@@ -43,7 +43,10 @@ I would like to thank people who assisted me throughout this project:
 * [@songotenks69](https://github.com/songotenks69)
 * [@Ovenoboyo](https://github.com/Ovenoboyo)
 * [SphericalKat](https://github.com/ATechnoHazard)
-* [nitamarcel](https://github.com/nitanmarcel)
+* [@rupansh](https://github.com/rupansh)
+* [@zakaryan2004](https://github.com/zakaryan2004)
+* [@kandnub](https://github.com/kandnub)
+* [@pqhaz](https://github.com/pqhaz)
 
 and many more people who aren't mentioned here.
 
