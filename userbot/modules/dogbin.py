@@ -5,7 +5,6 @@
 #
 """ Userbot module containing commands for interacting with dogbin(https://del.dog)"""
 
-import json
 from requests import get, post, exceptions
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
@@ -30,7 +29,6 @@ async def paste(pstl):
             message = match
         elif reply_id:
             message = (await pstl.get_reply_message()).message
-
 
         # Dogbin
         await pstl.edit("`Pasting text . . .`")
@@ -89,18 +87,18 @@ async def get_dogbin_content(dog_url):
 
         resp = get(f'{DOGBIN_URL}raw/{message}')
 
-            try:
-                resp.raise_for_status()
-            except exceptions.HTTPError as HTTPErr:
-                await dog_url.edit("Request returned an unsuccessful status code.\n\n" + str(HTTPErr))
-                return
-            except exceptions.Timeout as TimeoutErr:
-                await dog_url.edit("Request timed out."+ str(TimeoutErr))
-                return
-            except exceptions.TooManyRedirects as RedirectsErr:
-                await dog_url.edit("Request exceeded the configured number of maximum redirections." + str(RedirectsErr))
-                return
-            
+        try:
+            resp.raise_for_status()
+        except exceptions.HTTPError as HTTPErr:
+            await dog_url.edit("Request returned an unsuccessful status code.\n\n" + str(HTTPErr))
+            return
+        except exceptions.Timeout as TimeoutErr:
+            await dog_url.edit("Request timed out." + str(TimeoutErr))
+            return
+        except exceptions.TooManyRedirects as RedirectsErr:
+            await dog_url.edit("Request exceeded the configured number of maximum redirections." + str(RedirectsErr))
+            return
+
         reply_text = "`Fetched dogbin URL content successfully!`\n\n`Content:` " + resp.text
 
         await dog_url.edit(reply_text)
