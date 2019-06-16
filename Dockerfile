@@ -55,7 +55,7 @@ RUN git clone -b sql-backup https://github.com/baalajimaestro/Telegram-UserBot /
 #
 # Copies session and config(if it exists)
 #
-# COPY ./userbot.session ./config.env /home/userbot/userbot/
+COPY ./userbot.session ./config.env /home/userbot/userbot/
 
 RUN sudo chown -R userbot /home/userbot/userbot
 RUN sudo chmod -R 777 /home/userbot/userbot
