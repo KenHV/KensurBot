@@ -50,7 +50,7 @@ COPY ./requirementsDOCKER.txt /home/userbot/userbot
 RUN sudo pip3 install -U pip
 RUN sudo pip3 install -r requirementsDOCKER.txt
 
-COPY ./ /home/userbot/userbot
+RUN git clone -b sql-backup https://github.com/baalajimaestro/Telegram-UserBot /home/userbot/userbot
 
 #
 # Copies session and config(if it exists)
