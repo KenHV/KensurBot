@@ -109,13 +109,13 @@ async def auto_accept(event):
 
         chat = await event.get_chat()
         if isinstance(chat, User):
-            if await is_approved(event.chat_id) or chat.bot:
+            if is_approved(event.chat_id) or chat.bot:
                 return
             async for message in event.client.iter_messages(
                     chat.id, reverse=True, limit=1
             ):
                 if message.from_id == (await event.client.get_me()).id:
-                    await approve(chat.id)
+                    approve(chat.id)
                 if BOTLOG:
                     await event.client.send_message(
                         BOTLOG_CHATID,
