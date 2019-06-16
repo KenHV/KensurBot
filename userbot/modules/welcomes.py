@@ -27,12 +27,13 @@ async def welcome_mute(welcm):
             adder = welcm.action_message.from_id
 
         async for admin in bot.iter_participants(welcm.chat_id, filter=ChannelParticipantsAdmins):
-                if admin.id == adder:
-                    ignore = True
-                    break
+            if admin.id is adder:
+                ignore = True
+                break
         if ignore:
             return
-        elif welcm.user_joined:
+
+        if welcm.user_joined:
             users_list = hasattr(welcm.action_message.action, "users")
             if users_list:
                 users = welcm.action_message.action.users
@@ -54,8 +55,9 @@ async def welcome_mute(welcm):
                 join_time = welcm.action_message.date
                 message_date = message.date
 
+                # The message was sent before the user joined, thus ignore it
                 if message_date < join_time:
-                    continue  # The message was sent before the user joined, thus ignore it
+                    continue
 
                 # DEBUGGING. LEAVING IT HERE FOR SOME TIME ###
                 print(f"User Joined: {join_time}")
@@ -115,7 +117,7 @@ async def welcome_mute(welcm):
                     )
 
                     await sleep(1)
-                    
+
                     await welcm.client(
                         EditBannedRequest(
                             welcm.chat_id,
@@ -123,7 +125,7 @@ async def welcome_mute(welcm):
                             UNBAN_RIGHTS
                         )
                     )
-                    
+
                 except:
                     await welcm.reply(
                         "@admins\n"
