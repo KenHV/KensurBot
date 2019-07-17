@@ -7,25 +7,25 @@
 """ Userbot module containing various scrapers. """
 
 import os
+from asyncio import create_subprocess_shell as asyncsh
+from asyncio.subprocess import PIPE as asyncsh_PIPE
 from html import unescape
 from re import findall
 from urllib import parse
 from urllib.error import HTTPError
-from asyncio import create_subprocess_shell as asyncsh
-from asyncio.subprocess import PIPE as asyncsh_PIPE
 
-from wikipedia import summary
-from wikipedia.exceptions import DisambiguationError, PageError
-from urbandict import define
-from requests import get
+from emoji import get_emoji_regexp
 from google_images_download import google_images_download
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
-from emoji import get_emoji_regexp
 from pytube import YouTube
 from pytube.helpers import safe_filename
+from requests import get
+from urbandict import define
+from wikipedia import summary
+from wikipedia.exceptions import DisambiguationError, PageError
 
 from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY, bot
 from userbot.events import register
@@ -270,11 +270,11 @@ async def lang(value):
     if not value.text[0].isalpha() and value.text[0] not in ("/", "#", "@", "!"):
         global LANG
         LANG = value.pattern_match.group(1)
+        await value.edit("Default language changed to **" + LANG + "**")
         if BOTLOG:
             await value.client.send_message(
                 BOTLOG_CHATID, "Default language changed to **" + LANG + "**"
             )
-            await value.edit("Default language changed to **" + LANG + "**")
 
 
 @register(outgoing=True, pattern="^.yt (.*)")
@@ -284,10 +284,19 @@ async def yt_search(video_q):
         query = video_q.pattern_match.group(1)
         result = ''
         i = 1
+
+        if not YOUTUBE_API_KEY:
+            await video_q.edit(
+                "`Error: YouTube API key missing!\
+                Add it to environment vars or config.env.`"
+            )
+            return
+
+        await video_q.edit("```Processing...```")
+
         full_response = youtube_search(query)
         videos_json = full_response[1]
 
-        await video_q.edit("```Processing...```")
         for video in videos_json:
             result += f"{i}. {unescape(video['snippet']['title'])} \
                 \nhttps://www.youtube.com/watch?v={video['id']['videoId']}\n"
@@ -304,8 +313,7 @@ def youtube_search(
         token=None,
         location=None,
         location_radius=None
-    ):
-
+):
     """ Do a YouTube search. """
     youtube = build('youtube', 'v3',
                     developerKey=YOUTUBE_API_KEY, cache_discovery=False)
@@ -327,13 +335,13 @@ def youtube_search(
             videos.append(search_result)
     try:
         nexttok = search_response["nextPageToken"]
-        return(nexttok, videos)
+        return (nexttok, videos)
     except HttpError:
         nexttok = "last_page"
-        return(nexttok, videos)
+        return (nexttok, videos)
     except KeyError:
         nexttok = "KeyError, try again."
-        return(nexttok, videos)
+        return (nexttok, videos)
 
 
 @register(outgoing=True, pattern=r".yt_dl (\S*) ?(\S*)")
@@ -383,7 +391,7 @@ async def download_video(v_url):
             await v_url.edit(
                 ("**File larger than 50MB. Sending the link instead.\n**"
                  f"Get the video [here]({video_stream.url})\n\n"
-                 "**If the video opens instead of playing, right-click(or long press) and "
+                 "**If the video plays instead of downloading, right click(or long press on touchscreen) and "
                  "press 'Save Video As...'(may depend on the browser) to download the video.**")
             )
             return

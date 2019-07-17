@@ -6,6 +6,7 @@ from sys import setrecursionlimit
 
 import spotify_token as st
 from requests import get
+from telethon.errors import AboutTooLongError
 from telethon.tl.functions.account import UpdateProfileRequest
 
 from userbot import (DEFAULT_BIO, CMD_HELP, BOTLOG, BOTLOG_CHATID,
@@ -13,11 +14,10 @@ from userbot import (DEFAULT_BIO, CMD_HELP, BOTLOG, BOTLOG_CHATID,
 from userbot.events import register
 
 # =================== CONSTANT ===================
-SPO_BIO_ENABLED = "```Spotify Current Music to Bio enabled.```"
-SPO_BIO_DISABLED = "```Spotify Current Music to Bio disabled. Bio is default now.```"
-SPO_BIO_RUNNING = "```Spotify Current Music to Bio already running.```"
-SPO_BIO_CONFIG_ERROR = "```Error.```"
-ERROR_MSG = "```Module halted, Unexpected error.```"
+SPO_BIO_ENABLED = "```Spotify current music to bio is now enabled.```"
+SPO_BIO_DISABLED = "```Spotify current music to bio is now disabled. Bio reverted to default.```"
+SPO_BIO_RUNNING = "```Spotify current music to bio is already running.```"
+ERROR_MSG = "```Spotify module halted, got an unexpected error.```"
 
 USERNAME = SPOTIFY_USERNAME
 PASSWORD = SPOTIFY_PASS
@@ -31,6 +31,8 @@ SPOTIFYCHECK = False
 RUNNING = False
 OLDEXCEPT = False
 PARSE = False
+
+
 # ================================================
 
 
@@ -65,7 +67,11 @@ async def update_spotify_info():
                 oldartist = artist
                 environ["oldsong"] = song
                 spobio = BIOPREFIX + " 🎧: " + artist + " - " + song
-                await bot(UpdateProfileRequest(about=spobio))
+                try:
+                    await bot(UpdateProfileRequest(about=spobio))
+                except AboutTooLongError:
+                    short_bio = "🎧: " + song
+                    await bot(UpdateProfileRequest(about=short_bio))
                 environ["errorcheck"] = "0"
         except KeyError:
             errorcheck = environ.get("errorcheck", None)
@@ -126,6 +132,7 @@ async def set_biodgraph(setdbio):
     RUNNING = False
     await bot(UpdateProfileRequest(about=DEFAULT_BIO))
     await setdbio.edit(SPO_BIO_DISABLED)
+
 
 CMD_HELP.update(
     {

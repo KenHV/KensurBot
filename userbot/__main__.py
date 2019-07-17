@@ -10,6 +10,7 @@ from sqlite3 import connect
 from sys import argv
 
 from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
+
 from userbot import BRAIN_CHECKER, LOGS, bot
 from userbot.modules import ALL_MODULES
 
@@ -35,7 +36,7 @@ for module_name in ALL_MODULES:
 
 LOGS.info("Your Bot is alive! Test it by typing .alive on any chat."
           " Should you need assistance, head to https://t.me/userbot_support")
-LOGS.info("Your Bot Version is 2.4.2")
+LOGS.info("Your Bot Version is 3.0-sql-esq")
 
 if len(argv) not in (1, 3, 4):
     bot.disconnect()

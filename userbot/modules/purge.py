@@ -42,7 +42,7 @@ async def fastpurger(purg):
         if BOTLOG:
             await purg.client.send_message(
                 BOTLOG_CHATID, "Purge of " +
-                str(count) + " messages done successfully."
+                               str(count) + " messages done successfully."
             )
         await sleep(2)
         await done.delete()
@@ -71,9 +71,9 @@ async def purgeme(delme):
         if BOTLOG:
             await delme.client.send_message(
                 BOTLOG_CHATID, "Purge of " +
-                str(count) + " messages done successfully."
+                               str(count) + " messages done successfully."
             )
-        sleep(2)
+        await sleep(2)
         i = 1
         await smsg.delete()
 
@@ -126,18 +126,13 @@ async def selfdestruct(destroy):
         message = destroy.text
         counter = int(message[4:6])
         text = str(destroy.text[6:])
-        text = (
-            text
-            + "\n\n`This message shall be self-destructed in "
-            + str(counter)
-            + " seconds`"
-        )
         await destroy.delete()
         smsg = await destroy.client.send_message(destroy.chat_id, text)
-        sleep(counter)
+        await sleep(counter)
         await smsg.delete()
         if BOTLOG:
             await destroy.client.send_message(BOTLOG_CHATID, "sd query done successfully")
+
 
 CMD_HELP.update({
     'purge': '.purge\

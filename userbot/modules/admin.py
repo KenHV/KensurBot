@@ -3,7 +3,7 @@
 # Licensed under the Raphielscape Public License, Version 1.b (the "License");
 # you may not use this file except in compliance with the License.
 """
-Userbot module which has commands related to and requiring admin privileges to use
+Userbot module to help you manage a group
 """
 
 from asyncio import sleep
@@ -63,6 +63,18 @@ KICK_RIGHTS = ChatBannedRights(
     until_date=None,
     view_messages=True
 )
+
+MUTE_RIGHTS = ChatBannedRights(
+    until_date=None,
+    send_messages=True
+)
+
+UNMUTE_RIGHTS = ChatBannedRights(
+    until_date=None,
+    send_messages=False
+)
+
+
 # ================================================
 
 
@@ -101,7 +113,8 @@ async def set_group_photo(gpic):
 
 
 @register(outgoing=True, pattern="^.promote(?: |$)(.*)")
-@register(incoming=True, from_users=BRAIN_CHECKER, pattern="^.promote(?: |$)(.*)")
+@register(incoming=True, from_users=BRAIN_CHECKER,
+          pattern="^.promote(?: |$)(.*)")
 async def promote(promt):
     """ For .promote command, do promote targeted person """
     if not promt.text[0].isalpha() \
@@ -266,7 +279,8 @@ async def ban(bon):
             if reply:
                 await reply.delete()
         except BadRequestError:
-            await bon.edit("`I dont have message nuking rights! But still he was banned!`")
+            bmsg = "`I dont have enough rights! But still he was banned!`"
+            await bon.edit(bmsg)
             return
         # Delete message and then tell that the command
         # is done gracefully
@@ -357,6 +371,14 @@ async def spider(spdr):
         else:
             return
 
+        self_user = await spdr.client.get_me()
+
+        if user.id == self_user.id:
+            await spdr.edit(
+                "`Mute Error! You are not supposed to mute yourself!`"
+            )
+            return
+
         # If the targeted user is a Sudo
         if user.id in BRAIN_CHECKER:
             await spdr.edit(
@@ -366,19 +388,30 @@ async def spider(spdr):
 
         # If everything goes well, do announcing and mute
         await spdr.edit("`Gets a tape!`")
-        mute(spdr.chat_id, user.id)
+        if mute(spdr.chat_id, user.id) is False:
+            return await spdr.edit('`Error! User probably already muted.`')
+        else:
+            try:
+                await spdr.client(
+                    EditBannedRequest(
+                        spdr.chat_id,
+                        user.id,
+                        MUTE_RIGHTS
+                    )
+                )
+                # Announce that the function is done
+                await spdr.edit("`Safely taped!`")
 
-        # Announce that the function is done
-        await spdr.edit("`Safely taped!`")
-
-        # Announce to logging group
-        if BOTLOG:
-            await spdr.client.send_message(
-                BOTLOG_CHATID,
-                "#MUTE\n"
-                f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                f"CHAT: {spdr.chat.title}(`{spdr.chat_id}`)"
-            )
+                # Announce to logging group
+                if BOTLOG:
+                    await spdr.client.send_message(
+                        BOTLOG_CHATID,
+                        "#MUTE\n"
+                        f"USER: [{user.first_name}](tg://user?id={user.id})\n"
+                        f"CHAT: {spdr.chat.title}(`{spdr.chat_id}`)"
+                    )
+            except UserIdInvalidError:
+                return await spdr.edit("`Uh oh my unmute logic broke!`")
 
 
 @register(outgoing=True, pattern="^.unmute(?: |$)(.*)")
@@ -412,28 +445,29 @@ async def unmoot(unmot):
         else:
             return
 
-        unmute(unmot.chat_id, user.id)
-
-        try:
-            await unmot.client(
-                EditBannedRequest(
-                    unmot.chat_id,
-                    user.id,
-                    UNBAN_RIGHTS
+        if unmute(unmot.chat_id, user.id) is False:
+            return await unmot.edit("`Error! User probably already unmuted.`")
+        else:
+            try:
+                await unmot.client(
+                    EditBannedRequest(
+                        unmot.chat_id,
+                        user.id,
+                        UNMUTE_RIGHTS
+                    )
                 )
-            )
-            await unmot.edit("```Unmuted Successfully```")
-        except UserIdInvalidError:
-            await unmot.edit("`Uh oh my unmute logic broke!`")
-            return
+                await unmot.edit("```Unmuted Successfully```")
+            except UserIdInvalidError:
+                await unmot.edit("`Uh oh my unmute logic broke!`")
+                return
 
-        if BOTLOG:
-            await unmot.client.send_message(
-                BOTLOG_CHATID,
-                "#UNMUTE\n"
-                f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                f"CHAT: {unmot.chat.title}(`{unmot.chat_id}`)"
-            )
+            if BOTLOG:
+                await unmot.client.send_message(
+                    BOTLOG_CHATID,
+                    "#UNMUTE\n"
+                    f"USER: [{user.first_name}](tg://user?id={user.id})\n"
+                    f"CHAT: {unmot.chat.title}(`{unmot.chat_id}`)"
+                )
 
 
 @register(incoming=True)
@@ -490,6 +524,7 @@ async def ungmoot(un_gmute):
             from userbot.modules.sql_helper.gmute_sql import ungmute
         except AttributeError:
             await un_gmute.edit(NO_SQL)
+            return
 
         user = await get_user_from_event(un_gmute)
         if user:
@@ -500,24 +535,26 @@ async def ungmoot(un_gmute):
         # If pass, inform and start ungmuting
         await un_gmute.edit('```Ungmuting...```')
 
-        ungmute(user.id)
+        if ungmute(user.id) is False:
+            await un_gmute.edit("`Error! User probably not gmuted.`")
+        else:
+            # Inform about success
+            await un_gmute.edit("```Ungmuted Successfully```")
 
-        # Inform about success
-        await un_gmute.edit("```Ungmuted Successfully```")
-
-        if BOTLOG:
-            await un_gmute.client.send_message(
-                BOTLOG_CHATID,
-                "#UNGMUTE\n"
-                f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                f"CHAT: {un_gmute.chat.title}(`{un_gmute.chat_id}`)"
-            )
+            if BOTLOG:
+                await un_gmute.client.send_message(
+                    BOTLOG_CHATID,
+                    "#UNGMUTE\n"
+                    f"USER: [{user.first_name}](tg://user?id={user.id})\n"
+                    f"CHAT: {un_gmute.chat.title}(`{un_gmute.chat_id}`)"
+                )
 
 
 @register(outgoing=True, pattern="^.gmute(?: |$)(.*)")
 async def gspider(gspdr):
     """ For .gmute command, gmutes the target in the userbot """
-    if not gspdr.text[0].isalpha() and gspdr.text[0] not in ("/", "#", "@", "!"):
+    cmd = gspdr.text[0]
+    if not cmd.isalpha() and cmd not in ("/", "#", "@", "!"):
         # Admin or creator check
         chat = await gspdr.get_chat()
         admin = chat.admin_rights
@@ -550,17 +587,18 @@ async def gspider(gspdr):
         await gspdr.edit("`Grabs a huge, sticky duct tape!`")
         gmute(user.id)
 
-        # Delete the replied message and inform about success
-        await gspdr.delete()
-        await gspdr.respond("`Globally taped!`")
+        if gmute(user.id) is False:
+            await gspdr.edit('`Error! User probably already gmuted.`')
+        else:
+            await gspdr.edit("`Globally taped!`")
 
-        if BOTLOG:
-            await gspdr.client.send_message(
-                BOTLOG_CHATID,
-                "#GMUTE\n"
-                f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                f"CHAT: {gspdr.chat.title}(`{gspdr.chat_id}`)"
-            )
+            if BOTLOG:
+                await gspdr.client.send_message(
+                    BOTLOG_CHATID,
+                    "#GMUTE\n"
+                    f"USER: [{user.first_name}](tg://user?id={user.id})\n"
+                    f"CHAT: {gspdr.chat.title}(`{gspdr.chat_id}`)"
+                )
 
 
 @register(outgoing=True, pattern="^.delusers(?: |$)(.*)")
@@ -616,7 +654,7 @@ async def rm_deletedacc(show):
                         )
                     )
                 except ChatAdminRequiredError:
-                    await show.edit("`you don't have ban rights in this group`")
+                    await show.edit("`You don't have enough rights.`")
                     return
                 except UserAdminInvalidError:
                     del_u -= 1
@@ -655,7 +693,8 @@ async def get_admin(show):
                     show.chat_id, filter=ChannelParticipantsAdmins
             ):
                 if not user.deleted:
-                    link = f"<a href=\"tg://user?id={user.id}\">{user.first_name}</a>"
+                    link_unf = "<a href=\"tg://user?id={}\">{}</a>"
+                    link = link_unf.format(user.id, user.first_name)
                     userid = f"<code>{user.id}</code>"
                     mentions += f"\n{link} {userid}"
                 else:
@@ -692,7 +731,9 @@ async def pin(msg):
             is_silent = False
 
         try:
-            await msg.client(UpdatePinnedMessageRequest(msg.to_id, to_pin, is_silent))
+            await msg.client(UpdatePinnedMessageRequest(msg.to_id,
+                                                        to_pin,
+                                                        is_silent))
         except BadRequestError:
             await msg.edit(NO_PERM)
             return
@@ -759,7 +800,8 @@ async def kick(usr):
             )
         )
 
-        await usr.edit(f"`Kicked` [{user.first_name}](tg://user?id={user.id})`!`")
+        kmsg = "`Kicked` [{}](tg://user?id={})`!`"
+        await usr.edit(kmsg.format(user.first_name, user.id))
 
         if BOTLOG:
             await usr.client.send_message(
@@ -788,7 +830,8 @@ async def get_user_from_event(event):
         if event.message.entities is not None:
             probable_user_mention_entity = event.message.entities[0]
 
-            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
+            if isinstance(probable_user_mention_entity,
+                          MessageEntityMentionName):
                 user_id = probable_user_mention_entity.user_id
                 user_obj = await event.client.get_entity(user_id)
                 return user_obj
@@ -799,6 +842,7 @@ async def get_user_from_event(event):
             return None
 
     return user_obj
+
 
 async def get_user_from_id(user, event):
     if isinstance(user, str):
@@ -813,31 +857,30 @@ async def get_user_from_id(user, event):
     return user_obj
 
 
-
 CMD_HELP.update({
-    "promote": "Usage: Reply to someone's message with .promote to promote them."
+    "promote": "Usage: Reply to message with .promote to promote them."
 })
 CMD_HELP.update({
-    "ban": "Usage: Reply to someone's message with .ban to ban them."
+    "ban": "Usage: Reply to message with .ban to ban them."
 })
 CMD_HELP.update({
-    "demote": "Usage: Reply to someone's message with .demote to revoke their admin permissions."
+    "demote": "Usage: Reply to message with .demote to revoke their admin permissions."
 })
 CMD_HELP.update({
-    "unban": "Usage: Reply to someone's message with .unban to unban them in this chat."
+    "unban": "Usage: Reply to message with .unban to unban them in this chat."
 })
 CMD_HELP.update({
-    "mute": "Usage: Reply to someone's message with .mute to mute them, works on admins too"
+    "mute": "Usage: Reply tomessage with .mute to mute them, works on admins too"
 })
 CMD_HELP.update({
-    "unmute": "Usage: Reply to someone's message with .unmute to remove them from muted list."
+    "unmute": "Usage: Reply to message with .unmute to remove them from muted list."
 })
 CMD_HELP.update({
-    "gmute": "Usage: Reply to someone's message with .gmute to mute them in all \
+    "gmute": "Usage: Reply to message with .gmute to mute them in all \
 groups you have in common with them."
 })
 CMD_HELP.update({
-    "ungmute": "Usage: Reply someone's message with .ungmute to remove them from the gmuted list."
+    "ungmute": "Usage: Reply message with .ungmute to remove them from the gmuted list."
 })
 
 CMD_HELP.update(
@@ -854,6 +897,6 @@ CMD_HELP.update(
 
 CMD_HELP.update(
     {
-        "adminlist" : "Usage: Retrieves all admins in the chat."
+        "adminlist": "Usage: Retrieves all admins in the chat."
     }
 )

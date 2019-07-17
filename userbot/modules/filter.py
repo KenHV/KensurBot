@@ -24,6 +24,8 @@ async def filter_incoming_handler(handler):
                 return
             listes = handler.text.split(" ")
             filters = get_filters(handler.chat_id)
+            if not filters:
+                return
             for trigger in filters:
                 for item in listes:
                     pro = fullmatch(trigger.keyword, item, flags=IGNORECASE)
@@ -44,12 +46,20 @@ async def add_new_filter(new_handler):
             await new_handler.edit("`Running on Non-SQL mode!`")
             return
         message = new_handler.text
-        kek = message.split()
+        keyword = message.split()
         string = ""
-        for i in range(2, len(kek)):
-            string = string + " " + str(kek[i])
-        add_filter(str(new_handler.chat_id), kek[1], string)
-        await new_handler.edit("```Filter added successfully```")
+        for i in range(2, len(keyword)):
+            string = string + " " + str(keyword[i])
+
+        if event.reply_to_msg_id:
+            string = " " + (await event.get_reply_message()).text
+
+        msg = "`Filter` **{}** `{} successfully`"
+
+        if add_filter(str(new_handler.chat_id), keyword[1], string[1:]) is True:
+            await new_handler.edit(msg.format(keyword[1], 'added'))
+        else:
+            await new_handler.edit(msg.format(keyword[1], 'updated'))
 
 
 @register(outgoing=True, pattern="^.stop\\s.*")
@@ -67,25 +77,34 @@ async def remove_a_filter(r_handler):
         await r_handler.edit("```Filter removed successfully```")
 
 
-@register(outgoing=True, pattern="^.rmfilters$")
+
+@register(outgoing=True, pattern="^.rmfilters (.*)")
 async def kick_marie_filter(kick):
     """ For .rmfilters command, allows you to kick all \
         Marie(or her clones) filters from a chat. """
     if not kick.text[0].isalpha() and kick.text[0] not in ("/", "#", "@", "!"):
-        await kick.edit("```Will be kicking away all Marie filters.```")
-        sleep(3)
+        bot_type = kick.pattern_match.group(1)
+        if bot_type not in ["marie", "rose"]:
+            await kick.edit("`That bot is not yet supported!`")
+            return
+        await kick.edit("```Will be kicking away all Filters!```")
+        await sleep(3)
         resp = await kick.get_reply_message()
         filters = resp.text.split("-")[1:]
         for i in filters:
-            await kick.reply("/stop %s" % (i.strip()))
+            if bot_type == "marie":
+                await kick.reply("/stop %s" % (i.strip()))
+            if bot_type == "rose":
+                i = i.replace('`', '')
+                await kick.reply("/stop %s" % (i.strip()))
             await sleep(0.3)
         await kick.respond(
-            "```Successfully purged Marie filters yaay!```\n Gimme cookies!"
+            "```Successfully purged bots filters yaay!```\n Gimme cookies!"
         )
         if BOTLOG:
             await kick.client.send_message(
-                BOTLOG_CHATID, "I cleaned all Marie filters at " +
-                str(kick.chat_id)
+                BOTLOG_CHATID, "I cleaned all filters at " +
+                               str(kick.chat_id)
             )
 
 
@@ -100,10 +119,17 @@ async def filters_active(event):
             return
         transact = "`There are no filters in this chat.`"
         filters = get_filters(event.chat_id)
-        for i in filters:
-            message = "Active filters in this chat: \n\n"
-            transact = message + "🔹 " + i.keyword + "\n"
+        for filt in filters:
+            if transact == "`There are no filters in this chat.`":
+                transact = "Active filters in this chat:\n"
+                transact += "🔹 **{}** - `{}`\n".format(filt["keyword"],
+                                                       filt["msg"])
+            else:
+                transact += "🔹 **{}** - `{}`\n".format(filt["keyword"],
+                                                       filt["msg"])
+
         await event.edit(transact)
+
 
 CMD_HELP.update({
     "filters": "\
@@ -112,7 +138,7 @@ CMD_HELP.update({
 \n\n.filter <keyword> <reply message>\
 \nUsage: Add a filter to this chat. \
 The bot will now reply that message whenever 'keyword' is mentioned. \
-If you reply to a sticker with a keyword, the bot will reply with that sticker.\
+If you reply to sticker with keyword, bot will reply with that sticker.\
 \nNOTE: all filter keywords are in lowercase.\
 \n\n.stop <filter>\
 \nUsage: Stops that filter.\

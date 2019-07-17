@@ -12,12 +12,9 @@ import random
 import re
 import time
 
-from spongemock import spongemock
-from zalgo_text import zalgo
-
 from cowpy import cow
 
-from userbot import (DISABLE_RUN, WIDE_MAP, CMD_HELP)
+from userbot import CMD_HELP, ZALG_LIST
 from userbot.events import register
 
 # ================= CONSTANT =================
@@ -193,6 +190,8 @@ RUNSREACTS = [
     "I Fugged off!",
 ]
 DISABLE_RUN = False
+
+
 # ===========================================
 
 
@@ -247,9 +246,8 @@ async def copypasta(cp_e):
             return
 
         reply_text = random.choice(EMOJIS)
-        b_char = random.choice(
-            message
-        ).lower()  # choose a random character in the message to be substituted with 🅱️
+        # choose a random character in the message to be substituted with 🅱️
+        b_char = random.choice(message).lower()
         for owo in message:
             if owo == " ":
                 reply_text += random.choice(EMOJIS)
@@ -271,6 +269,7 @@ async def copypasta(cp_e):
 async def vapor(vpr):
     """ Vaporize everything! """
     if not vpr.text[0].isalpha() and vpr.text[0] not in ("/", "#", "@", "!"):
+        reply_text = list()
         textx = await vpr.get_reply_message()
         message = vpr.pattern_match.group(1)
         if message:
@@ -281,8 +280,15 @@ async def vapor(vpr):
             await vpr.edit("`Ｇｉｖｅ ｓｏｍｅ ｔｅｘｔ ｆｏｒ ｖａｐｏｒ！`")
             return
 
-        reply_text = str(message).translate(WIDE_MAP)
-        await vpr.edit(reply_text)
+        for charac in message:
+            if 0x21 <= ord(charac) <= 0x7F:
+                reply_text.append(chr(ord(charac) + 0xFEE0))
+            elif ord(charac) == 0x20:
+                reply_text.append(chr(0x3000))
+            else:
+                reply_text.append(charac)
+
+        await vpr.edit("".join(reply_text))
 
 
 @register(outgoing=True, pattern="^.str(?: |$)(.*)")
@@ -303,7 +309,7 @@ async def stretch(stret):
         count = random.randint(3, 10)
         reply_text = re.sub(
             r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])",
-            (r"\1"*count),
+            (r"\1" * count),
             message
         )
         await stret.edit(reply_text)
@@ -313,6 +319,7 @@ async def stretch(stret):
 async def zal(zgfy):
     """ Invoke the feeling of chaos. """
     if not zgfy.text[0].isalpha() and zgfy.text[0] not in ("/", "#", "@", "!"):
+        reply_text = list()
         textx = await zgfy.get_reply_message()
         message = zgfy.pattern_match.group(1)
         if message:
@@ -325,9 +332,27 @@ async def zal(zgfy):
             )
             return
 
-        input_text = " ".join(message).lower()
-        zalgofied_text = zalgo.zalgo().zalgofy(input_text)
-        await zgfy.edit(zalgofied_text)
+        for charac in message:
+            if not charac.isalpha():
+                reply_text.append(charac)
+                continue
+
+            for _ in range(0, 3):
+                randint = random.randint(0, 2)
+
+                if randint == 0:
+                    charac = charac.strip() + \
+                        random.choice(ZALG_LIST[0]).strip()
+                elif randint == 1:
+                    charac = charac.strip() + \
+                        random.choice(ZALG_LIST[1]).strip()
+                else:
+                    charac = charac.strip() + \
+                        random.choice(ZALG_LIST[2]).strip()
+
+            reply_text.append(charac)
+
+        await zgfy.edit("".join(reply_text))
 
 
 @register(outgoing=True, pattern="^hi$")
@@ -407,9 +432,9 @@ async def enable_runs(run):
 @register(outgoing=True, pattern="^.metoo$")
 async def metoo(hahayes):
     """ Haha yes """
-    if not hahayes.text[0].isalpha() and hahayes.text[0] not in ("/", "#", "@", "!"):
-        index = random.randint(0, len(METOOSTR) - 1)
-        reply_text = METOOSTR[index]
+    if not hahayes.text[0].isalpha() and hahayes.text[0] not in (
+            "/", "#", "@", "!"):
+        reply_text = random.choice(METOOSTR)
         await hahayes.edit(reply_text)
 
 
@@ -417,6 +442,7 @@ async def metoo(hahayes):
 async def spongemocktext(mock):
     """ Do it and find the real fun. """
     if not mock.text[0].isalpha() and mock.text[0] not in ("/", "#", "@", "!"):
+        reply_text = list()
         textx = await mock.get_reply_message()
         message = mock.pattern_match.group(1)
         if message:
@@ -427,8 +453,14 @@ async def spongemocktext(mock):
             await mock.edit("`gIvE sOMEtHInG tO MoCk!`")
             return
 
-        reply_text = spongemock.mock(message)
-        await mock.edit(reply_text)
+        for charac in message:
+            if charac.isalpha() and random.randint(0, 1):
+                to_app = charac.upper() if charac.islower() else charac.lower()
+                reply_text.append(to_app)
+            else:
+                reply_text.append(charac)
+
+        await mock.edit("".join(reply_text))
 
 
 @register(outgoing=True, pattern="^.clap(?: |$)(.*)")
@@ -487,6 +519,7 @@ async def typewriter(typew):
             await typew.edit(old_text)
             await asyncio.sleep(sleep_time)
 
+
 CMD_HELP.update({
-    "memes": "Ask Thoncc (@Skittles9823Bot) for that."
+    "memes": "Ask 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for that."
 })
