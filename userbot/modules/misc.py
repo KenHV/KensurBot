@@ -76,7 +76,7 @@ async def bot_community(community):
 async def bot_support(wannahelp):
     """ For .support command, just returns the group link. """
     if not wannahelp.text[0].isalpha() and wannahelp.text[0] not in ("/", "#", "@", "!"):
-        await wannahelp.edit("Join the Paperplane Extended Channel: @PaperplaneExtendedNews")
+        await wannahelp.edit("Join the Paperplane Extended Channel: @PaperplaneExtended")
         
 @register(outgoing=True, pattern="^.creator$")
 async def creator(e):
