@@ -11,12 +11,14 @@ RUN apk add --no-cache --update \
     bash \
     build-base \
     bzip2-dev \
-    chromium \
-    chromium-chromedriver \
     curl \
     figlet \
     gcc \
     git \
+    sudo \
+    util-linux \
+    chromium \
+    chromium-chromedriver \
     jpeg-dev \
     libffi-dev \
     libpq \
@@ -41,13 +43,16 @@ RUN apk add --no-cache --update \
     py-tz \
     py3-aiohttp \
     python-dev \
+    openssl \
+    pv \
+    jq \
+    wget \
     python3 \
     python3-dev \
     readline-dev \
     sqlite \
     sqlite-dev \
     sudo \
-    util-linux \
     zlib-dev
 
 RUN pip3 install --upgrade pip setuptools
@@ -59,6 +64,7 @@ RUN adduser userbot --disabled-password --home /home/userbot
 RUN adduser userbot wheel
 USER userbot
 RUN mkdir /home/userbot/userbot
+RUN mkdir /home/userbot/bin
 RUN git clone -b sql-extended https://github.com/AvinashReddy3108/PaperplaneExtended /home/userbot/userbot
 WORKDIR /home/userbot/userbot
 ADD ./requirements.txt /home/userbot/userbot/requirements.txt
@@ -67,6 +73,13 @@ ADD ./requirements.txt /home/userbot/userbot/requirements.txt
 # Copies session and config(if it exists)
 #
 COPY ./sample_config.env ./userbot.session* ./config.env* /home/userbot/userbot/
+
+#
+# Clone helper scripts
+#
+RUN curl -s https://raw.githubusercontent.com/yshalsager/megadown/master/megadown -o /home/userbot/bin/megadown && sudo chmod a+x /home/userbot/bin/megadown
+RUN curl -s https://raw.githubusercontent.com/yshalsager/cmrudl.py/master/cmrudl.py -o /home/userbot/bin/cmrudl && sudo chmod a+x /home/userbot/bin/cmrudl
+ENV PATH="/home/userbot/bin:$PATH"
 
 #
 # Install requirements
