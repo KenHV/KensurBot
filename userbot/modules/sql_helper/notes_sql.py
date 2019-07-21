@@ -20,6 +20,13 @@ class Notes(BASE):
 Notes.__table__.create(checkfirst=True)
 
 
+def get_note(chat_id, keyword):
+    try:
+        return SESSION.query(Notes).get((str(chat_id), keyword))
+    finally:
+        SESSION.close()
+
+
 def get_notes(chat_id):
     try:
         return SESSION.query(Notes).filter(Notes.chat_id == str(chat_id)).all()
@@ -28,21 +35,31 @@ def get_notes(chat_id):
 
 
 def add_note(chat_id, keyword, reply):
-    adder = SESSION.query(Notes).get((str(chat_id), keyword))
-    if adder:
-        adder.reply = reply
-    else:
+    to_check = get_note(chat_id, keyword)
+    if not to_check:
         adder = Notes(str(chat_id), keyword, reply)
-    SESSION.add(adder)
-    SESSION.commit()
-
+        SESSION.add(adder)
+        SESSION.commit()
+        return True
+    else:
+        rem = SESSION.query(Notes).get((str(chat_id), keyword))
+        SESSION.delete(rem)
+        SESSION.commit()
+        adder = Notes(str(chat_id), keyword, reply)
+        SESSION.add(adder)
+        SESSION.commit()
+        return False
 
 def rm_note(chat_id, keyword):
-    note = SESSION.query(Notes).filter(Notes.chat_id == str(chat_id), Notes.keyword == keyword)
-    if note:
-        note.delete()
+    to_check = get_note(chat_id, keyword)
+    if not to_check:
+        return False
+    else:
+        rem = SESSION.query(Notes).get((str(chat_id), keyword))
+        SESSION.delete(rem)
         SESSION.commit()
-
+        return True
+        
 def rm_all_notes(chat_id):
     notes = SESSION.query(Notes).filter(Notes.chat_id == str(chat_id))
     if notes:

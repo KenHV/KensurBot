@@ -5,12 +5,19 @@
 #
 #
 
-""" Userbot module for having some fun. """
+""" Userbot module for having some fun with people. """
 
 import asyncio
 import random
 import re
 import time
+
+from collections import deque
+
+import requests
+
+from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.types import MessageEntityMentionName
 
 from cowpy import cow
 
@@ -27,6 +34,7 @@ METOOSTR = [
     "Haha yes",
     "Me rn",
 ]
+
 EMOJIS = [
     "😂",
     "😂",
@@ -57,6 +65,39 @@ EMOJIS = [
     "😩",
     "🚰",
 ]
+
+INSULT_STRINGS = [
+    "Owww ... Such a stupid idiot.",
+    "Don't drink and type.",
+    "Command not found. Just like your brain.",
+    "Bot rule 544 section 9 prevents me from replying to stupid humans like you.",
+    "Sorry, we do not sell brains.",
+    "Believe me you are not normal.",
+    "I bet your brain feels as good as new, seeing that you never use it.",
+    "If I wanted to kill myself I'd climb your ego and jump to your IQ.",
+    "You didn't evolve from apes, they evolved from you.",
+    "What language are you speaking? Cause it sounds like bullshit.",
+    "You are proof that evolution CAN go in reverse.",
+    "I would ask you how old you are but I know you can't count that high.",
+    "As an outsider, what do you think of the human race?",
+    "Ordinarily people live and learn. You just live.",
+    "Keep talking, someday you'll say something intelligent!.......(I doubt it though)",
+    "Everyone has the right to be stupid but you are abusing the privilege.",
+    "I'm sorry I hurt your feelings when I called you stupid. I thought you already knew that.",
+    "You should try tasting cyanide.",
+    "You should try sleeping forever.",
+    "Pick up a gun and shoot yourself.",
+    "Try bathing with Hydrochloric Acid instead of water.",
+    "Go Green! Stop inhaling Oxygen.",
+    "God was searching for you. You should leave to meet him.",
+    "You should Volunteer for target in an firing range.",
+    "Try playing catch and throw with RDX its fun.",
+    "People like you are the reason we have middle fingers.",
+    "When your mom dropped you off at the school, she got a ticket for littering.",
+    "You’re so ugly that when you cry, the tears roll down the back of your head, just to avoid your face.",
+    "If you’re talking behind my back then you’re in a perfect position to kiss my a**!.",
+]
+
 UWUS = [
     "(・`ω´・)",
     ";;w;;",
@@ -75,6 +116,7 @@ UWUS = [
     "*(^O^)*",
     "((+_+))",
 ]
+
 FACEREACTS = [
     "ʘ‿ʘ",
     "ヾ(-_- )ゞ",
@@ -176,6 +218,7 @@ FACEREACTS = [
     r"¯\(°_o)/¯",
     "(｡◕‿◕｡)",
 ]
+
 RUNSREACTS = [
     "Runs to Thanos",
     "Runs far, far away from earth",
@@ -188,10 +231,167 @@ RUNSREACTS = [
     "I go away",
     "I am just walking off, coz me is too fat.",
     "I Fugged off!",
+    "Will run for chocolate.",
+    "I run because I really like food.",
+    "Running...because dieting is not an option.",
+    "Wicked fast runnah",
+    "If you wanna catch me, you got to be fast...if you wanna stay with me, you got to be good...if you wanna pass me...You've got to be kidding.",
+    "Anyone can run a hundred meters, it's the next forty-two thousand and two hundred that count.",
+    "Why are all these people following me?",
+    "Are the kids still chasing me?",
+    "Running a marathon...there's an app for that.",
 ]
+
+HELLOSTR = [
+    "Hi !",
+    "‘Ello, gov'nor!",
+    "What’s crackin’?",
+    "‘Sup, homeslice?",
+    "Howdy, howdy ,howdy!",
+    "Hello, who's there, I'm talking.",
+    "You know who this is.",
+    "Yo!",
+    "Whaddup.",
+    "Greetings and salutations!",
+    "Hello, sunshine!",
+    "Hey, howdy, hi!",
+    "What’s kickin’, little chicken?",
+    "Peek-a-boo!",
+    "Howdy-doody!",
+    "Hey there, freshman!",
+    "I come in peace!",
+    "Ahoy, matey!",
+    "Hiya!",
+]
+
+SHGS = [
+    "┐(´д｀)┌",
+    "┐(´～｀)┌",
+    "┐(´ー｀)┌",
+    "┐(￣ヘ￣)┌",
+    "╮(╯∀╰)╭",
+    "╮(╯_╰)╭",
+    "┐(´д`)┌",
+    "┐(´∀｀)┌",
+    "ʅ(́◡◝)ʃ",
+    "ლ(ﾟдﾟლ)",
+    "┐(ﾟ～ﾟ)┌",
+    "┐('д')┌",
+    "ლ｜＾Д＾ლ｜",
+    "ლ（╹ε╹ლ）",
+    "ლ(ಠ益ಠ)ლ",
+    "┐(‘～`;)┌",
+    "ヘ(´－｀;)ヘ",
+    "┐( -“-)┌",
+    "乁༼☯‿☯✿༽ㄏ",
+    "ʅ（´◔౪◔）ʃ",
+    "ლ(•ω •ლ)",
+    "ヽ(゜～゜o)ノ",
+    "ヽ(~～~ )ノ",
+    "┐(~ー~;)┌",
+    "┐(-。ー;)┌",
+    "¯\_(ツ)_/¯",
+    "¯\_(⊙_ʖ⊙)_/¯",
+    "乁ʕ •̀ ۝ •́ ʔㄏ",
+    "¯\_༼ ಥ ‿ ಥ ༽_/¯",
+    "乁( ⁰͡  Ĺ̯ ⁰͡ ) ㄏ",
+]
+
+CRI = [
+    "أ‿أ",
+    "╥﹏╥",
+    "(;﹏;)",
+    "(ToT)",
+    "(┳Д┳)",
+    "(ಥ﹏ಥ)",
+    "（；へ：）",
+    "(T＿T)",
+    "（πーπ）",
+    "(Ｔ▽Ｔ)",
+    "(⋟﹏⋞)",
+    "（ｉДｉ）",
+    "(´Д⊂ヽ",
+    "(;Д;)",
+    "（>﹏<）",
+    "(TдT)",
+    "(つ﹏⊂)",
+    "༼☯﹏☯༽",
+    "(ノ﹏ヽ)",
+    "(ノAヽ)",
+    "(╥_╥)",
+    "(T⌓T)",
+    "(༎ຶ⌑༎ຶ)",
+    "(☍﹏⁰)｡",
+    "(ಥ_ʖಥ)",
+    "(つд⊂)",
+    "(≖͞_≖̥)",
+    "(இ﹏இ`｡)",
+    "༼ಢ_ಢ༽",
+    "༼ ༎ຶ ෴ ༎ຶ༽",
+]
+
+SLAP_TEMPLATES = [
+    "{hits} {victim} with a {item}.",
+    "{hits} {victim} in the face with a {item}.",
+    "{hits} {victim} around a bit with a {item}.",
+    "{throws} a {item} at {victim}.",
+    "grabs a {item} and {throws} it at {victim}'s face.",
+    "launches a {item} in {victim}'s general direction.",
+    "starts slapping {victim} silly with a {item}.",
+    "pins {victim} down and repeatedly {hits} them with a {item}.",
+    "grabs up a {item} and {hits} {victim} with it.",
+    "ties {victim} to a chair and {throws} a {item} at them.",
+    "gave a friendly push to help {victim} learn to swim in lava."
+]
+
+ITEMS = [
+    "cast iron skillet",
+    "large trout",
+    "baseball bat",
+    "cricket bat",
+    "wooden cane",
+    "nail",
+    "printer",
+    "shovel",
+    "CRT monitor",
+    "physics textbook",
+    "toaster",
+    "portrait of Richard Stallman",
+    "television",
+    "five ton truck",
+    "roll of duct tape",
+    "book",
+    "laptop",
+    "old television",
+    "sack of rocks",
+    "rainbow trout",
+    "rubber chicken",
+    "spiked bat",
+    "fire extinguisher",
+    "heavy rock",
+    "chunk of dirt",
+    "beehive",
+    "piece of rotten meat",
+    "bear",
+    "ton of bricks",
+]
+
+THROW = [
+    "throws",
+    "flings",
+    "chucks",
+    "hurls",
+]
+
+HIT = [
+    "hits",
+    "whacks",
+    "slaps",
+    "smacks",
+    "bashes",
+]
+
 DISABLE_RUN = False
-
-
 # ===========================================
 
 
@@ -220,6 +420,101 @@ async def kek(keks):
         time.sleep(0.3)
         await keks.edit(":" + uio[i % 2])
 
+@register(outgoing=True, pattern=r"^.coinflip (.*)")
+async def _(event):
+    if event.fwd_from:
+        return
+    r = random.randint(1, 100)
+    input_str = event.pattern_match.group(1)
+    if input_str:
+        input_str = input_str.lower()
+    if r % 2 == 1:
+        if input_str == "heads":
+            await event.edit("The coin landed on: **Heads**.\nYou were correct.")
+        elif input_str == "tails":
+            await event.edit("The coin landed on: **Heads**.\nYou weren't correct, try again ...")
+        else:
+            await event.edit("The coin landed on: **Heads**.")
+    elif r % 2 == 0:
+        if input_str == "tails":
+            await event.edit("The coin landed on: **Tails**.\nYou were correct.")
+        elif input_str == "heads":
+            await event.edit("The coin landed on: **Tails**.\nYou weren't correct, try again ...")
+        else:
+            await event.edit("The coin landed on: **Tails**.")
+    else:
+        await event.edit("Gimme another coin, this one fake AF !!")
+
+@register(pattern="^.slap(?: |$)(.*)", outgoing=True)
+async def who(event):
+    """ slaps a user, or get slapped if not a reply. """
+    if event.fwd_from:
+        return
+
+    replied_user = await get_user(event)
+    caption = await slap(replied_user, event)
+    message_id_to_reply = event.message.reply_to_msg_id
+
+    if not message_id_to_reply:
+        message_id_to_reply = None
+
+    try:
+        await event.edit(caption)
+
+    except:
+        await event.edit("`Can't slap this person, need to fetch some sticks and stones !!`")
+
+async def get_user(event):
+    """ Get the user from argument or replied message. """
+    if event.reply_to_msg_id:
+        previous_message = await event.get_reply_message()
+        replied_user = await event.client(GetFullUserRequest(previous_message.from_id))
+    else:
+        user = event.pattern_match.group(1)
+
+        if user.isnumeric():
+            user = int(user)
+
+        if not user:
+            self_user = await event.client.get_me()
+            user = self_user.id
+
+        if event.message.entities is not None:
+            probable_user_mention_entity = event.message.entities[0]
+
+            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
+                user_id = probable_user_mention_entity.user_id
+                replied_user = await event.client(GetFullUserRequest(user_id))
+                return replied_user
+        try:
+            user_object = await event.client.get_entity(user)
+            replied_user = await event.client(GetFullUserRequest(user_object.id))
+
+        except (TypeError, ValueError):
+            await event.edit("`I don't slap aliens, they ugly AF !!`")
+            return None
+
+    return replied_user
+
+async def slap(replied_user, event):
+    """ Construct a funny slap sentence !! """
+    user_id = replied_user.user.id
+    first_name = replied_user.user.first_name
+    username = replied_user.user.username
+
+    if username:
+        slapped = "@{}".format(username)
+    else:
+        slapped = f"[{first_name}](tg://user?id={user_id})"
+
+    temp = random.choice(SLAP_TEMPLATES)
+    item = random.choice(ITEMS)
+    hit = random.choice(HIT)
+    throw = random.choice(THROW)
+
+    caption = "..." + temp.format(victim=slapped, item=item, hits=hit, throws=throw)
+
+    return caption
 
 @register(outgoing=True, pattern="^-_-$")
 async def lol(lel):
@@ -229,6 +524,40 @@ async def lol(lel):
         okay = okay[:-1] + "_-"
         await lel.edit(okay)
 
+@register(outgoing=True, pattern="^.decide$")
+async def _(event):
+    if event.fwd_from:
+        return
+    message_id = event.message.id
+    if event.reply_to_msg_id:
+        message_id = event.reply_to_msg_id
+    r = requests.get("https://yesno.wtf/api").json()
+    await event.client.send_message(
+        event.chat_id,
+        str(r["answer"]).upper(),
+        reply_to=message_id,
+        file=r["image"]
+    )
+    await event.delete()
+
+@register(outgoing=True, pattern="^;_;$")
+async def fun(e):
+    t = ";__;"
+    for j in range(10):
+        t = t[:-1] + "_;"
+        await e.edit(t)
+
+@register(outgoing=True, pattern="^.cry$")
+async def cry(e):
+    """ y u du dis, i cry everytime !! """
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit(random.choice(CRI))
+
+@register(outgoing=True, pattern="^.insult$")
+async def cry(e):
+    """ y u du dis, i cry everytime !! """
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit(random.choice(INSULT_STRINGS))
 
 @register(outgoing=True, pattern="^.cp(?: |$)(.*)")
 async def copypasta(cp_e):
@@ -246,8 +575,9 @@ async def copypasta(cp_e):
             return
 
         reply_text = random.choice(EMOJIS)
-        # choose a random character in the message to be substituted with 🅱️
-        b_char = random.choice(message).lower()
+        b_char = random.choice(
+            message
+        ).lower()  # choose a random character in the message to be substituted with 🅱️
         for owo in message:
             if owo == " ":
                 reply_text += random.choice(EMOJIS)
@@ -309,7 +639,7 @@ async def stretch(stret):
         count = random.randint(3, 10)
         reply_text = re.sub(
             r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])",
-            (r"\1" * count),
+            (r"\1"*count),
             message
         )
         await stret.edit(reply_text)
@@ -355,10 +685,11 @@ async def zal(zgfy):
         await zgfy.edit("".join(reply_text))
 
 
-@register(outgoing=True, pattern="^hi$")
+@register(outgoing=True, pattern="^.hi$")
 async def hoi(hello):
     """ Greet everyone! """
-    await hello.edit("Hoi!😄")
+    if not hello.text[0].isalpha() and hello.text[0] not in ("/", "#", "@", "!"):
+        await hello.edit(random.choice(HELLOSTR))
 
 
 @register(outgoing=True, pattern="^.owo(?: |$)(.*)")
@@ -389,16 +720,14 @@ async def faces(owo):
 async def react_meme(react):
     """ Make your userbot react to everything. """
     if not react.text[0].isalpha() and react.text[0] not in ("/", "#", "@", "!"):
-        index = random.randint(0, len(FACEREACTS))
-        reply_text = FACEREACTS[index]
-        await react.edit(reply_text)
+        await react.edit(random.choice(FACEREACTS))
 
 
 @register(outgoing=True, pattern="^.shg$")
 async def shrugger(shg):
     r""" ¯\_(ツ)_/¯ """
     if not shg.text[0].isalpha() and shg.text[0] not in ("/", "#", "@", "!"):
-        await shg.edit(r"¯\_(ツ)_/¯")
+        await shg.edit(random.choice(SHGS))
 
 
 @register(outgoing=True, pattern="^.runs$")
@@ -406,9 +735,7 @@ async def runner_lol(run):
     """ Run, run, RUNNN! """
     if not DISABLE_RUN:
         if not run.text[0].isalpha() and run.text[0] not in ("/", "#", "@", "!"):
-            index = random.randint(0, len(RUNSREACTS) - 1)
-            reply_text = RUNSREACTS[index]
-            await run.edit(reply_text)
+            await run.edit(random.choice(RUNSREACTS))
 
 
 @register(outgoing=True, pattern="^.disable runs$")
@@ -417,7 +744,7 @@ async def disable_runs(norun):
     if not norun.text[0].isalpha() and norun.text[0] not in ("/", "#", "@", "!"):
         global DISABLE_RUN
         DISABLE_RUN = True
-        await norun.edit("```Done!```")
+        await norun.edit("```Disabled .runs !!```")
 
 
 @register(outgoing=True, pattern="^.enable runs$")
@@ -426,17 +753,46 @@ async def enable_runs(run):
     if not run.text[0].isalpha() and run.text[0] not in ("/", "#", "@", "!"):
         global DISABLE_RUN
         DISABLE_RUN = False
-        await run.edit("```Done!```")
+        await run.edit("```Enabled .runs !!```")
 
 
 @register(outgoing=True, pattern="^.metoo$")
 async def metoo(hahayes):
     """ Haha yes """
-    if not hahayes.text[0].isalpha() and hahayes.text[0] not in (
-            "/", "#", "@", "!"):
-        reply_text = random.choice(METOOSTR)
-        await hahayes.edit(reply_text)
+    if not hahayes.text[0].isalpha() and hahayes.text[0] not in ("/", "#", "@", "!"):
+        await hahayes.edit(random.choice(METOOSTR))
 
+@register(outgoing=True, pattern="^Oof$")
+async def Oof(e):
+    t = "Oof"
+    for j in range(15):
+        t = t[:-1] + "of"
+        await e.edit(t)
+
+@register(outgoing=True, pattern="^.10iq$")
+async def iqless(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("♿")
+
+@register(outgoing=True, pattern="^.moon$")
+async def _(event):
+	if event.fwd_from:
+		return
+	deq = deque(list("🌗🌘🌑🌒🌓🌔🌕🌖"))
+	for _ in range(32):
+		await asyncio.sleep(0.1)
+		await event.edit("".join(deq))
+		deq.rotate(1)
+
+@register(outgoing=True, pattern="^.clock$")
+async def _(event):
+	if event.fwd_from:
+		return
+	deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
+	for _ in range(32):
+		await asyncio.sleep(0.1)
+		await event.edit("".join(deq))
+		deq.rotate(1)
 
 @register(outgoing=True, pattern="^.mock(?: |$)(.*)")
 async def spongemocktext(mock):
@@ -481,7 +837,6 @@ async def claptext(memereview):
         reply_text += " 👏"
         await memereview.edit(reply_text)
 
-
 @register(outgoing=True, pattern="^.bt$")
 async def bluetext(bt_e):
     """ Believe me, you will find this useful. """
@@ -492,6 +847,53 @@ async def bluetext(bt_e):
                 "`Are you a stupid animal which is attracted to colours?`"
             )
 
+
+@register(outgoing=True, pattern="^.smk (.*)")
+async def smrk(smk):
+        if not smk.text[0].isalpha() and smk.text[0] not in ("/", "#", "@", "!"):
+            textx = await smk.get_reply_message()
+            message = smk.text
+        if message[5:]:
+            message = str(message[5:])
+        elif textx:
+            message = textx
+            message = str(message.message)
+        if message == 'dele':
+            await smk.edit( message +'te the hell' + "ツ" )
+            await smk.edit("ツ")
+        else:
+             smirk = " ツ"
+             reply_text = message + smirk
+             await smk.edit(reply_text)
+
+
+@register(outgoing=True, pattern=r"\.f (.*)")
+async def payf(e):
+    paytext = e.pattern_match.group(1)[0]
+    pay = "{}\n{}\n{}\n{}\n{}\n{}\n{}".format(paytext*5, paytext*1,paytext*1, paytext*4, paytext*1, paytext*1, paytext*1)
+    await e.edit(pay)
+
+
+@register(outgoing=True, pattern="^.lfy (.*)",)
+async def let_me_google_that_for_you(lmgtfy_q):
+    if not lmgtfy_q.text[0].isalpha() and lmgtfy_q.text[0] not in ("/", "#", "@", "!"):
+        textx = await lmgtfy_q.get_reply_message()
+        query = lmgtfy_q.text
+        if query[5:]:
+            query = str(query[5:])
+        elif textx:
+            query = textx
+            query = query.message
+        query_encoded = query.replace(" ", "+")
+        lfy_url = f"http://lmgtfy.com/?s=g&iie=1&q={query_encoded}"
+        payload = {'format': 'json', 'url': lfy_url}
+        r = requests.get('http://is.gd/create.php', params=payload)
+        await lmgtfy_q.edit(f"[{query}]({r.json()['shorturl']})")
+        if BOTLOG:
+            await bot.send_message(
+                BOTLOG_CHATID,
+                "LMGTFY query `" + query + "` was executed successfully",
+            )
 
 @register(pattern='.type(?: |$)(.*)')
 async def typewriter(typew):
@@ -519,7 +921,64 @@ async def typewriter(typew):
             await typew.edit(old_text)
             await asyncio.sleep(sleep_time)
 
-
 CMD_HELP.update({
-    "memes": "Ask 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for that."
+    "memes": ".cowsay\
+\nUsage: cow which says things.\
+\n\n:/\
+\nUsage: Check yourself ;)\
+\n\n-_-\
+\nUsage: Ok...\
+\n\n;_;\
+\nUsage: Like `-_-` but crying.\
+\n\n.cp\
+\nUsage: Copypasta the famous meme\
+\n\n.vapor\
+\nUsage: Vaporize everything!\
+\n\n.str\
+\nUsage: Stretch it.\
+\n\n.10iq\
+\nUsage: You retard !!\
+\n\n.zal\
+\nUsage: Invoke the feeling of chaos.\
+\n\nOof\
+\nUsage: Ooooof\
+\n\n.moon\
+\nUsage: kensar moon animation.\
+\n\n.clock\
+\nUsage: kensar clock animation.\
+\n\n.hi\
+\nUsage: Greet everyone!\
+\n\n.coinflip <heads/tails>\
+\nUsage: Flip a coin !!\
+\n\n.owo\
+\nUsage: UwU\
+\n\n.react\
+\nUsage: Make your userbot react to everything.\
+\n\n.slap\
+\nUsage: reply to slap them with random objects !!\
+\n\n.cry\
+\nUsage: y u du dis, i cri.\
+\n\n.shg\
+\nUsage: Shrug at it !!\
+\n\n.runs\
+\nUsage: Run, run, RUNNN! [`.disable runs`: disable | `.enable runs`: enable]\
+\n\n.metoo\
+\nUsage: Haha yes\
+\n\n.mock\
+\nUsage: Do it and find the real fun.\
+\n\n.clap\
+\nUsage: Praise people!\
+\n\n.f <emoji/character>\
+\nUsage: Pay Respects.\
+\n\n.bt\
+\nUsage: Believe me, you will find this useful.\
+\n\n.smk <text/reply>\
+\nUsage: A shit module for ツ , who cares.\
+\n\n.type\
+\nUsage: Just a small command to make your keyboard become a typewriter!\
+\n\n.lfy <query>\
+\nUsage: Let me Google that for you real quick !!\
+\n\n.decide\
+\nUsage: Make a quick decision.\
+\n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
 })

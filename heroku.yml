@@ -1,5 +1,5 @@
 build: 
-  docker: 
+  docker:
       worker: Dockerfile
 run:
-   worker: dash init/start.sh
+   worker: python3 -m userbot

@@ -10,7 +10,6 @@ from sqlite3 import connect
 from sys import argv
 
 from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
-
 from userbot import BRAIN_CHECKER, LOGS, bot
 from userbot.modules import ALL_MODULES
 
@@ -19,8 +18,8 @@ CURSOR = DB.cursor()
 CURSOR.execute("""SELECT * FROM BRAIN1""")
 ALL_ROWS = CURSOR.fetchall()
 INVALID_PH = '\nERROR: The Phone No. entered is INVALID' \
-             '\n  Tip: Use Country Code along with No.' \
-             '\n       Recheck your Phone Number'
+             '\n Tip: Use Country Code along with number.' \
+             '\n      Recheck your Phone Number'
 
 for i in ALL_ROWS:
     BRAIN_CHECKER.append(i[0])
@@ -34,9 +33,9 @@ except PhoneNumberInvalidError:
 for module_name in ALL_MODULES:
     imported_module = import_module("userbot.modules." + module_name)
 
-LOGS.info("Your Bot is alive! Test it by typing .alive on any chat."
-          " Should you need assistance, head to https://t.me/userbot_support")
-LOGS.info("Your Bot Version is 3.0-sql-esq")
+LOGS.info("Your Bot is now running! Test it by typing .alive in any chat."
+          "If you need assistance, head to https://t.me/userbot_support")
+LOGS.info("Your Bot Version is 3.0-sql-extended")
 
 if len(argv) not in (1, 3, 4):
     bot.disconnect()

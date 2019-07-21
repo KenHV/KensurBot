@@ -11,7 +11,6 @@ import os
 
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import MessageEntityMentionName
-
 from userbot import CMD_HELP
 from userbot.events import register
 
@@ -50,10 +49,9 @@ async def who(event):
         if not photo.startswith("http"):
             os.remove(photo)
         await event.delete()
-
+        
     except TypeError:
         await event.edit(caption, parse_mode="html")
-
 
 async def get_user(event):
     """ Get the user from argument or replied message. """
@@ -73,9 +71,7 @@ async def get_user(event):
         if event.message.entities is not None:
             probable_user_mention_entity = event.message.entities[0]
 
-            if isinstance(
-                    probable_user_mention_entity,
-                    MessageEntityMentionName):
+            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
                 user_id = probable_user_mention_entity.user_id
                 replied_user = await event.client(GetFullUserRequest(user_id))
                 return replied_user
@@ -87,7 +83,6 @@ async def get_user(event):
             return None
 
     return replied_user
-
 
 async def fetch_info(replied_user, event):
     """ Get details from the User object. """
@@ -127,7 +122,6 @@ async def fetch_info(replied_user, event):
     caption += f"<a href=\"tg://user?id={user_id}\">{first_name}</a>"
 
     return photo, caption
-
 
 CMD_HELP.update({
     "whois": ".whois <username> or reply to someones text with .whois\

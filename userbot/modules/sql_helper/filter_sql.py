@@ -27,21 +27,50 @@ class Filters(BASE):
 Filters.__table__.create(checkfirst=True)
 
 
+def get_filter(chat_id, keyword):
+    try:
+        return SESSION.query(Filters).get((str(chat_id), keyword))
+    finally:
+        SESSION.close()
+    
+    
 def get_filters(chat_id):
     try:
         return SESSION.query(Filters).filter(Filters.chat_id == str(chat_id)).all()
     finally:
         SESSION.close()
 
-
+        
 def add_filter(chat_id, keyword, reply):
-    adder = Filters(str(chat_id), keyword, reply)
-    SESSION.add(adder)
-    SESSION.commit()
+    to_check = get_filter(chat_id, keyword)
+    if not to_check:
+        adder = Filters(str(chat_id), keyword, reply)
+        SESSION.add(adder)
+        SESSION.commit()
+        return True
+    else:
+        rem = SESSION.query(Filters).get((str(chat_id), keyword))
+        SESSION.delete(rem)
+        SESSION.commit()
+        adder = Filters(str(chat_id), keyword, reply)
+        SESSION.add(adder)
+        SESSION.commit()
+        return False
 
 
 def remove_filter(chat_id, keyword):
-    rem = SESSION.query(Filters).get((str(chat_id), keyword))
-    if rem:
+    to_check = get_filter(chat_id, keyword)
+    
+    if not to_check:
+        return False
+    else:
+        rem = SESSION.query(Filters).get((str(chat_id), keyword))
         SESSION.delete(rem)
+        SESSION.commit()
+        return True
+
+def rm_all_filters(chat_id):
+    filters = SESSION.query(Notes).filter(Notes.chat_id == str(chat_id))
+    if filters:
+        filters.delete()
         SESSION.commit()

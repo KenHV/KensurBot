@@ -7,19 +7,17 @@
 
 from asyncio import create_subprocess_shell as asyncrunapp
 from asyncio.subprocess import PIPE as asyncPIPE
-from os import remove
 from platform import python_version, uname
 from shutil import which
-
+from os import remove
 from telethon import version
 
 from userbot import CMD_HELP
 from userbot.events import register
 
+
 # ================= CONSTANT =================
 DEFAULTUSER = uname().node
-
-
 # ============================================
 
 
@@ -79,7 +77,7 @@ async def bot_ver(event):
             )
         else:
             await event.edit(
-                "Shame that you don't have git, You're running r3.0-sql-esq anyway"
+                "Shame that you don't have git, You're running r2.2a anyway"
             )
 
 
@@ -137,12 +135,12 @@ async def amireallyalive(alive):
     if not alive.text[0].isalpha() and alive.text[0] not in ("/", "#", "@", "!"):
         await alive.edit(
             "`"
-            "Your bot is running \n\n"
+            "My bot is running \n\n"
             f"Telethon version: {version.__version__} \n"
             f"Python: {python_version()} \n"
             f"User: {DEFAULTUSER}"
             "`"
-        )
+            )
 
 
 @register(outgoing=True, pattern="^.aliveu")
@@ -174,7 +172,6 @@ async def amireallyalivereset(ureset):
             "Successfully reset user for alive!"
             "`"
         )
-
 
 CMD_HELP.update({
     "sysd": ".sysd\

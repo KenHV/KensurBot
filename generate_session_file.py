@@ -5,10 +5,9 @@
 #
 # This script wont run your bot, it just generates a session.
 
-import os
-
-from dotenv import load_dotenv
 from telethon import TelegramClient
+from dotenv import load_dotenv
+import os
 
 load_dotenv("config.env")
 

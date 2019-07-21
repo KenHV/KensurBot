@@ -7,11 +7,13 @@ Userbot module to help you manage a group
 """
 
 from asyncio import sleep
+from os import remove
 
 from telethon.errors import (BadRequestError, ChatAdminRequiredError,
                              ImageProcessFailedError, PhotoCropSizeSmallError,
                              UserAdminInvalidError)
-from telethon.errors.rpcerrorlist import UserIdInvalidError
+from telethon.errors.rpcerrorlist import (UserIdInvalidError,
+                                          MessageTooLongError)
 from telethon.tl.functions.channels import (EditAdminRequest,
                                             EditBannedRequest,
                                             EditPhotoRequest)
@@ -26,13 +28,13 @@ from userbot.events import register
 # =================== CONSTANT ===================
 PP_TOO_SMOL = "`The image is too small`"
 PP_ERROR = "`Failure while processing image`"
-NO_ADMIN = "`You aren't an admin!`"
-NO_PERM = "`You don't have sufficient permissions!`"
+NO_ADMIN = "`I am not an admin!`"
+NO_PERM = "`I don't have sufficient permissions!`"
 NO_SQL = "`Running on Non-SQL mode!`"
 
 CHAT_PP_CHANGED = "`Chat Picture Changed`"
 CHAT_PP_ERROR = "`Some issue with updating the pic,`" \
-                "`maybe you aren't an admin,`" \
+                "`maybe coz I'm not an admin,`" \
                 "`or don't have the desired rights.`"
 INVALID_MEDIA = "`Invalid Extension`"
 
@@ -73,8 +75,6 @@ UNMUTE_RIGHTS = ChatBannedRights(
     until_date=None,
     send_messages=False
 )
-
-
 # ================================================
 
 
@@ -113,8 +113,7 @@ async def set_group_photo(gpic):
 
 
 @register(outgoing=True, pattern="^.promote(?: |$)(.*)")
-@register(incoming=True, from_users=BRAIN_CHECKER,
-          pattern="^.promote(?: |$)(.*)")
+@register(incoming=True, from_users=BRAIN_CHECKER, pattern="^.promote(?: |$)(.*)")
 async def promote(promt):
     """ For .promote command, do promote targeted person """
     if not promt.text[0].isalpha() \
@@ -279,8 +278,7 @@ async def ban(bon):
             if reply:
                 await reply.delete()
         except BadRequestError:
-            bmsg = "`I dont have enough rights! But still he was banned!`"
-            await bon.edit(bmsg)
+            await bon.edit("`I dont have message nuking rights! But still he was banned!`")
             return
         # Delete message and then tell that the command
         # is done gracefully
@@ -374,10 +372,8 @@ async def spider(spdr):
         self_user = await spdr.client.get_me()
 
         if user.id == self_user.id:
-            await spdr.edit(
-                "`Mute Error! You are not supposed to mute yourself!`"
-            )
-            return
+        	await spdr.edit("`Mute Error! You are not supposed to mute yourself!`")
+        	return
 
         # If the targeted user is a Sudo
         if user.id in BRAIN_CHECKER:
@@ -399,6 +395,7 @@ async def spider(spdr):
                         MUTE_RIGHTS
                     )
                 )
+
                 # Announce that the function is done
                 await spdr.edit("`Safely taped!`")
 
@@ -448,12 +445,13 @@ async def unmoot(unmot):
         if unmute(unmot.chat_id, user.id) is False:
             return await unmot.edit("`Error! User probably already unmuted.`")
         else:
+
             try:
                 await unmot.client(
                     EditBannedRequest(
                         unmot.chat_id,
                         user.id,
-                        UNMUTE_RIGHTS
+                        UNBAN_RIGHTS
                     )
                 )
                 await unmot.edit("```Unmuted Successfully```")
@@ -553,8 +551,7 @@ async def ungmoot(un_gmute):
 @register(outgoing=True, pattern="^.gmute(?: |$)(.*)")
 async def gspider(gspdr):
     """ For .gmute command, gmutes the target in the userbot """
-    cmd = gspdr.text[0]
-    if not cmd.isalpha() and cmd not in ("/", "#", "@", "!"):
+    if not gspdr.text[0].isalpha() and gspdr.text[0] not in ("/", "#", "@", "!"):
         # Admin or creator check
         chat = await gspdr.get_chat()
         admin = chat.admin_rights
@@ -585,8 +582,6 @@ async def gspider(gspdr):
 
         # If pass, inform and start gmuting
         await gspdr.edit("`Grabs a huge, sticky duct tape!`")
-        gmute(user.id)
-
         if gmute(user.id) is False:
             await gspdr.edit('`Error! User probably already gmuted.`')
         else:
@@ -634,7 +629,7 @@ async def rm_deletedacc(show):
 
         # Well
         if not admin and not creator:
-            await show.edit("`You aren't an admin here!`")
+            await show.edit("`I am not an admin here!`")
             return
 
         await show.edit("`Cleaning deleted accounts...`")
@@ -654,7 +649,7 @@ async def rm_deletedacc(show):
                         )
                     )
                 except ChatAdminRequiredError:
-                    await show.edit("`You don't have enough rights.`")
+                    await show.edit("`I don't have ban rights in this group`")
                     return
                 except UserAdminInvalidError:
                     del_u -= 1
@@ -683,7 +678,7 @@ async def get_admin(show):
     """ For .adminlist command, list all of the admins of the chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
         if not show.is_group:
-            await show.edit("Are you sure this is a group?")
+            await show.edit("I don't think this is a group.")
             return
         info = await show.client.get_entity(show.chat_id)
         title = info.title if info.title else "this chat"
@@ -693,8 +688,7 @@ async def get_admin(show):
                     show.chat_id, filter=ChannelParticipantsAdmins
             ):
                 if not user.deleted:
-                    link_unf = "<a href=\"tg://user?id={}\">{}</a>"
-                    link = link_unf.format(user.id, user.first_name)
+                    link = f"<a href=\"tg://user?id={user.id}\">{user.first_name}</a>"
                     userid = f"<code>{user.id}</code>"
                     mentions += f"\n{link} {userid}"
                 else:
@@ -720,7 +714,7 @@ async def pin(msg):
         to_pin = msg.reply_to_msg_id
 
         if not to_pin:
-            await msg.edit("`Reply to a message which you want to pin.`")
+            await msg.edit("`Reply to a message to pin it.`")
             return
 
         options = msg.pattern_match.group(1)
@@ -731,9 +725,7 @@ async def pin(msg):
             is_silent = False
 
         try:
-            await msg.client(UpdatePinnedMessageRequest(msg.to_id,
-                                                        to_pin,
-                                                        is_silent))
+            await msg.client(UpdatePinnedMessageRequest(msg.to_id, to_pin, is_silent))
         except BadRequestError:
             await msg.edit(NO_PERM)
             return
@@ -800,8 +792,7 @@ async def kick(usr):
             )
         )
 
-        kmsg = "`Kicked` [{}](tg://user?id={})`!`"
-        await usr.edit(kmsg.format(user.first_name, user.id))
+        await usr.edit(f"`Kicked` [{user.first_name}](tg://user?id={user.id})`!`")
 
         if BOTLOG:
             await usr.client.send_message(
@@ -811,6 +802,48 @@ async def kick(usr):
                 f"CHAT: {usr.chat.title}(`{usr.chat_id}`)\n"
             )
 
+
+@register(outgoing=True, pattern="^.userslist ?(.*)")
+async def get_users(show):
+    """ For .userslist command, list all of the users of the chat. """
+    if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
+        if not show.is_group:
+            await show.edit("Are you sure this is a group?")
+            return
+        info = await show.client.get_entity(show.chat_id)
+        title = info.title if info.title else "this chat"
+        mentions = 'Users in {}: \n'.format(title)
+        try:
+            if not show.pattern_match.group(1):
+                async for user in show.client.iter_participants(show.chat_id):
+                    if not user.deleted:
+                        mentions += f"\n[{user.first_name}](tg://user?id={user.id}) `{user.id}`"
+                    else:
+                        mentions += f"\nDeleted Account `{user.id}`"
+            else:
+                searchq = show.pattern_match.group(1)
+                async for user in show.client.iter_participants(show.chat_id, search=f'{searchq}'):
+                    if not user.deleted:
+                        mentions += f"\n[{user.first_name}](tg://user?id={user.id}) `{user.id}`"
+                    else:
+                        mentions += f"\nDeleted Account `{user.id}`"
+        except ChatAdminRequiredError as err:
+            mentions += " " + str(err) + "\n"
+        try:
+            await show.edit(mentions)
+        except MessageTooLongError:
+            await show.edit("Damn, this is a huge group. Uploading users lists as file.")
+            file = open("userslist.txt", "w+")
+            file.write(mentions)
+            file.close()
+            await show.client.send_file(
+                show.chat_id,
+                "userslist.txt",
+                caption='Users in {}'.format(title),
+                reply_to=show.id,
+            )
+            remove("userslist.txt")
+            
 
 async def get_user_from_event(event):
     """ Get the user from argument or replied message. """
@@ -830,8 +863,7 @@ async def get_user_from_event(event):
         if event.message.entities is not None:
             probable_user_mention_entity = event.message.entities[0]
 
-            if isinstance(probable_user_mention_entity,
-                          MessageEntityMentionName):
+            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
                 user_id = probable_user_mention_entity.user_id
                 user_obj = await event.client.get_entity(user_id)
                 return user_obj
@@ -842,7 +874,6 @@ async def get_user_from_event(event):
             return None
 
     return user_obj
-
 
 async def get_user_from_id(user, event):
     if isinstance(user, str):
@@ -856,47 +887,27 @@ async def get_user_from_id(user, event):
 
     return user_obj
 
-
 CMD_HELP.update({
-    "promote": "Usage: Reply to message with .promote to promote them."
+    "admin": ".promote\
+\nUsage: Reply to someone's message with .promote to promote them.\
+\n\n.demote\
+\nUsage: Reply to someone's message with .demote to revoke their admin permissions.\
+\n\n.ban\
+\nUsage: Reply to someone's message with .ban to ban them.\
+\n\n.unban\
+\nUsage: Reply to someone's message with .unban to unban them in this chat.\
+\n\n.mute\
+\nUsage: Reply to someone's message with .mute to mute them, works on admins too.\
+\n\n.unmute\
+\nUsage: Reply to someone's message with .unmute to remove them from muted list.\
+\n\n.gmute\
+\nUsage: Reply to someone's message with .gmute to mute them in all groups you have in common with them.\
+\n\n.ungmute\
+\nUsage: Reply someone's message with .ungmute to remove them from the gmuted list.\
+\n\n.delusers\
+\nUsage: Searches for deleted accounts in a group. Use .delusers clean to remove deleted accounts from the group.\
+\n\n.adminlist\
+\nUsage: Retrieves all admins in the chat.\
+\n\n.userslist or .userslist <name>\
+\nUsage: Retrieves all users in the chat."
 })
-CMD_HELP.update({
-    "ban": "Usage: Reply to message with .ban to ban them."
-})
-CMD_HELP.update({
-    "demote": "Usage: Reply to message with .demote to revoke their admin permissions."
-})
-CMD_HELP.update({
-    "unban": "Usage: Reply to message with .unban to unban them in this chat."
-})
-CMD_HELP.update({
-    "mute": "Usage: Reply tomessage with .mute to mute them, works on admins too"
-})
-CMD_HELP.update({
-    "unmute": "Usage: Reply to message with .unmute to remove them from muted list."
-})
-CMD_HELP.update({
-    "gmute": "Usage: Reply to message with .gmute to mute them in all \
-groups you have in common with them."
-})
-CMD_HELP.update({
-    "ungmute": "Usage: Reply message with .ungmute to remove them from the gmuted list."
-})
-
-CMD_HELP.update(
-    {
-        "delusers": "Usage: Searches for deleted accounts in a group."
-    }
-)
-
-CMD_HELP.update(
-    {
-        "delusers clean": "Usage: Searches and removes deleted accounts from the group"
-    }
-)
-
-CMD_HELP.update(
-    {
-        "adminlist": "Usage: Retrieves all admins in the chat."
-    }
-)
