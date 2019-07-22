@@ -87,7 +87,7 @@ async def _(event):
 
 
 CMD_HELP.update({
-    'ocr': ".ocr <language>)\
+    'ocr': ".ocr <language>\
 \nUsage: Reply to an image or sticker to extract text from the given content.\
 \nExample: .ocr (get language codes from here : https://ocr.space/ocrapi)"
 })
