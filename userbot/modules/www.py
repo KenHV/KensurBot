@@ -61,13 +61,14 @@ def speed_convert(size):
 
 @register(outgoing=True, pattern="^.nearestdc$")
 async def neardc(event):
-    """ For .nearestdc command, get the nearest datacenter information. """
-    result = await event.client(functions.help.GetNearestDcRequest())
-    await event.edit(
-        f"Country : `{result.country}` \n"
-        f"Nearest Datacenter : `{result.nearest_dc}` \n"
-        f"This Datacenter : `{result.this_dc}`"
-    )
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+        """ For .nearestdc command, get the nearest datacenter information. """
+        result = await event.client(functions.help.GetNearestDcRequest())
+        await event.edit(
+            f"Country : `{result.country}` \n"
+            f"Nearest Datacenter : `{result.nearest_dc}` \n"
+            f"This Datacenter : `{result.this_dc}`"
+        )
 
 
 @register(outgoing=True, pattern="^.pingme$")

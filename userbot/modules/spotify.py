@@ -114,24 +114,26 @@ async def dirtyfix():
 
 @register(outgoing=True, pattern="^.enablespotify$")
 async def set_biostgraph(setstbio):
-    setrecursionlimit(700000)
-    if not SPOTIFYCHECK:
-        environ["errorcheck"] = "0"
-        await setstbio.edit(SPO_BIO_ENABLED)
-        await get_spotify_token()
-        await dirtyfix()
-    else:
-        await setstbio.edit(SPO_BIO_RUNNING)
+    if not setstbio.text[0].isalpha() and setstbio.text[0] not in ("/", "#", "@", "!"):
+        setrecursionlimit(700000)
+        if not SPOTIFYCHECK:
+            environ["errorcheck"] = "0"
+            await setstbio.edit(SPO_BIO_ENABLED)
+            await get_spotify_token()
+            await dirtyfix()
+        else:
+            await setstbio.edit(SPO_BIO_RUNNING)
 
 
 @register(outgoing=True, pattern="^.disablespotify$")
 async def set_biodgraph(setdbio):
-    global SPOTIFYCHECK
-    global RUNNING
-    SPOTIFYCHECK = False
-    RUNNING = False
-    await bot(UpdateProfileRequest(about=DEFAULT_BIO))
-    await setdbio.edit(SPO_BIO_DISABLED)
+    if not setdbio.text[0].isalpha() and setdbio.text[0] not in ("/", "#", "@", "!"):
+        global SPOTIFYCHECK
+        global RUNNING
+        SPOTIFYCHECK = False
+        RUNNING = False
+        await bot(UpdateProfileRequest(about=DEFAULT_BIO))
+        await setdbio.edit(SPO_BIO_DISABLED)
 
 
 CMD_HELP.update(

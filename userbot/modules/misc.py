@@ -45,7 +45,7 @@ async def sleepybot(time):
 @register(outgoing=True, pattern="^.shutdown$")
 async def killdabot(event):
     """ For .shutdown command, shut the bot down."""
-    if not event.text[0].isalpha():
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         await event.edit("`Goodbye *Windows XP shutdown sound*....`")
         if BOTLOG:
             await event.client.send_message(
@@ -57,7 +57,7 @@ async def killdabot(event):
 @register(outgoing=True, pattern="^.restart$")
 async def revivedabot(restart):
     """ For .restart command, restart the bot down."""
-    if not restart.text[0].isalpha():
+    if not restart.text[0].isalpha() and restart.text[0] not in ("/", "#", "@", "!"):
         # Copyright(c) Kandnub | 2019
         await restart.edit("`BRB... *PornHub intro*`")
         await restart.client.disconnect()
@@ -71,13 +71,13 @@ async def bot_community(community):
     """ For .support command, just returns the group link. """
     if not community.text[0].isalpha() and community.text[0] not in ("/", "#", "@", "!"):
         await community.edit("Join the awesome Paperplane userbot community: @userbot_support\nBe warned that this is a fork of their project and you may get limited support for bugs.")
-        
+
 @register(outgoing=True, pattern="^.support$")
 async def bot_support(wannahelp):
     """ For .support command, just returns the group link. """
     if not wannahelp.text[0].isalpha() and wannahelp.text[0] not in ("/", "#", "@", "!"):
         await wannahelp.edit("Join the Paperplane Extended Channel: @PaperplaneExtended")
-        
+
 @register(outgoing=True, pattern="^.creator$")
 async def creator(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):

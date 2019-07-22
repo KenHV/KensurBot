@@ -391,7 +391,6 @@ HIT = [
     "bashes",
 ]
 
-DISABLE_RUN = False
 # ===========================================
 
 
@@ -414,55 +413,58 @@ async def univsaye(cowmsg):
 
 @register(outgoing=True, pattern="^:/$")
 async def kek(keks):
-    """ Check yourself ;)"""
-    uio = ["/", "\\"]
-    for i in range(1, 15):
-        time.sleep(0.3)
-        await keks.edit(":" + uio[i % 2])
+    if not keks.text[0].isalpha() and keks.text[0] not in ("/", "#", "@", "!"):
+        """ Check yourself ;)"""
+        uio = ["/", "\\"]
+        for i in range(1, 15):
+            time.sleep(0.3)
+            await keks.edit(":" + uio[i % 2])
 
 @register(outgoing=True, pattern=r"^.coinflip (.*)")
 async def _(event):
-    if event.fwd_from:
-        return
-    r = random.randint(1, 100)
-    input_str = event.pattern_match.group(1)
-    if input_str:
-        input_str = input_str.lower()
-    if r % 2 == 1:
-        if input_str == "heads":
-            await event.edit("The coin landed on: **Heads**.\nYou were correct.")
-        elif input_str == "tails":
-            await event.edit("The coin landed on: **Heads**.\nYou weren't correct, try again ...")
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+        if event.fwd_from:
+            return
+        r = random.randint(1, 100)
+        input_str = event.pattern_match.group(1)
+        if input_str:
+            input_str = input_str.lower()
+        if r % 2 == 1:
+            if input_str == "heads":
+                await event.edit("The coin landed on: **Heads**.\nYou were correct.")
+            elif input_str == "tails":
+                await event.edit("The coin landed on: **Heads**.\nYou weren't correct, try again ...")
+            else:
+                await event.edit("The coin landed on: **Heads**.")
+        elif r % 2 == 0:
+            if input_str == "tails":
+                await event.edit("The coin landed on: **Tails**.\nYou were correct.")
+            elif input_str == "heads":
+                await event.edit("The coin landed on: **Tails**.\nYou weren't correct, try again ...")
+            else:
+                await event.edit("The coin landed on: **Tails**.")
         else:
-            await event.edit("The coin landed on: **Heads**.")
-    elif r % 2 == 0:
-        if input_str == "tails":
-            await event.edit("The coin landed on: **Tails**.\nYou were correct.")
-        elif input_str == "heads":
-            await event.edit("The coin landed on: **Tails**.\nYou weren't correct, try again ...")
-        else:
-            await event.edit("The coin landed on: **Tails**.")
-    else:
-        await event.edit("Gimme another coin, this one fake AF !!")
+            await event.edit("Gimme another coin, this one fake AF !!")
 
 @register(pattern="^.slap(?: |$)(.*)", outgoing=True)
 async def who(event):
-    """ slaps a user, or get slapped if not a reply. """
-    if event.fwd_from:
-        return
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+        """ slaps a user, or get slapped if not a reply. """
+        if event.fwd_from:
+            return
 
-    replied_user = await get_user(event)
-    caption = await slap(replied_user, event)
-    message_id_to_reply = event.message.reply_to_msg_id
+        replied_user = await get_user(event)
+        caption = await slap(replied_user, event)
+        message_id_to_reply = event.message.reply_to_msg_id
 
-    if not message_id_to_reply:
-        message_id_to_reply = None
+        if not message_id_to_reply:
+            message_id_to_reply = None
 
-    try:
-        await event.edit(caption)
+        try:
+            await event.edit(caption)
 
-    except:
-        await event.edit("`Can't slap this person, need to fetch some sticks and stones !!`")
+        except:
+            await event.edit("`Can't slap this person, need to fetch some sticks and stones !!`")
 
 async def get_user(event):
     """ Get the user from argument or replied message. """
@@ -518,34 +520,37 @@ async def slap(replied_user, event):
 
 @register(outgoing=True, pattern="^-_-$")
 async def lol(lel):
-    """ Ok... """
-    okay = "-_-"
-    for _ in range(10):
-        okay = okay[:-1] + "_-"
-        await lel.edit(okay)
+    if not lel.text[0].isalpha() and lel.text[0] not in ("/", "#", "@", "!"):
+        """ Ok... """
+        okay = "-_-"
+        for _ in range(10):
+            okay = okay[:-1] + "_-"
+            await lel.edit(okay)
 
 @register(outgoing=True, pattern="^.decide$")
 async def _(event):
-    if event.fwd_from:
-        return
-    message_id = event.message.id
-    if event.reply_to_msg_id:
-        message_id = event.reply_to_msg_id
-    r = requests.get("https://yesno.wtf/api").json()
-    await event.client.send_message(
-        event.chat_id,
-        str(r["answer"]).upper(),
-        reply_to=message_id,
-        file=r["image"]
-    )
-    await event.delete()
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+        if event.fwd_from:
+            return
+        message_id = event.message.id
+        if event.reply_to_msg_id:
+            message_id = event.reply_to_msg_id
+        r = requests.get("https://yesno.wtf/api").json()
+        await event.client.send_message(
+            event.chat_id,
+            str(r["answer"]).upper(),
+            reply_to=message_id,
+            file=r["image"]
+        )
+        await event.delete()
 
 @register(outgoing=True, pattern="^;_;$")
 async def fun(e):
-    t = ";__;"
-    for j in range(10):
-        t = t[:-1] + "_;"
-        await e.edit(t)
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        t = ";__;"
+        for j in range(10):
+            t = t[:-1] + "_;"
+            await e.edit(t)
 
 @register(outgoing=True, pattern="^.cry$")
 async def cry(e):
@@ -554,8 +559,8 @@ async def cry(e):
         await e.edit(random.choice(CRI))
 
 @register(outgoing=True, pattern="^.insult$")
-async def cry(e):
-    """ y u du dis, i cry everytime !! """
+async def insult(e):
+    """ I make you cry !! """
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         await e.edit(random.choice(INSULT_STRINGS))
 
@@ -733,27 +738,8 @@ async def shrugger(shg):
 @register(outgoing=True, pattern="^.runs$")
 async def runner_lol(run):
     """ Run, run, RUNNN! """
-    if not DISABLE_RUN:
-        if not run.text[0].isalpha() and run.text[0] not in ("/", "#", "@", "!"):
-            await run.edit(random.choice(RUNSREACTS))
-
-
-@register(outgoing=True, pattern="^.disable runs$")
-async def disable_runs(norun):
-    """ Some people don't like running... """
-    if not norun.text[0].isalpha() and norun.text[0] not in ("/", "#", "@", "!"):
-        global DISABLE_RUN
-        DISABLE_RUN = True
-        await norun.edit("```Disabled .runs !!```")
-
-
-@register(outgoing=True, pattern="^.enable runs$")
-async def enable_runs(run):
-    """ But some do! """
     if not run.text[0].isalpha() and run.text[0] not in ("/", "#", "@", "!"):
-        global DISABLE_RUN
-        DISABLE_RUN = False
-        await run.edit("```Enabled .runs !!```")
+        await run.edit(random.choice(RUNSREACTS))
 
 
 @register(outgoing=True, pattern="^.metoo$")
@@ -764,10 +750,11 @@ async def metoo(hahayes):
 
 @register(outgoing=True, pattern="^Oof$")
 async def Oof(e):
-    t = "Oof"
-    for j in range(15):
-        t = t[:-1] + "of"
-        await e.edit(t)
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        t = "Oof"
+        for j in range(15):
+            t = t[:-1] + "of"
+            await e.edit(t)
 
 @register(outgoing=True, pattern="^.10iq$")
 async def iqless(e):
@@ -776,23 +763,25 @@ async def iqless(e):
 
 @register(outgoing=True, pattern="^.moon$")
 async def _(event):
-	if event.fwd_from:
-		return
-	deq = deque(list("🌗🌘🌑🌒🌓🌔🌕🌖"))
-	for _ in range(32):
-		await asyncio.sleep(0.1)
-		await event.edit("".join(deq))
-		deq.rotate(1)
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+	    if event.fwd_from:
+		    return
+	    deq = deque(list("🌗🌘🌑🌒🌓🌔🌕🌖"))
+	    for _ in range(32):
+		    await asyncio.sleep(0.1)
+		    await event.edit("".join(deq))
+		    deq.rotate(1)
 
 @register(outgoing=True, pattern="^.clock$")
 async def _(event):
-	if event.fwd_from:
-		return
-	deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
-	for _ in range(32):
-		await asyncio.sleep(0.1)
-		await event.edit("".join(deq))
-		deq.rotate(1)
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+	    if event.fwd_from:
+		    return
+	    deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
+	    for _ in range(32):
+		    await asyncio.sleep(0.1)
+		    await event.edit("".join(deq))
+		    deq.rotate(1)
 
 @register(outgoing=True, pattern="^.mock(?: |$)(.*)")
 async def spongemocktext(mock):
@@ -869,9 +858,10 @@ async def smrk(smk):
 
 @register(outgoing=True, pattern=r"\.f (.*)")
 async def payf(e):
-    paytext = e.pattern_match.group(1)[0]
-    pay = "{}\n{}\n{}\n{}\n{}\n{}\n{}".format(paytext*5, paytext*1,paytext*1, paytext*4, paytext*1, paytext*1, paytext*1)
-    await e.edit(pay)
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        paytext = e.pattern_match.group(1)
+        pay = "{}\n{}\n{}\n{}\n{}\n{}\n{}".format(paytext*5, paytext*1,paytext*1, paytext*4, paytext*1, paytext*1, paytext*1)
+        await e.edit(pay)
 
 
 @register(outgoing=True, pattern="^.lfy (.*)",)

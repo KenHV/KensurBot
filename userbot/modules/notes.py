@@ -10,7 +10,7 @@ from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
 
 
-@register(outgoing=True, pattern="^.saved$")
+@register(outgoing=True, pattern="^.notes$")
 async def notes_active(svd):
     """ For .saved command, list all of the notes saved in a chat. """
     if not svd.text[0].isalpha() and svd.text[0] not in ("/", "#", "@", "!"):
@@ -19,7 +19,7 @@ async def notes_active(svd):
         except AttributeError:
             await svd.edit("`Running on Non-SQL mode!`")
             return
-        
+
         message = "`There are no saved notes in this chat`"
         notes = get_notes(svd.chat_id)
         for note in notes:
@@ -31,7 +31,7 @@ async def notes_active(svd):
 
         await svd.edit(message)
 
-        
+
 @register(outgoing=True, pattern=r"^.clear (\w*)")
 async def remove_notes(clr):
     """ For .clear command, clear note with the given name."""
@@ -48,8 +48,8 @@ async def remove_notes(clr):
         else:
             return await clr.edit("`Successfully deleted note:` **{}**"
                                   .format(notename))
-        
-        
+
+
 @register(outgoing=True, pattern=r"^.save (\w*)")
 async def add_filter(fltr):
     """ For .save command, saves notes in a chat. """
@@ -64,7 +64,7 @@ async def add_filter(fltr):
         string = fltr.text.partition(notename)[2]
         if fltr.reply_to_msg_id:
             string = " " + (await fltr.get_reply_message()).text
-            
+
         msg = "`Note {} successfully. Use` #{} `to get it`"
         if add_note(str(fltr.chat_id), notename, string) is False:
             return await fltr.edit(msg.format('updated', notename))
@@ -122,9 +122,11 @@ async def kick_marie_notes(kick):
 CMD_HELP.update({
     "notes": "\
 #<notename>\
-\nUsage: Gets the note with name notename\
+\nUsage: Gets the note with name notename.\
 \n\n.save <notename> <notedata>\
-\nUsage: Saves notedata as a note with the name notename\
+\nUsage: Saves notedata as a note with the name notename.\
+\n\n.notes\
+\nUsage: Gets all saved notes in the chat.\
 \n\n.clear <notename>\
 \nUsage: Deletes the note with name notename.\
 "})

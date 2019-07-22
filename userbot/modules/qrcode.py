@@ -19,15 +19,6 @@ from userbot import CMD_HELP
 from userbot.events import register
 
 
-def progress(current, total):
-    """ Calculate and return the download progress with given arguments. """
-    print(
-        "Downloaded {} of {}\nCompleted {}".format(
-            current, total, (current / total) * 100
-        )
-    )
-
-
 @register(pattern=r"^.getqr$", outgoing=True)
 async def parseqr(qr_e):
     """ For .getqr command, get QR Code content from the replied photo. """
@@ -36,7 +27,7 @@ async def parseqr(qr_e):
             return
         start = datetime.now()
         downloaded_file_name = await qr_e.client.download_media(
-            await qr_e.get_reply_message(), progress_callback=progress
+            await qr_e.get_reply_message()
         )
         # parse the Official ZXing webpage to decode the QRCode
         command_to_exec = [
@@ -90,7 +81,7 @@ async def make_qr(makeqr):
             reply_msg_id = previous_message.id
             if previous_message.media:
                 downloaded_file_name = await makeqr.client.download_media(
-                    previous_message, progress_callback=progress
+                    previous_message
                 )
                 m_list = None
                 with open(downloaded_file_name, "rb") as file:
@@ -115,8 +106,7 @@ async def make_qr(makeqr):
         await makeqr.client.send_file(
             makeqr.chat_id,
             "img_file.webp",
-            reply_to=reply_msg_id,
-            progress_callback=progress,
+            reply_to=reply_msg_id
         )
         os.remove("img_file.webp")
         duration = (datetime.now() - start).seconds

@@ -287,6 +287,5 @@ CMD_HELP.update({
 \n\n.notifoff\
 \nUsage: Clears any notifications of unapproved PMs.\
 \n\n.notifon\
-\nUsage: Allows notifications for unapproved PMs.\
-"
+\nUsage: Allows notifications for unapproved PMs."
 })

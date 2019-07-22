@@ -13,17 +13,18 @@ from userbot.events import register
 
 @register(outgoing=True, pattern="^.tspam")
 async def tmeme(e):
-    tspam = str(e.text[7:])
-    message = tspam.replace(" ", "")
-    for letter in message:
-        await e.respond(letter)
-    await e.delete()
-    if BOTLOG:
-            await e.client.send_message(
-                BOTLOG_CHATID,
-                "#TSPAM \n\n"
-                "TSpam was executed successfully"
-                )
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        tspam = str(e.text[7:])
+        message = tspam.replace(" ", "")
+        for letter in message:
+            await e.respond(letter)
+        await e.delete()
+        if BOTLOG:
+                await e.client.send_message(
+                    BOTLOG_CHATID,
+                    "#TSPAM \n\n"
+                    "TSpam was executed successfully"
+                    )
 
 @register(outgoing=True, pattern="^.spam")
 async def spammer(e):

@@ -58,32 +58,28 @@ def ocr_space_url(url, overlay=False, api_key=OCR_SPACE_API_KEY, language='eng')
     return r.json()
 
 
-def progress(current, total):
-    logging.info("Downloaded {} of {}\nCompleted {}".format(
-        current, total, (current / total) * 100))
-
 @register(pattern=r"\.ocr (.*)", outgoing=True)
 async def _(event):
-    if event.fwd_from:
-        return
-    await event.edit("*Processing...*")
-    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
-        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-    lang_code = event.pattern_match.group(1)
-    downloaded_file_name = await bot.download_media(
-        await event.get_reply_message(),
-        TEMP_DOWNLOAD_DIRECTORY,
-        progress_callback=progress
-    )
-    test_file = ocr_space_file(filename=downloaded_file_name, language=lang_code)
-    try:
-        ParsedText = test_file["ParsedResults"][0]["ParsedText"]
-        ProcessingTimeInMilliseconds = str(int(test_file["ProcessingTimeInMilliseconds"]) // 1000)
-    except:
-        await event.edit("Errors...")
-    else:
-        await event.edit("Read Document in {} seconds. \n{}".format(ProcessingTimeInMilliseconds, ParsedText))
-    os.remove(downloaded_file_name)
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+        if event.fwd_from:
+            return
+        await event.edit("*Processing...*")
+        if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+            os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
+        lang_code = event.pattern_match.group(1)
+        downloaded_file_name = await bot.download_media(
+            await event.get_reply_message(),
+            TEMP_DOWNLOAD_DIRECTORY
+        )
+        test_file = ocr_space_file(filename=downloaded_file_name, language=lang_code)
+        try:
+            ParsedText = test_file["ParsedResults"][0]["ParsedText"]
+            ProcessingTimeInMilliseconds = str(int(test_file["ProcessingTimeInMilliseconds"]) // 1000)
+        except:
+            await event.edit("Errors...")
+        else:
+            await event.edit("Read Document in {} seconds. \n{}".format(ProcessingTimeInMilliseconds, ParsedText))
+        os.remove(downloaded_file_name)
 
 
 CMD_HELP.update({

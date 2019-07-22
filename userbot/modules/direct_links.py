@@ -59,7 +59,8 @@ async def direct_link_generator(request):
             elif 'androidfilehost.com' in link:
                 reply += androidfilehost(link)
             else:
-                reply += re.findall(r"\bhttps?://(.*?[^/]+)", link)[0] + 'is not supported'
+                reply += re.findall(r"\bhttps?://(.*?[^/]+)",
+                                    link)[0] + 'is not supported'
         await request.edit(reply)
 
 
@@ -107,6 +108,7 @@ def gdrive(url: str) -> str:
     reply += f'[{name}]({dl_url})\n'
     return reply
 
+
 def zippy_share(url: str) -> str:
     """ ZippyShare direct links generator
     Based on https://github.com/LameLemon/ziggy"""
@@ -136,6 +138,7 @@ def zippy_share(url: str) -> str:
     name = urllib.parse.unquote(dl_url.split('/')[-1])
     reply += f'[{name}]({dl_url})\n'
     return reply
+
 
 def yandex_disk(url: str) -> str:
     """ Yandex.Disk direct links generator
@@ -196,7 +199,7 @@ def cm_ru(url: str) -> str:
     try:
         data = json.loads(result)
     except json.decoder.JSONDecodeError:
-        reply += "`Error: Can't extract the link\n`"
+        reply += "`Error: Can't extract the link`\n"
         return reply
     dl_url = data['download']
     name = data['file_name']
@@ -243,6 +246,7 @@ def sourceforge(url: str) -> str:
         reply += f'[{name}]({dl_url}) '
     return reply
 
+
 def osdn(url: str) -> str:
     """ OSDN direct links generator """
     osdn_link = 'https://osdn.net'
@@ -251,7 +255,11 @@ def osdn(url: str) -> str:
     except IndexError:
         reply = "`No OSDN links found`\n"
         return reply
-    page = BeautifulSoup(requests.get(link, allow_redirects=True).content, 'lxml')
+    page = BeautifulSoup(
+        requests.get(
+            link,
+            allow_redirects=True).content,
+        'lxml')
     info = page.find('a', {'class': 'mirror_link'})
     link = urllib.parse.unquote(osdn_link + info['href'])
     reply = f"Mirrors for __{link.split('/')[-1]}__\n"
@@ -262,6 +270,7 @@ def osdn(url: str) -> str:
         dl_url = re.sub(r'm=(.*)&f', f'm={mirror}&f', link)
         reply += f'[{name}]({dl_url}) '
     return reply
+
 
 def github(url: str) -> str:
     """ GitHub direct links generator """
@@ -281,6 +290,7 @@ def github(url: str) -> str:
     reply += f'[{name}]({dl_url}) '
     return reply
 
+
 def androidfilehost(url: str) -> str:
     """ AFH direct links generator """
     try:
@@ -295,36 +305,33 @@ def androidfilehost(url: str) -> str:
     res = session.get(link, headers=headers, allow_redirects=True)
     headers = {
         'origin': 'https://androidfilehost.com',
-        'x-mod-sbb-ctype': 'xhr',
-        'referer': f'https://androidfilehost.com/?fid={fid}',
-        'authority': 'androidfilehost.com',
-        'x-requested-with': 'XMLHttpRequest',
         'accept-encoding': 'gzip, deflate, br',
         'accept-language': 'en-US,en;q=0.9',
         'user-agent': user_agent,
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'x-mod-sbb-ctype': 'xhr',
         'accept': '*/*',
+        'referer': f'https://androidfilehost.com/?fid={fid}',
+        'authority': 'androidfilehost.com',
+        'x-requested-with': 'XMLHttpRequest',
     }
-
     data = {
         'submit': 'submit',
         'action': 'getdownloadmirrors',
         'fid': f'{fid}'
     }
-
     mirrors = None
     reply = ''
     error = "`Error: Can't find Mirrors for the link`\n"
-
     try:
-        req = session.post('https://androidfilehost.com/libs/otf/mirrors.otf.php',
-                            headers=headers, data=data, cookies=res.cookies)
-
+        req = session.post(
+            'https://androidfilehost.com/libs/otf/mirrors.otf.php',
+            headers=headers,
+            data=data,
+            cookies=res.cookies)
         mirrors = req.json()['MIRRORS']
-
     except (json.decoder.JSONDecodeError, TypeError):
         reply += error
-
     if not mirrors:
         reply += error
         return reply
@@ -332,19 +339,24 @@ def androidfilehost(url: str) -> str:
         name = item['name']
         dl_url = item['url']
         reply += f'[{name}]({dl_url}) '
-
     return reply
+
 
 def useragent():
     """
     useragent random setter
     """
     useragents = BeautifulSoup(
-        requests.get('https://developers.whatismybrowser.com/'
-                     'useragents/explore/operating_system_name/android/').content, 'lxml')\
-        .findAll('td', {'class': 'useragent'})
+        requests.get(
+            'https://developers.whatismybrowser.com/'
+            'useragents/explore/operating_system_name/android/').content,
+        'lxml') .findAll(
+            'td',
+            {
+                'class': 'useragent'})
     user_agent = choice(useragents)
     return user_agent.text
+
 
 CMD_HELP.update({
     "direct": ".direct <url> <url>\n"
