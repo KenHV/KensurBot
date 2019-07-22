@@ -69,6 +69,8 @@ CONSOLE_LOGGER_VERBOSE = sb(
 
 DB_URI = os.environ.get("DATABASE_URL", None)
 
+OCR_SPACE_API_KEY = os.environ.get("OCR_SPACE_API_KEY", None)
+
 CHROME_DRIVER = os.environ.get("CHROME_DRIVER", None)
 
 GOOGLE_CHROME_BIN = os.environ.get("GOOGLE_CHROME_BIN", None)
@@ -100,19 +102,9 @@ else:
     # pylint: disable=invalid-name
     bot = TelegramClient("userbot", API_KEY, API_HASH)
 
-if os.path.exists("learning-data-root.check"):
-    os.remove("learning-data-root.check")
-else:
-    LOGS.info("Braincheck file does not exist, fetching...")
-
-URL = 'https://raw.githubusercontent.com/RaphielGang/databasescape/master/learning-data-root.check'
-
-with open('learning-data-root.check', 'wb') as load:
-    load.write(get(URL).content)
 
 # Global Variables
 COUNT_MSG = 0
-BRAIN_CHECKER = []
 USERS = {}
 COUNT_PM = {}
 LASTMSG = {}

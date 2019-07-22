@@ -62,6 +62,10 @@
       "description": "YouTube Data API Key for .yt command. Get from https://console.cloud.google.com",
       "required": false
     },
+    "OCR_SPACE_API_KEY": {
+      "description": "OCR API Key for .ocr command Get from https://ocr.space/ocrapi",
+      "required": false
+    },
     "DEFAULT_BIO": {
       "description": "Set a default bio to be shown when you are not listening on Spotify..",
       "required": false

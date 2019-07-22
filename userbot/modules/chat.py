@@ -7,6 +7,8 @@
 from time import sleep
 
 from telethon.tl.functions.channels import LeaveChannelRequest
+from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.types import MessageEntityMentionName
 
 from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, bot
 from userbot.events import register
@@ -43,6 +45,45 @@ async def chatidgetter(chat):
     if not chat.text[0].isalpha() and chat.text[0] not in ("/", "#", "@", "!"):
         await chat.edit("Chat ID: `" + str(chat.chat_id) + "`")
 
+@register(outgoing=True, pattern="^.mention(?: |$)(.*)")
+async def mention(event):
+	if event.fwd_from:
+		return
+	input_str = event.pattern_match.group(1)
+
+	if event.reply_to_msg_id:
+		previous_message = await event.get_reply_message()
+		if previous_message.forward:
+			replied_user = await event.client(GetFullUserRequest(previous_message.forward.from_id))
+		else:
+			replied_user = await event.client(GetFullUserRequest(previous_message.from_id))
+	else:
+		if event.message.entities is not None:
+			mention_entity = event.message.entities
+			probable_user_mention_entity = mention_entity[0]
+			if type(probable_user_mention_entity) == MessageEntityMentionName:
+				user_id = probable_user_mention_entity.user_id
+				replied_user = await event.client(GetFullUserRequest(user_id))
+		else:
+			try:
+				user_object = await event.client.get_entity(input_str)
+				user_id = user_object.id
+				replied_user = await event.client(GetFullUserRequest(user_id))
+			except Exception as e:
+				await event.edit(str(e))
+				return None
+
+	user_id = replied_user.user.id
+	caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, input_str)
+	await event.client.send_message(
+		event.chat_id,
+		caption,
+		parse_mode="HTML",
+		force_document=False,
+		silent=True
+		)
+	await event.delete()
+
 
 @register(outgoing=True, pattern=r"^.log(?: |$)([\s\S]*)")
 async def log(log_text):
@@ -72,8 +113,8 @@ async def kickme(leave):
     if not leave.text[0].isalpha() and leave.text[0] not in ("/", "#", "@", "!"):
         await leave.edit("`Nope, no, no, I go away`")
         await bot(LeaveChannelRequest(leave.chat_id))
-        
-        
+
+
 @register(outgoing=True, pattern="^.unmutechat$")
 async def unmute_chat(unm_e):
     """ For .unmutechat command, unmute a muted chat. """
@@ -129,5 +170,7 @@ CMD_HELP.update({
 \n\n.unmutechat\
 \nUsage: Unmutes a muted chat.\
 \n\n.mutechat\
-\nUsage: Allows you to mute any chat."
+\nUsage: Allows you to mute any chat.\
+\n\n.mention <text>\
+\nUsage: Mention any person in the group with custom text."
 })
