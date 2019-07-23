@@ -52,33 +52,32 @@ async def mention(event):
             return
         input_str = event.pattern_match.group(1)
     
-    if event.reply_to_msg_id:
-        previous_message = await event.get_reply_message()
-        if previous_message.forward:
-            replied_user = await event.client(GetFullUserRequest(previous_message.forward.from_id))
+        if event.reply_to_msg_id:
+            previous_message = await event.get_reply_message()
+            if previous_message.forward:
+                replied_user = await event.client(GetFullUserRequest(previous_message.forward.from_id))
+            else :
+                replied_user = await event.client(GetFullUserRequest(previous_message.from_id))
         else :
-            replied_user = await event.client(GetFullUserRequest(previous_message.from_id))
-    else :
-        if event.message.entities is not None:
-            mention_entity = event.message.entities
-            probable_user_mention_entity = mention_entity[0]
-            if type(probable_user_mention_entity) == MessageEntityMentionName:
-                user_id = probable_user_mention_entity.user_id
-                replied_user = await event.client(GetFullUserRequest(user_id))
-        else :
-            try:
-                user_object = await event.client.get_entity(input_str)
-                user_id = user_object.id
-                replied_user = await event.client(GetFullUserRequest(user_id))
+            if event.message.entities is not None:
+                mention_entity = event.message.entities
+                probable_user_mention_entity = mention_entity[0]
+                if type(probable_user_mention_entity) == MessageEntityMentionName:
+                    user_id = probable_user_mention_entity.user_id
+                    replied_user = await event.client(GetFullUserRequest(user_id))
+            else :
+                try:
+                    user_object = await event.client.get_entity(input_str)
+                    user_id = user_object.id
+                    replied_user = await event.client(GetFullUserRequest(user_id))
                 
-            except Exception as e:
-                await event.edit(str(e))
-                return None
+                except Exception as e:
+                    await event.edit(str(e))
+                    return None
 
         user_id = replied_user.user.id
         caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, input_str)
         await event.edit(caption, parse_mode = "HTML")
-
 	
 @register(outgoing=True, pattern=r"^.log(?: |$)([\s\S]*)")
 async def log(log_text):
