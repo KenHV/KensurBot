@@ -45,7 +45,28 @@ async def chatidgetter(chat):
     if not chat.text[0].isalpha() and chat.text[0] not in ("/", "#", "@", "!"):
         await chat.edit("Chat ID: `" + str(chat.chat_id) + "`")
 
-        
+
+@register(outgoing=True, pattern="^.mention (.*)")
+async def mention(event):
+    """ For .chatid, returns the ID of the chat you are in at that moment. """
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+        if event.fwd_from:
+            return
+        input_str = event.pattern_match.group(1)
+        if event.reply_to_msg_id:
+            previous_message = await event.get_reply_message()
+            if previous_message.forward:
+                replied_user = previous_message.forward.from_id
+            else:
+                replied_user = previous_message.from_id
+        else:
+            return
+        user_id = replied_user
+        caption = """<a href='tg://user?id={}'>{}</a>""".format(
+            user_id, input_str)
+        await event.edit(caption, parse_mode="HTML")
+
+
 @register(outgoing=True, pattern=r"^.log(?: |$)([\s\S]*)")
 async def log(log_text):
     """ For .log command, forwards a message or the command argument to the bot logs group """
@@ -132,5 +153,7 @@ CMD_HELP.update({
 \n\n.unmutechat\
 \nUsage: Unmutes a muted chat.\
 \n\n.mutechat\
-\nUsage: Allows you to mute any chat.\"
+\nUsage: Allows you to mute any chat.\
+\n\n.mention <text>\
+\nUsage: Reply to generate the user's permanent link with custom text."
 })
