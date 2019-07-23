@@ -47,7 +47,7 @@ async def chatidgetter(chat):
 
 	
 @register(pattern=".mention(?: |$)(.*)", outgoing=True)
-async def mention(event):
+async def who(event):
     """ For .mention command, mention a user with custom text as link to their profile """
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
@@ -55,10 +55,10 @@ async def mention(event):
         
         replied_user = await get_user(event)
 		
-		user_id = replied_user.user.id
+	user_id = replied_user.user.id
 		
-		caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, caption)
-		await event.edit(caption, parse_mode = "HTML")
+	caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, caption)
+	await event.edit(caption, parse_mode = "HTML")
 		
 async def get_user(event):
     """ Get the user from argument or replied message. """
