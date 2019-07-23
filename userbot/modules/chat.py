@@ -45,35 +45,41 @@ async def chatidgetter(chat):
     if not chat.text[0].isalpha() and chat.text[0] not in ("/", "#", "@", "!"):
         await chat.edit("Chat ID: `" + str(chat.chat_id) + "`")
 
-@register(outgoing = True, pattern = "^.mention ?(.*)")
+@register(outgoing = True, pattern = "^.mention (?: |$)(.*) (.*)")
 async def mention(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
             return
-        input_str = event.pattern_match.group(1)
-    
+
+        input_str = event.pattern_match.group(2)
+
         if event.reply_to_msg_id:
             previous_message = await event.get_reply_message()
             if previous_message.forward:
                 replied_user = await event.client(GetFullUserRequest(previous_message.forward.from_id))
             else :
                 replied_user = await event.client(GetFullUserRequest(previous_message.from_id))
-        else :
-            if event.message.entities is not None:
-                mention_entity = event.message.entities
-                probable_user_mention_entity = mention_entity[0]
-                if type(probable_user_mention_entity) == MessageEntityMentionName:
-                    user_id = probable_user_mention_entity.user_id
-                    replied_user = await event.client(GetFullUserRequest(user_id))
-            else :
-                try:
-                    user_object = await event.client.get_entity(input_str)
-                    user_id = user_object.id
-                    replied_user = await event.client(GetFullUserRequest(user_id))
+	else:
+		user = event.pattern_match.group(1)
+		
+		if user.isnumeric():
+			user = int(user)
+			
+            	if event.message.entities is not None:
+                	probable_user_mention_entity = event.message.entities[0]
+			
+                	if isinstance(probable_user_mention_entity, MessageEntityMentionName):
+				user_id = probable_user_mention_entity.user_id
+				replied_user = await event.client(GetFullUserRequest(user_id))
+            	else :
+                	try:
+				user_object = await event.client.get_entity(input_str)
+				user_id = user_object.id
+				replied_user = await event.client(GetFullUserRequest(user_id))
                 
-                except Exception as e:
-                    await event.edit(str(e))
-                    return None
+                	except (TypeError, ValueError) as e:
+				await event.edit(str(e))
+                    		return None
 
         user_id = replied_user.user.id
         caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, input_str)
