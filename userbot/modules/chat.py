@@ -45,21 +45,23 @@ async def chatidgetter(chat):
     if not chat.text[0].isalpha() and chat.text[0] not in ("/", "#", "@", "!"):
         await chat.edit("Chat ID: `" + str(chat.chat_id) + "`")
 
-	
+
 @register(pattern=".mention(?: |$)(.*)", outgoing=True)
 async def who(event):
     """ For .mention command, mention a user with custom text as link to their profile """
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
             return
-        
+
         replied_user = await get_user(event)
-		
-	user_id = replied_user.user.id
-		
-	caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, caption)
-	await event.edit(caption, parse_mode = "HTML")
-		
+
+        user_id = replied_user.user.id
+
+        caption = """<a href='tg://user?id={}'>{}</a>""".format(
+            user_id, caption)
+        await event.edit(caption, parse_mode="HTML")
+
+
 async def get_user(event):
     """ Get the user from argument or replied message. """
     if event.reply_to_msg_id:
@@ -68,10 +70,10 @@ async def get_user(event):
         caption = event.pattern_match.group(1)
     else:
         user, caption = event.pattern_match.group(1).split("|", 1)
-	
-	    if not caption:
-		    await event.edit("Can't mention without a caption !!")
-		    return
+
+        if not caption:
+                await event.edit("Can't mention without a caption !!")
+                return
 
         if user.isnumeric():
             user = int(user)
@@ -95,6 +97,7 @@ async def get_user(event):
             return None
 
     return replied_user, caption
+
 
 @register(outgoing=True, pattern=r"^.log(?: |$)([\s\S]*)")
 async def log(log_text):
@@ -155,6 +158,7 @@ async def mute_chat(mute_e):
             await mute_e.client.send_message(
                 BOTLOG_CHATID,
                 str(mute_e.chat_id) + " was silenced.")
+
 
 @register(incoming=True)
 async def keep_read(message):
