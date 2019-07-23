@@ -47,7 +47,7 @@ async def chatidgetter(chat):
 
 @register(outgoing=True, pattern="^.mention(?: |$)(.*)")
 async def mention(event):
-    if not log_text.text[0].isalpha() and log_text.text[0] not in ("/", "#", "@", "!"):
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
 	    if event.fwd_from:
 		    return
 	    input_str = event.pattern_match.group(1)
