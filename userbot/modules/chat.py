@@ -67,12 +67,12 @@ async def mention(event):
 				    replied_user = await event.client(GetFullUserRequest(user_id))
 		    else:
 			    try:
-				    user_object = await event.client.get_entity(input_str)
-				    user_id = user_object.id
-				    replied_user = await event.client(GetFullUserRequest(user_id))
+				user_object = await event.client.get_entity(input_str)
+				user_id = user_object.id
+				replied_user = await event.client(GetFullUserRequest(user_id))
 			    except Exception as e:
-				    await event.edit(str(e))
-				    return None
+				await event.edit(str(e))
+				return None
 
 	    user_id = replied_user.user.id
 	    caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, input_str)
