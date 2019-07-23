@@ -45,60 +45,7 @@ async def chatidgetter(chat):
     if not chat.text[0].isalpha() and chat.text[0] not in ("/", "#", "@", "!"):
         await chat.edit("Chat ID: `" + str(chat.chat_id) + "`")
 
-
-@register(pattern=".mention(?: |$)(.*)", outgoing=True)
-async def who(event):
-    """ For .mention command, mention a user with custom text as link to their profile """
-    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
-        if event.fwd_from:
-            return
-
-        replied_user = await get_user(event)
-
-        user_id = replied_user.user.id
-
-        caption = """<a href='tg://user?id={}'>{}</a>""".format(
-            user_id, caption)
-        await event.edit(caption, parse_mode="HTML")
-
-
-async def get_user(event):
-    """ Get the user from argument or replied message. """
-    if event.reply_to_msg_id:
-        previous_message = await event.get_reply_message()
-        replied_user = await event.client(GetFullUserRequest(previous_message.from_id))
-        caption = event.pattern_match.group(1)
-    else:
-        user, caption = event.pattern_match.group(1).split("|", 1)
-
-        if not caption:
-                await event.edit("Can't mention without a caption !!")
-                return
-
-        if user.isnumeric():
-            user = int(user)
-
-        if not user:
-            await event.edit("I can't mention nothing !!")
-            return
-
-        if event.message.entities is not None:
-            probable_user_mention_entity = event.message.entities[0]
-
-            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
-                user_id = probable_user_mention_entity.user_id
-                replied_user = await event.client(GetFullUserRequest(user_id))
-                return replied_user, caption
-        try:
-            user_object = await event.client.get_entity(user)
-            replied_user = await event.client(GetFullUserRequest(user_object.id))
-        except (TypeError, ValueError) as err:
-            await event.edit(str(err))
-            return None
-
-    return replied_user, caption
-
-
+        
 @register(outgoing=True, pattern=r"^.log(?: |$)([\s\S]*)")
 async def log(log_text):
     """ For .log command, forwards a message or the command argument to the bot logs group """
@@ -185,7 +132,5 @@ CMD_HELP.update({
 \n\n.unmutechat\
 \nUsage: Unmutes a muted chat.\
 \n\n.mutechat\
-\nUsage: Allows you to mute any chat.\
-\n\n.mention <username>|<text> or .mention <text> (in reply)\
-\nUsage: Mention any person in the group with custom text."
+\nUsage: Allows you to mute any chat.\"
 })
