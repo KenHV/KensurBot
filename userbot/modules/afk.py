@@ -147,6 +147,7 @@ async def type_afk_is_not_true(notafk):
     if ISAFK:
         delgvar("AFK_STATUS")
         await notafk.respond("I'm no longer AFK.")
+        delgvar("AFK_REASON")
         afk_info = await notafk.respond(
             "`You recieved " +
             str(COUNT_MSG) +
