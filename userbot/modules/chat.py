@@ -45,7 +45,7 @@ async def chatidgetter(chat):
     if not chat.text[0].isalpha() and chat.text[0] not in ("/", "#", "@", "!"):
         await chat.edit("Chat ID: `" + str(chat.chat_id) + "`")
 
-@register(outgoing=True, pattern="^.mention(?: |$)(.*)")
+@register(outgoing=True, pattern="^.mention ?(.*)")
 async def mention(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
 	    if event.fwd_from:
@@ -76,14 +76,7 @@ async def mention(event):
 
 	    user_id = replied_user.user.id
 	    caption = """<a href='tg://user?id={}'>{}</a>""".format(user_id, input_str)
-	    await event.client.send_message(
-		    event.chat_id,
-		    caption,
-		    parse_mode="HTML",
-		    force_document=False,
-		    silent=True
-		    )
-	    await event.delete()
+	    await event.edit(caption, parse_mode="HTML")
 
 
 @register(outgoing=True, pattern=r"^.log(?: |$)([\s\S]*)")
@@ -172,6 +165,6 @@ CMD_HELP.update({
 \nUsage: Unmutes a muted chat.\
 \n\n.mutechat\
 \nUsage: Allows you to mute any chat.\
-\n\n.mention <text>\
+\n\n.mention <username> <text> or .mention <text> (in reply)\
 \nUsage: Mention any person in the group with custom text."
 })
