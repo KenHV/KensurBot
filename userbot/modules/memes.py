@@ -748,7 +748,7 @@ async def metoo(hahayes):
     if not hahayes.text[0].isalpha() and hahayes.text[0] not in ("/", "#", "@", "!"):
         await hahayes.edit(random.choice(METOOSTR))
 
-@register(outgoing=True, pattern="^Oof$")
+@register(outgoing=True, pattern="^.oof$")
 async def Oof(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         t = "Oof"
@@ -930,7 +930,7 @@ CMD_HELP.update({
 \nUsage: You retard !!\
 \n\n.zal\
 \nUsage: Invoke the feeling of chaos.\
-\n\nOof\
+\n\n.oof\
 \nUsage: Ooooof\
 \n\n.moon\
 \nUsage: kensar moon animation.\
