@@ -47,9 +47,9 @@ async def chatidgetter(chat):
 
 	
 @register(pattern=".mention(?: |$)(.*)", outgoing=True)
-async def who(event):
-    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+async def mention(event):
     """ For .mention command, mention a user with custom text as link to their profile """
+    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
             return
         
