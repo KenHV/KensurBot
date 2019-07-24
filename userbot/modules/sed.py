@@ -19,12 +19,12 @@ DELIMITERS = ("/", ":", "|", "_")
 def separate_sed(sed_string):
     """ Separate sed arguments. """
     if (
-            len(sed_string) >= 3 and
-            sed_string[3] in DELIMITERS and
-            sed_string.count(sed_string[3]) >= 2
+            len(sed_string) >= 4 and
+            sed_string[4] in DELIMITERS and
+            sed_string.count(sed_string[4]) >= 2
     ):
-        delim = sed_string[3]
-        start = counter = 4
+        delim = sed_string[4]
+        start = counter = 5
         while counter < len(sed_string):
             if sed_string[counter] == "\\":
                 counter += 1
