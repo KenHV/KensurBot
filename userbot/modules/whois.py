@@ -11,10 +11,8 @@ import os
 
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import MessageEntityMentionName
-from userbot import CMD_HELP
+from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
-
-TMP_DOWNLOAD_DIRECTORY = "./"
 
 
 @register(pattern=".whois(?: |$)(.*)", outgoing=True)
@@ -24,8 +22,8 @@ async def who(event):
         if event.fwd_from:
             return
 
-        if not os.path.isdir(TMP_DOWNLOAD_DIRECTORY):
-            os.makedirs(TMP_DOWNLOAD_DIRECTORY)
+        if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+            os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
 
         replied_user = await get_user(event)
 
@@ -98,7 +96,7 @@ async def fetch_info(replied_user, event):
     verified = replied_user.user.verified
     photo = await event.client.download_profile_photo(
         user_id,
-        TMP_DOWNLOAD_DIRECTORY + str(user_id) + ".jpg",
+        TEMP_DOWNLOAD_DIRECTORY + str(user_id) + ".jpg",
         download_big=True
     )
     first_name = first_name.replace("\u2060", "") if first_name else (
