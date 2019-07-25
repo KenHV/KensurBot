@@ -249,7 +249,7 @@ def upload_file(http, file_path, file_name, mime_type):
     media_body = MediaFileUpload(file_path, mimetype=mime_type, resumable=True)
     body = {
         "title": file_name,
-        "description": "backup",
+        "description": "Uploaded using PaperplaneExtended Userbot.",
         "mimeType": mime_type,
     }
     if parent_id:
