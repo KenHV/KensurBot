@@ -263,7 +263,7 @@ def upload_file(event, http, file_path, file_name, mime_type):
         "withLink": True
     }
     # Insert a file
-    file = drive_service.files().insert(body=body, media_body=media_body).execute()
+    file = drive_service.files().insert(body=body, media_body=media_body)
     uploaded = False
     while not uploaded:
         status, uploaded = file.next_chunk()
