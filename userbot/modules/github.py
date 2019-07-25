@@ -6,7 +6,7 @@ from userbot import bot, CMD_HELP
 @bot.on(events.NewMessage(outgoing=True, pattern=r"^\.git (.*)"))
 async def github(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
-        URL = f"https://api.github.com/users/{e.pattern_match.group(1)}"
+        URL = f"https://api.github.com/users/{event.pattern_match.group(1)}"
         chat = await event.get_chat()
         async with aiohttp.ClientSession() as session:
             async with session.get(URL) as request:
@@ -23,7 +23,7 @@ async def github(event):
                 created_at = result.get("created_at", "Not Found")
 
                 REPLY = f"""
-        GitHub Info for `{e.pattern_match.group(1)}`
+        GitHub Info for `{event.pattern_match.group(1)}`
 
 Username: `{name}`
 Bio: `{bio}`

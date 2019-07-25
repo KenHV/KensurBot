@@ -15,7 +15,6 @@ from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 from userbot import CMD_HELP
 from userbot.events import register
 
-
 async def gen_chlog(repo, diff):
     ch_log = ''
     d_form = "%d/%m/%y"
@@ -23,18 +22,18 @@ async def gen_chlog(repo, diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
 
-
 async def is_off_br(br):
-    off_br = ['sql-extended']
+    off_br = ['sql-extended', 'sql-dirty']
     for k in off_br:
         if k == br:
             return 1
     return
 
-
 @register(outgoing=True, pattern="^.update(?: |$)(.*)")
 async def upstream(ups):
-    if not ups.text[0].isalpha() and ups.text[0] not in ("/", "#", "@", "!"):
+    "For .update command, check if the bot is up to date, update if specified"
+    if not ups.text[0].isalpha() and ups.text[0] not in (
+        "/", "#", "@", "!"):
         await ups.edit("`Checking for updates, please wait....`")
         conf = ups.pattern_match.group(1)
         off_repo = 'https://github.com/AvinashReddy3108/PaperplaneExtended.git'
@@ -110,7 +109,7 @@ async def upstream(ups):
 
 CMD_HELP.update({
     'update': '.update\
-\nUsage: Checks if the main userbot repository has any updates and shows changelog if so.\
+\nUsage: Check if the main userbot repository has any updates and show changelog if so.\
 \n\n.update now\
-\nUsage: Updates your userbot if there are any updates in the main userbot repository.'
+\nUsage: Update your userbot, if there are any updates in the main userbot repository.'
 })

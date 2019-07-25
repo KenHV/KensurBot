@@ -23,7 +23,7 @@ import httplib2
 import subprocess
 
 # Path to token json file, it should be in same directory as script
-G_DRIVE_TOKEN_FILE = TEMP_DOWNLOAD_DIRECTORY + "/auth_token.txt"
+G_DRIVE_TOKEN_FILE = "./auth_token.txt"
 # Copy your credentials from the APIs Console
 CLIENT_ID = G_DRIVE_CLIENT_ID
 CLIENT_SECRET = G_DRIVE_CLIENT_SECRET
@@ -134,7 +134,7 @@ async def download(dryb):
                 required_file_name = downloaded_file_name
                 duration = (end - start).seconds
                 await dryb.edit(
-                    "Downloaded to `{}` in {} seconds.".format(
+                    "Downloaded to `{}` in {} seconds, uploading to Google Drive !!".format(
                         downloaded_file_name, duration)
                 )
         elif input_str:
@@ -144,9 +144,9 @@ async def download(dryb):
                 end = datetime.now()
                 duration = (end - start).seconds
                 required_file_name = input_str
-                await dryb.edit("Found `{}` in {} seconds.".format(input_str, duration))
+                await dryb.edit("Found `{}` in {} seconds, uploading to Google Drive !!".format(input_str, duration))
             else:
-                await dryb.edit("File Not found in local server. Give me a file path :((")
+                await dryb.edit("File not found in local server. Give me a valid file path !!")
                 return False
     # logger.info(required_file_name)
     if required_file_name:
@@ -164,10 +164,10 @@ async def download(dryb):
         # required_file_name will have the full path
         # Sometimes API fails to retrieve starting URI, we wrap it.
         try:
-            g_drive_link = upload_file(http, required_file_name, file_name, mime_type)
-            await dryb.edit(f"Google Drive Link = {g_drive_link}")
+            g_drive_link = upload_file(dryb, http, required_file_name, file_name, mime_type)
+            await dryb.edit(f"Uploaded `{required_file_name}` to {g_drive_link} successfully !!")
         except Exception as e:
-            await dryb.edit(f"Exception occurred while uploading to gDrive {e}")
+            await dryb.edit(f"Error while uploading to Google Drive\nError Code:\n`{e}`")
 
 
 @register(pattern=r"^.gdrivesp https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})", outgoing=True)
@@ -215,6 +215,7 @@ async def create_token_file(token_file, event):
         redirect_uri=REDIRECT_URI
     )
     authorize_url = flow.step1_get_authorize_url()
+    await event.edit("Check your userbot log for authentication link !!")
     async with event.client.conversation(BOTLOG_CHATID) as conv:
         await conv.send_message(f"Go to the following link in your browser: {authorize_url} and reply the code")
         response = conv.wait_event(events.NewMessage(
@@ -241,7 +242,7 @@ def authorize(token_file, storage):
     return http
 
 
-def upload_file(http, file_path, file_name, mime_type):
+def upload_file(event, http, file_path, file_name, mime_type):
     # Create Google Drive service instance
     drive_service = build("drive", "v2", http=http)
     # File body description
@@ -263,6 +264,17 @@ def upload_file(http, file_path, file_name, mime_type):
     }
     # Insert a file
     file = drive_service.files().insert(body=body, media_body=media_body).execute()
+    uploaded = False
+    while not uploaded:
+        status, uploaded = file.next_chunk()
+        if uploaded:
+            break
+        percentage = int(status.progress() * 100)
+        progress_str = "[{0}{1}]\nProgress: {2}%".format(
+            ''.join(["█" for i in range(math.floor(percentage / 5))]),
+            ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
+            round(percentage, 2))
+        event.edit(f"Uploading **{file_name}** to Google Drive !!\n{progress_str}")
     # Insert new permissions
     drive_service.permissions().insert(fileId=file["id"], body=permissions).execute()
     # Define file instance and get url for download
@@ -275,9 +287,9 @@ async def _(event):
     if event.fwd_from:
         return
     folder_link = "https://drive.google.com/drive/u/2/folders/"+parent_id
-    await event.edit("**Your Gdrive Folder Link : **\n"+folder_link)
-    
-    
+    await event.edit("Your current Google Drive upload directory: \n"+folder_link)
+
+
 CMD_HELP.update({
     "gdrive": ".gdrive <file_path/reply>\nUsage: Uploads the file in reply (or file path in server) to your Google Drive.\n\nUse .gdrivesp <link to GDrive Folder> to set the folder to upload new files to , .gdriveclear to revert to default upload destination and .gfolder to know your current upload destination."
 })
