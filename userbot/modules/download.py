@@ -107,27 +107,7 @@ async def download(target_file):
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
         message = await target_file.get_reply_message()
-        if message.media is not None:
-            start = datetime.now()
-            try:
-                c_time = time.time()
-                downloaded_file_name = await target_file.client.download_media(
-                    message,
-                    TEMP_DOWNLOAD_DIRECTORY,
-                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                        progress(d, t, target_file, c_time, "Downloading...")
-                    )
-                )
-            except Exception as e: # pylint:disable=C0103,W0703
-                await target_file.edit(str(e))
-            else:
-                end = datetime.now()
-                duration = (end - start).seconds
-                await target_file.edit(
-                    "Downloaded to `{}` in {} seconds.".format(
-                        downloaded_file_name, duration)
-                )
-        elif "|" in input_str:
+        if "|" in input_str:
             start = datetime.now()
             url, file_name = input_str.split("|")
             url = url.strip()
@@ -174,6 +154,26 @@ async def download(target_file):
             else:
                 await target_file.edit(
                     "Incorrect URL\n{}".format(url)
+                )
+        elif message.media:
+            start = datetime.now()
+            try:
+                c_time = time.time()
+                downloaded_file_name = await target_file.client.download_media(
+                    message,
+                    TEMP_DOWNLOAD_DIRECTORY,
+                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                        progress(d, t, target_file, c_time, "Downloading...")
+                    )
+                )
+            except Exception as e: # pylint:disable=C0103,W0703
+                await target_file.edit(str(e))
+            else:
+                end = datetime.now()
+                duration = (end - start).seconds
+                await target_file.edit(
+                    "Downloaded to `{}` in {} seconds.".format(
+                        downloaded_file_name, duration)
                 )
         else:
             await target_file.edit("Reply to a message to download to my local server.")
