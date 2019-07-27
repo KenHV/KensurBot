@@ -2,10 +2,9 @@ from telethon import events
 import os
 import requests
 import logging
-from userbot import bot, OCR_SPACE_API_KEY , CMD_HELP
+from userbot import bot, OCR_SPACE_API_KEY, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
-TEMP_DOWNLOAD_DIRECTORY = os.environ.get("TMP_DOWNLOAD_DIRECTORY", "./")
 
 def ocr_space_file(filename, overlay=False, api_key=OCR_SPACE_API_KEY, language='eng'):
     """ OCR.space API request with local file.

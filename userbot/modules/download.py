@@ -23,10 +23,9 @@ from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from telethon.tl.types import DocumentAttributeVideo
 
-from userbot import LOGS, CMD_HELP
+from userbot import LOGS, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
-TEMP_DOWNLOAD_DIRECTORY = os.environ.get("TMP_DOWNLOAD_DIRECTORY", "./")
 
 async def progress(current, total, event, start, type_of_ps, file_name = None):
     """Generic progress_callback for both
@@ -162,7 +161,7 @@ async def download(target_file):
         else:
             await target_file.edit("Reply to a message to download to my local server.")
 
-            
+
 async def download_coroutine(session, url, file_name, event, start):
     CHUNK_SIZE = 2341
     downloaded = 0
@@ -217,8 +216,8 @@ ETA: {}""".format(
                         logger.info(str(e))
                         pass
         return await response.release()
-            
-            
+
+
 @register(pattern=r".uploadir (.*)", outgoing=True)
 async def uploadir(udir_event):
     """ For .uploadir command, allows you to upload everything from a folder in the server"""

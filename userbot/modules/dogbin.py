@@ -6,8 +6,9 @@
 """ Userbot module containing commands for interacting with dogbin(https://del.dog)"""
 
 from requests import get, post, exceptions
-
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, LOGS
+import asyncio
+import os
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, LOGS, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
 DOGBIN_URL = "https://del.dog/"
@@ -27,7 +28,21 @@ async def paste(pstl):
         if match:
             message = match
         elif reply_id:
-            message = (await pstl.get_reply_message()).message
+            message = (await pstl.get_reply_message())
+            if message.media:
+                downloaded_file_name = await pstl.client.download_media(
+                    message,
+                    TEMP_DOWNLOAD_DIRECTORY,
+                )
+                m_list = None
+                with open(downloaded_file_name, "rb") as fd:
+                    m_list = fd.readlines()
+                message = ""
+                for m in m_list:
+                    message += m.decode("UTF-8") + "\r\n"
+                os.remove(downloaded_file_name)
+            else:
+                message = message.message
 
         # Dogbin
         await pstl.edit("`Pasting text . . .`")
