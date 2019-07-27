@@ -1,110 +1,111 @@
 {
-  "name": "Paperplane Extended - Telegram Userbot",
-  "description": "A modular Telegram userbot running on Python 3.6+ with an sqlalchemy database.",
-  "logo": "https://i.imgur.com/ATSG4w3.png",
-  "keywords": [
-    "telegram",
-    "userbot",
-    "plugin",
-    "modular",
-    "productivity"
-  ],
-  "repository": "https://github.com/AvinashReddy3108/PaperplaneExtended",
-  "website": "https://github.com/RaphielGang/Telegram-UserBot/wiki",
-  "success_url": "https://t.me/userbot_announcements",
-  "stack": "container",
-  "env": {
-    "API_KEY": {
-      "description": "Get this value from my.telegram.org.",
-      "value": ""
-    },
-    "API_HASH": {
-      "description": "Get this value from my.telegram.org.",
-      "value": ""
-    },
-    "STRING_SESSION": {
-      "description": "[REQUIRED] Get this value by running python3 string_session.py in app console.",
-      "required": false
-    },
-    "CHROME_DRIVER": {
-      "description": "ChromeDriver location.",
-      "value": "/usr/bin/chromedriver"
-    },
-    "GOOGLE_CHROME_BIN": {
-      "description": "Google Chrome (or) Chromium binary location.",
-      "value": "/usr/bin/chromium-browser"
-    },
-    "OPEN_WEATHER_MAP_APPID": {
-      "description": "Get your own APPID (API key)from https://api.openweathermap.org/data/2.5/weather",
-      "required": false
-    },
-    "SCREENSHOT_LAYER_ACCESS_KEY": {
-      "description": "Get your own ACCESS_KEY (API key) from http://api.screenshotlayer.com/api/capture",
-      "required": false
-    },
-    "BOTLOG": {
-      "description": "Incase you want to turn off logging, put this to false",
-      "value": "False"
-    },
-    "BOTLOG_CHATID": {
-      "description": "ChatID for the Log group",
-      "value": "0"
-    },
-    "CONSOLE_LOGGER_VERBOSE": {
-      "description": "If you need Verbosity on the Logging",
-      "value": "False"
-    },
-    "PM_AUTO_BAN": {
-      "description": "PM Auto-Ban Feature Switch",
-      "value": "False"
-    },
-    "YOUTUBE_API_KEY": {
-      "description": "YouTube Data API Key for .yt command. Get from https://console.cloud.google.com",
-      "required": false
-    },
-    "OCR_SPACE_API_KEY": {
-      "description": "OCR API Key for .ocr command Get from https://ocr.space/ocrapi",
-      "required": false
-    },
-    "DEFAULT_BIO": {
-      "description": "Set a default bio to be shown when you are not listening on Spotify..",
-      "required": false
-    },
-    "SPOTIFY_USERNAME": {
-      "description": "Put your Spotify Username (your Spotify username).",
-      "required": false
-    },
-    "SPOTIFY_PASS": {
-      "description": "Put your Spotify Password.",
-      "required": false
-    },
-    "SPOTIFY_BIO_PREFIX": {
-      "description": "Put the prefix that you want to show while you listen to music",
-      "required": false
-    },
-    "WELCOME_MUTE": {
-      "description": "Mute some known spammer bots after they join.",
-      "value": "False"
-    },
-    "TMP_DOWNLOAD_DIRECTORY": {
-      "description": "Download location for many modules (GDrive, .download etc..)",
-      "value": "./",
-      "required": "False"
-    },
-    "G_DRIVE_CLIENT_ID": {
-      "description": "Enter Your Client ID for Google Drive.",
-      "required": false
-    },
-    "G_DRIVE_CLIENT_SECRET": {
-      "description": "Enter Your Client Secret for Google Drive.",
-      "required": false
-  },
-  "addons": [
-    {
-      "plan": "heroku-postgresql",
-      "options": {
-        "version": "9.5"
-      }
+    "name":"Paperplane Extended - Telegram Userbot",
+    "description":"A modular Telegram userbot running on Python 3.6+ with an sqlalchemy database.",
+    "logo":"https://i.imgur.com/ATSG4w3.png",
+    "keywords":[
+        "telegram",
+        "userbot",
+        "plugin",
+        "modular",
+        "productivity"
+    ],
+    "repository":"https://github.com/AvinashReddy3108/PaperplaneExtended",
+    "website":"https://github.com/RaphielGang/Telegram-UserBot/wiki",
+    "success_url":"https://t.me/userbot_announcements",
+    "stack":"container",
+    "env":{
+        "API_KEY":{
+            "description":"Get this value from my.telegram.org.",
+            "value":""
+        },
+        "API_HASH":{
+            "description":"Get this value from my.telegram.org.",
+            "value":""
+        },
+        "STRING_SESSION":{
+            "description":"[REQUIRED] Get this value by running python3 string_session.py in app console.",
+            "required":false
+        },
+        "CHROME_DRIVER":{
+            "description":"ChromeDriver location.",
+            "value":"/usr/bin/chromedriver"
+        },
+        "GOOGLE_CHROME_BIN":{
+            "description":"Google Chrome (or) Chromium binary location.",
+            "value":"/usr/bin/chromium-browser"
+        },
+        "OPEN_WEATHER_MAP_APPID":{
+            "description":"Get your own APPID (API key)from https://api.openweathermap.org/data/2.5/weather",
+            "required":false
+        },
+        "SCREENSHOT_LAYER_ACCESS_KEY":{
+            "description":"Get your own ACCESS_KEY (API key) from http://api.screenshotlayer.com/api/capture",
+            "required":false
+        },
+        "BOTLOG":{
+            "description":"Incase you want to turn off logging, put this to false",
+            "value":"False"
+        },
+        "BOTLOG_CHATID":{
+            "description":"ChatID for the Log group",
+            "value":"0"
+        },
+        "CONSOLE_LOGGER_VERBOSE":{
+            "description":"If you need Verbosity on the Logging",
+            "value":"False"
+        },
+        "PM_AUTO_BAN":{
+            "description":"PM Auto-Ban Feature Switch",
+            "value":"False"
+        },
+        "YOUTUBE_API_KEY":{
+            "description":"YouTube Data API Key for .yt command. Get from https://console.cloud.google.com",
+            "required":false
+        },
+        "OCR_SPACE_API_KEY":{
+            "description":"OCR API Key for .ocr command Get from https://ocr.space/ocrapi",
+            "required":false
+        },
+        "DEFAULT_BIO":{
+            "description":"Set a default bio to be shown when you are not listening on Spotify..",
+            "required":false
+        },
+        "SPOTIFY_USERNAME":{
+            "description":"Put your Spotify Username (your Spotify username).",
+            "required":false
+        },
+        "SPOTIFY_PASS":{
+            "description":"Put your Spotify Password.",
+            "required":false
+        },
+        "SPOTIFY_BIO_PREFIX":{
+            "description":"Put the prefix that you want to show while you listen to music",
+            "required":false
+        },
+        "WELCOME_MUTE":{
+            "description":"Mute some known spammer bots after they join.",
+            "value":"False"
+        },
+        "TMP_DOWNLOAD_DIRECTORY":{
+            "description":"Download location for many modules (GDrive, .download etc..)",
+            "value":"./",
+            "required":"False"
+        },
+        "G_DRIVE_CLIENT_ID":{
+            "description":"Enter Your Client ID for Google Drive.",
+            "required":false
+        },
+        "G_DRIVE_CLIENT_SECRET":{
+            "description":"Enter Your Client Secret for Google Drive.",
+            "required":false
+        },
+        "addons":[
+            {
+                "plan":"heroku-postgresql",
+                "options":{
+                    "version":"9.5"
+                }
+            }
+        ]
     }
-  ]
 }
