@@ -146,7 +146,7 @@ async def download(target_file):
                 total_length = downloader.filesize if downloader.filesize else None
                 downloaded = downloader.get_dl_size()
                 now = time.time()
-                diff = now - start
+                diff = now - c_time
                 percentage = downloader.get_progress()*100
                 speed = downloader.get_speed()
                 elapsed_time = round(diff) * 1000
