@@ -174,7 +174,7 @@ async def download(dryb):
 async def download(set):
     """For .gdrivesp command, allows you to set path"""
     if not set.text[0].isalpha() and set.text[0] not in ("/", "#", "@", "!"):
-        if event.fwd_from:
+        if set.fwd_from:
             return
         await set.reply("Processing ...")
         input_str = set.pattern_match.group(1)
