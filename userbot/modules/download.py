@@ -88,11 +88,11 @@ def time_formatter(milliseconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
-    tmp = ((str(days) + "day(s), ") if days else "") + \
-        ((str(hours) + "hour(s), ") if hours else "") + \
-        ((str(minutes) + "minute(s), ") if minutes else "") + \
-        ((str(seconds) + "second(s), ") if seconds else "") + \
-        ((str(milliseconds) + "millisecond(s), ") if milliseconds else "")
+    tmp = ((str(days) + " day(s), ") if days else "") + \
+        ((str(hours) + " hour(s), ") if hours else "") + \
+        ((str(minutes) + " minute(s), ") if minutes else "") + \
+        ((str(seconds) + " second(s), ") if seconds else "") + \
+        ((str(milliseconds) + " millisecond(s), ") if milliseconds else "")
     return tmp[:-2]
 
 
@@ -107,7 +107,7 @@ async def download(target_file):
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
         message = await target_file.get_reply_message()
-        if message.media:
+        if message.media is not None:
             start = datetime.now()
             try:
                 c_time = time.time()
