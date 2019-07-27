@@ -165,7 +165,7 @@ async def download(dryb):
         # Sometimes API fails to retrieve starting URI, we wrap it.
         try:
             g_drive_link = upload_file(http, required_file_name, file_name, mime_type)
-            await dryb.edit(f"File `{required_file_name}`\n\n was uploaded to [G Drive]({g_drive_link}) successfully!!")
+            await dryb.edit(f"File `{required_file_name}`\n\n was uploaded to [Google Drive]({g_drive_link}) successfully!!")
         except Exception as e:
             await dryb.edit(f"Error while uploading to Google Drive\nError Code:\n`{e}`")
 
