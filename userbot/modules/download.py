@@ -106,12 +106,13 @@ async def download(target_file):
         input_str = target_file.pattern_match.group(1)
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-        if target_file.reply_to_msg_id:
+        message = await target_file.get_reply_message()
+        if message.media:
             start = datetime.now()
             try:
                 c_time = time.time()
                 downloaded_file_name = await target_file.client.download_media(
-                    await target_file.get_reply_message(),
+                    message,
                     TEMP_DOWNLOAD_DIRECTORY,
                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
                         progress(d, t, target_file, c_time, "Downloading...")
@@ -156,7 +157,7 @@ async def download(target_file):
                     round(percentage, 2))
                 estimated_total_time = downloader.get_eta()
                 try:
-                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(total_length)} of {humanbytes(downloaded)}\nETA: {time_formatter(estimated_total_time)}"
+                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(downloaded)} of {humanbytes(total_length)}\nETA: {time_formatter(estimated_total_time)}"
                     if current_message != display_message:
                         await target_file.edit(current_message)
                         display_message = current_message
