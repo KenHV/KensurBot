@@ -165,7 +165,7 @@ async def download(dryb):
         # Sometimes API fails to retrieve starting URI, we wrap it.
         try:
             g_drive_link = upload_file(http, required_file_name, file_name, mime_type)
-            await dryb.edit(f"Uploaded `{required_file_name}` to {g_drive_link} successfully !!")
+            await dryb.edit(f"File `{required_file_name}`\n\n was uploaded to [G Drive]({g_drive_link}) successfully!!")
         except Exception as e:
             await dryb.edit(f"Error while uploading to Google Drive\nError Code:\n`{e}`")
 
@@ -280,5 +280,5 @@ async def _(event):
 
 
 CMD_HELP.update({
-    "gdrive": ".gdrive <file_path/reply>\nUsage: Uploads the file in reply (or file path in server) to your Google Drive.\n\nUse .gdrivesp <link to GDrive Folder> to set the folder to upload new files to , .gdriveclear to revert to default upload destination and .gfolder to know your current upload destination."
+    "gdrive": ".gdrive <file_path/reply>\nUsage: Uploads the file in reply (or file path in server) to your Google Drive.\n\n .gdrivesp <link to GDrive Folder>\n to set the folder to upload new files to.\n\n .gdriveclear to revert to default upload destination.\n\n .gfolder to know your current upload destination/folder."
 })
