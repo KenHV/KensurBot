@@ -268,9 +268,9 @@ def upload_file(http, file_path, file_name, mime_type, event):
     while response is None:
         status, response = file.next_chunk()
         if status:
-            print("Uploaded %d%%." % int(status.progress() * 100))
+            event.edit("Uploaded %d%%." % int(status.progress() * 100))
     if file:
-        print(file_name + " uploaded successfully")
+        event.edit(file_name + " uploaded successfully")
     # Insert new permissions
     drive_service.permissions().insert(fileId=file["id"], body=permissions).execute()
     # Define file instance and get url for download
