@@ -164,7 +164,7 @@ async def download(dryb):
         # required_file_name will have the full path
         # Sometimes API fails to retrieve starting URI, we wrap it.
         try:
-            g_drive_link = upload_file(http, required_file_name, file_name, mime_type)
+            g_drive_link = upload_file(http, required_file_name, file_name, mime_type, dryb)
             await dryb.edit(f"File `{required_file_name}`\n\n was uploaded to [Google Drive]({g_drive_link}) successfully!!")
         except Exception as e:
             await dryb.edit(f"Error while uploading to Google Drive\nError Code:\n`{e}`")
@@ -242,7 +242,7 @@ def authorize(token_file, storage):
     return http
 
 
-def upload_file(http, file_path, file_name, mime_type):
+def upload_file(http, file_path, file_name, mime_type, event):
     # Create Google Drive service instance
     drive_service = build("drive", "v2", http=http)
     # File body description
@@ -263,7 +263,14 @@ def upload_file(http, file_path, file_name, mime_type):
         "withLink": True
     }
     # Insert a file
-    file = drive_service.files().insert(body=body, media_body=media_body).execute()
+    file = drive_service.files().insert(body=body, media_body=media_body)
+    response = None
+    while response is None:
+        status, response = file.next_chunk()
+        if status:
+            print("Uploaded %d%%." % int(status.progress() * 100))
+    if file:
+        print(file_name + " uploaded successfully")
     # Insert new permissions
     drive_service.permissions().insert(fileId=file["id"], body=permissions).execute()
     # Define file instance and get url for download
