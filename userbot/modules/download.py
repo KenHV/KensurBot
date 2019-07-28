@@ -17,7 +17,7 @@ from datetime import datetime
 import time
 import math
 
-import aiohttp
+from pySmartDL import SmartDL
 import asyncio
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
@@ -88,11 +88,11 @@ def time_formatter(milliseconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
-    tmp = ((str(days) + "day(s), ") if days else "") + \
-        ((str(hours) + "hour(s), ") if hours else "") + \
-        ((str(minutes) + "minute(s), ") if minutes else "") + \
-        ((str(seconds) + "second(s), ") if seconds else "") + \
-        ((str(milliseconds) + "millisecond(s), ") if milliseconds else "")
+    tmp = ((str(days) + " day(s), ") if days else "") + \
+        ((str(hours) + " hour(s), ") if hours else "") + \
+        ((str(minutes) + " minute(s), ") if minutes else "") + \
+        ((str(seconds) + " second(s), ") if seconds else "") + \
+        ((str(milliseconds) + " millisecond(s), ") if milliseconds else "")
     return tmp[:-2]
 
 
@@ -106,12 +106,61 @@ async def download(target_file):
         input_str = target_file.pattern_match.group(1)
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-        if target_file.reply_to_msg_id:
+        message = await target_file.get_reply_message()
+        if "|" in input_str:
+            start = datetime.now()
+            url, file_name = input_str.split("|")
+            url = url.strip()
+            # https://stackoverflow.com/a/761825/4723940
+            file_name = file_name.strip()
+            head, tail = os.path.split(file_name)
+            if head:
+                if not os.path.isdir(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)):
+                    os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
+                    file_name = os.path.join(head, tail)
+            downloaded_file_name = TEMP_DOWNLOAD_DIRECTORY + "" + file_name
+            downloader = SmartDL(url, downloaded_file_name, progress_bar=False)
+            downloader.start(blocking=False)
+            c_time = time.time()
+            while not downloader.isFinished():
+                display_message = ""
+                total_length = downloader.filesize if downloader.filesize else None
+                downloaded = downloader.get_dl_size()
+                now = time.time()
+                diff = now - c_time
+                percentage = downloader.get_progress()*100
+                speed = downloader.get_speed()
+                elapsed_time = round(diff) * 1000
+                progress_str = "[{0}{1}]\nProgress: {2}%".format(
+                    ''.join(["█" for i in range(math.floor(percentage / 5))]),
+                    ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
+                    round(percentage, 2))
+                estimated_total_time = downloader.get_eta()
+                try:
+                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(downloaded)} of {humanbytes(total_length)}\nETA: {time_formatter(estimated_total_time)}"
+                    if current_message != display_message:
+                        await target_file.edit(current_message)
+                        display_message = current_message
+                except Exception as e:
+                    LOGS.info(str(e))
+                    pass
+            end = datetime.now()
+            duration = (end - start).seconds
+            if downloader.isSuccessful():
+                await target_file.edit(
+                    "Downloaded to `{}` in {} seconds.".format(
+                        downloaded_file_name, duration)
+                )
+            else:
+                await target_file.edit(
+                    "Incorrect URL\n{}".format(url)
+                )
+        elif message.media:
             start = datetime.now()
             try:
                 c_time = time.time()
                 downloaded_file_name = await target_file.client.download_media(
-                    await target_file.get_reply_message(),
+                    message,
                     TEMP_DOWNLOAD_DIRECTORY,
                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
                         progress(d, t, target_file, c_time, "Downloading...")
@@ -126,96 +175,8 @@ async def download(target_file):
                     "Downloaded to `{}` in {} seconds.".format(
                         downloaded_file_name, duration)
                 )
-        elif "|" in input_str:
-            start = datetime.now()
-            url, file_name = input_str.split("|")
-            url = url.strip()
-            # https://stackoverflow.com/a/761825/4723940
-            file_name = file_name.strip()
-            head, tail = os.path.split(file_name)
-            if head:
-                if not os.path.isdir(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)):
-                    os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
-                    file_name = os.path.join(head, tail)
-            downloaded_file_name = TEMP_DOWNLOAD_DIRECTORY + "" + file_name
-            async with aiohttp.ClientSession() as session:
-                c_time = time.time()
-                await download_coroutine(
-                    session,
-                    url,
-                    downloaded_file_name,
-                    target_file,
-                    c_time
-                )
-            end = datetime.now()
-            duration = (end - start).seconds
-            if os.path.exists(downloaded_file_name):
-                await target_file.edit(
-                    "Downloaded to `{}` in {} seconds.".format(
-                        downloaded_file_name, duration)
-                )
-            else:
-                await target_file.edit(
-                    "Incorrect URL\n{}".format(url)
-                )
         else:
             await target_file.edit("Reply to a message to download to my local server.")
-
-
-async def download_coroutine(session, url, file_name, event, start):
-    CHUNK_SIZE = 2341
-    downloaded = 0
-    display_message = ""
-    async with session.get(url) as response:
-        total_length = int(response.headers["Content-Length"])
-        content_type = response.headers["Content-Type"]
-        if "text" in content_type and total_length < 500:
-            return await response.release()
-        await event.edit("""Initiating Download
-URL: {}
-File Name: {}
-File Size: {}""".format(url, file_name, humanbytes(total_length)))
-        with open(file_name, "wb") as f_handle:
-            while True:
-                chunk = await response.content.read(CHUNK_SIZE)
-                if not chunk:
-                    break
-                f_handle.write(chunk)
-                downloaded += CHUNK_SIZE
-                now = time.time()
-                diff = now - start
-                if round(diff % 5.00) == 0 or downloaded == total_length:
-                    percentage = downloaded * 100 / total_length
-                    speed = downloaded / diff
-                    elapsed_time = round(diff) * 1000
-                    progress_str = "[{0}{1}]\nProgress: {2}%".format(
-                        ''.join(["█" for i in range(math.floor(percentage / 5))]),
-                        ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
-                        round(percentage, 2))
-                    time_to_completion = round(
-                        (total_length - downloaded) / speed) * 1000
-                    estimated_total_time = elapsed_time + time_to_completion
-                    try:
-                        current_message = """Downloading...
-URL: {}
-File Name: {}
-{}
-{} of {}
-ETA: {}""".format(
-    url,
-    file_name,
-    progress_str,
-    humanbytes(total_length),
-    humanbytes(downloaded),
-    time_formatter(estimated_total_time)
-)
-                        if current_message != display_message:
-                            await event.edit(current_message)
-                            display_message = current_message
-                    except Exception as e:
-                        logger.info(str(e))
-                        pass
-        return await response.release()
 
 
 @register(pattern=r".uploadir (.*)", outgoing=True)
