@@ -165,7 +165,7 @@ async def download(dryb):
         # Sometimes API fails to retrieve starting URI, we wrap it.
         try:
             g_drive_link = await upload_file(http, required_file_name, file_name, mime_type, dryb)
-            await dryb.edit(f"File `{required_file_name}`\n\n was uploaded to [Google Drive]({g_drive_link}) successfully!!")
+            await dryb.edit(f"File `{required_file_name}`\n\nwas uploaded to [Google Drive]({g_drive_link}) successfully!!")
         except Exception as e:
             await dryb.edit(f"Error while uploading to Google Drive\nError Code:\n`{e}`")
 
@@ -268,7 +268,12 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     while response is None:
         status, response = file.next_chunk()
         if status:
-            await event.edit("Uploaded %d%%." % int(status.progress() * 100))
+            percentage = int(status.progress() * 100)
+            progress_str = "[{0}{1}]\nProgress: {2}%\n".format(
+                ''.join(["█" for i in range(math.floor(percentage / 5))]),
+                ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
+                round(percentage, 2))
+            await event.edit(f"Uploading to Google Drive...\nURL: {url}\nFile Name: {file_name}\n{progress_str}")
     if file:
         await event.edit(file_name + " uploaded successfully")
     # Insert new permissions
