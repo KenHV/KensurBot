@@ -142,7 +142,7 @@ async def download(target_file):
                         await target_file.edit(current_message)
                         display_message = current_message
                 except Exception as e:
-                    logger.info(str(e))
+                    LOGS.info(str(e))
                     pass
             end = datetime.now()
             duration = (end - start).seconds
