@@ -183,7 +183,7 @@ async def download(dryb):
                 required_file_name = downloaded_file_name
                 duration = (end - start).seconds
                 await dryb.edit(
-                    "Downloaded to `{}` in {} seconds.".format(
+                    "Downloaded to `{}` in {} seconds.\nNow uploading to GDrive...".format(
                         downloaded_file_name, duration)
                 )
         elif input_str:
@@ -213,14 +213,14 @@ async def download(dryb):
         # Sometimes API fails to retrieve starting URI, we wrap it.
         try:
             g_drive_link = await upload_file(http, required_file_name, file_name, mime_type, dryb)
-            await dryb.edit(f"File `{required_file_name}`\n\nwas uploaded to [Google Drive]({g_drive_link}) successfully!!")
+            await dryb.edit(f"File:`{required_file_name}`\nwas successfully uploaded to [Google Drive]({g_drive_link})!")
         except Exception as e:
             await dryb.edit(f"Error while uploading to Google Drive\nError Code:\n`{e}`")
 
 
-@register(pattern=r"^.gdrivesp https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})", outgoing=True)
+@register(pattern=r"^.gsetf https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})", outgoing=True)
 async def download(set):
-    """For .gdrivesp command, allows you to set path"""
+    """For .gsetf command, allows you to set path"""
     if not set.text[0].isalpha() and set.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
             return
@@ -234,9 +234,9 @@ async def download(set):
             await set.edit("Use `.gdrivesp <link to GDrive Folder>` to set the folder to upload new files to.")
 
 
-@register(pattern="^.gdriveclear$", outgoing=True)
+@register(pattern="^.gsetclear$", outgoing=True)
 async def download(gclr):
-    """For .gdriveclear command, allows you clear ur curnt custom path"""
+    """For .gsetclear command, allows you clear ur curnt custom path"""
     if not gclr.text[0].isalpha() and gclr.text[0] not in ("/", "#", "@", "!"):
         if gclr.fwd_from:
             return
@@ -339,5 +339,5 @@ async def _(event):
 
 
 CMD_HELP.update({
-    "gdrive": ".gdrive <file_path / reply / URL|file_name>\nUsage: Uploads the file in reply , URL or file path in server to your Google Drive.\n\n.gdrivesp <link to GDrive Folder>\n to set the folder to upload new files to.\n\n.gdriveclear to revert to default upload destination.\n\n.gfolder to know your current upload destination/folder."
+    "gdrive": ".gdrive <file_path / reply / URL|file_name>\nUsage: Uploads the file in reply , URL or file path in server to your Google Drive.\n\n.gsetf <GDrive Folder URL>\nUseage:Sets the folder to upload new files to.\n\n.gsetclear\nUseage:Reverts to default upload destination.\n\n.gfolder\nUseage:Shows your current upload destination/folder."
 })
