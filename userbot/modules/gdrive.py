@@ -244,7 +244,7 @@ def authorize(token_file, storage):
 
 def upload_file(http, file_path, file_name, mime_type, event):
     # Create Google Drive service instance
-    drive_service = build("drive", "v2", http=http)
+    drive_service = build("drive", "v2", http=http, cache_discovery=False)
     # File body description
     media_body = MediaFileUpload(file_path, mimetype=mime_type, resumable=True)
     body = {
@@ -268,9 +268,9 @@ def upload_file(http, file_path, file_name, mime_type, event):
     while response is None:
         status, response = file.next_chunk()
         if status:
-            event.edit("Uploaded %d%%." % int(status.progress() * 100))
+            await event.edit("Uploaded %d%%." % int(status.progress() * 100))
     if file:
-        event.edit(file_name + " uploaded successfully")
+        await event.edit(file_name + " uploaded successfully")
     # Insert new permissions
     drive_service.permissions().insert(fileId=response.get('id'), body=permissions)
     # Define file instance and get url for download
