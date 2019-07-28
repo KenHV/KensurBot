@@ -272,10 +272,9 @@ def upload_file(http, file_path, file_name, mime_type, event):
     if file:
         event.edit(file_name + " uploaded successfully")
     # Insert new permissions
-    drive_service.permissions().insert(fileId=file["id"], body=permissions).execute()
+    drive_service.permissions().insert(fileId=response.get('id'), body=permissions)
     # Define file instance and get url for download
-    file = drive_service.files().get(fileId=file["id"]).execute()
-    download_url = file.get("webContentLink")
+    download_url = "https://drive.google.com/file/d/" + response.get('id') + "/view"
     return download_url
 
 @register(pattern="^.gfolder$", outgoing=True)
