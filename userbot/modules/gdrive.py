@@ -110,18 +110,67 @@ async def download(dryb):
         if dryb.fwd_from:
             return
         await dryb.edit("Processing ...")
+        input_str = dryb.pattern_match.group(1)
         if CLIENT_ID is None or CLIENT_SECRET is None:
             return false
-        input_str = dryb.pattern_match.group(1)
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
             required_file_name = None
-        if dryb.reply_to_msg_id:
+        message = await dryb.get_reply_message()
+        if "|" in input_str:
+            start = datetime.now()
+            url, file_name = input_str.split("|")
+            url = url.strip()
+            # https://stackoverflow.com/a/761825/4723940
+            file_name = file_name.strip()
+            head, tail = os.path.split(file_name)
+            if head:
+                if not os.path.isdir(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)):
+                    os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
+                    file_name = os.path.join(head, tail)
+            downloaded_file_name = TEMP_DOWNLOAD_DIRECTORY + "" + file_name
+            downloader = SmartDL(url, downloaded_file_name, progress_bar=False)
+            downloader.start(blocking=False)
+            c_time = time.time()
+            while not downloader.isFinished():
+                display_message = ""
+                total_length = downloader.filesize if downloader.filesize else None
+                downloaded = downloader.get_dl_size()
+                now = time.time()
+                diff = now - start
+                percentage = downloader.get_progress()*100
+                speed = downloader.get_speed()
+                elapsed_time = round(diff) * 1000
+                progress_str = "[{0}{1}]\nProgress: {2}%".format(
+                    ''.join(["█" for i in range(math.floor(percentage / 5))]),
+                    ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
+                    round(percentage, 2))
+                estimated_total_time = downloader.get_eta()
+                try:
+                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(total_length)} of {humanbytes(downloaded)}\nETA: {time_formatter(estimated_total_time)}"
+                    if current_message != display_message:
+                        await dryb.edit(current_message)
+                        display_message = current_message
+                except Exception as e:
+                    LOGS.info(str(e))
+                    pass
+            end = datetime.now()
+            duration = (end - start).seconds
+            if downloader.isSuccessful():
+                await dryb.edit(
+                    "Downloaded to `{}` in {} seconds.".format(
+                        downloaded_file_name, duration)
+                )
+            else:
+                await dryb.edit(
+                    "Incorrect URL\n{}".format(url)
+                )
+        elif message.media:
             start = datetime.now()
             try:
                 c_time = time.time()
                 downloaded_file_name = await dryb.client.download_media(
-                    await dryb.get_reply_message(),
+                    message,
                     TEMP_DOWNLOAD_DIRECTORY,
                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
                         progress(d, t, dryb, c_time, "Downloading...")
@@ -134,7 +183,7 @@ async def download(dryb):
                 required_file_name = downloaded_file_name
                 duration = (end - start).seconds
                 await dryb.edit(
-                    "Downloaded to `{}` in {} seconds, uploading to Google Drive !!".format(
+                    "Downloaded to `{}` in {} seconds.".format(
                         downloaded_file_name, duration)
                 )
         elif input_str:
@@ -148,7 +197,6 @@ async def download(dryb):
             else:
                 await dryb.edit("File not found in local server. Give me a valid file path !!")
                 return False
-    # logger.info(required_file_name)
     if required_file_name:
         #
         if G_DRIVE_AUTH_TOKEN_DATA is not None:
@@ -273,7 +321,7 @@ async def upload_file(http, file_path, file_name, mime_type, event):
                 ''.join(["█" for i in range(math.floor(percentage / 5))]),
                 ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
                 round(percentage, 2))
-            await event.edit(f"Uploading to Google Drive...\nFile Name: {file_name}\n{progress_str}")
+            await event.edit(f"Uploading to Google Drive...\n\nFile Name: {file_name}\n{progress_str}")
     if file:
         await event.edit(file_name + " uploaded successfully")
     # Insert new permissions
@@ -291,5 +339,5 @@ async def _(event):
 
 
 CMD_HELP.update({
-    "gdrive": ".gdrive <file_path/reply>\nUsage: Uploads the file in reply (or file path in server) to your Google Drive.\n\n .gdrivesp <link to GDrive Folder>\n to set the folder to upload new files to.\n\n .gdriveclear to revert to default upload destination.\n\n .gfolder to know your current upload destination/folder."
+    "gdrive": ".gdrive <file_path / reply / URL|file_name>\nUsage: Uploads the file in reply , URL or file path in server to your Google Drive.\n\n.gdrivesp <link to GDrive Folder>\n to set the folder to upload new files to.\n\n.gdriveclear to revert to default upload destination.\n\n.gfolder to know your current upload destination/folder."
 })
