@@ -339,5 +339,5 @@ async def _(event):
 
 
 CMD_HELP.update({
-    "gdrive": ".gdrive <file_path / reply / URL|file_name>\nUsage: Uploads the file in reply , URL or file path in server to your Google Drive.\n\n.gsetf <GDrive Folder URL>\nUseage:Sets the folder to upload new files to.\n\n.gsetclear\nUseage:Reverts to default upload destination.\n\n.gfolder\nUseage:Shows your current upload destination/folder."
+    "gdrive": ".gdrive <file_path / reply / URL|file_name>\nUsage: Uploads the file in reply , URL or file path in server to your Google Drive.\n\n.gsetf <GDrive Folder URL>\nUsage:Sets the folder to upload new files to.\n\n.gsetclear\nUsage:Reverts to default upload destination.\n\n.gfolder\nUsage:Shows your current upload destination/folder."
 })
