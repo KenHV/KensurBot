@@ -242,7 +242,7 @@ def authorize(token_file, storage):
     return http
 
 
-def upload_file(http, file_path, file_name, mime_type, event):
+async def upload_file(http, file_path, file_name, mime_type, event):
     # Create Google Drive service instance
     drive_service = build("drive", "v2", http=http, cache_discovery=False)
     # File body description
