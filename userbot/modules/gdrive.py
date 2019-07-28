@@ -16,7 +16,7 @@ from apiclient.errors import ResumableUploadError
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.file import Storage
 from oauth2client import file, client, tools
-from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET, G_DRIVE_AUTH_TOKEN_DATA, GDRIVE_FOLDER_ID, BOTLOG_CHATID, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP)
+from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET, G_DRIVE_AUTH_TOKEN_DATA, GDRIVE_FOLDER_ID, BOTLOG_CHATID, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS)
 from userbot.events import register
 from mimetypes import guess_type
 import httplib2
@@ -242,7 +242,7 @@ def authorize(token_file, storage):
     return http
 
 
-async def upload_file(http, file_path, file_name, mime_type, event):
+def upload_file(http, file_path, file_name, mime_type, event):
     # Create Google Drive service instance
     drive_service = build("drive", "v2", http=http, cache_discovery=False)
     # File body description
@@ -268,9 +268,9 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     while response is None:
         status, response = file.next_chunk()
         if status:
-            await event.edit("Uploaded %d%%." % int(status.progress() * 100))
+            LOGS.info("Uploaded %d%%." % int(status.progress() * 100))
     if file:
-        await event.edit(file_name + " uploaded successfully")
+        LOGS.info(file_name + " uploaded successfully")
     # Insert new permissions
     drive_service.permissions().insert(fileId=response.get('id'), body=permissions)
     # Define file instance and get url for download
