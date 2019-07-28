@@ -273,7 +273,7 @@ async def upload_file(http, file_path, file_name, mime_type, event):
                 ''.join(["█" for i in range(math.floor(percentage / 5))]),
                 ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
                 round(percentage, 2))
-            await event.edit(f"Uploading to Google Drive...\nURL: {url}\nFile Name: {file_name}\n{progress_str}")
+            await event.edit(f"Uploading to Google Drive...\nFile Name: {file_name}\n{progress_str}")
     if file:
         await event.edit(file_name + " uploaded successfully")
     # Insert new permissions
