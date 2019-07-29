@@ -8,7 +8,12 @@
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
+from telethon.tl import types
+from telethon import utils
 
+TYPE_TEXT = 0
+TYPE_PHOTO = 1
+TYPE_DOCUMENT = 2
 
 @register(outgoing=True, pattern="^.notes$")
 async def notes_active(svd):
@@ -25,9 +30,9 @@ async def notes_active(svd):
         for note in notes:
             if message == "`There are no saved notes in this chat`":
                 message = "Notes saved in this chat:\n"
-                message += "🗒️ `{}`\n".format(note["name"])
+                message += "🗒️ `{}`\n".format(note.keyword)
             else:
-                message += "🗒️ `{}`\n".format(note["name"])
+                message += "🗒️ `{}`\n".format(note.keyword)
 
         await svd.edit(message)
 
@@ -50,7 +55,7 @@ async def remove_notes(clr):
                                   .format(notename))
 
 
-@register(outgoing=True, pattern=r"^.save (\w*)")
+@register(outgoing=True, pattern=r"^.save (.*)")
 async def add_filter(fltr):
     """ For .save command, saves notes in a chat. """
     if not fltr.text[0].isalpha() and fltr.text[0] not in ("/", "#", "@", "!"):
@@ -61,15 +66,28 @@ async def add_filter(fltr):
             return
 
         notename = fltr.pattern_match.group(1)
-        string = fltr.text.partition(notename)[2]
-        if fltr.reply_to_msg_id:
-            string = " " + (await fltr.get_reply_message()).text
+        msg = await fltr.get_reply_message()
+        if msg:
+            snip = {'type': TYPE_TEXT, 'text': msg.message or ''}
+            if msg.media:
+                media = None
+                if isinstance(msg.media, types.MessageMediaPhoto):
+                    media = utils.get_input_photo(msg.media.photo)
+                    snip['type'] = TYPE_PHOTO
+                elif isinstance(msg.media, types.MessageMediaDocument):
+                    media = utils.get_input_document(msg.media.document)
+                    snip['type'] = TYPE_DOCUMENT
+                if media:
+                    snip['id'] = media.id
+                    snip['hash'] = media.access_hash
+                    snip['fr'] = media.file_reference
 
-        msg = "`Note {} successfully. Use` #{} `to get it`"
-        if add_note(str(fltr.chat_id), notename, string) is False:
-            return await fltr.edit(msg.format('updated', notename))
+        success = "`Note {} successfully. Use` #{} `to get it`"
+        
+        if add_note(str(fltr.chat_id), notename, snip['text'], snip['type'], snip.get('id'), snip.get('hash'), snip.get('fr')) is False:
+            return await fltr.edit(success.format('updated', notename))
         else:
-            return await fltr.edit(msg.format('added', notename))
+            return await fltr.edit(success.format('added', notename))
 
 
 @register(pattern=r"#\w*", disable_edited=True)
@@ -85,8 +103,29 @@ async def incom_note(getnt):
             notes = get_notes(getnt.chat_id)
             for note in notes:
                 if notename == note.keyword:
-                    await getnt.reply(note.reply)
-                    return
+                    if note.snip_type == TYPE_PHOTO:
+                        media = types.InputPhoto(
+                            int(note.media_id),
+                            int(note.media_access_hash),
+                            note.media_file_reference
+                        )
+                    elif note.snip_type == TYPE_DOCUMENT:
+                        media = types.InputDocument(
+                        int(note.media_id),
+                        int(note.media_access_hash),
+                        note.media_file_reference
+                    )
+                    else:
+                        media = None
+                    message_id = getnt.message.id
+                    if getnt.reply_to_msg_id:
+                        message_id = getnt.reply_to_msg_id
+                    await getnt.client.send_message(
+                        getnt.chat_id,
+                        note.reply,
+                        reply_to=message_id,
+                        file=media
+                    )
     except AttributeError:
         pass
 

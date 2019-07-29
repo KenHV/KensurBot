@@ -77,33 +77,34 @@ UNMUTE_RIGHTS = ChatBannedRights(
 )
 # ================================================
 
-
 @register(outgoing=True, pattern="^.setgrouppic$")
 async def set_group_photo(gpic):
     """ For .setgrouppic command, changes the picture of a group """
     if not gpic.text[0].isalpha() and gpic.text[0] not in ("/", "#", "@", "!"):
         replymsg = await gpic.get_reply_message()
         chat = await gpic.get_chat()
+        admin = chat.admin_rights
+        creator = chat.creator
         photo = None
 
-        if not chat.admin_rights or chat.creator:
+        if not admin and not creator:
             await gpic.edit(NO_ADMIN)
             return
 
         if replymsg and replymsg.media:
             if isinstance(replymsg.media, MessageMediaPhoto):
-                photo = await bot.download_media(message=replymsg.photo)
+                photo = await gpic.client.download_media(message=replymsg.photo)
             elif "image" in replymsg.media.document.mime_type.split('/'):
-                photo = await bot.download_file(replymsg.media.document)
+                photo = await gpic.client.download_file(replymsg.media.document)
             else:
                 await gpic.edit(INVALID_MEDIA)
 
         if photo:
             try:
-                await EditPhotoRequest(
-                    gpic.chat_id,
-                    await bot.upload_file(photo)
-                )
+                await gpic.client(EditPhotoRequest(
+                gpic.chat_id,
+                await gpic.client.upload_file(photo)
+                ))
                 await gpic.edit(CHAT_PP_CHANGED)
 
             except PhotoCropSizeSmallError:

@@ -57,7 +57,7 @@ async def paste(pstl):
                 reply_text = (
                     "`Pasted successfully!`\n\n"
                     f"`Shortened URL:` {dogbin_final_url}\n\n"
-                    "Original(non-shortened) URLs`\n"
+                    "`Original(non-shortened) URLs`\n"
                     f"`Dogbin URL`: {DOGBIN_URL}v/{key}\n")
             else:
                 reply_text = (

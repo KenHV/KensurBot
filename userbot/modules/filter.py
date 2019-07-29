@@ -6,11 +6,15 @@
 """ Userbot module for filter commands """
 
 from asyncio import sleep
-from re import fullmatch, IGNORECASE
-
+from re import fullmatch, IGNORECASE, escape
+from telethon.tl import types
+from telethon import utils
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
 
+TYPE_TEXT = 0
+TYPE_PHOTO = 1
+TYPE_DOCUMENT = 2
 
 @register(incoming=True, disable_edited=True)
 async def filter_incoming_handler(handler):
@@ -22,21 +26,43 @@ async def filter_incoming_handler(handler):
             except AttributeError:
                 await handler.edit("`Running on Non-SQL mode!`")
                 return
-            listes = handler.text.split(" ")
+
+            name = handler.raw_text
             filters = get_filters(handler.chat_id)
             if not filters:
                     return
             for trigger in filters:
-                for item in listes:
-                    pro = fullmatch(trigger.keyword, item, flags=IGNORECASE)
-                    if pro:
-                        await handler.reply(trigger.reply)
-                        return
+                pattern = r"( |^|[^\w])" + escape(trigger.keyword) + r"( |$|[^\w])"
+                pro = fullmatch(pattern, name, flags=IGNORECASE)
+                if pro:
+                    if trigger.snip_type == TYPE_PHOTO:
+                        media = types.InputPhoto(
+                            int(trigger.media_id),
+                            int(trigger.media_access_hash),
+                            trigger.media_file_reference
+                        )
+                    elif trigger.snip_type == TYPE_DOCUMENT:
+                        media = types.InputDocument(
+                            int(trigger.media_id),
+                            int(trigger.media_access_hash),
+                            trigger.media_file_reference
+                        )
+                    else:
+                        media = None
+                    message_id = handler.message.id
+                    if handler.reply_to_msg_id:
+                        message_id = handler.reply_to_msg_id
+                    await handler.client.send_message(
+                        handler.chat_id,
+                        trigger.reply,
+                        reply_to=message_id,
+                        file=media
+                    )
     except AttributeError:
         pass
 
 
-@register(outgoing=True, pattern="^.filter\\s.*")
+@register(outgoing=True, pattern="^.filter (.*)")
 async def add_new_filter(new_handler):
     """ For .filter command, allows adding new filters in a chat """
     if not new_handler.text[0].isalpha() and new_handler.text[0] not in ("/", "#", "@", "!"):
@@ -45,21 +71,30 @@ async def add_new_filter(new_handler):
         except AttributeError:
             await new_handler.edit("`Running on Non-SQL mode!`")
             return
-        message = new_handler.text
-        kek = message.split()
-        string = ""
-        for i in range(2, len(kek)):
-            string = string + " " + str(kek[i])
             
-        if new_handler.reply_to_msg_id:
-            string = " " + (await new_handler.get_reply_message()).text
-            
-        msg = "`Filter` **{}** `{} successfully`"
-        
-        if add_filter(str(new_handler.chat_id), kek[1], string[1:]) is True:
-            await new_handler.edit(msg.format(kek[1], 'added'))
+        keyword = new_handler.pattern_match.group(1)
+        msg = await new_handler.get_reply_message()
+        if msg:
+            snip = {'type': TYPE_TEXT, 'text': msg.message or ''}
+            if msg.media:
+                media = None
+                if isinstance(msg.media, types.MessageMediaPhoto):
+                    media = utils.get_input_photo(msg.media.photo)
+                    snip['type'] = TYPE_PHOTO
+                elif isinstance(msg.media, types.MessageMediaDocument):
+                    media = utils.get_input_document(msg.media.document)
+                    snip['type'] = TYPE_DOCUMENT
+                if media:
+                    snip['id'] = media.id
+                    snip['hash'] = media.access_hash
+                    snip['fr'] = media.file_reference
+
+        success = "`Filter` **{}** `{} successfully`"
+
+        if add_filter(str(new_handler.chat_id), keyword, snip['text'], snip['type'], snip.get('id'), snip.get('hash'), snip.get('fr')) is True:
+            await new_handler.edit(success.format(keyword, 'added'))
         else:
-            await new_handler.edit(msg.format(kek[1], 'updated'))
+            await new_handler.edit(success.format(keyword, 'updated'))
 
 
 @register(outgoing=True, pattern="^.stop\\s.*")
@@ -71,9 +106,9 @@ async def remove_a_filter(r_handler):
         except AttributeError:
             await r_handler.edit("`Running on Non-SQL mode!`")
             return
-        
+
         filt = r_handler.text[6:]
-        
+
         if not remove_filter(r_handler.chat_id, filt):
             await r_handler.edit("`Filter` **{}** `doesn't exist.`"
                              .format(filt))
@@ -123,22 +158,19 @@ async def filters_active(event):
             await event.edit("`Running on Non-SQL mode!`")
             return
         transact = "`There are no filters in this chat.`"
-        
-        
         filters = get_filters(event.chat_id)
+
         for filt in filters:
             if transact == "`There are no filters in this chat.`":
                 transact = "Active filters in this chat:\n"
-                transact += "👁️ `{}`\nReply:\n{}\n".format(filt.keyword,
-                                                           filt.reply)
+                transact += "👁️ `{}`\n".format(filt.keyword)
             else:
-                transact += "👁️ `{}`\nReply:\n{}\n".format(filt.keyword,
-                                                           filt.reply)
+                transact += "👁️ `{}`\n".format(filt.keyword)
 
         await event.edit(transact)
-        
-        
-        
+
+
+
 CMD_HELP.update({
     "filter": "\
 .filters\

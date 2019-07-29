@@ -2,7 +2,7 @@ try:
     from userbot.modules.sql_helper import SESSION, BASE
 except ImportError:
     raise AttributeError
-from sqlalchemy import Column, String, UnicodeText
+from sqlalchemy import Column, UnicodeText, LargeBinary, Numeric, String
 
 
 class Notes(BASE):
@@ -10,11 +10,19 @@ class Notes(BASE):
     chat_id = Column(String(14), primary_key=True)
     keyword = Column(UnicodeText, primary_key=True, nullable=False)
     reply = Column(UnicodeText, nullable=False)
+    snip_type = Column(Numeric)
+    media_id = Column(UnicodeText)
+    media_access_hash = Column(UnicodeText)
+    media_file_reference = Column(LargeBinary)
 
-    def __init__(self, chat_id, keyword, reply):
+    def __init__(self, chat_id, keyword, reply, snip_type, media_id=None, media_access_hash=None, media_file_reference=None):
         self.chat_id = str(chat_id)  # ensure string
         self.keyword = keyword
         self.reply = reply
+        self.snip_type = snip_type
+        self.media_id = media_id
+        self.media_access_hash = media_access_hash
+        self.media_file_reference = media_file_reference
 
 
 Notes.__table__.create(checkfirst=True)
@@ -34,10 +42,10 @@ def get_notes(chat_id):
         SESSION.close()
 
 
-def add_note(chat_id, keyword, reply):
+def add_note(chat_id, keyword, reply, snip_type, media_id, media_access_hash, media_file_reference):
     to_check = get_note(chat_id, keyword)
     if not to_check:
-        adder = Notes(str(chat_id), keyword, reply)
+        adder = Notes(str(chat_id), keyword, reply, snip_type, media_id,media_access_hash, media_file_reference)
         SESSION.add(adder)
         SESSION.commit()
         return True
@@ -45,7 +53,7 @@ def add_note(chat_id, keyword, reply):
         rem = SESSION.query(Notes).get((str(chat_id), keyword))
         SESSION.delete(rem)
         SESSION.commit()
-        adder = Notes(str(chat_id), keyword, reply)
+        adder = Notes(str(chat_id), keyword, reply, snip_type, media_id,media_access_hash, media_file_reference)
         SESSION.add(adder)
         SESSION.commit()
         return False
@@ -59,7 +67,7 @@ def rm_note(chat_id, keyword):
         SESSION.delete(rem)
         SESSION.commit()
         return True
-        
+
 def rm_all_notes(chat_id):
     notes = SESSION.query(Notes).filter(Notes.chat_id == str(chat_id))
     if notes:

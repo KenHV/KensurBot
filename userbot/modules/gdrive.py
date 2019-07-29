@@ -8,6 +8,7 @@ import asyncio
 import math
 import os
 import time
+from pySmartDL import SmartDL
 from telethon import events
 from datetime import datetime
 from apiclient.discovery import build
@@ -116,7 +117,6 @@ async def download(dryb):
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
             required_file_name = None
-        message = await dryb.get_reply_message()
         if "|" in input_str:
             start = datetime.now()
             url, file_name = input_str.split("|")
@@ -137,7 +137,7 @@ async def download(dryb):
                 total_length = downloader.filesize if downloader.filesize else None
                 downloaded = downloader.get_dl_size()
                 now = time.time()
-                diff = now - start
+                diff = now - c_time
                 percentage = downloader.get_progress()*100
                 speed = downloader.get_speed()
                 elapsed_time = round(diff) * 1000
@@ -145,9 +145,9 @@ async def download(dryb):
                     ''.join(["█" for i in range(math.floor(percentage / 5))]),
                     ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),
                     round(percentage, 2))
-                estimated_total_time = downloader.get_eta()
+                estimated_total_time = downloader.get_eta(human=True)
                 try:
-                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(total_length)} of {humanbytes(downloaded)}\nETA: {time_formatter(estimated_total_time)}"
+                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(total_length)} of {humanbytes(downloaded)}\nETA: {estimated_total_time}"
                     if current_message != display_message:
                         await dryb.edit(current_message)
                         display_message = current_message
@@ -165,7 +165,18 @@ async def download(dryb):
                 await dryb.edit(
                     "Incorrect URL\n{}".format(url)
                 )
-        elif message.media:
+        elif input_str:
+            input_str = input_str.strip()
+            if os.path.exists(input_str):
+                start = datetime.now()
+                end = datetime.now()
+                duration = (end - start).seconds
+                required_file_name = input_str
+                await dryb.edit("Found `{}` in {} seconds, uploading to Google Drive !!".format(input_str, duration))
+            else:
+                await dryb.edit("File not found in local server. Give me a valid file path !!")
+                return False
+        elif dryb.reply_to_msg_id:
             start = datetime.now()
             try:
                 c_time = time.time()
@@ -186,17 +197,6 @@ async def download(dryb):
                     "Downloaded to `{}` in {} seconds.\nNow uploading to GDrive...".format(
                         downloaded_file_name, duration)
                 )
-        elif input_str:
-            input_str = input_str.strip()
-            if os.path.exists(input_str):
-                start = datetime.now()
-                end = datetime.now()
-                duration = (end - start).seconds
-                required_file_name = input_str
-                await dryb.edit("Found `{}` in {} seconds, uploading to Google Drive !!".format(input_str, duration))
-            else:
-                await dryb.edit("File not found in local server. Give me a valid file path !!")
-                return False
     if required_file_name:
         #
         if G_DRIVE_AUTH_TOKEN_DATA is not None:
