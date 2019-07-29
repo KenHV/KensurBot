@@ -159,7 +159,7 @@ async def download(target_file):
             try:
                 c_time = time.time()
                 downloaded_file_name = await target_file.client.download_media(
-                    message,
+                    await target_file.get_reply_message(),
                     TEMP_DOWNLOAD_DIRECTORY,
                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
                         progress(d, t, target_file, c_time, "Downloading...")
