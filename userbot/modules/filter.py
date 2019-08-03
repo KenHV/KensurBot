@@ -172,8 +172,7 @@ async def filters_active(event):
 
 
 CMD_HELP.update({
-    "filter": "\
-    .filters\
+    "filter": ".filters\
     \nUsage: Lists all active userbot filters in a chat.\
     \n\n.filter <keyword> <reply message>\
     \nUsage: Adds a filter to the chat.\
@@ -182,5 +181,5 @@ CMD_HELP.update({
     \n\n.stop <filter>\
     \nUsage: Stops the specified filter.\
     \n\n.rmfilters <marie/rose>\
-    \nUsage: Removes all filters of Bots(Eg:Marie or Rose) in a chat.
-"})
+    \nUsage: Removes all filters of Bots(Eg:Marie or Rose) in a chat."
+})
