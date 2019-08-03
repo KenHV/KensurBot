@@ -335,7 +335,7 @@ async def _(event):
     if event.fwd_from:
         return
     folder_link = "https://drive.google.com/drive/u/2/folders/"+parent_id
-    await event.edit("Your current Google Drive upload directory: \n"+folder_link)
+    await event.edit(f"UserBot is currently uploading files to\n [This Folder]({folder_link})")
 
 
 CMD_HELP.update({

@@ -38,10 +38,6 @@
       "description": "Get your own APPID (API key)from https://api.openweathermap.org/data/2.5/weather",
       "required": false
     },
-    "SCREENSHOT_LAYER_ACCESS_KEY": {
-      "description": "Get your own ACCESS_KEY (API key) from http://api.screenshotlayer.com/api/capture",
-      "required": false
-    },
     "BOTLOG": {
       "description": "Incase you want to turn off logging, put this to false",
       "value": "False"

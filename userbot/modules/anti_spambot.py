@@ -143,6 +143,6 @@ async def welcome_mute(welcm):
 
 CMD_HELP.update({
     'welcome_mute': "If enabled in config.env or env var, \
-        this module will ban(or inform admins) the group join \
-        spammers if they match the userbot's algorithm of banning"
+        this module will ban(or inform admins of the group) when \
+        spammers join and match the userbot's banning algorithm."
 })
