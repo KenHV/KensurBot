@@ -173,13 +173,14 @@ async def filters_active(event):
 
 CMD_HELP.update({
     "filter": "\
-.filters\
-\nUsage: List all active filters in this chat.\
-\n\n.filter <keyword> <reply message>\
-\nUsage: Add a filter to this chat. \
-The bot will now reply that message whenever 'keyword' is mentioned. \
-If you reply to a sticker with a keyword, the bot will reply with that sticker.\
-\nNOTE: all filter keywords are in lowercase.\
-\n\n.stop <filter>\
-\nUsage: Stops that filter.\
+    .filters\
+    \nUsage: Lists all active userbot filters in a chat.\
+    \n\n.filter <keyword> <reply message>\
+    \nUsage: Adds a filter to the chat.\
+    \nThe bot will reply to the message whenever 'keyword' is mentioned.\
+    \nWorks with everything from files to stickers.\
+    \n\n.stop <filter>\
+    \nUsage: Stops the specified filter.\
+    \n\n.rmfilters <marie/rose>\
+    \nUsage: Removes all filters of Bots(Eg:Marie or Rose) in a chat.
 "})
