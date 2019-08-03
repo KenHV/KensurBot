@@ -162,8 +162,8 @@ CMD_HELP.update({
     "notes": "\
 #<notename>\
 \nUsage: Gets the note with name notename.\
-\n\n.save <notename> <notedata>\
-\nUsage: Saves notedata as a note with the name notename.\
+\n\n.save <notename>\
+\nUsage: Saves the replied message as a note with the name notename. (Works with pics, docs, and stickers too !!)\
 \n\n.notes\
 \nUsage: Gets all saved notes in the chat.\
 \n\n.clear <notename>\
