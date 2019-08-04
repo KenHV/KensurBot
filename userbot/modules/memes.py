@@ -826,14 +826,15 @@ async def claptext(memereview):
         reply_text += " 👏"
         await memereview.edit(reply_text)
 
+			  
 @register(outgoing=True, pattern="^.bt$")
 async def bluetext(bt_e):
     """ Believe me, you will find this useful. """
     if not bt_e.text[0].isalpha() and bt_e.text[0] not in ("/", "#", "@", "!"):
         if await bt_e.get_reply_message():
             await bt_e.edit(
-                "`BLUETEXT MUST CLICK.`\n"
-                "`Are you a stupid animal which is attracted to colours?`"
+                "/BLUETEXT /MUST /CLICK.\n"
+                "/ARE /YOU /A /STUPID /ANIMAL /WHICH /IS /ATTRACTED /TO /COLOURS ?"
             )
 
 
