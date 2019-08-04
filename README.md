@@ -27,12 +27,12 @@
 
 This is a fork of the famous [Paperplane](https://github.com/RaphielGang/Telegram-UserBot) userbot made by the awesome [RaphielGang](https://github.com/RaphielGang) team with some extras from the Telegram userbot community.
 
-For setting up and configuring this userbot, you can checkout the [Wiki](https://github.com/AvinashReddy3108/PaperplaneExtended/wiki) [WIP, Coming Soon !!]
+For setting up and configuring this userbot, you can checkout the [Wiki](https://telegra.ph/How-to-host-a-Telegram-Userbot-07-24)
 
 If you just want to stay in the loop about new features or
 announcements you can join the [news channel](https://t.me/PaperplaneExtended).
 
-If you find any bugs or have any suggestions then don’t hesitate to contact me in my [support group](https://t.me/joinchat/FL1HhlObW_Q5oUrZdbDcKg).
+If you find any bugs or have any suggestions then don’t hesitate to contact me in my [Fan Club](https://t.me/PaperplaneExtendedChat).
 
 ### Credits:
 
@@ -53,10 +53,12 @@ I would like to thank people who assisted me throughout this project:
 * [@zakaryan2004](https://github.com/zakaryan2004)
 * [@kandnub](https://github.com/kandnub)
 * [@pqhaz](https://github.com/pqhaz)
+* [@Zero_cool7870](https://github.com/jaskaranSM)
+* [@Prakasaka](https://github.com/Prakasaka)
 
 and many more people and projects who aren’t mentioned here.
 
 All features taken from them are copyrighted to their respespective, if you are handling the features/module
 by them you need to strictly comply their respective LICENSE
 
-Found Bugs? Create an issue on the issue tracker, or post it in the [support group](https://t.me/joinchat/FL1HhlObW_Q5oUrZdbDcKg).
+Found Bugs? Create an issue on the issue tracker, or post it in the [Fan Club](https://t.me/PaperplaneExtendedChat).
