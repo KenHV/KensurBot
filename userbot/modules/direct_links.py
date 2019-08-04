@@ -360,9 +360,9 @@ def useragent():
 
 CMD_HELP.update({
     "direct": ".direct <url>\n"
-              "Usage: Reply to or paste supported link\n"
-              "Generates direct download link from supported URL(s)\n"
-              "Supported websites:\n"
+              "Usage: Reply to a link or paste a URL to"\n
+              "generate a direct download link"\n\n
+              "List of supported URLs:\n"
               "`Google Drive - MEGA.nz - Cloud Mail - Yandex.Disk - AFH - "
               "ZippyShare - MediaFire - SourceForge - OSDN - GitHub`"
 })
