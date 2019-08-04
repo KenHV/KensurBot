@@ -161,11 +161,11 @@ async def kick_marie_notes(kick):
 CMD_HELP.update({
     "notes": "\
 #<notename>\
-\nUsage: Gets the note with name notename.\
+\nUsage: Gets the specified note.\
 \n\n.save <notename>\
-\nUsage: Saves the replied message as a note with the name notename. (Works with pics, docs, and stickers too !!)\
+\nUsage: Saves the replied message as a note with the name notename. (Works with pics, docs, and stickers too!)\
 \n\n.notes\
-\nUsage: Gets all saved notes in the chat.\
+\nUsage: Gets all saved notes in a chat.\
 \n\n.clear <notename>\
-\nUsage: Deletes the note with name notename.\
+\nUsage: Deletes the specified note.\
 "})
