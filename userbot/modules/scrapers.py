@@ -168,7 +168,7 @@ async def gsearch(q_event):
     if not q_event.text[0].isalpha() and q_event.text[0] not in (
             "/", "#", "@", "!"):
         match_ = q_event.pattern_match.group(1)
-        match = parse.quote_plus(match_)
+        match = quote_plus(match_)
         result_ = await asyncsh(
             f"gsearch {match}",
             stdout=asyncsh_PIPE,
