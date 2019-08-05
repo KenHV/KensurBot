@@ -9,11 +9,11 @@ from telethon.events import ChatAction
 async def welcome_to_chat(event):
     cws = get_current_welcome_settings(event.chat_id)
     if cws:
-        """user_added=False,
+        """user_added=True,
         user_joined=True,
         user_left=False,
         user_kicked=False,"""
-        if event.user_joined or event.user_added:
+        if (event.user_joined or event.user_added) and not (await event.get_user()).bot:
             if cws.should_clean_welcome:
                 try:
                     await event.client.delete_messages(
