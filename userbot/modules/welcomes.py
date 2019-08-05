@@ -125,8 +125,8 @@ async def del_welcome(event):
 CMD_HELP.update({
     "welcome": "\
 .welcome <notedata/reply>\
-\nUsage: Saves (or updates) notedata / replied message as a welcome note in the chat.\
-\nAvailable variables for formatting welcome messages : {mention}, {title}, {count}, {first}, {last}, {fullname}, {userid}, {username}, {my_first}, {my_fullname}, {my_last}, {my_mention}, {my_username}\
+\nUsage: Saves notedata / replied message as a welcome note in the chat.\
+\n\nAvailable variables for formatting welcome messages : {mention}, {title}, {count}, {first}, {last}, {fullname}, {userid}, {username}, {my_first}, {my_fullname}, {my_last}, {my_mention}, {my_username}\
 \n\n.show welcome\
 \nUsage: Gets your current welcome message in the chat.\
 \n\n.del welcome\
