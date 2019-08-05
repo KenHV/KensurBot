@@ -147,7 +147,7 @@ async def download(dryb):
                     round(percentage, 2))
                 estimated_total_time = downloader.get_eta(human=True)
                 try:
-                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(total_length)} of {humanbytes(downloaded)}\nETA: {estimated_total_time}"
+                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(downloaded)} of {humanbytes(total_length)}\nETA: {estimated_total_time}"
                     if current_message != display_message:
                         await dryb.edit(current_message)
                         display_message = current_message
@@ -158,9 +158,10 @@ async def download(dryb):
             duration = (end - start).seconds
             if downloader.isSuccessful():
                 await dryb.edit(
-                    "Downloaded to `{}` in {} seconds.".format(
+                    "Downloaded to `{}` in {} seconds.\nNow uploading to GDrive...".format(
                         downloaded_file_name, duration)
                 )
+                required_file_name = downloaded_file_name
             else:
                 await dryb.edit(
                     "Incorrect URL\n{}".format(url)
@@ -325,17 +326,18 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     if file:
         await event.edit(file_name + " uploaded successfully")
     # Insert new permissions
-    drive_service.permissions().insert(fileId=response.get('id'), body=permissions)
+    drive_service.permissions().insert(fileId=response.get('id'), body=permissions).execute()
     # Define file instance and get url for download
-    download_url = "https://drive.google.com/file/d/" + response.get('id') + "/view"
+    file = drive_service.files().get(fileId=response.get('id')).execute()
+    download_url = response.get("webContentLink")
     return download_url
 
 @register(pattern="^.gfolder$", outgoing=True)
 async def _(event):
     if event.fwd_from:
         return
-    folder_link = "https://drive.google.com/drive/u/2/folders/"+parent_id
-    await event.edit(f"UserBot is currently uploading files to\n [This Folder]({folder_link})")
+    folder_link =f"https://drive.google.com/drive/u/2/folders/"+parent_id
+    await event.edit(f"Your current Google Drive upload directory : [Here]({folder_link})")
 
 
 CMD_HELP.update({
