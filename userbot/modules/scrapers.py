@@ -161,12 +161,14 @@ async def _(event):
         end = datetime.now()
         ms = (end - start).seconds
 
+        
 @register(outgoing=True, pattern=r"^.google (.*)")
 async def gsearch(q_event):
     """ For .google command, do a Google search. """
-    if not q_event.text[0].isalpha() and q_event.text[0] not in ("/", "#", "@", "!"):
+    if not q_event.text[0].isalpha() and q_event.text[0] not in (
+            "/", "#", "@", "!"):
         match_ = q_event.pattern_match.group(1)
-        match = quote_plus(match_)
+        match = parse.quote_plus(match_)
         result_ = await asyncsh(
             f"gsearch {match}",
             stdout=asyncsh_PIPE,
@@ -183,7 +185,6 @@ async def gsearch(q_event):
                 BOTLOG_CHATID,
                 "Google Search query `" + match_ + "` was executed successfully",
             )
-
 
 @register(outgoing=True, pattern=r"^.wiki (.*)")
 async def wiki(wiki_q):
