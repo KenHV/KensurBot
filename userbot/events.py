@@ -6,6 +6,7 @@
 """ Userbot module for managing events. One of the main components of the userbot. """
 
 from telethon import events
+from telethon.events import StopPropagation
 import asyncio
 from userbot import bot
 from traceback import format_exc
@@ -42,6 +43,10 @@ def errors_handler(func):
     async def wrapper(errors):
         try:
             await func(errors)
+          
+        except StopPropagation:
+            pass
+        
         except BaseException:
 
             date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
