@@ -1,9 +1,9 @@
 import aiohttp
-from telethon import events
+from userbot.events import register, errors_handler
+from userbot import CMD_HELP
 
-from userbot import bot, CMD_HELP
-
-@bot.on(events.NewMessage(outgoing=True, pattern=r"^\.git (.*)"))
+@register(pattern=r".git (.*)", outgoing=True)
+@errors_handler
 async def github(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         URL = f"https://api.github.com/users/{event.pattern_match.group(1)}"

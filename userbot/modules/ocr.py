@@ -3,7 +3,7 @@ import os
 import requests
 import logging
 from userbot import bot, OCR_SPACE_API_KEY, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
 def ocr_space_file(filename, overlay=False, api_key=OCR_SPACE_API_KEY, language='eng'):
@@ -58,6 +58,7 @@ def ocr_space_url(url, overlay=False, api_key=OCR_SPACE_API_KEY, language='eng')
 
 
 @register(pattern=r"\.ocr (.*)", outgoing=True)
+@errors_handler
 async def _(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:

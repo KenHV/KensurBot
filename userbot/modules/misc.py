@@ -12,10 +12,11 @@ from time import sleep
 import os
 import sys
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
 @register(outgoing=True, pattern="^.random")
+@errors_handler
 async def randomise(items):
     """ For .random command, get a random item from the list of items. """
     if not items.text[0].isalpha() and items.text[0] not in ("/", "#", "@", "!"):
@@ -24,6 +25,7 @@ async def randomise(items):
         await items.edit("**Query: **\n`" + items.text[8:] + "`\n**Output: **\n`" + itemo[index] + "`")
 
 @register(outgoing=True, pattern="^.sleep( [0-9]+)?$")
+@errors_handler
 async def sleepybot(time):
     """ For .sleep command, let the userbot snooze for a few second. """
     message = time.text
@@ -43,6 +45,7 @@ async def sleepybot(time):
 
 
 @register(outgoing=True, pattern="^.shutdown$")
+@errors_handler
 async def killdabot(event):
     """ For .shutdown command, shut the bot down."""
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
@@ -55,6 +58,7 @@ async def killdabot(event):
         await event.client.disconnect()
 
 @register(outgoing=True, pattern="^.restart$")
+@errors_handler
 async def revivedabot(restart):
     """ For .restart command, restart the bot down."""
     if not restart.text[0].isalpha() and restart.text[0] not in ("/", "#", "@", "!"):
@@ -67,23 +71,27 @@ async def revivedabot(restart):
         quit()
 
 @register(outgoing=True, pattern="^.community$")
+@errors_handler
 async def bot_community(community):
     """ For .support command, just returns the group link. """
     if not community.text[0].isalpha() and community.text[0] not in ("/", "#", "@", "!"):
         await community.edit("Join the awesome Paperplane userbot community: @userbot_support\nBe warned that this is a fork of their project and you may get limited support for bugs.")
 
 @register(outgoing=True, pattern="^.support$")
+@errors_handler
 async def bot_support(wannahelp):
     """ For .support command, just returns the group link. """
     if not wannahelp.text[0].isalpha() and wannahelp.text[0] not in ("/", "#", "@", "!"):
         await wannahelp.edit("Join the Paperplane Extended Channel: @PaperplaneExtended")
 
 @register(outgoing=True, pattern="^.creator$")
+@errors_handler
 async def creator(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         await e.edit("[AvinashReddy3108](https://t.me/AvinashReddy3108)")
 
 @register(outgoing=True, pattern="^.readme$")
+@errors_handler
 async def reedme(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         await e.edit("You might want to have a look at the [README.md](https://github.com/AvinashReddy3108/PaperplaneExtended/blob/master/README.md) file.")
@@ -92,6 +100,7 @@ async def reedme(e):
 # Copyright (c) Gegham Zakaryan | 2019
 #
 @register(outgoing=True, pattern="^.repeat (.*) (.*)")
+@errors_handler
 async def repeat(rep):
     if not rep.text[0].isalpha() and rep.text[0] not in ("/", "#", "@", "!"):
         replyCount = int(rep.pattern_match.group(1))
@@ -105,6 +114,7 @@ async def repeat(rep):
         await rep.edit(replyText)
 
 @register(outgoing=True, pattern="^.repo$")
+@errors_handler
 async def repo_is_here(wannasee):
     """ For .repo command, just returns the repo URL. """
     if not wannasee.text[0].isalpha() and wannasee.text[0] not in ("/", "#", "@", "!"):

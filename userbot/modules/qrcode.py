@@ -16,10 +16,11 @@ import qrcode
 from bs4 import BeautifulSoup
 
 from userbot import CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
 @register(pattern=r"^.getqr$", outgoing=True)
+@errors_handler
 async def parseqr(qr_e):
     """ For .getqr command, get QR Code content from the replied photo. """
     if not qr_e.text[0].isalpha() and qr_e.text[0] not in ("/", "#", "@", "!"):
@@ -64,6 +65,7 @@ async def parseqr(qr_e):
 
 
 @register(pattern=r".makeqr(?: |$)([\s\S]*)", outgoing=True)
+@errors_handler
 async def make_qr(makeqr):
     """ For .makeqr command, make a QR Code containing the given content. """
     if not makeqr.text[0].isalpha() and makeqr.text[0] not in (

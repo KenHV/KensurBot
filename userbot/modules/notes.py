@@ -7,7 +7,7 @@
 """ Userbot module containing commands for keeping notes. """
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 from telethon.tl import types
 from telethon import utils
 
@@ -16,6 +16,7 @@ TYPE_PHOTO = 1
 TYPE_DOCUMENT = 2
 
 @register(outgoing=True, pattern="^.notes$")
+@errors_handler
 async def notes_active(svd):
     """ For .saved command, list all of the notes saved in a chat. """
     if not svd.text[0].isalpha() and svd.text[0] not in ("/", "#", "@", "!"):
@@ -38,6 +39,7 @@ async def notes_active(svd):
 
 
 @register(outgoing=True, pattern=r"^.clear (\w*)")
+@errors_handler
 async def remove_notes(clr):
     """ For .clear command, clear note with the given name."""
     if not clr.text[0].isalpha() and clr.text[0] not in ("/", "#", "@", "!"):
@@ -56,6 +58,7 @@ async def remove_notes(clr):
 
 
 @register(outgoing=True, pattern=r"^.save (.*)")
+@errors_handler
 async def add_filter(fltr):
     """ For .save command, saves notes in a chat. """
     if not fltr.text[0].isalpha() and fltr.text[0] not in ("/", "#", "@", "!"):
@@ -83,7 +86,7 @@ async def add_filter(fltr):
                     snip['fr'] = media.file_reference
 
         success = "`Note {} successfully. Use` #{} `to get it`"
-        
+
         if add_note(str(fltr.chat_id), notename, snip['text'], snip['type'], snip.get('id'), snip.get('hash'), snip.get('fr')) is False:
             return await fltr.edit(success.format('updated', notename))
         else:
@@ -91,6 +94,7 @@ async def add_filter(fltr):
 
 
 @register(pattern=r"#\w*", disable_edited=True)
+@errors_handler
 async def incom_note(getnt):
     """ Notes logic. """
     try:
@@ -130,6 +134,7 @@ async def incom_note(getnt):
         pass
 
 @register(outgoing=True, pattern="^.rmnotes (.*)")
+@errors_handler
 async def kick_marie_notes(kick):
     """ For .rmfilters command, allows you to kick all \
         Marie(or her clones) filters from a chat. """

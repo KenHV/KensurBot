@@ -13,13 +13,14 @@ from os import remove
 from PIL import Image
 from telethon.tl.types import DocumentAttributeFilename, MessageMediaPhoto
 from userbot import bot, CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 from telethon.tl.functions.messages import GetStickerSetRequest
 from telethon.tl.types import InputStickerSetID
 from telethon.tl.types import DocumentAttributeSticker
 
 
 @register(outgoing=True, pattern="^.kang")
+@errors_handler
 async def kang(args):
     """ For .kang command, kangs stickers or creates new ones. """
     if not args.text[0].isalpha() and args.text[0] not in ("/", "#", "@", "!"):
@@ -46,15 +47,15 @@ async def kang(args):
             elif (DocumentAttributeFilename(file_name='AnimatedSticker.tgs')
                   in message.media.document.attributes):
                 await bot.download_file(message.media.document, 'AnimatedSticker.tgs')
-                
+
                 # The attributes list of animated stickers is not consistent
                 # for some reason, so we look for the emoji in all possible
                 # parts of the attributes (hacky, but consistent.)
                 try:
-                    emoji = message.media.document.attributes[1].alt 
+                    emoji = message.media.document.attributes[1].alt
                 except:
                     emoji = message.media.document.attributes[0].alt
-                    
+
                 emojibypass = True
                 is_anim = True
                 photo = 1
@@ -198,6 +199,7 @@ async def resize_photo(photo):
     return image
 
 @register(outgoing=True, pattern="^.stkrinfo$")
+@errors_handler
 async def get_pack_info(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if not event.is_reply:

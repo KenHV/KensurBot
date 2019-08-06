@@ -11,7 +11,7 @@ from telethon.tl.functions.account import UpdateProfileRequest
 
 from userbot import (DEFAULT_BIO, CMD_HELP, BOTLOG, BOTLOG_CHATID,
                      SPOTIFY_BIO_PREFIX, SPOTIFY_PASS, SPOTIFY_USERNAME, bot)
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 # =================== CONSTANT ===================
 SPO_BIO_ENABLED = "```Spotify current music to bio is now enabled.```"
@@ -112,32 +112,32 @@ async def dirtyfix():
     await update_spotify_info()
 
 
-@register(outgoing=True, pattern="^.enablespotify$")
+@register(outgoing=True, pattern="^.enable spotify$")
+@errors_handler
 async def set_biostgraph(setstbio):
-    if not setstbio.text[0].isalpha() and setstbio.text[0] not in ("/", "#", "@", "!"):
-        setrecursionlimit(700000)
-        if not SPOTIFYCHECK:
-            environ["errorcheck"] = "0"
-            await setstbio.edit(SPO_BIO_ENABLED)
-            await get_spotify_token()
-            await dirtyfix()
-        else:
-            await setstbio.edit(SPO_BIO_RUNNING)
+    setrecursionlimit(700000)
+    if not SPOTIFYCHECK:
+        environ["errorcheck"] = "0"
+        await setstbio.edit(SPO_BIO_ENABLED)
+        await get_spotify_token()
+        await dirtyfix()
+    else:
+        await setstbio.edit(SPO_BIO_RUNNING)
 
 
-@register(outgoing=True, pattern="^.disablespotify$")
+@register(outgoing=True, pattern="^.disable spotify$")
+@errors_handler
 async def set_biodgraph(setdbio):
-    if not setdbio.text[0].isalpha() and setdbio.text[0] not in ("/", "#", "@", "!"):
-        global SPOTIFYCHECK
-        global RUNNING
-        SPOTIFYCHECK = False
-        RUNNING = False
-        await bot(UpdateProfileRequest(about=DEFAULT_BIO))
-        await setdbio.edit(SPO_BIO_DISABLED)
+    global SPOTIFYCHECK
+    global RUNNING
+    SPOTIFYCHECK = False
+    RUNNING = False
+    await bot(UpdateProfileRequest(about=DEFAULT_BIO))
+    await setdbio.edit(SPO_BIO_DISABLED)
 
 
 CMD_HELP.update(
     {
-        "spotify": ".enablespotify/.disablespotify\nUsage: Enable or Disable Spotify bio feature."
+        "spotify": ".enable spotify/.disable spotify\nUsage: Enable or Disable Spotify 'Now playing' in bio feature."
     }
 )

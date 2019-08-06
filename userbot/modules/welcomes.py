@@ -1,6 +1,6 @@
 from telethon.utils import pack_bot_file_id
 from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings, add_welcome_setting, rm_welcome_setting
-from userbot.events import register
+from userbot.events import register, errors_handler
 from userbot import CMD_HELP, bot, LOGS
 from telethon.events import ChatAction
 
@@ -22,60 +22,61 @@ async def welcome_to_chat(event):
                     )
                 except Exception as e:
                     LOGS.warn(str(e))
-                    
+
             a_user = await event.get_user()
             chat = await event.get_chat()
             me = await event.client.get_me()
 
             title = chat.title if chat.title else "this chat"
-            
+
             participants = await event.client.get_participants(chat)
             count = len(participants)
-            
+
             current_saved_welcome_message = cws.custom_welcome_message
-            
+
             mention = "[{}](tg://user?id={})".format(a_user.first_name, a_user.id)
             my_mention = "[{}](tg://user?id={})".format(me.first_name, me.id)
-            
+
             first = a_user.first_name
             last = a_user.last_name
             if last:
                 fullname = f"{first} {last}"
             else:
                 fullname = first
-                
+
             username = f"@{a_user.username}" if a_user.username else mention
-            
+
             userid = a_user.id
-            
+
             my_first = me.first_name
             my_last = me.last_name
             if my_last:
                 my_fullname = f"{my_first} {my_last}"
             else:
                 my_fullname = my_first
-            
+
             my_username = f"@{me.username}" if me.username else my_mention
 
             current_message = await event.reply(
-                current_saved_welcome_message.format(mention=mention, 
-                                                     title=title, 
-                                                     count=count, 
-                                                     first=first, 
-                                                     last=last, 
-                                                     fullname=fullname, 
-                                                     username=username, 
-                                                     userid=userid, 
-                                                     my_first=my_first, 
-                                                     my_last=my_last, 
-                                                     my_fullname=my_fullname, 
-                                                     my_username=my_username, 
+                current_saved_welcome_message.format(mention=mention,
+                                                     title=title,
+                                                     count=count,
+                                                     first=first,
+                                                     last=last,
+                                                     fullname=fullname,
+                                                     username=username,
+                                                     userid=userid,
+                                                     my_first=my_first,
+                                                     my_last=my_last,
+                                                     my_fullname=my_fullname,
+                                                     my_username=my_username,
                                                      my_mention=my_mention),
                 file=cws.media_file_id
             )
 
 
 @register(outgoing=True, pattern=r"^.welcome(?: |$)(.*)")
+@errors_handler
 async def save_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
@@ -101,6 +102,7 @@ async def save_welcome(event):
 
 
 @register(outgoing=True, pattern="^.show welcome$")
+@errors_handler
 async def show_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
@@ -112,6 +114,7 @@ async def show_welcome(event):
             await event.edit("`No welcome note saved here !!`")
 
 @register(outgoing=True, pattern="^.del welcome")
+@errors_handler
 async def del_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
