@@ -11,12 +11,11 @@ import traceback
 from selenium import webdriver
 from time import sleep
 from selenium.webdriver.chrome.options import Options
-from userbot.events import register, errors_handler
+from userbot.events import register
 from userbot import GOOGLE_CHROME_BIN, CHROME_DRIVER, CMD_HELP
 
 
 @register(pattern=r".screencapture (.*)", outgoing=True)
-@errors_handler
 async def capture(url):
     """ For .screencapture command, capture a website and send the photo. """
     if not url.text[0].isalpha() and url.text[0] not in ("/", "#", "@", "!"):
