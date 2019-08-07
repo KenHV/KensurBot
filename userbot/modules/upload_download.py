@@ -141,7 +141,7 @@ async def download(target_file):
                     if current_message != display_message:
                         await target_file.edit(current_message)
                         display_message = current_message
-                        asyncio.sleep(1)
+                        await asyncio.sleep(2.5)
                 except Exception as e:
                     LOGS.info(str(e))
                     pass
