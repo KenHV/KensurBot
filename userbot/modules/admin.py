@@ -23,7 +23,7 @@ from telethon.tl.types import (ChannelParticipantsAdmins, ChatAdminRights,
                                MessageMediaPhoto)
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 # =================== CONSTANT ===================
 PP_TOO_SMOL = "`The image is too small`"
@@ -78,7 +78,6 @@ UNMUTE_RIGHTS = ChatBannedRights(
 # ================================================
 
 @register(outgoing=True, pattern="^.setgrouppic$")
-@errors_handler
 async def set_group_photo(gpic):
     """ For .setgrouppic command, changes the picture of a group """
     if not gpic.text[0].isalpha() and gpic.text[0] not in ("/", "#", "@", "!"):
@@ -115,7 +114,6 @@ async def set_group_photo(gpic):
 
 
 @register(outgoing=True, pattern="^.promote(?: |$)(.*)")
-@errors_handler
 async def promote(promt):
     """ For .promote command, do promote targeted person """
     if not promt.text[0].isalpha() \
@@ -176,7 +174,6 @@ async def promote(promt):
 
 
 @register(outgoing=True, pattern="^.demote(?: |$)(.*)")
-@errors_handler
 async def demote(dmod):
     """ For .demote command, do demote targeted person """
     if not dmod.text[0].isalpha() and dmod.text[0] not in ("/", "#", "@", "!"):
@@ -235,7 +232,6 @@ async def demote(dmod):
 
 
 @register(outgoing=True, pattern="^.ban(?: |$)(.*)")
-@errors_handler
 async def ban(bon):
     """ For .ban command, do "thanos" at targeted person """
     if not bon.text[0].isalpha() and bon.text[0] not in ("/", "#", "@", "!"):
@@ -295,7 +291,6 @@ async def ban(bon):
 
 
 @register(outgoing=True, pattern="^.unban(?: |$)(.*)")
-@errors_handler
 async def nothanos(unbon):
     """ For .unban command, undo "thanos" on target """
     if not unbon.text[0].isalpha() and unbon.text[0] \
@@ -340,7 +335,6 @@ async def nothanos(unbon):
 
 
 @register(outgoing=True, pattern="^.mute(?: |$)(.*)")
-@errors_handler
 async def spider(spdr):
     """
     This function is basically muting peeps
@@ -406,7 +400,6 @@ async def spider(spdr):
 
 
 @register(outgoing=True, pattern="^.unmute(?: |$)(.*)")
-@errors_handler
 async def unmoot(unmot):
     """ For .unmute command, unmute the target """
     if not unmot.text[0].isalpha() and unmot.text[0] \
@@ -464,7 +457,6 @@ async def unmoot(unmot):
 
 
 @register(incoming=True)
-@errors_handler
 async def muter(moot):
     """ Used for deleting the messages of muted people """
     try:
@@ -499,7 +491,6 @@ async def muter(moot):
 
 
 @register(outgoing=True, pattern="^.ungmute(?: |$)(.*)")
-@errors_handler
 async def ungmoot(un_gmute):
     """ For .ungmute command, ungmutes the target in the userbot """
     if not un_gmute.text[0].isalpha() and un_gmute.text[0] \
@@ -546,7 +537,6 @@ async def ungmoot(un_gmute):
 
 
 @register(outgoing=True, pattern="^.gmute(?: |$)(.*)")
-@errors_handler
 async def gspider(gspdr):
     """ For .gmute command, gmutes the target in the userbot """
     if not gspdr.text[0].isalpha() and gspdr.text[0] not in ("/", "#", "@", "!"):
@@ -591,7 +581,6 @@ async def gspider(gspdr):
 
 
 @register(outgoing=True, pattern="^.delusers(?: |$)(.*)")
-@errors_handler
 async def rm_deletedacc(show):
     """ For .adminlist command, list all of the admins of the chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
@@ -669,7 +658,6 @@ async def rm_deletedacc(show):
 
 
 @register(outgoing=True, pattern="^.adminlist$")
-@errors_handler
 async def get_admin(show):
     """ For .adminlist command, list all of the admins of the chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
@@ -695,7 +683,6 @@ async def get_admin(show):
 
 
 @register(outgoing=True, pattern="^.pin(?: |$)(.*)")
-@errors_handler
 async def pin(msg):
     if not msg.text[0].isalpha() and msg.text[0] not in ("/", "#", "@", "!"):
         # Admin or creator check
@@ -742,7 +729,6 @@ async def pin(msg):
 
 
 @register(outgoing=True, pattern="^.kick(?: |$)(.*)")
-@errors_handler
 async def kick(usr):
     """ For .kick command, kick someone from the group using the userbot. """
     if not usr.text[0].isalpha() and usr.text[0] not in ("/", "#", "@", "!"):
@@ -796,7 +782,6 @@ async def kick(usr):
 
 
 @register(outgoing=True, pattern="^.userslist ?(.*)")
-@errors_handler
 async def get_users(show):
     """ For .userslist command, list all of the users of the chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):

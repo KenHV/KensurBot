@@ -7,11 +7,10 @@
 
 
 from userbot import CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 
 @register(outgoing=True, pattern="^.help(?: |$)(.*)")
-@errors_handler
 async def help(event):
     """ For .help command,"""
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):

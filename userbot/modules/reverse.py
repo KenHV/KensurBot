@@ -19,7 +19,7 @@ from telethon.tl.types import MessageMediaPhoto
 from PIL import Image
 
 from userbot import bot, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 
 opener = urllib.request.build_opener()
@@ -28,7 +28,6 @@ opener.addheaders = [('User-agent', useragent)]
 
 
 @register(outgoing=True, pattern=r"^.reverse(?: |$)(\d*)")
-@errors_handler
 async def okgoogle(img):
     """ For .reverse command, Google search images and stickers. """
     if not img.text[0].isalpha() and img.text[0] not in ("/", "#", "@", "!"):

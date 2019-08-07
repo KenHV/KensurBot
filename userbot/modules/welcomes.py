@@ -1,6 +1,6 @@
 from telethon.utils import pack_bot_file_id
 from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings, add_welcome_setting, rm_welcome_setting
-from userbot.events import register, errors_handler
+from userbot.events import register
 from userbot import CMD_HELP, bot, LOGS
 from telethon.events import ChatAction
 
@@ -76,7 +76,6 @@ async def welcome_to_chat(event):
 
 
 @register(outgoing=True, pattern=r"^.welcome(?: |$)(.*)")
-@errors_handler
 async def save_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
@@ -102,7 +101,6 @@ async def save_welcome(event):
 
 
 @register(outgoing=True, pattern="^.show welcome$")
-@errors_handler
 async def show_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
@@ -114,7 +112,6 @@ async def show_welcome(event):
             await event.edit("`No welcome note saved here !!`")
 
 @register(outgoing=True, pattern="^.del welcome")
-@errors_handler
 async def del_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:

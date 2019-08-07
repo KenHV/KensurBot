@@ -13,14 +13,13 @@ from os import remove
 from PIL import Image
 from telethon.tl.types import DocumentAttributeFilename, MessageMediaPhoto
 from userbot import bot, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 from telethon.tl.functions.messages import GetStickerSetRequest
 from telethon.tl.types import InputStickerSetID
 from telethon.tl.types import DocumentAttributeSticker
 
 
 @register(outgoing=True, pattern="^.kang")
-@errors_handler
 async def kang(args):
     """ For .kang command, kangs stickers or creates new ones. """
     if not args.text[0].isalpha() and args.text[0] not in ("/", "#", "@", "!"):
@@ -199,7 +198,6 @@ async def resize_photo(photo):
     return image
 
 @register(outgoing=True, pattern="^.stkrinfo$")
-@errors_handler
 async def get_pack_info(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if not event.is_reply:

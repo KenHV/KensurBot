@@ -14,18 +14,17 @@ from sqlalchemy.exc import IntegrityError
 
 from userbot import (COUNT_PM, CMD_HELP, BOTLOG, BOTLOG_CHATID,
                      PM_AUTO_BAN, LASTMSG, LOGS)
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 # ========================= CONSTANTS ============================
 UNAPPROVED_MSG = ("`Hello! This is an automated message.\n\n`"
-                  "`I have'nt approved you to PM yet.,`"
+                  "`I haven't approved you to PM yet.`"
                   "`Please wait for me to look in, I mostly approve PMs.\n\n`"
                   "`Until that, please don't spam my PM, you'll get blocked and reported !!`")
 # =================================================================
 
 
 @register(incoming=True, disable_edited=True)
-@errors_handler
 async def permitpm(event):
     """ Prohibits people from PMing you without approval. \
         Will block retarded nibbas automatically. """
@@ -99,7 +98,6 @@ async def permitpm(event):
 
 
 @register(disable_edited=True, outgoing=True)
-@errors_handler
 async def auto_accept(event):
     """ Will approve nibbas automatically if you texted them first. """
     if event.is_private and not (await event.get_sender()).bot:
@@ -125,7 +123,6 @@ async def auto_accept(event):
 
 
 @register(outgoing=True, pattern="^.notifoff$")
-@errors_handler
 async def notifoff(noff_event):
     """ For .notifoff command, stop getting notifications from unapproved PMs. """
     if not noff_event.text[0].isalpha() and noff_event.text[0] not in ("/", "#", "@", "!"):
@@ -138,7 +135,6 @@ async def notifoff(noff_event):
 
 
 @register(outgoing=True, pattern="^.notifon$")
-@errors_handler
 async def notifon(non_event):
     """ For .notifoff command, get notifications from unapproved PMs. """
     if not non_event.text[0].isalpha() and non_event.text[0] not in ("/", "#", "@", "!"):
@@ -151,7 +147,6 @@ async def notifon(non_event):
 
 
 @register(outgoing=True, pattern="^.approve$")
-@errors_handler
 async def approvepm(apprvpm):
     """ For .approve command, give someone the permissions to PM you. """
     if not apprvpm.text[0].isalpha() and apprvpm.text[0] not in ("/", "#", "@", "!"):
@@ -195,7 +190,6 @@ async def approvepm(apprvpm):
 
 
 @register(outgoing=True, pattern="^.disapprove$")
-@errors_handler
 async def disapprovepm(disapprvpm):
     if not disapprvpm.text[0].isalpha() and disapprvpm.text[0] not in ("/", "#", "@", "!"):
         try:
@@ -228,7 +222,6 @@ async def disapprovepm(disapprvpm):
 
 
 @register(outgoing=True, pattern="^.block$")
-@errors_handler
 async def blockpm(block):
     """ For .block command, block people from PMing you! """
     if not block.text[0].isalpha() and block.text[0] not in ("/", "#", "@", "!"):
@@ -263,7 +256,6 @@ async def blockpm(block):
 
 
 @register(outgoing=True, pattern="^.unblock$")
-@errors_handler
 async def unblockpm(unblock):
     """ For .unblock command, let people PMing you again! """
     if not unblock.text[0].isalpha() and unblock.text[0] \

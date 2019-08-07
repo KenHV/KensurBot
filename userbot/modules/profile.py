@@ -18,7 +18,7 @@ from telethon.tl.functions.photos import (DeletePhotosRequest,
 from telethon.tl.types import InputPhoto, MessageMediaPhoto, User, Chat, Channel
 
 from userbot import bot, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 from datetime import datetime
 
 # ====================== CONSTANT ===============================
@@ -36,7 +36,6 @@ USERNAME_TAKEN = "```This username is already taken.```"
 
 
 @register(outgoing=True, pattern="^.name")
-@errors_handler
 async def update_name(name):
     """ For .name command, change your name in Telegram. """
     if not name.text[0].isalpha() and name.text[0] not in ("/", "#", "@", "!"):
@@ -56,7 +55,6 @@ async def update_name(name):
 
 
 @register(outgoing=True, pattern="^.setpfp$")
-@errors_handler
 async def set_profilepic(propic):
     """ For .profilepic command, change your profile picture in Telegram. """
     if not propic.text[0].isalpha() and propic.text[0] not in ("/", "#", "@", "!"):
@@ -86,7 +84,6 @@ async def set_profilepic(propic):
 
 
 @register(outgoing=True, pattern="^.setbio (.*)")
-@errors_handler
 async def set_biograph(setbio):
     """ For .setbio command, set a new bio for your profile in Telegram. """
     if not setbio.text[0].isalpha() and setbio.text[0] not in ("/", "#", "@", "!"):
@@ -96,7 +93,6 @@ async def set_biograph(setbio):
 
 
 @register(outgoing=True, pattern="^.username (.*)")
-@errors_handler
 async def update_username(username):
     """ For .username command, set a new username in Telegram. """
     if not username.text[0].isalpha() and username.text[0] not in ("/", "#", "@", "!"):
@@ -108,7 +104,6 @@ async def update_username(username):
             await username.edit(USERNAME_TAKEN)
 
 @register(outgoing=True, pattern="^.count")
-@errors_handler
 async def _(event):
     if event.fwd_from:
         return
@@ -148,7 +143,6 @@ Channels:\t{}
 Bots:\t{}""".format(ms, u, g, c, bc, b))
 
 @register(outgoing=True, pattern=r"^.delpfp")
-@errors_handler
 async def remove_profilepic(delpfp):
     """ For .delpfp command, delete your current profile picture in Telegram. """
     if not delpfp.text[0].isalpha() and delpfp.text[0] not in ("/", "#", "@", "!"):

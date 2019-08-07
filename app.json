@@ -62,24 +62,8 @@
       "description": "OCR API Key for .ocr command Get from https://ocr.space/ocrapi",
       "required": false
     },
-    "DEFAULT_BIO": {
-      "description": "Set a default bio to be shown when you are not listening on Spotify..",
-      "required": false
-    },
-    "SPOTIFY_USERNAME": {
-      "description": "Put your Spotify Username (your Spotify username).",
-      "required": false
-    },
-    "SPOTIFY_PASS": {
-      "description": "Put your Spotify Password.",
-      "required": false
-    },
-    "SPOTIFY_BIO_PREFIX": {
-      "description": "Put the prefix that you want to show while you listen to music",
-      "required": false
-    },
-    "WELCOME_MUTE": {
-      "description": "Mute some known spammer bots after they join.",
+    "ANTI_SPAMBOT": {
+      "description": "Report or kick some known spammer bots after they join.",
       "value": "False"
     },
     "TMP_DOWNLOAD_DIRECTORY": {

@@ -9,10 +9,9 @@ import time
 from asyncio import wait
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 @register(outgoing=True, pattern="^.tspam")
-@errors_handler
 async def tmeme(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         tspam = str(e.text[7:])
@@ -28,7 +27,6 @@ async def tmeme(e):
                     )
 
 @register(outgoing=True, pattern="^.spam")
-@errors_handler
 async def spammer(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         message = e.text
@@ -44,7 +42,6 @@ async def spammer(e):
                 )
 
 @register(outgoing=True, pattern="^.bigspam")
-@errors_handler
 async def bigspam(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         message = e.text
@@ -62,7 +59,6 @@ async def bigspam(e):
 
 
 @register(outgoing=True, pattern="^.picspam")
-@errors_handler
 async def tiny_pic_spam(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         message = e.text
@@ -81,7 +77,6 @@ async def tiny_pic_spam(e):
 
 
 @register(outgoing=True, pattern="^.delayspam")
-@errors_handler
 async def spammer(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         message = e.text

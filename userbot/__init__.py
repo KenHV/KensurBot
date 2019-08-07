@@ -77,8 +77,8 @@ GOOGLE_CHROME_BIN = os.environ.get("GOOGLE_CHROME_BIN", None)
 
 OPEN_WEATHER_MAP_APPID = os.environ.get("OPEN_WEATHER_MAP_APPID", None)
 
-WELCOME_MUTE = sb(os.environ.get(
-    "WELCOME_MUTE", "False"
+ANTI_SPAMBOT = sb(os.environ.get(
+    "ANTI_SPAMBOT", "False"
 ))
 
 YOUTUBE_API_KEY = os.environ.get(

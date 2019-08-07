@@ -18,7 +18,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.file import Storage
 from oauth2client import file, client, tools
 from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET, G_DRIVE_AUTH_TOKEN_DATA, GDRIVE_FOLDER_ID, BOTLOG_CHATID, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS)
-from userbot.events import register, errors_handler
+from userbot.events import register
 from mimetypes import guess_type
 import httplib2
 import subprocess
@@ -105,7 +105,6 @@ def time_formatter(milliseconds: int) -> str:
     return tmp[:-2]
 
 @register(pattern=r"^.gdrive(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def download(dryb):
     """ For .gdrive command, upload files to google drive. """
     if not dryb.text[0].isalpha() and dryb.text[0] not in ("/", "#", "@", "!"):
@@ -221,7 +220,6 @@ async def download(dryb):
 
 
 @register(pattern=r"^.gsetf https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})", outgoing=True)
-@errors_handler
 async def download(set):
     """For .gsetf command, allows you to set path"""
     if not set.text[0].isalpha() and set.text[0] not in ("/", "#", "@", "!"):
@@ -238,7 +236,6 @@ async def download(set):
 
 
 @register(pattern="^.gsetclear$", outgoing=True)
-@errors_handler
 async def download(gclr):
     """For .gsetclear command, allows you clear ur curnt custom path"""
     if not gclr.text[0].isalpha() and gclr.text[0] not in ("/", "#", "@", "!"):
@@ -336,7 +333,6 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     return download_url
 
 @register(pattern="^.gfolder$", outgoing=True)
-@errors_handler
 async def _(event):
     if event.fwd_from:
         return

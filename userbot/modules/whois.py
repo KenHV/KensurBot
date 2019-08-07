@@ -12,11 +12,10 @@ import os
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import MessageEntityMentionName
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 
 @register(pattern=".whois(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def who(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         """ For .whois command, get info about a user. """
