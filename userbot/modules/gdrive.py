@@ -132,8 +132,8 @@ async def download(dryb):
             downloader = SmartDL(url, downloaded_file_name, progress_bar=False)
             downloader.start(blocking=False)
             c_time = time.time()
+            display_message = None
             while not downloader.isFinished():
-                display_message = ""
                 status = downloader.get_status().capitalize()
                 total_length = downloader.filesize if downloader.filesize else None
                 downloaded = downloader.get_dl_size()
@@ -152,7 +152,7 @@ async def download(dryb):
                     if current_message != display_message:
                         await dryb.edit(current_message)
                         display_message = current_message
-                        await asyncio.sleep(2.5)
+                        await asyncio.sleep(1)
                 except Exception as e:
                     LOGS.info(str(e))
                     pass
@@ -318,7 +318,7 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     response = None
     while response is None:
         status, response = file.next_chunk()
-        await asyncio.sleep(2.5)
+        await asyncio.sleep(1)
         if status:
             percentage = int(status.progress() * 100)
             progress_str = "[{0}{1}]\nProgress: {2}%\n".format(

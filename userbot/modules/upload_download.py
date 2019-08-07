@@ -121,8 +121,8 @@ async def download(target_file):
             downloader = SmartDL(url, downloaded_file_name, progress_bar=False)
             downloader.start(blocking=False)
             c_time = time.time()
+            display_message = None
             while not downloader.isFinished():
-                display_message = ""
                 status = downloader.get_status().capitalize()
                 total_length = downloader.filesize if downloader.filesize else None
                 downloaded = downloader.get_dl_size()
@@ -141,7 +141,7 @@ async def download(target_file):
                     if current_message != display_message:
                         await target_file.edit(current_message)
                         display_message = current_message
-                        await asyncio.sleep(2.5)
+                        await asyncio.sleep(1)
                 except Exception as e:
                     LOGS.info(str(e))
                     pass
