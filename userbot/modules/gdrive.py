@@ -134,6 +134,7 @@ async def download(dryb):
             c_time = time.time()
             while not downloader.isFinished():
                 display_message = ""
+                status = downloader.get_status().capitalize()
                 total_length = downloader.filesize if downloader.filesize else None
                 downloaded = downloader.get_dl_size()
                 now = time.time()
@@ -147,10 +148,11 @@ async def download(dryb):
                     round(percentage, 2))
                 estimated_total_time = downloader.get_eta(human=True)
                 try:
-                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(downloaded)} of {humanbytes(total_length)}\nETA: {estimated_total_time}"
+                    current_message = f"{status}...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(downloaded)} of {humanbytes(total_length)}\nETA: {estimated_total_time}"
                     if current_message != display_message:
                         await dryb.edit(current_message)
                         display_message = current_message
+                        asyncio.sleep(1)
                 except Exception as e:
                     LOGS.info(str(e))
                     pass
@@ -316,6 +318,7 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     response = None
     while response is None:
         status, response = file.next_chunk()
+        asyncio.sleep(1)
         if status:
             percentage = int(status.progress() * 100)
             progress_str = "[{0}{1}]\nProgress: {2}%\n".format(

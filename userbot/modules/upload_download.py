@@ -123,6 +123,7 @@ async def download(target_file):
             c_time = time.time()
             while not downloader.isFinished():
                 display_message = ""
+                status = downloader.get_status().capitalize()
                 total_length = downloader.filesize if downloader.filesize else None
                 downloaded = downloader.get_dl_size()
                 now = time.time()
@@ -136,10 +137,11 @@ async def download(target_file):
                     round(percentage, 2))
                 estimated_total_time = downloader.get_eta(human=True)
                 try:
-                    current_message = f"Downloading...\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(downloaded)} of {humanbytes(total_length)}\nETA: {estimated_total_time}"
+                    current_message = f"{status}..\nURL: {url}\nFile Name: {file_name}\n{progress_str}\n{humanbytes(downloaded)} of {humanbytes(total_length)}\nETA: {estimated_total_time}"
                     if current_message != display_message:
                         await target_file.edit(current_message)
                         display_message = current_message
+                        asyncio.sleep(1)
                 except Exception as e:
                     LOGS.info(str(e))
                     pass
