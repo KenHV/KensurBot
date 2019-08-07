@@ -62,7 +62,6 @@ RUN pip3 install --upgrade pip setuptools
 RUN  sed -e 's;^# \(%wheel.*NOPASSWD.*\);\1;g' -i /etc/sudoers
 RUN adduser userbot --disabled-password --home /home/userbot
 RUN adduser userbot wheel
-RUN adduser userbot sudo
 USER userbot
 RUN mkdir /home/userbot/userbot
 RUN mkdir /home/userbot/bin
