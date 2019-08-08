@@ -20,7 +20,7 @@ from userbot.events import register
 UNAPPROVED_MSG = ("`Hello! This is an automated message.\n\n`"
                   "`I haven't approved you to PM yet.`"
                   "`Please wait for me to look in, I mostly approve PMs.\n\n`"
-                  "`Until that, please don't spam my PM, you'll get blocked and reported !!`")
+                  "`Until then, please don't spam my PM, you'll get blocked and reported!`")
 # =================================================================
 
 
@@ -281,13 +281,13 @@ CMD_HELP.update({
 .approve\
 \nUsage: Approves the mentioned/replied person to PM.\
 \n\n.disapprove\
-\nUsage: Disapprove anyone in PM..\
+\nUsage: Disapproves the mentioned/replied person to PM.\
 \n\n.block\
-\nUsage: Blocks the person from PMing you.\
+\nUsage: Blocks the person.\
 \n\n.unblock\
 \nUsage: Unblocks the person so they can PM you.\
 \n\n.notifoff\
-\nUsage: Clears any notifications of unapproved PMs.\
+\nUsage: Clears/Disables any notifications of unapproved PMs.\
 \n\n.notifon\
 \nUsage: Allows notifications for unapproved PMs."
 })
