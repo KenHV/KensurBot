@@ -67,6 +67,8 @@ async def add_filter(fltr):
 
         notename = fltr.pattern_match.group(1)
         msg = await fltr.get_reply_message()
+        if not msg:
+            await fltr.edit("`I need something to save as a note.`")
         if msg:
             snip = {'type': TYPE_TEXT, 'text': msg.message or ''}
             if msg.media:
