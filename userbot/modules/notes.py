@@ -69,7 +69,7 @@ async def add_filter(fltr):
         msg = await fltr.get_reply_message()
         if not msg:
             await fltr.edit("`I need something to save as a note.`")
-        if msg:
+        else:
             snip = {'type': TYPE_TEXT, 'text': msg.message or ''}
             if msg.media:
                 media = None
