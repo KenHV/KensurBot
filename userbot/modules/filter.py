@@ -74,7 +74,9 @@ async def add_new_filter(new_handler):
 
         keyword = new_handler.pattern_match.group(1)
         msg = await new_handler.get_reply_message()
-        if msg:
+        if not msg:
+            await new_handler.edit("`I need something to save as reply to the filter.`")
+        else:
             snip = {'type': TYPE_TEXT, 'text': msg.message or ''}
             if msg.media:
                 media = None
