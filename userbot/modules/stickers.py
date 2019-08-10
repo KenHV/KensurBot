@@ -30,39 +30,39 @@ async def kang(args):
         photo = None
         emojibypass = False
         is_anim = False
-        emoji = ""
+        emoji = None
 
         if message and message.media:
             if isinstance(message.media, MessageMediaPhoto):
+                await args.edit("Kanging this pic...")
                 photo = io.BytesIO()
                 photo = await bot.download_media(message.photo, photo)
             elif "image" in message.media.document.mime_type.split('/'):
+                await args.edit("Kanging this pic...")
                 photo = io.BytesIO()
                 await bot.download_file(message.media.document, photo)
                 if (DocumentAttributeFilename(file_name='sticker.webp')
                         in message.media.document.attributes):
+                    await args.edit("Enslaving this sticker...")
                     emoji = message.media.document.attributes[1].alt
                     emojibypass = True
-            elif (DocumentAttributeFilename(file_name='AnimatedSticker.tgs')
-                  in message.media.document.attributes):
+            elif "tgsticker" in message.media.document.mime_type:
+                await args.edit("Taming this animated sticker...")
                 await bot.download_file(message.media.document, 'AnimatedSticker.tgs')
-
-                # The attributes list of animated stickers is not consistent
-                # for some reason, so we look for the emoji in all possible
-                # parts of the attributes (hacky, but consistent.)
-                try:
-                    emoji = message.media.document.attributes[1].alt
-                except:
-                    emoji = message.media.document.attributes[0].alt
-
+                
+                attributes = message.media.document.attributes
+                for attribute in attributes:
+                    if isinstance(attribute, DocumentAttributeSticker):
+                        emoji = attribute.alt
+                        
                 emojibypass = True
                 is_anim = True
                 photo = 1
             else:
-                await args.edit("`Unsupported File!`")
+                await args.edit("Unsupported File!")
                 return
         else:
-            await args.edit("`Reply to photo to kang it bruh`")
+            await args.edit("Reply to photo to kang it bruh")
             return
 
         if photo:
@@ -84,7 +84,7 @@ async def kang(args):
                     emoji = splat[1]
 
             packname = f"a{user.id}_by_{user.username}_{pack}"
-            packnick = f"@{user.username}'s userbot pack {pack}"
+            packnick = f"@{user.username}'s kang pack Vol.{pack}"
             cmd = '/newpack'
             file = io.BytesIO()
 
@@ -94,7 +94,7 @@ async def kang(args):
                 image.save(file, "PNG")
             else:
                 packname += "_anim"
-                packnick += " animated"
+                packnick = f"@{user.username}'s animated kang pack Vol.{pack}"
                 cmd = '/newanimated'
 
             response = urllib.request.urlopen(
@@ -102,7 +102,7 @@ async def kang(args):
             )
             htmlstr = response.read().decode("utf8").split('\n')
 
-            if "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>." not in htmlstr:
+            if "A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>." not in htmlstr:
                 async with bot.conversation('Stickers') as conv:
                     await conv.send_message('/addsticker')
                     await conv.get_response()
@@ -113,11 +113,13 @@ async def kang(args):
                     if is_anim:
                         await conv.send_file('AnimatedSticker.tgs', force_document=True)
                         remove('AnimatedSticker.tgs')
-                        # await bot.forward_messages('Stickers', [message.id], args.chat_id)
                     else:
                         file.seek(0)
                         await conv.send_file(file, force_document=True)
-                    await conv.get_response()
+                    rsp = await conv.get_response()
+                    if "Sorry, the file type is invalid." in rsp.text:
+                        await args.edit("Failed to add sticker,use @Stickers bot.")
+                        return
                     await conv.send_message(emoji)
                     # Ensure user doesn't get spamming notifications
                     await bot.send_read_acknowledge(conv.chat_id)
@@ -127,7 +129,7 @@ async def kang(args):
                     # Ensure user doesn't get spamming notifications
                     await bot.send_read_acknowledge(conv.chat_id)
             else:
-                await args.edit("Userbot sticker pack doesn't exist! Making a new one!")
+                await args.edit("Brewing new Pack...")
                 async with bot.conversation('Stickers') as conv:
                     await conv.send_message(cmd)
                     await conv.get_response()
@@ -140,11 +142,13 @@ async def kang(args):
                     if is_anim:
                         await conv.send_file('AnimatedSticker.tgs', force_document=True)
                         remove('AnimatedSticker.tgs')
-                        #await bot.forward_messages('Stickers', [message.id], args.chat_id)
                     else:
                         file.seek(0)
                         await conv.send_file(file, force_document=True)
-                    await conv.get_response()
+                    rsp = await conv.get_response()
+                    if "Sorry, the file type is invalid." in rsp.text:
+                        await args.edit("Failed to add sticker,use @Stickers bot.")
+                        return
                     await conv.send_message(emoji)
                     # Ensure user doesn't get spamming notifications
                     await bot.send_read_acknowledge(conv.chat_id)
@@ -168,7 +172,7 @@ async def kang(args):
                     await bot.send_read_acknowledge(conv.chat_id)
 
             await args.edit(
-                f"Sticker added! Your pack can be found [here](t.me/addstickers/{packname})",
+                f"Sticker kanged successfully! Pack can be found [here](t.me/addstickers/{packname})",
                 parse_mode='md'
             )
 
@@ -200,18 +204,15 @@ async def resize_photo(photo):
 @register(outgoing=True, pattern="^.stkrinfo$")
 async def get_pack_info(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
-        if not event.is_reply:
-            await bot.update_message(event, PACKINFO_HELP)
-            return
         rep_msg = await event.get_reply_message()
         if not rep_msg.document:
-            await bot.update_message(event, "`Reply to a sticker to get the pack details`")
+            await event.client.edit("Reply to a sticker to get the pack details")
             return
         stickerset_attr = rep_msg.document.attributes[1]
         if not isinstance(stickerset_attr, DocumentAttributeSticker):
-            await bot.update_message(event, "`Not a valid sticker`")
+            await event.client.edit("This is not a sticker. Reply to a sticker.")
             return
-        get_stickerset = await bot(GetStickerSetRequest(InputStickerSetID(id=stickerset_attr.stickerset.id, access_hash=stickerset_attr.stickerset.access_hash)))
+        get_stickerset = await event.client(GetStickerSetRequest(InputStickerSetID(id=stickerset_attr.stickerset.id, access_hash=stickerset_attr.stickerset.access_hash)))
         pack_emojis = []
         for document_sticker in get_stickerset.packs:
             if document_sticker.emoticon not in pack_emojis:
@@ -222,7 +223,7 @@ async def get_pack_info(event):
                 f"**Archived:** `{get_stickerset.set.archived}`\n" \
                 f"**Stickers In Pack:** `{len(get_stickerset.packs)}`\n" \
                 f"**Emojis In Pack:** {' '.join(pack_emojis)}"
-        await event.edit(OUTPUT)
+        await event.client.edit(OUTPUT)
 
 CMD_HELP.update({
     "stickers": ".kang\

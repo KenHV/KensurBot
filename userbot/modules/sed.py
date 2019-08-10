@@ -19,12 +19,12 @@ DELIMITERS = ("/", ":", "|", "_")
 def separate_sed(sed_string):
     """ Separate sed arguments. """
     if (
-            len(sed_string) >= 5 and
-            sed_string[5] in DELIMITERS and
-            sed_string.count(sed_string[5]) >= 2
+            len(sed_string) >= 2 and
+            sed_string[2] in DELIMITERS and
+            sed_string.count(sed_string[2]) >= 2
     ):
-        delim = sed_string[5]
-        start = counter = 6
+        delim = sed_string[2]
+        start = counter = 3
         while counter < len(sed_string):
             if sed_string[counter] == "\\":
                 counter += 1
@@ -64,7 +64,7 @@ def separate_sed(sed_string):
     return None
 
 
-@register(outgoing=True, pattern="^.sed ")
+@register(outgoing=True, pattern="^.s")
 async def sed(command):
     if not command.text[0].isalpha() and command.text[0] not in ("/", "#", "@", "!"):
         """ For sed command, use sed on Telegram. """
@@ -111,7 +111,7 @@ async def sed(command):
                 await command.edit("Did you mean? \n\n" + text + "")
 
 CMD_HELP.update({
-    "sed": ".sed <delimiter><old word(s)><delimiter><new word(s)>\
+    "sed": ".s<delimiter><old word(s)><delimiter><new word(s)>\
     \nUsage: Replaces a word or words using sed.\
     \nDelimiters: `/, :, |, _`"
 })

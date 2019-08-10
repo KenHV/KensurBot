@@ -10,8 +10,8 @@
     "productivity"
   ],
   "repository": "https://github.com/AvinashReddy3108/PaperplaneExtended",
-  "website": "https://github.com/RaphielGang/Telegram-UserBot/wiki",
-  "success_url": "https://t.me/userbot_announcements",
+  "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-07-24",
+  "success_url": "https://t.me/PaperplaneExtended",
   "stack": "container",
   "env": {
     "API_KEY": {
@@ -24,7 +24,7 @@
     },
     "STRING_SESSION": {
       "description": "[REQUIRED] Get this value by running python3 string_session.py in app console.",
-      "required": false
+      "value": ""
     },
     "CHROME_DRIVER": {
       "description": "ChromeDriver location.",
@@ -63,16 +63,47 @@
       "required": false
     },
     "ANTI_SPAMBOT": {
-      "description": "Report or kick some known spammer bots after they join.",
+      "description": "Kicks spambots from groups after they join. [Requires admin powers in groups to kick.]",
+      "value": "False"
+    },
+    "ANTI_SPAMBOT_SHOUT": {
+      "description": "Report spambots to @admins in groups after they join, just in case when you don't have admin powers to kick that shit yourself.",
       "value": "False"
     },
     "TMP_DOWNLOAD_DIRECTORY": {
       "description": "Download location for many modules (GDrive, .download etc..)",
-      "value": "./",
-      "required": "False"
+      "value": "./downloads/"
+    },
+    "CLEAN_WELCOME": {
+      "description": "Deletes old welcome messages; when a new person joins, the old message is deleted.",
+      "value": "True"
     },
     "G_DRIVE_CLIENT_ID": {
       "description": "Enter Your Client ID for Google Drive.",
+      "required": false
+    },
+    "LASTFM_API": {
+      "description": "API Key for Last.FM module. [Get one from - https://www.last.fm/api/account/create]",
+      "required": false
+    },
+    "LASTFM_SECRET": {
+      "description": "SECRET Key for Last.FM module. [Get one from - https://www.last.fm/api/account/create]",
+      "required": false
+    },
+    "LASTFM_USERNAME": {
+      "description": "Last.FM Username",
+      "required": false
+    },
+    "LASTFM_PASSWORD": {
+      "description": "Last.FM Password",
+      "required": false
+    },
+    "BIO_PREFIX": {
+      "description": "Prefix for Last.FM Module Bio.",
+      "required": false
+    },
+    "DEFAULT_BIO": {
+      "description": "Default profile bio.",
       "required": false
     },
     "G_DRIVE_CLIENT_SECRET": {
@@ -81,11 +112,11 @@
     }
   },
   "addons": [
-      {
-        "plan": "heroku-postgresql",
-        "options": {
-          "version": "9.5"
-        }
+    {
+      "plan": "heroku-postgresql",
+      "options": {
+        "version": "9.5"
       }
-    ]
-  }
+    }
+  ]
+}

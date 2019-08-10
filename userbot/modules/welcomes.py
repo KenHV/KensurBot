@@ -1,7 +1,7 @@
 from telethon.utils import pack_bot_file_id
 from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings, add_welcome_setting, rm_welcome_setting
 from userbot.events import register
-from userbot import CMD_HELP, bot, LOGS
+from userbot import CMD_HELP, bot, LOGS, CLEAN_WELCOME
 from telethon.events import ChatAction
 
 
@@ -14,7 +14,7 @@ async def welcome_to_chat(event):
         user_left=False,
         user_kicked=False,"""
         if (event.user_joined or event.user_added) and not (await event.get_user()).bot:
-            if cws.should_clean_welcome:
+            if CLEAN_WELCOME:
                 try:
                     await event.client.delete_messages(
                         event.chat_id,
@@ -73,6 +73,7 @@ async def welcome_to_chat(event):
                                                      my_mention=my_mention),
                 file=cws.media_file_id
             )
+            update_previous_welcome(event.chat_id, current_message.id)
 
 
 @register(outgoing=True, pattern=r"^.welcome(?: |$)(.*)")

@@ -47,7 +47,10 @@ async def permitpm(event):
                     # If the message doesn't same as previous one
                     # Send the Unapproved Message again
                     if event.text != prevmsg:
-                        async for message in event.client.iter_messages(event.chat_id, from_user='me', search=UNAPPROVED_MSG, limit=1):
+                        async for message in event.client.iter_messages(event.chat_id, 
+                                                                        from_user='me', 
+                                                                        search=UNAPPROVED_MSG, 
+                                                                        limit=1):
                             await message.delete()
                         await event.reply(UNAPPROVED_MSG)
                     LASTMSG.update({event.chat_id: event.text})
@@ -64,8 +67,8 @@ async def permitpm(event):
 
                 if COUNT_PM[event.chat_id] > 4:
                     await event.respond(
-                        "`You were spamming my master's PM, which I don't like.`"
-                        " `I'mma Report Spam.`"
+                        "`You were spamming my PM, which I didn't like.`\n"
+                        "`You have been BLOCKED and reported as SPAM, until further notice.`"
                     )
 
                     try:
@@ -178,7 +181,10 @@ async def approvepm(apprvpm):
             f"[{name0}](tg://user?id={uid}) `approved to PM!`"
         )
 
-        async for message in apprvpm.client.iter_messages(apprvpm.chat_id, from_user='me', search=UNAPPROVED_MSG, limit=1):
+        async for message in apprvpm.client.iter_messages(apprvpm.chat_id, 
+                                                          from_user='me', 
+                                                          search=UNAPPROVED_MSG, 
+                                                          limit=1):
             await message.delete()
 
         if BOTLOG:
