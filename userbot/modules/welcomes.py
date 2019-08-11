@@ -84,18 +84,18 @@ async def save_welcome(event):
         msg = await event.get_reply_message()
         input_str = event.pattern_match.group(1)
         if input_str:
-            if add_welcome_setting(event.chat_id, input_str, True, 0) is True:
+            if add_welcome_setting(event.chat_id, input_str, 0) is True:
                 await event.edit("`Welcome note saved !!`")
             else:
                 await event.edit("`I can only have one welcome note per chat !!`")
         elif msg and msg.media:
             bot_api_file_id = pack_bot_file_id(msg.media)
-            if add_welcome_setting(event.chat_id, msg.message, True, 0, bot_api_file_id) is True:
+            if add_welcome_setting(event.chat_id, msg.message, 0, bot_api_file_id) is True:
                 await event.edit("`Welcome note saved !!`")
             else:
                 await event.edit("`I can only have one welcome note per chat !!`")
         elif msg.message is not None:
-            if add_welcome_setting(event.chat_id, msg.message, True, 0) is True:
+            if add_welcome_setting(event.chat_id, msg.message, 0) is True:
                 await event.edit("`Welcome note saved !!`")
             else:
                 await event.edit("`I can only have one welcome note per chat !!`")
