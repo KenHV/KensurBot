@@ -102,7 +102,7 @@ async def kang(args):
             )
             htmlstr = response.read().decode("utf8").split('\n')
 
-            if "A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>." not in htmlstr:
+            if "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>." not in htmlstr:
                 async with bot.conversation('Stickers') as conv:
                     await conv.send_message('/addsticker')
                     await conv.get_response()
