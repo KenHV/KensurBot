@@ -31,7 +31,7 @@ def get_current_welcome_settings(chat_id):
         SESSION.close()
 
 
-def add_welcome_setting(chat_id, custom_welcome_message, previous_welcome,media_file_id=None):
+def add_welcome_setting(chat_id, custom_welcome_message, previous_welcome, media_file_id=None):
     try:
         adder = Welcome(chat_id, custom_welcome_message, previous_welcome, media_file_id)
         SESSION.add(adder)
