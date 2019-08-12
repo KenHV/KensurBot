@@ -21,6 +21,8 @@ UNAPPROVED_MSG = ("`Hello! This is an automated message.\n\n`"
                   "`I haven't approved you to PM yet.`"
                   "`Please wait for me to look in, I mostly approve PMs.\n\n`"
                   "`Until then, please don't spam my PM, you'll get blocked and reported!`")
+
+self_user = await event.client.get_me()
 # =================================================================
 
 
@@ -29,7 +31,6 @@ async def permitpm(event):
     """ Prohibits people from PMing you without approval. \
         Will block retarded nibbas automatically. """
     if PM_AUTO_BAN:
-        self_user = await event.client.get_me()
         if event.is_private and event.chat_id != "777000" and event.chat_id != self_user.id and not (await event.get_sender()).bot:
             try:
                 from userbot.modules.sql_helper.pm_permit_sql import is_approved
@@ -104,7 +105,7 @@ async def permitpm(event):
 @register(disable_edited=True, outgoing=True)
 async def auto_accept(event):
     """ Will approve nibbas automatically if you texted them first. """
-    if event.is_private and not (await event.get_sender()).bot:
+    if event.is_private and event.chat_id != "777000" and event.chat_id != self_user.id and not (await event.get_sender()).bot:
         try:
             from userbot.modules.sql_helper.pm_permit_sql import is_approved
             from userbot.modules.sql_helper.pm_permit_sql import approve
