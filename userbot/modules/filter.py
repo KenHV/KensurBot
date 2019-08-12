@@ -49,13 +49,8 @@ async def filter_incoming_handler(handler):
                         )
                     else:
                         media = None
-                    message_id = handler.message.id
-                    if handler.reply_to_msg_id:
-                        message_id = handler.reply_to_msg_id
-                    await handler.client.send_message(
-                        handler.chat_id,
+                    await handler.reply(
                         trigger.reply,
-                        reply_to=message_id,
                         file=media
                     )
     except AttributeError:

@@ -79,6 +79,7 @@ async def welcome_mute(welcm):
                         data = r.json()
                     except:
                         print("CAS check failed, falling back to legacy anti_spambot behaviour.")
+                        data = None
                         pass
 
                     if data and data['ok']:

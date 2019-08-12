@@ -37,7 +37,7 @@ async def notes_active(svd):
         await svd.edit(message)
 
 
-@register(outgoing=True, pattern=r"^.clear (\w*)")
+@register(outgoing=True, pattern=r"^.clear (.*)")
 async def remove_notes(clr):
     """ For .clear command, clear note with the given name."""
     if not clr.text[0].isalpha() and clr.text[0] not in ("/", "#", "@", "!"):
