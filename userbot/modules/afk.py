@@ -12,37 +12,39 @@ from telethon.events import StopPropagation
 
 from userbot import (COUNT_MSG, CMD_HELP, BOTLOG, BOTLOG_CHATID,
                      USERS)
+
 from userbot.events import register
 
 from userbot.modules.sql_helper.globals import gvarstatus, addgvar, delgvar
+from sqlalchemy.exc import IntegrityError
 
+# ========================= CONSTANTS ============================
 AFKSTR = [
-        "I'll be back in a couple of minutes... If not, read this status again!",
-        "I'll be back in a couple of hours. I didn't say starting from when.",
-        "If I'm not back in half an hour... please wait a little longer.",
-        "I'm busy right now. please talk in a bag and when I come back you'll just give me the bag!",
-        "I'm away right now. If you need anything, leave a message after the beep: beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeep!",
+        "I'm busy right now. Please talk in a bag and when I come back you'll just give me the bag!",
+        "I'm away right now. If you need anything, leave a message after the beep:\n`beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeep`!",
         "You missed me, next time aim better.",
-        "I'll be back in 5 minutes and if I'm not... Wait longer.",
+        "I'll be back in a few minutes and if I'm not...,\nwait longer.",
         "I'm not here right now, so I'm probably somewhere else.",
-        "Roses are red,Violets are blue,Leave me a message,And I'll get back to you.",
-        "Sometimes the best things in life are worth waiting for…I`ll be right back.",
-        "I'll be right back, but if I'm not right back, I'll be back later.",
-        "If you haven't figured it out already, I'm not here.",
-        "Hi. I'm not here right now...but maybe I am...or maybe it's a program...or maybe I'm a program in the Matrix...omg halp !!",
+        "Roses are red,\nViolets are blue,\nLeave me a message,\nAnd I'll get back to you.",
+        "Sometimes the best things in life are worth waiting for…\nI`ll be right back.",
+        "I'll be right back,\nbut if I'm not right back,\nI'll be back later.",
+        "If you haven't figured it out already,\nI'm not here.",
         "Hello, welcome to my away message, how may I ignore you today?",
-        "I'm away over 7 seas and 7 countries, 7 waters and 7 continents, 7 mountains and 7 hills, 7 plains and 7 mounds, 7 pools and 7 lakes, 7 springs and 7 meadows, 7 cities and 7 neighborhoods, 7 blocks and 7 houses... Where not even your messages can reach me!",
+        "I'm away over 7 seas and 7 countries,\n7 waters and 7 continents,\n7 mountains and 7 hills,\n7 plains and 7 mounds,\n7 pools and 7 lakes,\n7 springs and 7 meadows,\n7 cities and 7 neighborhoods,\n7 blocks and 7 houses...\n\nWhere not even your messages can reach me!",
         "I'm away from the keyboard at the moment, but if you'll scream loud enough at your screen, I might just hear you.",
-        "I went that way ---->",
+        "I went that way\n---->",
+        "I went this way\n<----",
         "Please leave a message and make me feel even more important than I already am.",
-        "I am not here so stop writing to me, or else you will find yourself with a screen full of your own messages.",
+        "I am not here so stop writing to me,\nor else you will find yourself with a screen full of your own messages.",
         "If I were here, I'd tell you where I am. But I'm not, so ask me when I return...",
-        "I am away! I don't know when I'll be back! Hopefully 10 minutes from NOW!",
+        "I am away! I don't know when I'll be back! Hopefully a few minutes from now!",
         "I'm not available right now so please leave your name, number, and address and I will STALK you later.",
-        "Sorry, I'm not here right now. Feel free to talk to the computer as long as you like. I'll get back to you later.",
+        "Sorry, I'm not here right now. Feel free to talk to my userbot as long as you like. I'll get back to you later.",
         "I bet you were expecting an away message!",
-        "I am not here right now...but if I was... wouldn't that be awesome?",
+        "Life is so short, there are so many things to do...\nI'm away doing one of them..",
+        "I am not here right now...\nbut if I was...\n\nwouldn't that be awesome?",
 ]
+# =================================================================
 
 @register(incoming=True, disable_edited=True)
 async def mention_afk(mention):
@@ -65,7 +67,7 @@ async def mention_afk(mention):
                 USERS.update({mention.sender_id: 1})
                 COUNT_MSG = COUNT_MSG + 1
             elif mention.sender_id in USERS:
-                if USERS[mention.sender_id] % 5 == 0:
+                if USERS[mention.sender_id] % 2 == 0:
                     if AFKREASON:
                         await mention.reply(
                             f"Sorry! But I'm still not back yet. Currently busy with `{AFKREASON}`."
@@ -88,8 +90,13 @@ async def afk_on_pm(sender):
     global USERS
     global COUNT_MSG
     AFKREASON = gvarstatus("AFK_REASON")
-    if sender.is_private and not (await sender.get_sender()).bot:
-        if ISAFK:
+    if sender.is_private and sender.chat_id != "777000" and not (await sender.get_sender()).bot:
+        try:
+            from userbot.modules.sql_helper.pm_permit_sql import is_approved
+        except AttributeError:
+            return
+        apprv = is_approved(event.chat_id)
+        if not apprv and ISAFK:
             if sender.sender_id not in USERS:
                 if AFKREASON:
                     await sender.reply(
@@ -187,5 +194,4 @@ CMD_HELP.update({
     "afk": ".afk [Optional Reason]\
 \nUsage: Sets you as afk.\nReplies to anyone who tags/PM's \
 you telling them that you are AFK(reason).\n\nSwitches off AFK when you type back anything.\
-"
-})
+"})
