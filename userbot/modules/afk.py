@@ -11,7 +11,7 @@ from asyncio import sleep
 from telethon.events import StopPropagation
 
 from userbot import (COUNT_MSG, CMD_HELP, BOTLOG, BOTLOG_CHATID,
-                     USERS)
+                     USERS, PM_AUTO_BAN)
 
 from userbot.events import register
 
@@ -96,7 +96,7 @@ async def afk_on_pm(sender):
         except AttributeError:
             return
         apprv = is_approved(event.chat_id)
-        if not apprv and ISAFK:
+        if (PM_AUTO_BAN and not apprv) and ISAFK:
             if sender.sender_id not in USERS:
                 if AFKREASON:
                     await sender.reply(
