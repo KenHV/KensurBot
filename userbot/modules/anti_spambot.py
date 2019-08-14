@@ -26,7 +26,7 @@ async def welcome_mute(welcm):
             return
         if welcm.user_joined or welcm.user_added:
             adder = None
-            ignore = None
+            ignore = False
 
             if welcm.user_added:
                 ignore = False
@@ -39,12 +39,14 @@ async def welcome_mute(welcm):
 
             if ignore:
                 return
+            
             elif welcm.user_joined:
                 users_list = hasattr(welcm.action_message.action, "users")
                 if users_list:
                     users = welcm.action_message.action.users
                 else:
                     users = [welcm.action_message.from_id]
+                    
             await sleep(5)
             spambot = False
 
