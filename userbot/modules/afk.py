@@ -90,7 +90,7 @@ async def afk_on_pm(sender):
     global USERS
     global COUNT_MSG
     AFKREASON = gvarstatus("AFK_REASON")
-    if sender.is_private and sender.chat_id != "777000" and not (await sender.get_sender()).bot:
+    if sender.is_private and sender.chat_id != 777000 and not (await sender.get_sender()).bot:
         try:
             from userbot.modules.sql_helper.pm_permit_sql import is_approved
         except AttributeError:
