@@ -292,7 +292,7 @@ async def ban(bon):
 
 @register(outgoing=True, pattern="^.unban(?: |$)(.*)")
 async def nothanos(unbon):
-        """ For .unban command, unbans the replied/tagged person """
+    """ For .unban command, unbans the replied/tagged person """
     if not unbon.text[0].isalpha() and unbon.text[0] \
             not in ("/", "#", "@", "!"):
 
@@ -538,7 +538,7 @@ async def ungmoot(un_gmute):
 
 @register(outgoing=True, pattern="^.gmute(?: |$)(.*)")
 async def gspider(gspdr):
-        """ For .gmute command, globally mutes the replied/tagged person """
+    """ For .gmute command, globally mutes the replied/tagged person """
     if not gspdr.text[0].isalpha() and gspdr.text[0] not in ("/", "#", "@", "!"):
         # Admin or creator check
         chat = await gspdr.get_chat()
