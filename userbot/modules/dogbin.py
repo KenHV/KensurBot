@@ -15,14 +15,14 @@ DOGBIN_URL = "https://del.dog/"
 
 @register(outgoing=True, pattern=r"^.paste(?: |$)([\s\S]*)")
 async def paste(pstl):
-    """ For .paste command, allows using dogbin functionality with the command. """
+    """ For .paste command, pastes the text directly to dogbin. """
     if not pstl.text[0].isalpha() and pstl.text[0] not in ("/", "#", "@", "!"):
         dogbin_final_url = ""
         match = pstl.pattern_match.group(1).strip()
         reply_id = pstl.reply_to_msg_id
 
         if not match and not reply_id:
-            await pstl.edit("There's nothing to paste.")
+            await pstl.edit("Master,please give me something to paste.")
             return
 
         if match:
@@ -71,13 +71,13 @@ async def paste(pstl):
         if BOTLOG:
             await pstl.client.send_message(
                 BOTLOG_CHATID,
-                "Paste query `" + message + "` was executed successfully",
+                f"Paste query was executed successfully",
             )
 
 
 @register(outgoing=True, pattern="^.getpaste(?: |$)(.*)")
 async def get_dogbin_content(dog_url):
-    """ For .get_dogbin_content command, fetches the content of a dogbin URL. """
+    """ For .getpaste command, fetches the content of a dogbin URL. """
     if not dog_url.text[0].isalpha() and dog_url.text[0] not in ("/", "#", "@", "!"):
         textx = await dog_url.get_reply_message()
         message = dog_url.pattern_match.group(1)
@@ -96,7 +96,7 @@ async def get_dogbin_content(dog_url):
         elif message.startswith("del.dog/"):
             message = message[len("del.dog/"):]
         else:
-            await dog_url.edit("`Are you sure you're using a valid dogbin URL?`")
+            await dog_url.edit("`Master I don't think that's a dogbin url...`")
             return
 
         resp = get(f'{DOGBIN_URL}raw/{message}')
@@ -119,12 +119,12 @@ async def get_dogbin_content(dog_url):
         if BOTLOG:
             await dog_url.client.send_message(
                 BOTLOG_CHATID,
-                "Get dogbin content query for `" + message + "` was executed successfully",
+                "Get dogbin content query was executed successfully",
             )
 
 CMD_HELP.update({
     "dogbin": ".paste <text/reply>\
 \nUsage: Create a paste or a shortened url using dogbin (https://del.dog/)\
 \n\n.getpaste\
-\nUsage: Get the content of a paste or shortened url from dogbin (https://del.dog/)"
+\nUsage: Gets the content of a paste or shortened url from dogbin (https://del.dog/)"
 })

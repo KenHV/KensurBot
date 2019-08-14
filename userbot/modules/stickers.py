@@ -34,27 +34,26 @@ async def kang(args):
 
         if message and message.media:
             if isinstance(message.media, MessageMediaPhoto):
-                await args.edit("Kanging this pic...")
+                await args.edit("Converting this into a sticker...")
                 photo = io.BytesIO()
                 photo = await bot.download_media(message.photo, photo)
             elif "image" in message.media.document.mime_type.split('/'):
-                await args.edit("Kanging this pic...")
+                await args.edit("Kanging this sticker...")
                 photo = io.BytesIO()
                 await bot.download_file(message.media.document, photo)
                 if (DocumentAttributeFilename(file_name='sticker.webp')
                         in message.media.document.attributes):
-                    await args.edit("Enslaving this sticker...")
                     emoji = message.media.document.attributes[1].alt
                     emojibypass = True
             elif "tgsticker" in message.media.document.mime_type:
                 await args.edit("Taming this animated sticker...")
                 await bot.download_file(message.media.document, 'AnimatedSticker.tgs')
-                
+
                 attributes = message.media.document.attributes
                 for attribute in attributes:
                     if isinstance(attribute, DocumentAttributeSticker):
                         emoji = attribute.alt
-                        
+
                 emojibypass = True
                 is_anim = True
                 photo = 1
@@ -62,7 +61,7 @@ async def kang(args):
                 await args.edit("Unsupported File!")
                 return
         else:
-            await args.edit("Reply to photo to kang it bruh")
+            await args.edit("Master, how do I kang that?!?")
             return
 
         if photo:
@@ -129,7 +128,7 @@ async def kang(args):
                     # Ensure user doesn't get spamming notifications
                     await bot.send_read_acknowledge(conv.chat_id)
             else:
-                await args.edit("Brewing new Pack...")
+                await args.edit("Brewing a new Pack...")
                 async with bot.conversation('Stickers') as conv:
                     await conv.send_message(cmd)
                     await conv.get_response()

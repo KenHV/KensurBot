@@ -156,9 +156,11 @@ async def welcome_mute(welcm):
                         BOTLOG_CHATID,
                         "#ANTI_SPAMBOT REPORT\n"
                         f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                        f"CHAT: {welcm.chat.title}(`{welcm.chat_id}`)\n"
+                        f"USER ID: `{user.id}`\n"
+                        f"CHAT: {welcm.chat.title}\n"
+                        f"CHAT ID: `{welcm.chat_id}`\n"
                         f"REASON: {reason}\n"
-                        f"MESSAGE:\n{message.text}"
+                        f"MESSAGE:\n\n{message.text}"
                     )
     except ValueError:
         pass

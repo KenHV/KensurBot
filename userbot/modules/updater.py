@@ -76,7 +76,7 @@ async def upstream(ups):
         if conf != "now":
             changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
             if len(changelog_str) > 4096:
-                await ups.edit("`Changelog is too big, view the file to see it.`")
+                await ups.edit("`Changelog is too big, sending it as a file.`")
                 file = open("output.txt", "w+")
                 file.write(changelog_str)
                 file.close()
@@ -88,7 +88,7 @@ async def upstream(ups):
                 remove("output.txt")
             else:
                 await ups.edit(changelog_str)
-            await ups.respond('`do \".update now\" to update`')
+            await ups.respond("`do \".update now\" to update\nDon't if using Heroku`")
             return
 
         await ups.edit('`New update found, updating...`')
@@ -108,8 +108,9 @@ async def upstream(ups):
 
 
 CMD_HELP.update({
-    'update': '.update\
-\nUsage: Check if the main userbot repository has any updates and show changelog if so.\
+    'update': ".update\
+\nUsage: Checks if the main userbot repository has any updates and shows a changelog if so.\
 \n\n.update now\
-\nUsage: Update your userbot, if there are any updates in the main userbot repository.'
+\nUsage: Updates your userbot, if there are any updates in the main userbot repository.\
+\n\nNote: If you are using Heroku, please don't use `.update now` as it won't work."
 })

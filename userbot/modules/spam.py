@@ -106,5 +106,5 @@ CMD_HELP.update({
 \nUsage: As if text spam was not enough !!\
 \n\n.delayspam <delay> <count> <text>\
 \nUsage: .bigspam but slower.\
-\n\n\nNOTE : I am not responsible for Telegram guys snapping their fingers and killing your account !!"
+\n\n\nNOTE : I am not responsible if you get banned for spamming!"
 })

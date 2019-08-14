@@ -20,8 +20,8 @@ from sqlalchemy.exc import IntegrityError
 
 # ========================= CONSTANTS ============================
 AFKSTR = [
-        "I'm busy right now. Please talk in a bag and when I come back you'll just give me the bag!",
-        "I'm away right now. If you need anything, leave a message after the beep:\n`beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeep`!",
+        "I'm busy right now. Please talk in a bag and when I come back you can just give me the bag!",
+        "I'm away right now. If you need anything, leave a message after the beep:\n\n`beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeep`!",
         "You missed me, next time aim better.",
         "I'll be back in a few minutes and if I'm not...,\nwait longer.",
         "I'm not here right now, so I'm probably somewhere else.",
@@ -38,7 +38,7 @@ AFKSTR = [
         "I am not here so stop writing to me,\nor else you will find yourself with a screen full of your own messages.",
         "If I were here, I'd tell you where I am. But I'm not, so ask me when I return...",
         "I am away! I don't know when I'll be back! Hopefully a few minutes from now!",
-        "I'm not available right now so please leave your name, number, and address and I will STALK you later.",
+        "I'm not available right now so please leave your name, number, and address and I will stalk you later.",
         "Sorry, I'm not here right now. Feel free to talk to my userbot as long as you like. I'll get back to you later.",
         "I bet you were expecting an away message!",
         "Life is so short, there are so many things to do...\nI'm away doing one of them..",
@@ -193,5 +193,5 @@ async def type_afk_is_not_true(notafk):
 CMD_HELP.update({
     "afk": ".afk [Optional Reason]\
 \nUsage: Sets you as afk.\nReplies to anyone who tags/PM's \
-you telling them that you are AFK(reason).\n\nSwitches off AFK when you type back anything.\
+you telling them that you are AFK(reason).\n\nSwitches off AFK when you type back anything, anywhere.\
 "})

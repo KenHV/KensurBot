@@ -69,7 +69,7 @@ async def time_func(tdata):
 
         time_zone = await get_tz(con)
         if not time_zone:
-            await tdata.edit("``` Wrong country given! Try again! ```")
+            await tdata.edit("``` Hmm...\nCan't find that country anywhere on planet Earth.```")
             return
 
         try:
@@ -104,7 +104,7 @@ async def date_func(dat):
 
         time_zone = await get_tz(con)
         if not time_zone:
-            await dat.edit("``` Wrong country given! Try again! ```")
+            await dat.edit("``` Is that even a name?! ```")
             return
 
         try:
@@ -124,7 +124,7 @@ async def set_time_country(loc):
 
         time_zone = await get_tz(temp_country)
         if not time_zone:
-            await loc.edit("``` Wrong country given! Try again! ```")
+            await loc.edit("``` Country doesn't exists, just like ur love life. ```")
             return
 
         try:

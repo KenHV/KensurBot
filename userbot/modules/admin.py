@@ -27,7 +27,7 @@ from userbot.events import register
 
 # =================== CONSTANT ===================
 PP_TOO_SMOL = "`The image is too small`"
-PP_ERROR = "`Failure while processing image`"
+PP_ERROR = "`Failure while processing the image`"
 NO_ADMIN = "`I am not an admin!`"
 NO_PERM = "`I don't have sufficient permissions!`"
 NO_SQL = "`Running on Non-SQL mode!`"
@@ -35,7 +35,7 @@ NO_SQL = "`Running on Non-SQL mode!`"
 CHAT_PP_CHANGED = "`Chat Picture Changed`"
 CHAT_PP_ERROR = "`Some issue with updating the pic,`" \
                 "`maybe coz I'm not an admin,`" \
-                "`or don't have the desired rights.`"
+                "`or don't have enough rights.`"
 INVALID_MEDIA = "`Invalid Extension`"
 
 BANNED_RIGHTS = ChatBannedRights(
@@ -115,7 +115,7 @@ async def set_group_photo(gpic):
 
 @register(outgoing=True, pattern="^.promote(?: |$)(.*)")
 async def promote(promt):
-    """ For .promote command, do promote targeted person """
+    """ For .promote command, promotes the replied/tagged person """
     if not promt.text[0].isalpha() \
             and promt.text[0] not in ("/", "#", "@", "!"):
         # Get targeted chat
@@ -175,7 +175,7 @@ async def promote(promt):
 
 @register(outgoing=True, pattern="^.demote(?: |$)(.*)")
 async def demote(dmod):
-    """ For .demote command, do demote targeted person """
+    """ For .demote command, demotes the replied/tagged person """
     if not dmod.text[0].isalpha() and dmod.text[0] not in ("/", "#", "@", "!"):
         # Admin right check
         chat = await dmod.get_chat()
@@ -233,7 +233,7 @@ async def demote(dmod):
 
 @register(outgoing=True, pattern="^.ban(?: |$)(.*)")
 async def ban(bon):
-    """ For .ban command, do "thanos" at targeted person """
+    """ For .ban command, bans the replied/tagged person """
     if not bon.text[0].isalpha() and bon.text[0] not in ("/", "#", "@", "!"):
         # Here laying the sanity check
         chat = await bon.get_chat()
@@ -280,7 +280,7 @@ async def ban(bon):
 
         await bon.edit("`{}` was banned!".format(str(user.id)))
 
-        # Announce to the logging group if we have demoted successfully
+        # Announce to the logging group if we have banned the person successfully!
         if BOTLOG:
             await bon.client.send_message(
                 BOTLOG_CHATID,
@@ -292,7 +292,7 @@ async def ban(bon):
 
 @register(outgoing=True, pattern="^.unban(?: |$)(.*)")
 async def nothanos(unbon):
-    """ For .unban command, undo "thanos" on target """
+        """ For .unban command, unbans the replied/tagged person """
     if not unbon.text[0].isalpha() and unbon.text[0] \
             not in ("/", "#", "@", "!"):
 
@@ -366,7 +366,7 @@ async def spider(spdr):
         self_user = await spdr.client.get_me()
 
         if user.id == self_user.id:
-        	await spdr.edit("`Mute Error! You are not supposed to mute yourself!`")
+        	await spdr.edit("`Master, You are not supposed to mute yourself!\n(ヘ･_･)ヘ┳━┳`")
         	return
 
 
@@ -401,7 +401,7 @@ async def spider(spdr):
 
 @register(outgoing=True, pattern="^.unmute(?: |$)(.*)")
 async def unmoot(unmot):
-    """ For .unmute command, unmute the target """
+    """ For .unmute command, unmute the replied/tagged person """
     if not unmot.text[0].isalpha() and unmot.text[0] \
             not in ("/", "#", "@", "!"):
 
@@ -538,7 +538,7 @@ async def ungmoot(un_gmute):
 
 @register(outgoing=True, pattern="^.gmute(?: |$)(.*)")
 async def gspider(gspdr):
-    """ For .gmute command, gmutes the target in the userbot """
+        """ For .gmute command, globally mutes the replied/tagged person """
     if not gspdr.text[0].isalpha() and gspdr.text[0] not in ("/", "#", "@", "!"):
         # Admin or creator check
         chat = await gspdr.get_chat()
@@ -567,7 +567,7 @@ async def gspider(gspdr):
         # If pass, inform and start gmuting
         await gspdr.edit("`Grabs a huge, sticky duct tape!`")
         if gmute(user.id) is False:
-            await gspdr.edit('`Error! User probably already gmuted.`')
+            await gspdr.edit('`Error! User probably already gmuted.\nRe-rolls the tape.`')
         else:
             await gspdr.edit("`Globally taped!`")
 
@@ -582,7 +582,7 @@ async def gspider(gspdr):
 
 @register(outgoing=True, pattern="^.delusers(?: |$)(.*)")
 async def rm_deletedacc(show):
-    """ For .adminlist command, list all of the admins of the chat. """
+    """ For .delusers command, list all the ghost/deleted accounts in a chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
         con = show.pattern_match.group(1)
         del_u = 0
@@ -616,7 +616,7 @@ async def rm_deletedacc(show):
             await show.edit("`I am not an admin here!`")
             return
 
-        await show.edit("`Cleaning deleted accounts...`")
+        await show.edit("`Deleting deleted accounts...\nOh I can do that?!?!`")
         del_u = 0
         del_a = 0
 
@@ -684,6 +684,7 @@ async def get_admin(show):
 
 @register(outgoing=True, pattern="^.pin(?: |$)(.*)")
 async def pin(msg):
+    """ For .pin command, pins the replied/tagged message on the top the chat. """
     if not msg.text[0].isalpha() and msg.text[0] not in ("/", "#", "@", "!"):
         # Admin or creator check
         chat = await msg.get_chat()
@@ -730,7 +731,7 @@ async def pin(msg):
 
 @register(outgoing=True, pattern="^.kick(?: |$)(.*)")
 async def kick(usr):
-    """ For .kick command, kick someone from the group using the userbot. """
+    """ For .kick command, kicks the replied/tagged person from the group. """
     if not usr.text[0].isalpha() and usr.text[0] not in ("/", "#", "@", "!"):
         # Admin or creator check
         chat = await usr.get_chat()
@@ -783,7 +784,7 @@ async def kick(usr):
 
 @register(outgoing=True, pattern="^.userslist ?(.*)")
 async def get_users(show):
-    """ For .userslist command, list all of the users of the chat. """
+    """ For .userslist command, list all of the users in a chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
         if not show.is_group:
             await show.edit("Are you sure this is a group?")
@@ -885,7 +886,7 @@ CMD_HELP.update({
 \n\n.delusers\
 \nUsage: Searches for deleted accounts in a group. Use .delusers clean to remove deleted accounts from the group.\
 \n\n.adminlist\
-\nUsage: Retrieves all admins in the chat.\
+\nUsage: Retrieves all admins in a chat.\
 \n\n.userslist or .userslist <name>\
-\nUsage: Retrieves all users in the chat."
+\nUsage: Retrieves all users in a chat."
 })

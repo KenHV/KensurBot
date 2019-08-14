@@ -62,7 +62,7 @@ async def _(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
         if event.fwd_from:
             return
-        await event.edit("*Processing...*")
+        await event.edit("*Reading...*")
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
         lang_code = event.pattern_match.group(1)
@@ -75,14 +75,12 @@ async def _(event):
             ParsedText = test_file["ParsedResults"][0]["ParsedText"]
             ProcessingTimeInMilliseconds = str(int(test_file["ProcessingTimeInMilliseconds"]) // 1000)
         except:
-            await event.edit("Errors...")
+            await event.edit("Couldn't read it.\nI guess I need new glasses.")
         else:
             await event.edit("Read Document in {} seconds. \n{}".format(ProcessingTimeInMilliseconds, ParsedText))
         os.remove(downloaded_file_name)
 
 
 CMD_HELP.update({
-    'ocr': ".ocr <language>\
-\nUsage: Reply to an image or sticker to extract text from the given content.\
-\nExample: .ocr (get language codes from here : https://ocr.space/ocrapi)"
+    'ocr': ".ocr <language>\nUsage: Reply to an image or sticker to extract text from it.\n\nGet language codes from [here](https://ocr.space/ocrapi)"
 })
