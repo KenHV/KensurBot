@@ -27,11 +27,10 @@ async def welcome_mute(welcm):
         if welcm.user_joined or welcm.user_added:
             adder = None
             ignore = False
-            users = []
 
             if welcm.user_added:
                 ignore = False
-                adder = welcm._added_by
+                adder = welcm.action_message.from_id
 
             async for admin in bot.iter_participants(welcm.chat_id, filter=ChannelParticipantsAdmins):
                 if admin.id == adder:
@@ -46,10 +45,13 @@ async def welcome_mute(welcm):
                 if users_list:
                     users = welcm.action_message.action.users
                 else:
-                    users = [welcm._added_by]
+                    users = [welcm.action_message.from_id]
                     
             await sleep(5)
             spambot = False
+            
+            if not users:
+                return
 
             for user_id in users:
                 async for message in bot.iter_messages(
