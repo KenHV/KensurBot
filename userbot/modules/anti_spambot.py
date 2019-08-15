@@ -115,7 +115,7 @@ async def welcome_mute(welcm):
                                 "Info"
                         ):
                             if user.last_name == "Bot":
-                                reason = "Known Spam Bot"
+                                reason = "Known spambot"
                                 spambot = True
 
                     if spambot:
@@ -134,7 +134,8 @@ async def welcome_mute(welcm):
                         await welcm.reply(
                             "@admins\n"
                             "`ANTI SPAMBOT DETECTOR!\n"
-                            "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`")
+                            "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`\n"
+                            f"REASON: {reason}")
                 else:
                     await welcm.reply(
                         "`Potential Spambot Detected! Kicking away! "
@@ -154,7 +155,8 @@ async def welcome_mute(welcm):
                             await welcm.reply(
                                 "@admins\n"
                                 "`ANTI SPAMBOT DETECTOR!\n"
-                                "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`")
+                                "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`\n"
+                                f"REASON: {reason}")
 
                 if BOTLOG:
                     await welcm.client.send_message(
