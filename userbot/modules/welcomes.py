@@ -9,6 +9,7 @@ async def welcome_to_chat(event):
     
     try:
         from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
+        from userbot.modules.sql_helper.welcome_sql import update_previous_welcome
     except AttributeError:
         return
     
