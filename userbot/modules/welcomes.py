@@ -6,6 +6,12 @@ from telethon.events import ChatAction
 
 @bot.on(ChatAction)
 async def welcome_to_chat(event):
+    
+    try:
+        from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
+    except AttributeError:
+        return
+    
     cws = get_current_welcome_settings(event.chat_id)
     if cws:
         """user_added=True,
@@ -13,12 +19,6 @@ async def welcome_to_chat(event):
         user_left=False,
         user_kicked=False,"""
         if (event.user_joined or event.user_added) and not (await event.get_user()).bot:
-            
-            try:
-                from userbot.modules.sql_helper.welcome_sql import update_previous_welcome
-            except AttributeError:
-                return
-            
             if CLEAN_WELCOME:
                 try:
                     await event.client.delete_messages(
