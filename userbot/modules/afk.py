@@ -96,7 +96,7 @@ async def afk_on_pm(sender):
         except AttributeError:
             return
         apprv = is_approved(sender.sender_id)
-        if (PM_AUTO_BAN and not apprv) and ISAFK:
+        if (PM_AUTO_BAN and apprv) and ISAFK:
             if sender.sender_id not in USERS:
                 if AFKREASON:
                     await sender.reply(
@@ -108,7 +108,7 @@ async def afk_on_pm(sender):
                     )
                 USERS.update({sender.sender_id: 1})
                 COUNT_MSG = COUNT_MSG + 1
-            elif sender.sender_id in USERS:
+            elif apprv and sender.sender_id in USERS:
                 if USERS[sender.sender_id] % 2 == 0:
                     if AFKREASON:
                         await sender.reply(
