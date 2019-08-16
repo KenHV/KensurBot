@@ -34,11 +34,11 @@ async def kang(args):
 
         if message and message.media:
             if isinstance(message.media, MessageMediaPhoto):
-                await args.edit("Converting this into a sticker...")
+                await args.edit("Waiting for Global Warming to melt this pic into a sticker...")
                 photo = io.BytesIO()
                 photo = await bot.download_media(message.photo, photo)
             elif "image" in message.media.document.mime_type.split('/'):
-                await args.edit("Kanging this sticker...")
+                await args.edit("Using witchery to kang this sticker...")
                 photo = io.BytesIO()
                 await bot.download_file(message.media.document, photo)
                 if (DocumentAttributeFilename(file_name='sticker.webp')
@@ -61,7 +61,7 @@ async def kang(args):
                 await args.edit("Unsupported File!")
                 return
         else:
-            await args.edit("Master, how do I kang that?!?")
+            await args.edit("I can't kang that...")
             return
 
         if photo:
