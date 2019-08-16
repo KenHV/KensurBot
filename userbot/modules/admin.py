@@ -366,7 +366,7 @@ async def spider(spdr):
         self_user = await spdr.client.get_me()
 
         if user.id == self_user.id:
-        	await spdr.edit("`Master, You are not supposed to mute yourself!\n(ヘ･_･)ヘ┳━┳`")
+        	await spdr.edit("`Hands too short, can't duct tape myself...\n(ヘ･_･)ヘ┳━┳`")
         	return
 
 
