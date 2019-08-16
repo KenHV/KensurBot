@@ -96,7 +96,7 @@ async def get_dogbin_content(dog_url):
         elif message.startswith("del.dog/"):
             message = message[len("del.dog/"):]
         else:
-            await dog_url.edit("`Master I don't think that's a dogbin url...`")
+            await dog_url.edit("`Is that even a dogbin url?`")
             return
 
         resp = get(f'{DOGBIN_URL}raw/{message}')
