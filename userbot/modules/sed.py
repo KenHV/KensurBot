@@ -18,6 +18,10 @@ DELIMITERS = ("/", ":", "|", "_")
 
 def separate_sed(sed_string):
     """ Separate sed arguments. """
+    
+    if len(sed_string) < 2:
+        return
+    
     if (
             len(sed_string) >= 2 and
             sed_string[2] in DELIMITERS and
