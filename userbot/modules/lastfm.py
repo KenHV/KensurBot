@@ -204,8 +204,8 @@ async def lastlog(lstlog):
 CMD_HELP.update({
     'lastfm': ".lastfm\
     \nUsage: Shows currently scrobbling track or most recent scrobbles if nothing is playing.\
-    \n'lastbio': .lastbio <on/off>\
-    \nUsage: Enable/Disable last.fm bio updating\
-    \n'lastlog': .lastlog <on/off>\
-    \nUsage: Enable/Disable last.fm bio logging"
+    \n\nlastbio: .lastbio <on/off>\
+    \nUsage: Enables/Disables last.fm current playing to bio.\
+    \n\nlastlog: .lastlog <on/off>\
+    \nUsage: Enable/Disable last.fm bio logging in the bot-log group."
 })
