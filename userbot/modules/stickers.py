@@ -197,7 +197,7 @@ async def kang(args):
                         await conv.send_file(file, force_document=True)
                     rsp = await conv.get_response()
                     if "Sorry, the file type is invalid." in rsp.text:
-                        await args.edit("Failed to add sticker,use @Stickers bot.")
+                        await args.edit("Failed to add sticker, use @Stickers bot to add the sticker manually.")
                         return
                     await conv.send_message(emoji)
                     # Ensure user doesn't get spamming notifications
