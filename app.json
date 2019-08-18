@@ -23,7 +23,7 @@
       "value": ""
     },
     "STRING_SESSION": {
-      "description": "[REQUIRED] Get this value by running python3 string_session.py in app console.",
+      "description": "Get this value by running [python3 string_session.py] in Termux or local system.",
       "value": ""
     },
     "CHROME_DRIVER": {
@@ -60,6 +60,10 @@
     },
     "OCR_SPACE_API_KEY": {
       "description": "OCR API Key for .ocr command Get from https://ocr.space/ocrapi",
+      "required": false
+    },
+    "REM_BG_API_KEY": {
+      "description": "API Key for .ocr command Get from https://www.remove.bg/api",
       "required": false
     },
     "ANTI_SPAMBOT": {

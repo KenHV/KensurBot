@@ -8,7 +8,7 @@
 
 import os
 import shutil
-import bs4
+from bs4 import BeautifulSoup
 import re
 from time import sleep
 from html import unescape
@@ -17,8 +17,6 @@ from datetime import datetime
 from selenium import webdriver
 from urllib.parse import quote_plus
 from urllib.error import HTTPError
-from asyncio import create_subprocess_shell as asyncsh
-from asyncio.subprocess import PIPE as asyncsh_PIPE
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
 from wikipedia import summary
@@ -51,7 +49,7 @@ async def setlang(prog):
 async def carbon_api(e):
  if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
    """ A Wrapper for carbon.now.sh """
-   await e.edit("Processing...")
+   await e.edit("`Processing..`")
    CARBON = 'https://carbon.now.sh/?l={lang}&code={code}'
    global CARBONLANG
    textx = await e.get_reply_message()
@@ -61,6 +59,7 @@ async def carbon_api(e):
    elif textx:
          pcode = str(textx.message) # Importing message to module
    code = quote_plus(pcode) # Converting to urlencoded
+   await e.edit("`Processing..\n25%`")
    url = CARBON.format(code=code, lang=CARBONLANG)
    chrome_options = Options()
    chrome_options.add_argument("--headless")
@@ -68,29 +67,25 @@ async def carbon_api(e):
    chrome_options.add_argument("--window-size=1920x1080")
    chrome_options.add_argument("--disable-dev-shm-usage")
    chrome_options.add_argument("--no-sandbox")
-   chrome_options.add_argument('--disable-gpu')
+   chrome_options.add_argument("--disable-gpu")
    prefs = {'download.default_directory' : './'}
    chrome_options.add_experimental_option('prefs', prefs)
-   await e.edit("Processing 30%")
-
    driver = webdriver.Chrome(executable_path=CHROME_DRIVER, options=chrome_options)
    driver.get(url)
+   await e.edit("`Processing..\n50%`")
    download_path = './'
    driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
    params = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_path}}
    command_result = driver.execute("send_command", params)
-
    driver.find_element_by_xpath("//button[contains(text(),'Export')]").click()
-   sleep(5) # this might take a bit.
    driver.find_element_by_xpath("//button[contains(text(),'4x')]").click()
-   sleep(5)
-   await e.edit("Processing 50%")
    driver.find_element_by_xpath("//button[contains(text(),'PNG')]").click()
-   sleep(5) #Waiting for downloading
-
-   await e.edit("Processing 90%")
+   await e.edit("`Processing..\n75%`")
+   # Waiting for downloading
+   sleep(2.5)
+   await e.edit("`Processing..\n100%`")
    file = './carbon.png'
-   await e.edit("Done!!")
+   await e.edit("`Uploading..`")
    await e.client.send_file(
          e.chat_id,
          file,
@@ -100,6 +95,7 @@ async def carbon_api(e):
          )
 
    os.remove('./carbon.png')
+   driver.quit()
    # Removing carbon.png after uploading
    await e.delete() # Deleting msg
 
@@ -153,37 +149,40 @@ async def _(event):
                     rebmun = round(number * current_rate, 2)
                     await event.edit("{} {} = {} {}".format(number, currency_from, rebmun, currency_to))
                 else:
-                    await event.edit("IDEKNOWTDWTT")
+                    await event.edit("`This seems to be some alien currency, which I can't convert right now.`")
             except e:
                 await event.edit(str(e))
         else:
-            await event.edit("`.currency number from to`")
+            await event.edit("`Invalid syntax.`")
         end = datetime.now()
         ms = (end - start).seconds
 
 
-@register(outgoing=True, pattern=r"^.google (.*)")
+@register(outgoing=True, pattern=r"^.search (.*)")
 async def gsearch(q_event):
     """ For .google command, do a Google search. """
     if not q_event.text[0].isalpha() and q_event.text[0] not in (
             "/", "#", "@", "!"):
         match_ = q_event.pattern_match.group(1)
         match = quote_plus(match_)
-        result_ = await asyncsh(
-            f"gsearch {match}",
-            stdout=asyncsh_PIPE,
-            stderr=asyncsh_PIPE
-        )
-        stdout, stderr = await result_.communicate()
-        result = str(stdout.decode().strip()) \
-            + str(stderr.decode().strip())
+        plain_txt = get(f"https://www.startpage.com/do/search?cmd=process_search&query={match}", 'html').text
+        soup = BeautifulSoup(plain_txt, "lxml")
+        
+        msg = ""
+        for result in soup.find_all('a', {'class': 'w-gl__result-title'}):
+            title = result.text
+            link = result.get('href')
+            msg += f"{title}\n{link}\n"
+            
         await q_event.edit(
-            "**Search Query:**\n`" + match_ + "`\n\n**Result:**\n" + result
+            "**Search Query:**\n`" + match_ + "`\n\n**Results:**\n" + msg,
+            link_preview = False
         )
+        
         if BOTLOG:
             await q_event.client.send_message(
                 BOTLOG_CHATID,
-                "Google Search query `" + match_ + "` was executed successfully",
+                "Search query `" + match_ + "` was executed successfully",
             )
 
 @register(outgoing=True, pattern=r"^.wiki (.*)")
@@ -335,12 +334,12 @@ async def imdb(e):
             final_name = '+'.join(remove_space)
             page = get("https://www.imdb.com/find?ref_=nv_sr_fn&q="+final_name+"&s=all")
             lnk = str(page.status_code)
-            soup = bs4.BeautifulSoup(page.content,'lxml')
+            soup = BeautifulSoup(page.content,'lxml')
             odds = soup.findAll("tr","odd")
             mov_title = odds[0].findNext('td').findNext('td').text
             mov_link = "http://www.imdb.com/"+odds[0].findNext('td').findNext('td').a['href']
             page1 = get(mov_link)
-            soup = bs4.BeautifulSoup(page1.content,'lxml')
+            soup = BeautifulSoup(page1.content,'lxml')
             if soup.find('div','poster'):
     	        poster = soup.find('div','poster').img['src']
             else:
@@ -436,7 +435,7 @@ async def translateme(trans):
         if BOTLOG:
             await trans.client.send_message(
                 BOTLOG_CHATID,
-                f"Translate query was executed successfully",
+                f"Translated some {source_lan.title()} stuff to {transl_lan.title()} just now.",
             )
 
 
@@ -459,7 +458,6 @@ async def yt_search(video_q):
     if not video_q.text[0].isalpha() and video_q.text[0] not in ("/", "#", "@", "!"):
         query = video_q.pattern_match.group(1)
         result = ''
-        i = 1
 
         if not YOUTUBE_API_KEY:
             await video_q.edit("`Error: YouTube API key missing! Add it to environment vars or config.env.`")
@@ -472,11 +470,11 @@ async def yt_search(video_q):
 
 
         for video in videos_json:
-            result += f"{i}. {unescape(video['snippet']['title'])} \
-                \nhttps://www.youtube.com/watch?v={video['id']['videoId']}\n"
-            i += 1
+            title = f"{unescape(video['snippet']['title'])}"
+            link = f"https://youtu.be/{video['id']['videoId']}"
+            result += f"{title}\n{link}\n\n"
 
-        reply_text = f"**Search Query:**\n`{query}`\n\n**Result:**\n{result}"
+        reply_text = f"**Search Query:**\n`{query}`\n\n**Results:**\n\n{result}"
 
         await video_q.edit(reply_text)
 
@@ -609,8 +607,8 @@ CMD_HELP.update({
         \nUsage: Beautify your code using carbon.now.sh\nUse .crblang <text> to set language for your code.'
 })
 CMD_HELP.update({
-    'google': '.google <query>\
-        \nUsage: Does a search on Google.'
+    'search': '.search <query>\
+        \nUsage: Does a search on StartPage.'
 })
 CMD_HELP.update({
     'wiki': '.wiki <query>\

@@ -1065,6 +1065,17 @@ async def let_me_google_that_for_you(lmgtfy_q):
         await lmgtfy_q.edit(f"[{query}]({r.json()['shorturl']})")
 
 
+@register(pattern=r".scam(?: |$)(.*)", outgoing=True)
+async def scam(event):
+    await event.delete()
+    input_str = event.pattern_match.group(1)
+    action = "typing"
+    if input_str:
+        action = input_str
+    async with event.client.action(event.chat_id, action):
+        await asyncio.sleep(60)
+
+
 @register(pattern='.type(?: |$)(.*)')
 async def typewriter(typew):
     """ Just a small command to make your keyboard become a typewriter! """
@@ -1090,6 +1101,7 @@ async def typewriter(typew):
             await asyncio.sleep(sleep_time)
             await typew.edit(old_text)
             await asyncio.sleep(sleep_time)
+
 
 CMD_HELP.update({
     "memes": ".cowsay\
@@ -1150,5 +1162,7 @@ CMD_HELP.update({
 \nUsage: Let me Google that for you real quick !!\
 \n\n.decide [Optional: (yes, no, maybe)]\
 \nUsage: Make a quick decision.\
+\n\n.scam [Optional: (typing, contact, game, location, voice, round, video, photo, document)]\
+\nUsage: Create fake chat actions, for fun. (Default action: typing)\
 \n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
 })
