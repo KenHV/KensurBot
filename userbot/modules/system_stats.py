@@ -187,6 +187,9 @@ CMD_HELP.update({
 })
 CMD_HELP.update({
     "alive": ".alive\
-    \nUsage: It's used to check if your bot is working or not. \
-Use .aliveu <new_user> to change user or .resetalive to reset .alive."
+    \nUsage: Type .alive to see wether your bot is working or not.\
+    \n\n.aliveu <text>\
+    \nUsage: Changes the "user" in alive to the text you want.\
+    \n\n.resetalive\
+    \nUsage: Resets the user to default."
 })
