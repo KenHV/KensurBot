@@ -14,6 +14,7 @@ from sqlalchemy.exc import IntegrityError
 
 from userbot import (COUNT_PM, CMD_HELP, BOTLOG, BOTLOG_CHATID,
                      PM_AUTO_BAN, LASTMSG, LOGS)
+
 from userbot.events import register
 
 # ========================= CONSTANTS ============================
@@ -118,12 +119,13 @@ async def auto_accept(event):
             async for message in event.client.iter_messages(
                     event.chat_id, reverse=True, limit=1
             ):
-                if message.from_id == (await event.client.get_me()).id:
+                if message.message is not UNAPPROVED_MSG and message.from_id == (await event.client.get_me()).id:
                     try:
-                        approve(chat.id)
+                        approve(event.chat_id)
                     except IntegrityError:
                         return
-                if BOTLOG:
+
+                if is_approved(event.chat_id) and BOTLOG:
                     await event.client.send_message(
                         BOTLOG_CHATID,
                         "#AUTO-APPROVED\n"

@@ -53,6 +53,7 @@ async def kbg(remob):
                     force_document=True,
                     reply_to=message_id
                 )
+                await remob.delete()
         else:
             await remob.edit("**Error (Invalid API key, I guess ?)**\n`{}`".format(output_file_name.content.decode("UTF-8")))
 
