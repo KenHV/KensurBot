@@ -1,4 +1,5 @@
 aiohttp
+aria2p
 async_generator
 bs4
 cowpy
@@ -25,14 +26,14 @@ pylast
 pySmartDL
 python-barcode
 python-dotenv
-pytube>=9.5.1
+youtube-dl
 pytz
 qrcode
 requests>=2.18.4
-search-engine-parser
+search-engine-parser>=0.4.2
 speedtest-cli>=2.0.2
 sqlalchemy>=1.2
-telethon>=1.9
+telethon>=1.10.3
 telethon-session-sqlalchemy>=0.2.6
 urbandict>=0.5
 wikipedia>=1.4.0

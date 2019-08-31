@@ -20,50 +20,45 @@ from userbot.events import register, errors_handler
 @register(pattern=".whois(?: |$)(.*)", outgoing=True)
 @errors_handler
 async def who(event):
-    if not event.text[0].isalpha() and event.text[0] not in (
-            "/", "#", "@", "!"):
-        """ For .whois command, get info about a user. """
-        if event.fwd_from:
-            return
 
-        await event.edit("`Sit tight while I steal some data from Mark Zuckerburg...`")
+    await event.edit(
+        "`Sit tight while I steal some data from Mark Zuckerburg...`")
 
-        if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
-            os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
+    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
 
-        replied_user = await get_user(event)
+    replied_user = await get_user(event)
 
-        photo, caption = await fetch_info(replied_user, event)
+    photo, caption = await fetch_info(replied_user, event)
 
-        message_id_to_reply = event.message.reply_to_msg_id
+    message_id_to_reply = event.message.reply_to_msg_id
 
-        if not message_id_to_reply:
-            message_id_to_reply = None
+    if not message_id_to_reply:
+        message_id_to_reply = None
 
-        try:
-            await event.client.send_file(
-                event.chat_id,
-                photo,
-                caption=caption,
-                link_preview=False,
-                force_document=False,
-                reply_to=message_id_to_reply,
-                parse_mode="html"
-            )
+    try:
+        await event.client.send_file(event.chat_id,
+                                     photo,
+                                     caption=caption,
+                                     link_preview=False,
+                                     force_document=False,
+                                     reply_to=message_id_to_reply,
+                                     parse_mode="html")
 
-            if not photo.startswith("http"):
-                os.remove(photo)
-            await event.delete()
+        if not photo.startswith("http"):
+            os.remove(photo)
+        await event.delete()
 
-        except TypeError:
-            await event.edit(caption, parse_mode="html")
+    except TypeError:
+        await event.edit(caption, parse_mode="html")
 
 
 async def get_user(event):
     """ Get the user from argument or replied message. """
     if event.reply_to_msg_id:
         previous_message = await event.get_reply_message()
-        replied_user = await event.client(GetFullUserRequest(previous_message.from_id))
+        replied_user = await event.client(
+            GetFullUserRequest(previous_message.from_id))
     else:
         user = event.pattern_match.group(1)
 
@@ -77,15 +72,15 @@ async def get_user(event):
         if event.message.entities is not None:
             probable_user_mention_entity = event.message.entities[0]
 
-            if isinstance(
-                    probable_user_mention_entity,
-                    MessageEntityMentionName):
+            if isinstance(probable_user_mention_entity,
+                          MessageEntityMentionName):
                 user_id = probable_user_mention_entity.user_id
                 replied_user = await event.client(GetFullUserRequest(user_id))
                 return replied_user
         try:
             user_object = await event.client.get_entity(user)
-            replied_user = await event.client(GetFullUserRequest(user_object.id))
+            replied_user = await event.client(
+                GetFullUserRequest(user_object.id))
         except (TypeError, ValueError) as err:
             await event.edit(str(err))
             return None
@@ -95,12 +90,11 @@ async def get_user(event):
 
 async def fetch_info(replied_user, event):
     """ Get details from the User object. """
-    replied_user_profile_photos = await event.client(GetUserPhotosRequest(
-        user_id=replied_user.user.id,
-        offset=42,
-        max_id=0,
-        limit=80
-    ))
+    replied_user_profile_photos = await event.client(
+        GetUserPhotosRequest(user_id=replied_user.user.id,
+                             offset=42,
+                             max_id=0,
+                             limit=80))
     replied_user_profile_photos_count = "Person needs help with uploading profile picture."
     try:
         replied_user_profile_photos_count = replied_user_profile_photos.count
@@ -120,15 +114,14 @@ async def fetch_info(replied_user, event):
     is_bot = replied_user.user.bot
     restricted = replied_user.user.restricted
     verified = replied_user.user.verified
-    photo = await event.client.download_profile_photo(
-        user_id,
-        TEMP_DOWNLOAD_DIRECTORY + str(user_id) + ".jpg",
-        download_big=True
-    )
-    first_name = first_name.replace("\u2060", "") if first_name else (
-        "This User has no First Name")
-    last_name = last_name.replace("\u2060", "") if last_name else (
-        "This User has no Last Name")
+    photo = await event.client.download_profile_photo(user_id,
+                                                      TEMP_DOWNLOAD_DIRECTORY +
+                                                      str(user_id) + ".jpg",
+                                                      download_big=True)
+    first_name = first_name.replace(
+        "\u2060", "") if first_name else ("This User has no First Name")
+    last_name = last_name.replace(
+        "\u2060", "") if last_name else ("This User has no Last Name")
     username = "@{}".format(username) if username else (
         "This User has no Username")
     user_bio = "This User has no About" if not user_bio else user_bio
@@ -150,7 +143,9 @@ async def fetch_info(replied_user, event):
 
     return photo, caption
 
+
 CMD_HELP.update({
-    "whois": ".whois <username> or reply to someones text with .whois\
+    "whois":
+    ".whois <username> or reply to someones text with .whois\
     \nUsage: Gets info of an user."
 })

@@ -18,15 +18,14 @@ from userbot.events import register, errors_handler
 @errors_handler
 async def speedtst(spd):
     """ For .speed command, use SpeedTest to check server speeds. """
-    if not spd.text[0].isalpha() and spd.text[0] not in ("/", "#", "@", "!"):
-        await spd.edit("`Running speed test . . .`")
-        test = speedtest.Speedtest()
+    await spd.edit("`Running speed test . . .`")
+    test = speedtest.Speedtest()
 
-        test.get_best_server()
-        test.download()
-        test.upload()
-        test.results.share()
-        result = test.results.dict()
+    test.get_best_server()
+    test.download()
+    test.upload()
+    test.results.share()
+    result = test.results.dict()
 
     await spd.edit("`"
                    "Started at "
@@ -48,52 +47,40 @@ def speed_convert(size):
     """
     power = 2**10
     zero = 0
-    units = {
-        0: '',
-        1: 'Kb/s',
-        2: 'Mb/s',
-        3: 'Gb/s',
-        4: 'Tb/s'}
+    units = {0: '', 1: 'Kb/s', 2: 'Mb/s', 3: 'Gb/s', 4: 'Tb/s'}
     while size > power:
         size /= power
         zero += 1
     return f"{round(size, 2)} {units[zero]}"
 
 
-@register(outgoing=True, pattern="^.nearestdc$")
+@register(outgoing=True, pattern="^.dc$")
 @errors_handler
 async def neardc(event):
-    if not event.text[0].isalpha() and event.text[0] not in (
-            "/", "#", "@", "!"):
-        """ For .nearestdc command, get the nearest datacenter information. """
-        result = await event.client(functions.help.GetNearestDcRequest())
-        await event.edit(
-            f"Country : `{result.country}` \n"
-            f"Nearest Datacenter : `{result.nearest_dc}` \n"
-            f"This Datacenter : `{result.this_dc}`"
-        )
+    """ For .dc command, get the nearest datacenter information. """
+    result = await event.client(functions.help.GetNearestDcRequest())
+    await event.edit(f"Country : `{result.country}`\n"
+                     f"Nearest Datacenter : `{result.nearest_dc}`\n"
+                     f"This Datacenter : `{result.this_dc}`")
 
 
-@register(outgoing=True, pattern="^.pingme$")
+@register(outgoing=True, pattern="^.ping$")
 @errors_handler
 async def pingme(pong):
-    """ FOr .pingme command, ping the userbot from any chat.  """
-    if not pong.text[0].isalpha() and pong.text[0] not in ("/", "#", "@", "!"):
-        start = datetime.now()
-        await pong.edit("`Pong!`")
-        end = datetime.now()
-        duration = (end - start).microseconds / 1000
-        await pong.edit("`Pong!\n%sms`" % (duration))
+    """ For .ping command, ping the userbot from any chat.  """
+    start = datetime.now()
+    await pong.edit("`Pong!`")
+    end = datetime.now()
+    duration = (end - start).microseconds / 1000
+    await pong.edit("`Pong!\n%sms`" % (duration))
 
-CMD_HELP.update({
-    "speed": ".speed\
-    \nUsage: Does a speedtest and shows the results."
-})
-CMD_HELP.update({
-    "nearestdc": ".nearestdc\
-    \nUsage: Finds the nearest datacenter from your server."
-})
-CMD_HELP.update({
-    "pingme": ".pingme\
-    \nUsage: Shows how long it takes to ping your bot."
-})
+
+CMD_HELP.update(
+    {"speed": ".speed\
+    \nUsage: Does a speedtest and shows the results."})
+CMD_HELP.update(
+    {"dc": ".dc\
+    \nUsage: Finds the nearest datacenter from your server."})
+CMD_HELP.update(
+    {"ping": ".ping\
+    \nUsage: Shows how long it takes to ping your bot."})

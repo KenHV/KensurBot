@@ -1,7 +1,5 @@
 config.env
 __pycache__/*
-brains.check
-learning-data-root.check
 userbot.db
 userbot.session
 userbot.session-journal
@@ -10,3 +8,4 @@ userbot/modules/__pycache__/*
 userbot/modules/sql_helper/__pycache__/*
 .progress
 .vscode/*
+bin/*

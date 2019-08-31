@@ -13,7 +13,7 @@ import sys
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import CMD_HELP
+from userbot import CMD_HELP, bot
 from userbot.events import register, errors_handler
 
 
@@ -37,81 +37,80 @@ async def is_off_br(br):
 @errors_handler
 async def upstream(ups):
     "For .update command, check if the bot is up to date, update if specified"
-    if not ups.text[0].isalpha() and ups.text[0] not in (
-            "/", "#", "@", "!"):
-        await ups.edit("`Checking for updates, please wait....`")
-        conf = ups.pattern_match.group(1)
-        off_repo = 'https://github.com/AvinashReddy3108/PaperplaneExtended.git'
+    await ups.edit("`Checking for updates, please wait....`")
+    conf = ups.pattern_match.group(1)
+    off_repo = 'https://github.com/AvinashReddy3108/PaperplaneExtended.git'
 
-        try:
-            txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
-            repo = Repo()
-        except NoSuchPathError as error:
-            await ups.edit(f'{txt}\n`directory {error} is not found`')
-            return
-        except InvalidGitRepositoryError as error:
-            await ups.edit(f'{txt}\n`directory {error} does not seems to be a git repository`')
-            return
-        except GitCommandError as error:
-            await ups.edit(f'{txt}\n`Early failure! {error}`')
-            return
-
-        ac_br = repo.active_branch.name
-        if not await is_off_br(ac_br):
-            await ups.edit(
-                f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). \
-                in that case, Updater is unable to identify which branch is to be merged. \
-                please checkout to any official branch`'
-            )
-            return
-
-        try:
-            repo.create_remote('upstream', off_repo)
-        except BaseException:
-            pass
-
-        ups_rem = repo.remote('upstream')
-        ups_rem.fetch(ac_br)
-        changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
-
-        if not changelog:
-            await ups.edit(f'\n`Your BOT is` **up-to-date** `with` **{ac_br}**\n')
-            return
-
-        if conf != "now":
-            changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
-            if len(changelog_str) > 4096:
-                await ups.edit("`Changelog is too big, sending it as a file.`")
-                file = open("output.txt", "w+")
-                file.write(changelog_str)
-                file.close()
-                await ups.client.send_file(
-                    ups.chat_id,
-                    "output.txt",
-                    reply_to=ups.id,
-                )
-                remove("output.txt")
-            else:
-                await ups.edit(changelog_str)
-            await ups.respond("`do \".update now\" to update\nDon't if using Heroku`")
-            return
-
-        await ups.edit('`New update found, updating...`')
-        ups_rem.fetch(ac_br)
-        ups_rem.git.reset('--hard', 'FETCH_HEAD')
+    try:
+        txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
+        repo = Repo()
+    except NoSuchPathError as error:
+        await ups.edit(f'{txt}\n`directory {error} is not found`')
+        return
+    except InvalidGitRepositoryError as error:
         await ups.edit(
-            '`Successfully Updated!\n'
-            'Bot is restarting... Wait for a second!`'
+            f'{txt}\n`directory {error} does not seems to be a git repository`'
         )
-        await ups.client.disconnect()
-        # Spin a new instance of bot
-        execl(sys.executable, sys.executable, *sys.argv)
-        # Shut the existing one down
-        exit()
+        return
+    except GitCommandError as error:
+        await ups.edit(f'{txt}\n`Early failure! {error}`')
+        return
+
+    ac_br = repo.active_branch.name
+    if not await is_off_br(ac_br):
+        await ups.edit(
+            f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). \
+            in that case, Updater is unable to identify which branch is to be merged. \
+            please checkout to any official branch`')
+        return
+
+    try:
+        repo.create_remote('upstream', off_repo)
+    except BaseException:
+        pass
+
+    ups_rem = repo.remote('upstream')
+    ups_rem.fetch(ac_br)
+    changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
+
+    if not changelog:
+        await ups.edit(f'\n`Your BOT is` **up-to-date** `with` **{ac_br}**\n')
+        return
+
+    if conf != "now":
+        changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
+        if len(changelog_str) > 4096:
+            await ups.edit("`Changelog is too big, sending it as a file.`")
+            file = open("output.txt", "w+")
+            file.write(changelog_str)
+            file.close()
+            await ups.client.send_file(
+                ups.chat_id,
+                "output.txt",
+                reply_to=ups.id,
+            )
+            remove("output.txt")
+        else:
+            await ups.edit(changelog_str)
+        await ups.respond(
+            "`do \".update now\" to update\nDon't if using Heroku`")
+        return
+
+    await ups.edit('`New update found, updating...`')
+    ups_rem.fetch(ac_br)
+    repo.git.reset('--hard', 'FETCH_HEAD')
+    await ups.edit('`Successfully Updated!\n'
+                   'Bot is restarting... Wait for a second!`')
+    await bot.disconnect()
+    # Spin a new instance of bot
+    execl(sys.executable, sys.executable, *sys.argv)
+    # Shut the existing one down
+    exit()
 
 
 CMD_HELP.update({
-    'update': ".update\
+    'update':
+    ".update\
 \nUsage: Checks if the main userbot repository has any updates and shows a changelog if so.\
 \n\n.update now\
 \nUsage: Updates your userbot, if there are any updates in the main userbot repository."

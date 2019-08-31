@@ -3,26 +3,19 @@ try:
 except ImportError:
     raise AttributeError
 
-from sqlalchemy import BigInteger, Column, String, UnicodeText
+from sqlalchemy import BigInteger, Boolean, Column, Numeric, String
 
 
 class Welcome(BASE):
     __tablename__ = "welcome"
     chat_id = Column(String(14), primary_key=True)
-    custom_welcome_message = Column(UnicodeText, nullable=False)
-    media_file_id = Column(UnicodeText)
     previous_welcome = Column(BigInteger)
+    f_mesg_id = Column(Numeric)
 
-    def __init__(
-            self,
-            chat_id,
-            custom_welcome_message,
-            previous_welcome,
-            media_file_id=None):
+    def __init__(self, chat_id, previous_welcome, f_mesg_id):
         self.chat_id = str(chat_id)
-        self.custom_welcome_message = custom_welcome_message
-        self.media_file_id = media_file_id
         self.previous_welcome = previous_welcome
+        self.f_mesg_id = f_mesg_id
 
 
 Welcome.__table__.create(checkfirst=True)
@@ -38,17 +31,9 @@ def get_current_welcome_settings(chat_id):
         SESSION.close()
 
 
-def add_welcome_setting(
-        chat_id,
-        custom_welcome_message,
-        previous_welcome,
-        media_file_id=None):
+def add_welcome_setting(chat_id, previous_welcome, f_mesg_id):
     try:
-        adder = Welcome(
-            chat_id,
-            custom_welcome_message,
-            previous_welcome,
-            media_file_id)
+        adder = Welcome(chat_id, previous_welcome, f_mesg_id)
         SESSION.add(adder)
         SESSION.commit()
         return True
@@ -70,5 +55,4 @@ def rm_welcome_setting(chat_id):
 def update_previous_welcome(chat_id, previous_welcome):
     row = SESSION.query(Welcome).get(str(chat_id))
     row.previous_welcome = previous_welcome
-    # commit the changes to the DB
     SESSION.commit()

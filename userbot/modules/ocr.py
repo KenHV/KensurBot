@@ -6,7 +6,10 @@ from userbot import bot, OCR_SPACE_API_KEY, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register, errors_handler
 
 
-async def ocr_space_file(filename, overlay=False, api_key=OCR_SPACE_API_KEY, language='eng'):
+async def ocr_space_file(filename,
+                         overlay=False,
+                         api_key=OCR_SPACE_API_KEY,
+                         language='eng'):
     """ OCR.space API request with local file.
         Python3.5 - not tested on 2.7
     :param filename: Your file path & name.
@@ -20,40 +23,42 @@ async def ocr_space_file(filename, overlay=False, api_key=OCR_SPACE_API_KEY, lan
     :return: Result in JSON format.
     """
 
-    payload = {'isOverlayRequired': overlay,
-               'apikey': api_key,
-               'language': language,
-               }
+    payload = {
+        'isOverlayRequired': overlay,
+        'apikey': api_key,
+        'language': language,
+    }
     with open(filename, 'rb') as f:
-        r = requests.post('https://api.ocr.space/parse/image',
-                          files={filename: f},
-                          data=payload,
-                          )
+        r = requests.post(
+            'https://api.ocr.space/parse/image',
+            files={filename: f},
+            data=payload,
+        )
     return r.json()
 
 
-@register(pattern=r"\.ocr (.*)", outgoing=True)
+@register(pattern=r".ocr (.*)", outgoing=True)
+@errors_handler
 async def ocr(event):
-    if not event.text[0].isalpha() and event.text[0] not in (
-            "/", "#", "@", "!"):
-        await event.edit("`Reading...`")
-        if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
-            os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-        lang_code = event.pattern_match.group(1)
-        downloaded_file_name = await bot.download_media(
-            await event.get_reply_message(),
-            TEMP_DOWNLOAD_DIRECTORY
-        )
-        test_file = await ocr_space_file(filename=downloaded_file_name, language=lang_code)
-        try:
-            ParsedText = test_file["ParsedResults"][0]["ParsedText"]
-        except BaseException:
-            await event.edit("`Couldn't read it.`\n`I guess I need new glasses.`")
-        else:
-            await event.edit(f"`Here's what I could read from it:`\n\n{ParsedText}")
-        os.remove(downloaded_file_name)
+    await event.edit("`Reading...`")
+    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
+    lang_code = event.pattern_match.group(1)
+    downloaded_file_name = await bot.download_media(
+        await event.get_reply_message(), TEMP_DOWNLOAD_DIRECTORY)
+    test_file = await ocr_space_file(filename=downloaded_file_name,
+                                     language=lang_code)
+    try:
+        ParsedText = test_file["ParsedResults"][0]["ParsedText"]
+    except BaseException:
+        await event.edit("`Couldn't read it.`\n`I guess I need new glasses.`")
+    else:
+        await event.edit(f"`Here's what I could read from it:`\n\n{ParsedText}"
+                         )
+    os.remove(downloaded_file_name)
 
 
 CMD_HELP.update({
-    'ocr': ".ocr <language>\nUsage: Reply to an image or sticker to extract text from it.\n\nGet language codes from [here](https://ocr.space/ocrapi)"
+    'ocr':
+    ".ocr <language>\nUsage: Reply to an image or sticker to extract text from it.\n\nGet language codes from [here](https://ocr.space/ocrapi)"
 })
