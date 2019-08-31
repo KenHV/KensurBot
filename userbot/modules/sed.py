@@ -1,6 +1,6 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 # The entire source code is OSSRPL except 'sed' which is GPLv3
@@ -11,17 +11,18 @@
 import re
 from sre_constants import error as sre_err
 from userbot import CMD_HELP
-from userbot.events import register
+from asyncio import sleep
+from userbot.events import register, errors_handler
 
 DELIMITERS = ("/", ":", "|", "_")
 
 
-def separate_sed(sed_string):
+async def separate_sed(sed_string):
     """ Separate sed arguments. """
-    
+
     if len(sed_string) < 2:
         return
-    
+
     if (
             len(sed_string) >= 2 and
             sed_string[2] in DELIMITERS and
@@ -69,10 +70,12 @@ def separate_sed(sed_string):
 
 
 @register(outgoing=True, pattern="^.s")
+@errors_handler
 async def sed(command):
-    if not command.text[0].isalpha() and command.text[0] not in ("/", "#", "@", "!"):
+    if not command.text[0].isalpha() and command.text[0] not in (
+            "/", "#", "@", "!"):
         """ For sed command, use sed on Telegram. """
-        sed_result = separate_sed(command.text)
+        sed_result = await separate_sed(command.text)
         textx = await command.get_reply_message()
         if sed_result:
             if textx:
@@ -103,7 +106,7 @@ async def sed(command):
                     text = re.sub(repl, repl_with, to_fix, flags=re.I).strip()
                 elif "i" in flags:
                     text = re.sub(repl, repl_with, to_fix,
-                                count=1, flags=re.I).strip()
+                                  count=1, flags=re.I).strip()
                 elif "g" in flags:
                     text = re.sub(repl, repl_with, to_fix).strip()
                 else:
@@ -112,7 +115,9 @@ async def sed(command):
                 await command.edit("B O I! [Learn Regex](https://regexone.com)")
                 return
             if text:
-                await command.edit("Did you mean? \n\n" + text + "")
+                await command.edit(f"Did you mean? \n\n{text}")
+                sleep(2.5)
+                await command.edit(text)
 
 CMD_HELP.update({
     "sed": ".s<delimiter><old word(s)><delimiter><new word(s)>\

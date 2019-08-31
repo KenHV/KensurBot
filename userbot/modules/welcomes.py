@@ -1,18 +1,20 @@
 from telethon.utils import pack_bot_file_id
-from userbot.events import register
+from userbot.events import register, errors_handler
 from userbot import CMD_HELP, bot, LOGS, CLEAN_WELCOME
 from telethon.events import ChatAction
+from userbot.events import errors_handler
 
 
 @bot.on(ChatAction)
+@errors_handler
 async def welcome_to_chat(event):
-    
+
     try:
         from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
         from userbot.modules.sql_helper.welcome_sql import update_previous_welcome
     except AttributeError:
         return
-    
+
     cws = get_current_welcome_settings(event.chat_id)
     if cws:
         """user_added=True,
@@ -79,19 +81,21 @@ async def welcome_to_chat(event):
                                                      my_mention=my_mention),
                 file=cws.media_file_id
             )
-            
+
             update_previous_welcome(event.chat_id, current_message.id)
 
 
 @register(outgoing=True, pattern=r"^.welcome(?: |$)(.*)")
+@errors_handler
 async def save_welcome(event):
-    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+    if not event.text[0].isalpha() and event.text[0] not in (
+            "/", "#", "@", "!"):
         try:
             from userbot.modules.sql_helper.welcome_sql import add_welcome_setting
         except AttributeError:
             await event.edit("`Running on Non-SQL mode!`")
             return
-        
+
         msg = await event.get_reply_message()
         input_str = event.pattern_match.group(1)
         if input_str:
@@ -101,7 +105,11 @@ async def save_welcome(event):
                 await event.edit("`I can only have one welcome note per chat !!`")
         elif msg and msg.media:
             bot_api_file_id = pack_bot_file_id(msg.media)
-            if add_welcome_setting(event.chat_id, msg.message, 0, bot_api_file_id) is True:
+            if add_welcome_setting(
+                    event.chat_id,
+                    msg.message,
+                    0,
+                    bot_api_file_id) is True:
                 await event.edit("`Welcome note saved !!`")
             else:
                 await event.edit("`I can only have one welcome note per chat !!`")
@@ -113,29 +121,34 @@ async def save_welcome(event):
 
 
 @register(outgoing=True, pattern="^.show welcome$")
+@errors_handler
 async def show_welcome(event):
-    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+    if not event.text[0].isalpha() and event.text[0] not in (
+            "/", "#", "@", "!"):
         try:
             from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
         except AttributeError:
             await event.edit("`Running on Non-SQL mode!`")
             return
-        
+
         cws = get_current_welcome_settings(event.chat_id)
         if cws:
             await event.edit(f"`The current welcome message is:`\n{cws.custom_welcome_message}")
         else:
             await event.edit("`No welcome note saved here !!`")
 
+
 @register(outgoing=True, pattern="^.del welcome$")
+@errors_handler
 async def del_welcome(event):
-    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+    if not event.text[0].isalpha() and event.text[0] not in (
+            "/", "#", "@", "!"):
         try:
             from userbot.modules.sql_helper.welcome_sql import rm_welcome_setting
         except AttributeError:
             await event.edit("`Running on Non-SQL mode!`")
             return
-        
+
         if rm_welcome_setting(event.chat_id) is True:
             await event.edit("`Welcome note deleted for this chat.`")
         else:

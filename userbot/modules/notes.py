@@ -1,13 +1,13 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 
 """ Userbot module containing commands for keeping notes. """
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 from telethon.tl import types
 from telethon import utils
 
@@ -15,7 +15,9 @@ TYPE_TEXT = 0
 TYPE_PHOTO = 1
 TYPE_DOCUMENT = 2
 
+
 @register(outgoing=True, pattern="^.notes$")
+@errors_handler
 async def notes_active(svd):
     """ For .saved command, list all of the notes saved in a chat. """
     if not svd.text[0].isalpha() and svd.text[0] not in ("/", "#", "@", "!"):
@@ -30,14 +32,15 @@ async def notes_active(svd):
         for note in notes:
             if message == "`There are no saved notes in this chat`":
                 message = "Notes saved in this chat:\n"
-                message += "🗒️ `{}`\n".format(note.keyword)
+                message += "- `#{}`\n".format(note.keyword)
             else:
-                message += "🗒️ `{}`\n".format(note.keyword)
+                message += "- `#{}`\n".format(note.keyword)
 
         await svd.edit(message)
 
 
 @register(outgoing=True, pattern=r"^.clear (.*)")
+@errors_handler
 async def remove_notes(clr):
     """ For .clear command, clear note with the given name."""
     if not clr.text[0].isalpha() and clr.text[0] not in ("/", "#", "@", "!"):
@@ -56,6 +59,7 @@ async def remove_notes(clr):
 
 
 @register(outgoing=True, pattern=r"^.save (.*)")
+@errors_handler
 async def add_filter(fltr):
     """ For .save command, saves notes in a chat. """
     if not fltr.text[0].isalpha() and fltr.text[0] not in ("/", "#", "@", "!"):
@@ -86,13 +90,20 @@ async def add_filter(fltr):
 
         success = "`Note {} successfully. Use` #{} `to get it`"
 
-        if add_note(str(fltr.chat_id), notename, snip['text'], snip['type'], snip.get('id'), snip.get('hash'), snip.get('fr')) is False:
+        if add_note(str(fltr.chat_id),
+                    notename,
+                    snip['text'],
+                    snip['type'],
+                    snip.get('id'),
+                    snip.get('hash'),
+                    snip.get('fr')) is False:
             return await fltr.edit(success.format('updated', notename))
         else:
             return await fltr.edit(success.format('added', notename))
 
 
 @register(pattern=r"#\w*", disable_edited=True)
+@errors_handler
 async def incom_note(getnt):
     """ Notes logic. """
     try:
@@ -113,10 +124,10 @@ async def incom_note(getnt):
                         )
                     elif note.snip_type == TYPE_DOCUMENT:
                         media = types.InputDocument(
-                        int(note.media_id),
-                        int(note.media_access_hash),
-                        note.media_file_reference
-                    )
+                            int(note.media_id),
+                            int(note.media_access_hash),
+                            note.media_file_reference
+                        )
                     else:
                         media = None
                     message_id = getnt.message.id
@@ -131,7 +142,9 @@ async def incom_note(getnt):
     except AttributeError:
         pass
 
+
 @register(outgoing=True, pattern="^.rmnotes (.*)")
+@errors_handler
 async def kick_marie_notes(kick):
     """ For .rmfilters command, allows you to kick all \
         Marie(or her clones) filters from a chat. """

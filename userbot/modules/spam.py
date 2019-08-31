@@ -1,37 +1,39 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 
 import asyncio
-import time
-from asyncio import wait
+from asyncio import wait, sleep
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 
-@register(outgoing=True, pattern="^.tspam")
+
+@register(outgoing=True, pattern="^.tspam (.*)")
+@errors_handler
 async def tmeme(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
-        tspam = str(e.text[7:])
+        tspam = str(e.pattern_match.group(1))
         message = tspam.replace(" ", "")
         for letter in message:
             await e.respond(letter)
         await e.delete()
         if BOTLOG:
-                await e.client.send_message(
-                    BOTLOG_CHATID,
-                    "#TSPAM \n\n"
-                    "TSpam was executed successfully"
-                    )
+            await e.client.send_message(
+                BOTLOG_CHATID,
+                "#TSPAM \n\n"
+                "TSpam was executed successfully"
+            )
 
-@register(outgoing=True, pattern="^.spam")
+
+@register(outgoing=True, pattern="^.spam (.*)")
+@errors_handler
 async def spammer(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
-        message = e.text
-        counter = int(message[6:8])
-        spam_message = str(e.text[8:])
+        counter = int(e.pattern_match.group(1).split(' ', 1)[0])
+        spam_message = str(e.pattern_match.group(1).split(' ', 1)[1])
         await asyncio.wait([e.respond(spam_message) for i in range(counter)])
         await e.delete()
         if BOTLOG:
@@ -39,26 +41,11 @@ async def spammer(e):
                 BOTLOG_CHATID,
                 "#SPAM \n\n"
                 "Spam was executed successfully"
-                )
-
-@register(outgoing=True, pattern="^.bigspam")
-async def bigspam(e):
-    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
-        message = e.text
-        counter = int(message[9:13])
-        spam_message = str(e.text[13:])
-        for i in range(1, counter):
-            await e.respond(spam_message)
-        await e.delete()
-        if BOTLOG:
-            await e.client.send_message(
-                BOTLOG_CHATID,
-                "#BIGSPAM \n\n"
-                "Bigspam was executed successfully"
-                )
+            )
 
 
 @register(outgoing=True, pattern="^.picspam")
+@errors_handler
 async def tiny_pic_spam(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         message = e.text
@@ -73,38 +60,35 @@ async def tiny_pic_spam(e):
                 BOTLOG_CHATID,
                 "#PICSPAM \n\n"
                 "PicSpam was executed successfully"
-                )
+            )
 
 
-@register(outgoing=True, pattern="^.delayspam")
+@register(outgoing=True, pattern="^.delayspam (.*)")
+@errors_handler
 async def spammer(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
-        message = e.text
-        spamDelay = float(message[11:15])
-        counter = int(message[15:19])
-        spam_message = str(e.text[19:])
-        from userbot.events import register
+        spamDelay = float(e.pattern_match.group(1).split(' ', 2)[0])
+        counter = int(e.pattern_match.group(1).split(' ', 2)[1])
+        spam_message = str(e.pattern_match.group(1).split(' ', 2)[2])
         for i in range(1, counter):
             await e.respond(spam_message)
-            time.sleep(spamDelay)
+            await sleep(spamDelay)
         await e.delete()
         if BOTLOG:
             await e.client.send_message(
                 BOTLOG_CHATID,
                 "#DelaySPAM \n\n"
                 "DelaySpam was executed successfully"
-                )
+            )
 
 CMD_HELP.update({
     "spam": ".tspam <text>\
 \nUsage: Spam the text letter by letter.\
 \n\n.spam <count> <text>\
-\nUsage: Your regular spammer stuff :P\
-\n\n.bigspam <count> <text>\
-\nUsage: .spam on steroids !!\
-\n\n.picspam <count> <link>\
+\nUsage: Floods text in the chat !!\
+\n\n.picspam <count> <link to image/gif>\
 \nUsage: As if text spam was not enough !!\
 \n\n.delayspam <delay> <count> <text>\
-\nUsage: .bigspam but slower.\
-\n\n\nNOTE : I am not responsible if you get banned for spamming!"
+\nUsage: .bigspam but with custom delay.\
+\n\n\nNOTE : Spam at your own risk !!"
 })

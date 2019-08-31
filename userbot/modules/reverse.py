@@ -2,7 +2,7 @@
 #
 # Thanks to @kandnub, for this awesome module !!
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 
@@ -19,7 +19,7 @@ from telethon.tl.types import MessageMediaPhoto
 from PIL import Image
 
 from userbot import bot, CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
 opener = urllib.request.build_opener()
@@ -28,6 +28,7 @@ opener.addheaders = [('User-agent', useragent)]
 
 
 @register(outgoing=True, pattern=r"^.reverse(?: |$)(\d*)")
+@errors_handler
 async def okgoogle(img):
     """ For .reverse command, Google search images and stickers. """
     if not img.text[0].isalpha() and img.text[0] not in ("/", "#", "@", "!"):
@@ -53,10 +54,17 @@ async def okgoogle(img):
             name = "okgoogle.png"
             image.save(name, "PNG")
             image.close()
-            #https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
+            # https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
             searchUrl = 'https://www.google.com/searchbyimage/upload'
-            multipart = {'encoded_image': (name, open(name, 'rb')), 'image_content': ''}
-            response = requests.post(searchUrl, files=multipart, allow_redirects=False)
+            multipart = {
+                'encoded_image': (
+                    name,
+                    open(
+                        name,
+                        'rb')),
+                'image_content': ''}
+            response = requests.post(
+                searchUrl, files=multipart, allow_redirects=False)
             fetchUrl = response.headers['Location']
 
             if response != 400:
@@ -67,7 +75,7 @@ async def okgoogle(img):
                 return
 
             os.remove(name)
-            match = ParseSauce(fetchUrl + "&preferences?hl=en&fg=1#languages")
+            match = await ParseSauce(fetchUrl + "&preferences?hl=en&fg=1#languages")
             guess = match['best_guess']
             imgspage = match['similar_images']
 
@@ -81,21 +89,21 @@ async def okgoogle(img):
                 lim = img.pattern_match.group(1)
             else:
                 lim = 3
-            images = scam(match, lim)
+            images = await scam(match, lim)
             yeet = []
             for i in images:
                 k = requests.get(i)
                 yeet.append(k.content)
             try:
                 await img.client.send_file(entity=await img.client.get_input_entity(img.chat_id),
-                                            file=yeet,
-                                            reply_to=img)
+                                           file=yeet,
+                                           reply_to=img)
             except TypeError:
                 pass
             await img.edit(f"[{guess}]({fetchUrl})\n\n[Visually similar images]({imgspage})")
 
 
-def ParseSauce(googleurl):
+async def ParseSauce(googleurl):
     """Parse/Scrape the HTML code for the info we want."""
 
     source = opener.open(googleurl).read()
@@ -108,17 +116,19 @@ def ParseSauce(googleurl):
 
     try:
         for similar_image in soup.findAll('input', {'class': 'gLFyf'}):
-            url = 'https://www.google.com/search?tbm=isch&q=' + urllib.parse.quote_plus(similar_image.get('value'))
+            url = 'https://www.google.com/search?tbm=isch&q=' + \
+                urllib.parse.quote_plus(similar_image.get('value'))
             results['similar_images'] = url
-    except:
+    except BaseException:
         pass
 
-    for best_guess in soup.findAll('div', attrs={'class':'r5a77d'}):
+    for best_guess in soup.findAll('div', attrs={'class': 'r5a77d'}):
         results['best_guess'] = best_guess.get_text()
 
     return results
 
-def scam(results, lim):
+
+async def scam(results, lim):
 
     single = opener.open(results['similar_images']).read()
     decoded = single.decode('utf-8')

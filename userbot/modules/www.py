@@ -1,6 +1,6 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 """ Userbot module containing commands related to the \
@@ -11,10 +11,11 @@ from datetime import datetime
 import speedtest
 from telethon import functions
 from userbot import CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
 @register(outgoing=True, pattern="^.speed$")
+@errors_handler
 async def speedtst(spd):
     """ For .speed command, use SpeedTest to check server speeds. """
     if not spd.text[0].isalpha() and spd.text[0] not in ("/", "#", "@", "!"):
@@ -60,8 +61,10 @@ def speed_convert(size):
 
 
 @register(outgoing=True, pattern="^.nearestdc$")
+@errors_handler
 async def neardc(event):
-    if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+    if not event.text[0].isalpha() and event.text[0] not in (
+            "/", "#", "@", "!"):
         """ For .nearestdc command, get the nearest datacenter information. """
         result = await event.client(functions.help.GetNearestDcRequest())
         await event.edit(
@@ -72,6 +75,7 @@ async def neardc(event):
 
 
 @register(outgoing=True, pattern="^.pingme$")
+@errors_handler
 async def pingme(pong):
     """ FOr .pingme command, ping the userbot from any chat.  """
     if not pong.text[0].isalpha() and pong.text[0] not in ("/", "#", "@", "!"):

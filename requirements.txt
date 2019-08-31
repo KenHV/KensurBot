@@ -23,11 +23,13 @@ psycopg2-binary
 pybase64>=0.4.0
 pylast
 pySmartDL
+python-barcode
 python-dotenv
 pytube>=9.5.1
 pytz
 qrcode
 requests>=2.18.4
+search-engine-parser
 speedtest-cli>=2.0.2
 sqlalchemy>=1.2
 telethon>=1.9

@@ -1,6 +1,6 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 
@@ -11,10 +11,11 @@ from asyncio import sleep
 from telethon.errors import rpcbaseerrors
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
 @register(outgoing=True, pattern="^.purge$")
+@errors_handler
 async def fastpurger(purg):
     """ For .purge command, purge all messages starting from the reply. """
     if not purg.text[0].isalpha() and purg.text[0] not in ("/", "#", "@", "!"):
@@ -49,9 +50,11 @@ async def fastpurger(purg):
 
 
 @register(outgoing=True, pattern="^.purgeme")
+@errors_handler
 async def purgeme(delme):
     """ For .purgeme, delete x count of your latest message."""
-    if not delme.text[0].isalpha() and delme.text[0] not in ("/", "#", "@", "!"):
+    if not delme.text[0].isalpha() and delme.text[0] not in (
+            "/", "#", "@", "!"):
         message = delme.text
         count = int(message[9:])
         i = 1
@@ -79,9 +82,11 @@ async def purgeme(delme):
 
 
 @register(outgoing=True, pattern="^.del$")
+@errors_handler
 async def delete_it(delme):
     """ For .del command, delete the replied message. """
-    if not delme.text[0].isalpha() and delme.text[0] not in ("/", "#", "@", "!"):
+    if not delme.text[0].isalpha() and delme.text[0] not in (
+            "/", "#", "@", "!"):
         msg_src = await delme.get_reply_message()
         if delme.reply_to_msg_id:
             try:
@@ -101,13 +106,14 @@ async def delete_it(delme):
 
 
 @register(outgoing=True, pattern="^.edit")
+@errors_handler
 async def editer(edit):
     """ For .editme command, edit your last message. """
     if not edit.text[0].isalpha() and edit.text[0] not in ("/", "#", "@", "!"):
         message = edit.text
         chat = await edit.get_input_chat()
         self_id = await edit.client.get_peer_id('me')
-        string = str(message[8:])
+        string = str(message[6:])
         i = 1
         async for message in edit.client.iter_messages(chat, self_id):
             if i == 2:
@@ -120,9 +126,11 @@ async def editer(edit):
 
 
 @register(outgoing=True, pattern="^.sd")
+@errors_handler
 async def selfdestruct(destroy):
     """ For .sd command, make seflf-destructable messages. """
-    if not destroy.text[0].isalpha() and destroy.text[0] not in ("/", "#", "@", "!"):
+    if not destroy.text[0].isalpha() and destroy.text[0] not in (
+            "/", "#", "@", "!"):
         message = destroy.text
         counter = int(message[4:6])
         text = str(destroy.text[6:])
@@ -150,7 +158,7 @@ CMD_HELP.update({
 
 CMD_HELP.update({
     'edit': ".edit <newmessage>\
-\nUsage: Edits the text you replied to with newtext."
+\nUsage: Replace your last message with <newmessage>."
 })
 
 CMD_HELP.update({

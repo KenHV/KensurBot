@@ -1,19 +1,21 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 """
 This module updates the userbot based on Upstream revision
 """
 
-from os import remove
+from os import remove, execl
+import sys
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
 from userbot import CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
+
 
 async def gen_chlog(repo, diff):
     ch_log = ''
@@ -22,6 +24,7 @@ async def gen_chlog(repo, diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
 
+
 async def is_off_br(br):
     off_br = ['sql-extended', 'sql-dirty']
     for k in off_br:
@@ -29,11 +32,13 @@ async def is_off_br(br):
             return 1
     return
 
+
 @register(outgoing=True, pattern="^.update(?: |$)(.*)")
+@errors_handler
 async def upstream(ups):
     "For .update command, check if the bot is up to date, update if specified"
     if not ups.text[0].isalpha() and ups.text[0] not in (
-        "/", "#", "@", "!"):
+            "/", "#", "@", "!"):
         await ups.edit("`Checking for updates, please wait....`")
         conf = ups.pattern_match.group(1)
         off_repo = 'https://github.com/AvinashReddy3108/PaperplaneExtended.git'
@@ -70,7 +75,7 @@ async def upstream(ups):
         changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
 
         if not changelog:
-            await ups.edit(f'\n`Your BOT is`  **up-to-date**  `with`  **{ac_br}**\n')
+            await ups.edit(f'\n`Your BOT is` **up-to-date** `with` **{ac_br}**\n')
             return
 
         if conf != "now":
@@ -92,25 +97,22 @@ async def upstream(ups):
             return
 
         await ups.edit('`New update found, updating...`')
-
-        try:
-            ups_rem.pull(ac_br)
-            await ups.edit(
-                '`Successfully Updated without casualties\nBot is switching off now.. restart kthx`'
-            )
-            await ups.client.disconnect()
-        except GitCommandError:
-            ups_rem.git.reset('--hard')
-            await ups.edit(
-                '`Successfully Updated with casualties\nBot is switching off now.. restart kthx`'
-            )
-            await ups.client.disconnect()
+        ups_rem.fetch(ac_br)
+        ups_rem.git.reset('--hard', 'FETCH_HEAD')
+        await ups.edit(
+            '`Successfully Updated!\n'
+            'Bot is restarting... Wait for a second!`'
+        )
+        await ups.client.disconnect()
+        # Spin a new instance of bot
+        execl(sys.executable, sys.executable, *sys.argv)
+        # Shut the existing one down
+        exit()
 
 
 CMD_HELP.update({
     'update': ".update\
 \nUsage: Checks if the main userbot repository has any updates and shows a changelog if so.\
 \n\n.update now\
-\nUsage: Updates your userbot, if there are any updates in the main userbot repository.\
-\n\nNote: If you are using Heroku, please don't use `.update now` as it won't work."
+\nUsage: Updates your userbot, if there are any updates in the main userbot repository."
 })

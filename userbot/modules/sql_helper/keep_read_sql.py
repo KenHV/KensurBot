@@ -20,7 +20,7 @@ KRead.__table__.create(checkfirst=True)
 def is_kread():
     try:
         return SESSION.query(KRead).all()
-    except:
+    except BaseException:
         return None
     finally:
         SESSION.close()

@@ -10,15 +10,22 @@ import os
 import time
 from pySmartDL import SmartDL
 from telethon import events
-from datetime import datetime
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
 from apiclient.errors import ResumableUploadError
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.file import Storage
 from oauth2client import file, client, tools
-from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET, G_DRIVE_AUTH_TOKEN_DATA, GDRIVE_FOLDER_ID, BOTLOG_CHATID, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS)
-from userbot.events import register
+from userbot import (
+    G_DRIVE_CLIENT_ID,
+    G_DRIVE_CLIENT_SECRET,
+    G_DRIVE_AUTH_TOKEN_DATA,
+    GDRIVE_FOLDER_ID,
+    BOTLOG_CHATID,
+    TEMP_DOWNLOAD_DIRECTORY,
+    CMD_HELP,
+    LOGS)
+from userbot.events import register, errors_handler
 from mimetypes import guess_type
 import httplib2
 import subprocess
@@ -38,6 +45,7 @@ parent_id = GDRIVE_FOLDER_ID
 
 
 @register(pattern=r"^.gdrive(?: |$)(.*)", outgoing=True)
+@errors_handler
 async def download(dryb):
     """ For .gdrive command, upload files to google drive. """
     if not dryb.text[0].isalpha() and dryb.text[0] not in ("/", "#", "@", "!"):
@@ -51,14 +59,16 @@ async def download(dryb):
             os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
             required_file_name = None
         if "|" in input_str:
-            start = datetime.now()
             url, file_name = input_str.split("|")
             url = url.strip()
             # https://stackoverflow.com/a/761825/4723940
             file_name = file_name.strip()
             head, tail = os.path.split(file_name)
             if head:
-                if not os.path.isdir(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)):
+                if not os.path.isdir(
+                    os.path.join(
+                        TEMP_DOWNLOAD_DIRECTORY,
+                        head)):
                     os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
                     file_name = os.path.join(head, tail)
             downloaded_file_name = TEMP_DOWNLOAD_DIRECTORY + "" + file_name
@@ -72,7 +82,7 @@ async def download(dryb):
                 downloaded = downloader.get_dl_size()
                 now = time.time()
                 diff = now - c_time
-                percentage = downloader.get_progress()*100
+                percentage = downloader.get_progress() * 100
                 speed = downloader.get_speed()
                 elapsed_time = round(diff) * 1000
                 progress_str = "[{0}{1}]\nProgress: {2}%".format(
@@ -89,12 +99,10 @@ async def download(dryb):
                 except Exception as e:
                     LOGS.info(str(e))
                     pass
-            end = datetime.now()
-            duration = (end - start).seconds
             if downloader.isSuccessful():
                 await dryb.edit(
-                    "Downloaded to `{}` in {} seconds.\nNow uploading to GDrive...".format(
-                        downloaded_file_name, duration)
+                    "Downloaded to `{}` successfully !!\nInitiating upload to Google Drive..".format(
+                        downloaded_file_name)
                 )
                 required_file_name = downloaded_file_name
             else:
@@ -104,16 +112,12 @@ async def download(dryb):
         elif input_str:
             input_str = input_str.strip()
             if os.path.exists(input_str):
-                start = datetime.now()
-                end = datetime.now()
-                duration = (end - start).seconds
                 required_file_name = input_str
-                await dryb.edit("Found `{}` in {} seconds, uploading to Google Drive !!".format(input_str, duration))
+                await dryb.edit("Found `{}` in local server, initiating upload to Google Drive..".format(input_str, duration))
             else:
-                await dryb.edit("File not found in local server. Give me a valid file path !!")
+                await dryb.edit("File not found in local server. Give me a valid file path !")
                 return False
         elif dryb.reply_to_msg_id:
-            start = datetime.now()
             try:
                 c_time = time.time()
                 downloaded_file_name = await dryb.client.download_media(
@@ -123,26 +127,26 @@ async def download(dryb):
                         progress(d, t, dryb, c_time, "Downloading...")
                     )
                 )
-            except Exception as e: # pylint:disable=C0103,W0703
+            except Exception as e:  # pylint:disable=C0103,W0703
                 await dryb.edit(str(e))
             else:
-                end = datetime.now()
                 required_file_name = downloaded_file_name
-                duration = (end - start).seconds
                 await dryb.edit(
-                    "Downloaded to `{}` in {} seconds.\nNow uploading to GDrive...".format(
-                        downloaded_file_name, duration)
+                    "Downloaded to `{}` successfully !!\nInitiating upload to Google Drive..".format(
+                        downloaded_file_name)
                 )
     if required_file_name:
         #
         if G_DRIVE_AUTH_TOKEN_DATA is not None:
             with open(G_DRIVE_TOKEN_FILE, "w") as t_file:
                 t_file.write(G_DRIVE_AUTH_TOKEN_DATA)
-        # Check if token file exists, if not create it by requesting authorization code
+        # Check if token file exists, if not create it by requesting
+        # authorization code
         if not os.path.isfile(G_DRIVE_TOKEN_FILE):
             storage = await create_token_file(G_DRIVE_TOKEN_FILE, dryb)
             http = authorize(G_DRIVE_TOKEN_FILE, storage)
-        # Authorize, get file parameters, upload file and print out result URL for download
+        # Authorize, get file parameters, upload file and print out result URL
+        # for download
         http = authorize(G_DRIVE_TOKEN_FILE, None)
         file_name, mime_type = file_ops(required_file_name)
         # required_file_name will have the full path
@@ -154,7 +158,10 @@ async def download(dryb):
             await dryb.edit(f"Error while uploading to Google Drive\nError Code:\n`{e}`")
 
 
-@register(pattern=r"^.gsetf https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})", outgoing=True)
+@register(
+    pattern=r"^.gsetf https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})",
+    outgoing=True)
+@errors_handler
 async def download(set):
     """For .gsetf command, allows you to set path"""
     if not set.text[0].isalpha() and set.text[0] not in ("/", "#", "@", "!"):
@@ -171,6 +178,7 @@ async def download(set):
 
 
 @register(pattern="^.gsetclear$", outgoing=True)
+@errors_handler
 async def download(gclr):
     """For .gsetclear command, allows you clear ur curnt custom path"""
     if not gclr.text[0].isalpha() and gclr.text[0] not in ("/", "#", "@", "!"):
@@ -239,7 +247,8 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     if parent_id:
         body["parents"] = [{"id": parent_id}]
     # Permissions body description: anyone who has link can upload
-    # Other permissions can be found at https://developers.google.com/drive/v2/reference/permissions
+    # Other permissions can be found at
+    # https://developers.google.com/drive/v2/reference/permissions
     permissions = {
         "role": "reader",
         "type": "anyone",
@@ -262,17 +271,21 @@ async def upload_file(http, file_path, file_name, mime_type, event):
     if file:
         await event.edit(file_name + " uploaded successfully")
     # Insert new permissions
-    drive_service.permissions().insert(fileId=response.get('id'), body=permissions).execute()
+    drive_service.permissions().insert(
+        fileId=response.get('id'),
+        body=permissions).execute()
     # Define file instance and get url for download
     file = drive_service.files().get(fileId=response.get('id')).execute()
     download_url = response.get("webContentLink")
     return download_url
 
+
 @register(pattern="^.gfolder$", outgoing=True)
+@errors_handler
 async def _(event):
     if event.fwd_from:
         return
-    folder_link =f"https://drive.google.com/drive/u/2/folders/"+parent_id
+    folder_link = f"https://drive.google.com/drive/u/2/folders/" + parent_id
     await event.edit(f"Userbot is currently uploading files to [this Gdrive folder]({folder_link})")
 
 

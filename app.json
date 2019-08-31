@@ -16,23 +16,34 @@
   "env": {
     "API_KEY": {
       "description": "Get this value from my.telegram.org.",
-      "value": ""
+      "required": true
     },
     "API_HASH": {
       "description": "Get this value from my.telegram.org.",
-      "value": ""
+      "required": true
     },
     "STRING_SESSION": {
       "description": "Get this value by running [python3 string_session.py] in Termux or local system.",
-      "value": ""
+      "required": true
+    },
+    "COUNTRY": {
+      "description": "Set your Country to be used in the .time and .date commands.",
+      "required": false
+    },
+    "TZ_NUMBER": {
+      "description": "Change this value in case your country has multiple Time Zones.",
+      "value": "1",
+      "required": false
     },
     "CHROME_DRIVER": {
-      "description": "ChromeDriver location.",
-      "value": "/usr/bin/chromedriver"
+      "description": "ChromeDriver location for selenium based modules.",
+      "value": "/usr/bin/chromedriver",
+      "required": false
     },
     "GOOGLE_CHROME_BIN": {
-      "description": "Google Chrome (or) Chromium binary location.",
-      "value": "/usr/bin/chromium-browser"
+      "description": "Google Chrome (or) Chromium binary location for selenium based modules.",
+      "value": "/usr/bin/chromium-browser",
+      "required": false
     },
     "OPEN_WEATHER_MAP_APPID": {
       "description": "Get your own APPID (API key)from https://api.openweathermap.org/data/2.5/weather",
@@ -43,15 +54,15 @@
       "value": "False"
     },
     "BOTLOG_CHATID": {
-      "description": "ChatID for the Log group",
+      "description": "ChatID of the Log group. Set it to '0' if BOTLOG = False",
       "value": "0"
     },
     "CONSOLE_LOGGER_VERBOSE": {
-      "description": "If you need Verbosity on the Logging",
+      "description": "If you need verbosity on the console logging",
       "value": "False"
     },
     "PM_AUTO_BAN": {
-      "description": "PM Auto-Ban Feature Switch",
+      "description": "PM Auto-Ban Feature Switch. Also known as the 'bleep blop, this is a bot...' module.",
       "value": "False"
     },
     "YOUTUBE_API_KEY": {
@@ -79,7 +90,7 @@
       "value": "./downloads/"
     },
     "CLEAN_WELCOME": {
-      "description": "Deletes old welcome messages; when a new person joins, the old message is deleted.",
+      "description": "When a new person joins, the old welcome message is deleted.",
       "value": "True"
     },
     "G_DRIVE_CLIENT_ID": {
@@ -108,6 +119,10 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
+      "required": false
+    },
+    "ALIVE_NAME": {
+      "description": "Name to show in .alive message",
       "required": false
     },
     "G_DRIVE_CLIENT_SECRET": {

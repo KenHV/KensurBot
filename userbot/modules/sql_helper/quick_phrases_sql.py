@@ -21,7 +21,8 @@ QuickPhrase.__table__.create(checkfirst=True)
 
 def get_phrases(resp):
     try:
-        return SESSION.query(QuickPhrase).filter(QuickPhrase.resp == str(resp)).all()
+        return SESSION.query(QuickPhrase).filter(
+            QuickPhrase.resp == str(resp)).all()
     finally:
         SESSION.close()
 
@@ -33,7 +34,7 @@ def add_phrase(resp, phrase):
 
 
 def remove_phrase(resp, phrase):
-    rem = SESSION.query(QuickPhrase).get((str(resp),str(phrase)))
+    rem = SESSION.query(QuickPhrase).get((str(resp), str(phrase)))
     if rem:
         SESSION.delete(rem)
         SESSION.commit()

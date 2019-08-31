@@ -15,7 +15,15 @@ class Filters(BASE):
     media_access_hash = Column(UnicodeText)
     media_file_reference = Column(LargeBinary)
 
-    def __init__(self, chat_id, keyword, reply, snip_type, media_id=None, media_access_hash=None, media_file_reference=None):
+    def __init__(
+            self,
+            chat_id,
+            keyword,
+            reply,
+            snip_type,
+            media_id=None,
+            media_access_hash=None,
+            media_file_reference=None):
         self.chat_id = str(chat_id)  # ensure string
         self.keyword = keyword
         self.reply = reply
@@ -44,15 +52,30 @@ def get_filter(chat_id, keyword):
 
 def get_filters(chat_id):
     try:
-        return SESSION.query(Filters).filter(Filters.chat_id == str(chat_id)).all()
+        return SESSION.query(Filters).filter(
+            Filters.chat_id == str(chat_id)).all()
     finally:
         SESSION.close()
 
 
-def add_filter(chat_id, keyword, reply, snip_type, media_id, media_access_hash, media_file_reference):
+def add_filter(
+        chat_id,
+        keyword,
+        reply,
+        snip_type,
+        media_id,
+        media_access_hash,
+        media_file_reference):
     to_check = get_filter(chat_id, keyword)
     if not to_check:
-        adder = Filters(str(chat_id), keyword, reply, snip_type, media_id,media_access_hash, media_file_reference)
+        adder = Filters(
+            str(chat_id),
+            keyword,
+            reply,
+            snip_type,
+            media_id,
+            media_access_hash,
+            media_file_reference)
         SESSION.add(adder)
         SESSION.commit()
         return True
@@ -60,7 +83,14 @@ def add_filter(chat_id, keyword, reply, snip_type, media_id, media_access_hash, 
         rem = SESSION.query(Filters).get((str(chat_id), keyword))
         SESSION.delete(rem)
         SESSION.commit()
-        adder = Filters(str(chat_id), keyword, reply, snip_type, media_id,media_access_hash, media_file_reference)
+        adder = Filters(
+            str(chat_id),
+            keyword,
+            reply,
+            snip_type,
+            media_id,
+            media_access_hash,
+            media_file_reference)
         SESSION.add(adder)
         SESSION.commit()
         return False
@@ -75,6 +105,7 @@ def remove_filter(chat_id, keyword):
         SESSION.delete(rem)
         SESSION.commit()
         return True
+
 
 def rm_all_filters(chat_id):
     filters = SESSION.query(Filters).filter(Filters.chat_id == str(chat_id))

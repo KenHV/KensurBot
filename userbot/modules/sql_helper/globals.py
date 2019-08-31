@@ -21,15 +21,17 @@ Globals.__table__.create(checkfirst=True)
 
 def gvarstatus(variable):
     try:
-        return SESSION.query(Globals).filter(Globals.variable == str(variable)).first().value
-    except:
+        return SESSION.query(Globals).filter(
+            Globals.variable == str(variable)).first().value
+    except BaseException:
         return None
     finally:
         SESSION.close()
 
 
 def addgvar(variable, value):
-    if SESSION.query(Globals).filter(Globals.variable == str(variable)).one_or_none():
+    if SESSION.query(Globals).filter(
+            Globals.variable == str(variable)).one_or_none():
         delgvar(variable)
     adder = Globals(str(variable), value)
     SESSION.add(adder)

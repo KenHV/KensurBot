@@ -1,6 +1,6 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 """
 Userbot module to help you manage a group
@@ -23,7 +23,7 @@ from telethon.tl.types import (ChannelParticipantsAdmins, ChatAdminRights,
                                MessageMediaPhoto)
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 # =================== CONSTANT ===================
 PP_TOO_SMOL = "`The image is too small`"
@@ -77,7 +77,9 @@ UNMUTE_RIGHTS = ChatBannedRights(
 )
 # ================================================
 
+
 @register(outgoing=True, pattern="^.setgrouppic$")
+@errors_handler
 async def set_group_photo(gpic):
     """ For .setgrouppic command, changes the picture of a group """
     if not gpic.text[0].isalpha() and gpic.text[0] not in ("/", "#", "@", "!"):
@@ -102,8 +104,8 @@ async def set_group_photo(gpic):
         if photo:
             try:
                 await gpic.client(EditPhotoRequest(
-                gpic.chat_id,
-                await gpic.client.upload_file(photo)
+                    gpic.chat_id,
+                    await gpic.client.upload_file(photo)
                 ))
                 await gpic.edit(CHAT_PP_CHANGED)
 
@@ -114,6 +116,7 @@ async def set_group_photo(gpic):
 
 
 @register(outgoing=True, pattern="^.promote(?: |$)(.*)")
+@errors_handler
 async def promote(promt):
     """ For .promote command, promotes the replied/tagged person """
     if not promt.text[0].isalpha() \
@@ -174,6 +177,7 @@ async def promote(promt):
 
 
 @register(outgoing=True, pattern="^.demote(?: |$)(.*)")
+@errors_handler
 async def demote(dmod):
     """ For .demote command, demotes the replied/tagged person """
     if not dmod.text[0].isalpha() and dmod.text[0] not in ("/", "#", "@", "!"):
@@ -232,6 +236,7 @@ async def demote(dmod):
 
 
 @register(outgoing=True, pattern="^.ban(?: |$)(.*)")
+@errors_handler
 async def ban(bon):
     """ For .ban command, bans the replied/tagged person """
     if not bon.text[0].isalpha() and bon.text[0] not in ("/", "#", "@", "!"):
@@ -250,7 +255,6 @@ async def ban(bon):
             pass
         else:
             return
-
 
         # Announce that we're going to whack the pest
         await bon.edit("`Whacking the pest!`")
@@ -280,7 +284,8 @@ async def ban(bon):
 
         await bon.edit("`{}` was banned!".format(str(user.id)))
 
-        # Announce to the logging group if we have banned the person successfully!
+        # Announce to the logging group if we have banned the person
+        # successfully!
         if BOTLOG:
             await bon.client.send_message(
                 BOTLOG_CHATID,
@@ -291,6 +296,7 @@ async def ban(bon):
 
 
 @register(outgoing=True, pattern="^.unban(?: |$)(.*)")
+@errors_handler
 async def nothanos(unbon):
     """ For .unban command, unbans the replied/tagged person """
     if not unbon.text[0].isalpha() and unbon.text[0] \
@@ -335,6 +341,7 @@ async def nothanos(unbon):
 
 
 @register(outgoing=True, pattern="^.mute(?: |$)(.*)")
+@errors_handler
 async def spider(spdr):
     """
     This function is basically muting peeps
@@ -366,9 +373,8 @@ async def spider(spdr):
         self_user = await spdr.client.get_me()
 
         if user.id == self_user.id:
-        	await spdr.edit("`Hands too short, can't duct tape myself...\n(ヘ･_･)ヘ┳━┳`")
-        	return
-
+            await spdr.edit("`Hands too short, can't duct tape myself...\n(ヘ･_･)ヘ┳━┳`")
+            return
 
         # If everything goes well, do announcing and mute
         await spdr.edit("`Gets a tape!`")
@@ -400,6 +406,7 @@ async def spider(spdr):
 
 
 @register(outgoing=True, pattern="^.unmute(?: |$)(.*)")
+@errors_handler
 async def unmoot(unmot):
     """ For .unmute command, unmute the replied/tagged person """
     if not unmot.text[0].isalpha() and unmot.text[0] \
@@ -457,6 +464,7 @@ async def unmoot(unmot):
 
 
 @register(incoming=True)
+@errors_handler
 async def muter(moot):
     """ Used for deleting the messages of muted people """
     try:
@@ -491,6 +499,7 @@ async def muter(moot):
 
 
 @register(outgoing=True, pattern="^.ungmute(?: |$)(.*)")
+@errors_handler
 async def ungmoot(un_gmute):
     """ For .ungmute command, ungmutes the target in the userbot """
     if not un_gmute.text[0].isalpha() and un_gmute.text[0] \
@@ -537,9 +546,11 @@ async def ungmoot(un_gmute):
 
 
 @register(outgoing=True, pattern="^.gmute(?: |$)(.*)")
+@errors_handler
 async def gspider(gspdr):
     """ For .gmute command, globally mutes the replied/tagged person """
-    if not gspdr.text[0].isalpha() and gspdr.text[0] not in ("/", "#", "@", "!"):
+    if not gspdr.text[0].isalpha() and gspdr.text[0] not in (
+            "/", "#", "@", "!"):
         # Admin or creator check
         chat = await gspdr.get_chat()
         admin = chat.admin_rights
@@ -563,7 +574,6 @@ async def gspider(gspdr):
         else:
             return
 
-
         # If pass, inform and start gmuting
         await gspdr.edit("`Grabs a huge, sticky duct tape!`")
         if gmute(user.id) is False:
@@ -581,6 +591,7 @@ async def gspider(gspdr):
 
 
 @register(outgoing=True, pattern="^.delusers(?: |$)(.*)")
+@errors_handler
 async def rm_deletedacc(show):
     """ For .delusers command, list all the ghost/deleted accounts in a chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
@@ -656,8 +667,16 @@ async def rm_deletedacc(show):
 
         await show.edit(del_status)
 
+        if BOTLOG:
+            await show.client.send_message(
+                BOTLOG_CHATID,
+                "#CLEANUP\n"
+                f"Cleaned **{del_u}** deleted account(s) !!"
+            )
+
 
 @register(outgoing=True, pattern="^.adminlist$")
+@errors_handler
 async def get_admin(show):
     """ For .adminlist command, list all of the admins of the chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
@@ -683,6 +702,7 @@ async def get_admin(show):
 
 
 @register(outgoing=True, pattern="^.pin(?: |$)(.*)")
+@errors_handler
 async def pin(msg):
     """ For .pin command, pins the replied/tagged message on the top the chat. """
     if not msg.text[0].isalpha() and msg.text[0] not in ("/", "#", "@", "!"):
@@ -730,6 +750,7 @@ async def pin(msg):
 
 
 @register(outgoing=True, pattern="^.kick(?: |$)(.*)")
+@errors_handler
 async def kick(usr):
     """ For .kick command, kicks the replied/tagged person from the group. """
     if not usr.text[0].isalpha() and usr.text[0] not in ("/", "#", "@", "!"):
@@ -747,7 +768,6 @@ async def kick(usr):
         if not user:
             await usr.edit("`Couldn't fetch user.`")
             return
-
 
         await usr.edit("`Kicking...`")
 
@@ -783,6 +803,7 @@ async def kick(usr):
 
 
 @register(outgoing=True, pattern="^.userslist ?(.*)")
+@errors_handler
 async def get_users(show):
     """ For .userslist command, list all of the users in a chat. """
     if not show.text[0].isalpha() and show.text[0] not in ("/", "#", "@", "!"):
@@ -842,7 +863,9 @@ async def get_user_from_event(event):
         if event.message.entities is not None:
             probable_user_mention_entity = event.message.entities[0]
 
-            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
+            if isinstance(
+                    probable_user_mention_entity,
+                    MessageEntityMentionName):
                 user_id = probable_user_mention_entity.user_id
                 user_obj = await event.client.get_entity(user_id)
                 return user_obj
@@ -853,6 +876,7 @@ async def get_user_from_event(event):
             return None
 
     return user_obj
+
 
 async def get_user_from_id(user, event):
     if isinstance(user, str):

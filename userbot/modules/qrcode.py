@@ -1,6 +1,6 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 # The entire source code is OSSRPL except 'makeqr and getqr' which is MPL
@@ -10,22 +10,22 @@
 
 import os
 import asyncio
-from datetime import datetime
 
 import qrcode
+import barcode
+from barcode.writer import ImageWriter
+
 from bs4 import BeautifulSoup
 
 from userbot import CMD_HELP
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
-@register(pattern=r"^.getqr$", outgoing=True)
+@register(pattern=r"^.decode$", outgoing=True)
+@errors_handler
 async def parseqr(qr_e):
-    """ For .getqr command, get QR Code content from the replied photo. """
+    """ For .decode command, get QR Code/BarCode content from the replied photo. """
     if not qr_e.text[0].isalpha() and qr_e.text[0] not in ("/", "#", "@", "!"):
-        if qr_e.fwd_from:
-            return
-        start = datetime.now()
         downloaded_file_name = await qr_e.client.download_media(
             await qr_e.get_reply_message()
         )
@@ -50,27 +50,70 @@ async def parseqr(qr_e):
         if not t_response:
             logger.info(e_response)
             logger.info(t_response)
-            await qr_e.edit("@oo0pps .. something wrongings. Failed to decode QRCode")
+            await qr_e.edit("Failed to decode.")
             return
         soup = BeautifulSoup(t_response, "html.parser")
         qr_contents = soup.find_all("pre")[0].text
-        end = datetime.now()
-        duration = (end - start).seconds
-        await qr_e.edit(
-            "Obtained QRCode contents in {} seconds.\n{}".format(duration, qr_contents)
-        )
-        await asyncio.sleep(5)
         await qr_e.edit(qr_contents)
 
 
+@register(pattern=r".barcode(?: |$)([\s\S]*)", outgoing=True)
+@errors_handler
+async def barcode(event):
+    """ For .barcode command, genrate a barcode containing the given content. """
+    if not event.text[0].isalpha() and event.text[0] not in (
+            "/", "#", "@", "!"):
+        await event.edit("`Processing..`")
+        input_str = event.pattern_match.group(1)
+        message = "SYNTAX: `.barcode <long text to include>`"
+        reply_msg_id = event.message.id
+        if input_str:
+            message = input_str
+        elif event.reply_to_msg_id:
+            previous_message = await event.get_reply_message()
+            reply_msg_id = previous_message.id
+            if previous_message.media:
+                downloaded_file_name = await event.client.download_media(
+                    previous_message
+                )
+                m_list = None
+                with open(downloaded_file_name, "rb") as fd:
+                    m_list = fd.readlines()
+                message = ""
+                for m in m_list:
+                    message += m.decode("UTF-8") + "\r\n"
+                os.remove(downloaded_file_name)
+            else:
+                message = previous_message.message
+        else:
+            event.edit("SYNTAX: `.barcode <long text to include>`")
+            return
+
+        bar_code_type = "code128"
+        try:
+            bar_code_mode_f = barcode.get(
+                bar_code_type, message, writer=ImageWriter())
+            filename = bar_code_mode_f.save(bar_code_type)
+            await event.client.send_file(
+                event.chat_id,
+                filename,
+                reply_to=reply_msg_id
+            )
+            os.remove(filename)
+        except Exception as e:
+            await event.edit(str(e))
+            return
+        await event.delete()
+
+
 @register(pattern=r".makeqr(?: |$)([\s\S]*)", outgoing=True)
+@errors_handler
 async def make_qr(makeqr):
     """ For .makeqr command, make a QR Code containing the given content. """
     if not makeqr.text[0].isalpha() and makeqr.text[0] not in (
             "/", "#", "@", "!"):
         if makeqr.fwd_from:
             return
-        start = datetime.now()
         input_str = makeqr.pattern_match.group(1)
         message = "SYNTAX: `.makeqr <long text to include>`"
         reply_msg_id = None
@@ -109,19 +152,22 @@ async def make_qr(makeqr):
             reply_to=reply_msg_id
         )
         os.remove("img_file.webp")
-        duration = (datetime.now() - start).seconds
-        await makeqr.edit("Created QRCode in {} seconds".format(duration))
-        await asyncio.sleep(5)
         await makeqr.delete()
 
 
 CMD_HELP.update({
-    'getqr': ".getqr\
-\nUsage: Get the QR Code content from the replied QR Code."
+    'decode': ".decode <reply to barcode/qrcode>\
+\nUsage: Get the content from the replied QR Code/Bar Code."
 })
 
 CMD_HELP.update({
-    'makeqr': ".makeqr <content>)\
+    'makeqr': ".makeqr <content>\
 \nUsage: Make a QR Code from the given content.\
 \nExample: .makeqr www.google.com"
+})
+
+CMD_HELP.update({
+    'barcode': ".barcode <content>\
+\nUsage: Make a BarCode from the given content.\
+\nExample: .barcode www.google.com"
 })

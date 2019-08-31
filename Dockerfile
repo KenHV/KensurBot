@@ -34,13 +34,14 @@ RUN apk add --no-cache --update \
     postgresql \
     postgresql-client \
     postgresql-dev \
-    py-lxml \
-    py-pillow \
-    py-pip \
-    py-psycopg2 \
-    py-requests \
-    py-sqlalchemy \
-    py-tz \
+    py3-lxml \
+    py3-pillow \
+    py3-pip \
+    py3-setuptools \
+    py3-psycopg2 \
+    py3-requests \
+    py3-sqlalchemy \
+    py3-tz \
     py3-aiohttp \
     python-dev \
     openssl \
@@ -54,8 +55,6 @@ RUN apk add --no-cache --update \
     sqlite-dev \
     sudo \
     zlib-dev
-
-RUN pip3 install --upgrade pip setuptools
 
 # Copy Python Requirements to /app
 
@@ -86,6 +85,7 @@ ENV PATH="/home/userbot/bin:$PATH"
 #
 RUN sudo pip3 install -r requirements.txt
 ADD . /home/userbot/userbot
+RUN sudo chown -R $(whoami) /usr/lib/python3.7/site-packages
 RUN sudo chown -R userbot /home/userbot/userbot
 RUN sudo chmod -R 777 /home/userbot/userbot
 CMD ["python3","-m","userbot"]
