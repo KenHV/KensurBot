@@ -89,7 +89,7 @@ CMD_HELP.update({
 \nUsage: Spam the text letter by letter.\
 \n\n.spam <count> <text>\
 \nUsage: Floods text in the chat !!\
-\n\n.wpam <text>\
+\n\n.wspam <text>\
 \nUsage: Spam the text word by word.\
 \n\n.picspam <count> <link to image/gif>\
 \nUsage: As if text spam was not enough !!\
