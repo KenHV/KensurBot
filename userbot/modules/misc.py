@@ -67,7 +67,7 @@ async def killdabot(event):
 @register(outgoing=True, pattern="^.restart$")
 @errors_handler
 async def killdabot(event):
-    await event.edit("`BRB... *PornHub intro*`")
+    await event.edit("`*i would be back in a moment*`")
     if BOTLOG:
         await event.client.send_message(BOTLOG_CHATID, "#RESTART \n"
                                         "Bot Restarted")
@@ -100,7 +100,7 @@ async def bot_support(wannahelp):
 @register(outgoing=True, pattern="^.creator$")
 @errors_handler
 async def creator(e):
-    await e.edit("[AvinashReddy3108](https://t.me/AvinashReddy3108)")
+    await e.edit("[TeKnoways](https://t.me/Three_Cube_TeKnoways)")
 
 
 @register(outgoing=True, pattern="^.readme$")
@@ -136,7 +136,7 @@ async def repeat(rep):
 async def repo_is_here(wannasee):
     """ For .repo command, just returns the repo URL. """
     await wannasee.edit(
-        "Click [here](https://github.com/AvinashReddy3108/PaperplaneExtended) to open Paperplane Extended's GitHub page."
+        "Click [here](https://github.com/mkaraniya/PaperplaneExtended) to open Paperplane Extended's GitHub page."
     )
 
 
