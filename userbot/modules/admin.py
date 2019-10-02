@@ -538,7 +538,7 @@ async def rm_deletedacc(show):
         return
     con = show.pattern_match.group(1)
     del_u = 0
-    del_status = "`No deleted accounts found, Group is cleaned as Hell`"
+    del_status = "`No deleted accounts found, Group is cleaned`"
 
     if con != "clean":
         await show.edit("`Searching for zombie accounts...`")
