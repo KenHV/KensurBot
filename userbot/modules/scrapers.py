@@ -197,7 +197,7 @@ async def gsearch(q_event):
         page = 1
     search_args = (str(match), int(page))
     gsearch = GoogleSearch()
-    gresults = gsearch.search(*search_args)
+    gresults = await gsearch.search(*search_args)
     msg = ""
     for i in range(10):
         try:
