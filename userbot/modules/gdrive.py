@@ -1,8 +1,7 @@
-# Special thanks to @spechide & @Zero_cool7870 & @Prakaska :)
-# The entire code given below is verbatim copied from
-# https://github.com/cyberboysumanjay/Gdrivedownloader/blob/master/gdrive_upload.py
-# there might be some changes made to suit the needs for this repository
-# Licensed under MIT License
+# Copyright (C) 2019 The Raphielscape Company LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
+# you may not use this file except in compliance with the License.
 
 import asyncio
 import math
@@ -19,7 +18,7 @@ from oauth2client import file, client, tools
 from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET,
                      G_DRIVE_AUTH_TOKEN_DATA, GDRIVE_FOLDER_ID, BOTLOG_CHATID,
                      TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS)
-from userbot.events import register, errors_handler
+from userbot.events import register
 from mimetypes import guess_type
 import httplib2
 import subprocess
@@ -41,7 +40,6 @@ G_DRIVE_DIR_MIME_TYPE = "application/vnd.google-apps.folder"
 
 
 @register(pattern=r"^.gdrive(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def gdrive_upload_function(dryb):
     """ For .gdrive command, upload files to google drive. """
     await dryb.edit("Processing ...")
@@ -76,8 +74,9 @@ async def gdrive_upload_function(dryb):
             speed = downloader.get_speed()
             elapsed_time = round(diff) * 1000
             progress_str = "[{0}{1}] {2}%".format(
-                ''.join(["▰" for i in range(math.floor(percentage / 5))]),
-                ''.join(["▱" for i in range(20 - math.floor(percentage / 5))]),
+                ''.join(["▰" for i in range(math.floor(percentage / 10))]),
+                ''.join(["▱"
+                         for i in range(10 - math.floor(percentage / 10))]),
                 round(percentage, 2))
             estimated_total_time = downloader.get_eta(human=True)
             try:
@@ -145,7 +144,8 @@ async def gdrive_upload_function(dryb):
         # Sometimes API fails to retrieve starting URI, we wrap it.
         try:
             g_drive_link = await upload_file(http, required_file_name,
-                                             file_name, mime_type, dryb)
+                                             file_name, mime_type, dryb,
+                                             parent_id)
             await dryb.edit(
                 f"File:`{required_file_name}`\nwas Successfully Uploaded to [Google Drive]({g_drive_link})!"
             )
@@ -155,13 +155,9 @@ async def gdrive_upload_function(dryb):
 
 
 @register(pattern=r"^.ggd(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def upload_dir_to_gdrive(event):
     await event.edit("Processing ...")
     if CLIENT_ID is None or CLIENT_SECRET is None:
-        await event.edit(
-            "This module requires credentials from https://da.gd/so63O. Aborting!"
-        )
         return
     input_str = event.pattern_match.group(1)
     if os.path.isdir(input_str):
@@ -186,13 +182,9 @@ async def upload_dir_to_gdrive(event):
 
 
 @register(pattern=r"^.list(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def gdrive_search_list(event):
     await event.edit("Processing ...")
     if CLIENT_ID is None or CLIENT_SECRET is None:
-        await event.edit(
-            "This module requires credentials from https://da.gd/so63O. Aborting!"
-        )
         return
     input_str = event.pattern_match.group(1).strip()
     # TODO: remove redundant code
@@ -214,7 +206,6 @@ async def gdrive_search_list(event):
     pattern=
     r"^.gsetf https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})",
     outgoing=True)
-@errors_handler
 async def download(set):
     """For .gsetf command, allows you to set path"""
     await set.edit("Processing ...")
@@ -232,7 +223,6 @@ async def download(set):
 
 
 @register(pattern="^.gsetclear$", outgoing=True)
-@errors_handler
 async def download(gclr):
     """For .gsetclear command, allows you clear ur curnt custom path"""
     await gclr.reply("Processing ...")
@@ -241,7 +231,6 @@ async def download(gclr):
 
 
 @register(pattern="^.gfolder$", outgoing=True)
-@errors_handler
 async def show_current_gdrove_folder(event):
     if parent_id:
         folder_link = f"https://drive.google.com/drive/folders/" + parent_id
@@ -295,7 +284,7 @@ def authorize(token_file, storage):
     return http
 
 
-async def upload_file(http, file_path, file_name, mime_type, event):
+async def upload_file(http, file_path, file_name, mime_type, event, parent_id):
     # Create Google Drive service instance
     drive_service = build("drive", "v2", http=http, cache_discovery=False)
     # File body description
@@ -324,9 +313,10 @@ async def upload_file(http, file_path, file_name, mime_type, event):
         await asyncio.sleep(1)
         if status:
             percentage = int(status.progress() * 100)
-            progress_str = "[{0}{1}] {2}%\n".format(
-                "".join(["▰" for i in range(math.floor(percentage / 5))]),
-                "".join(["▱" for i in range(20 - math.floor(percentage / 5))]),
+            progress_str = "[{0}{1}] {2}%".format(
+                "".join(["▰" for i in range(math.floor(percentage / 10))]),
+                "".join(["▱"
+                         for i in range(10 - math.floor(percentage / 10))]),
                 round(percentage, 2))
             current_message = f"Uploading to Google Drive\nFile Name: {file_name}\n{progress_str}"
             if display_message != current_message:
@@ -385,7 +375,8 @@ async def DoTeskWithDir(http, input_directory, event, parent_id):
             file_name, mime_type = file_ops(current_file_name)
             # current_file_name will have the full path
             g_drive_link = await upload_file(http, current_file_name,
-                                             file_name, mime_type, event)
+                                             file_name, mime_type, event,
+                                             parent_id)
             r_p_id = parent_id
     # TODO: there is a #bug here :(
     return r_p_id
@@ -454,11 +445,11 @@ CMD_HELP.update({
     ".gdrive <file_path / reply / URL|file_name>\
     \nUsage: Uploads the file in reply , URL or file path in server to your Google Drive.\
     \n\n.gsetf <GDrive Folder URL>\
-    \nUsage:Sets the folder to upload new files to.\
+    \nUsage: Sets the folder to upload new files to.\
     \n\n.gsetclear\
-    \nUsage:Reverts to default upload destination.\
+    \nUsage: Reverts to default upload destination.\
     \n\n.gfolder\
-    \nUsage:Shows your current upload destination/folder.\
+    \nUsage: Shows your current upload destination/folder.\
     \n\n.list <query>\
     \nUsage: Looks for files and folders in your Google Drive.\
     \n\n.ggd <path_to_folder_in_server>\

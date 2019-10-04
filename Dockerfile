@@ -49,7 +49,9 @@ RUN apk add --no-cache --update \
     ffmpeg \
     sqlite-dev \
     sudo \
-    zlib-dev
+    zlib-dev \
+    jpeg-dev \
+    python-dev
 
 
 RUN python3 -m ensurepip \
@@ -70,13 +72,6 @@ WORKDIR /root/userbot/
 # Copies session and config (if it exists)
 #
 COPY ./sample_config.env ./userbot.session* ./config.env* /root/userbot/
-
-#
-# Clone helper scripts
-#
-RUN curl -s https://raw.githubusercontent.com/yshalsager/megadown/master/megadown -o /root/userbot/bin/megadown && sudo chmod a+x /root/userbot/bin/megadown
-RUN curl -s https://raw.githubusercontent.com/yshalsager/cmrudl.py/master/cmrudl.py -o /root/userbot/bin/cmrudl && sudo chmod a+x /root/userbot/bin/cmrudl
-ENV PATH="/root/userbot/bin:$PATH"
 
 #
 # Install requirements

@@ -2,26 +2,21 @@
 #
 # Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
-#
-#
 """ Userbot module for having some fun with people. """
 
-import asyncio
-import random
-import re
+from asyncio import sleep
+from random import choice, getrandbits, randint
+from re import sub
 import time
 
 from collections import deque
 
 import requests
 
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.types import MessageEntityMentionName
-
 from cowpy import cow
 
 from userbot import CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 from userbot.modules.admin import get_user_from_event
 
 # ================= CONSTANT =================
@@ -614,7 +609,6 @@ WHERE = ["in the chest", "on the head", "on the butt", "on the crotch"]
 
 
 @register(outgoing=True, pattern=r"^.(\w+)say (.*)")
-@errors_handler
 async def univsaye(cowmsg):
     """ For .cowsay module, userbot wrapper for cow which says things. """
     arg = cowmsg.pattern_match.group(1).lower()
@@ -630,8 +624,7 @@ async def univsaye(cowmsg):
     await cowmsg.edit(f"`{cheese.milk(text).replace('`', '´')}`")
 
 
-@register(outgoing=True, pattern="^:/$")
-@errors_handler
+@register(outgoing=True, pattern="^:/$", ignore_unsafe=True)
 async def kek(keks):
     """ Check yourself ;)"""
     uio = ["/", "\\"]
@@ -641,9 +634,8 @@ async def kek(keks):
 
 
 @register(outgoing=True, pattern=r"^.coinflip (.*)")
-@errors_handler
 async def coin(event):
-    r = random.choice(["heads", "tails"])
+    r = choice(["heads", "tails"])
     input_str = event.pattern_match.group(1)
     if input_str:
         input_str = input_str.lower()
@@ -670,19 +662,14 @@ async def coin(event):
 
 
 @register(pattern="^.slap(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def who(event):
     """ slaps a user, or get slapped if not a reply. """
     replied_user = await get_user_from_event(event)
     if replied_user:
         replied_user = replied_user[0]
     else:
-        await event.edit("`I can't slap nothing !!`")
+        return
     caption = await slap(replied_user, event)
-    message_id_to_reply = event.message.reply_to_msg_id
-
-    if not message_id_to_reply:
-        message_id_to_reply = None
 
     try:
         await event.edit(caption)
@@ -704,11 +691,11 @@ async def slap(replied_user, event):
     else:
         slapped = f"[{first_name}](tg://user?id={user_id})"
 
-    temp = random.choice(SLAP_TEMPLATES)
-    item = random.choice(ITEMS)
-    hit = random.choice(HIT)
-    throw = random.choice(THROW)
-    where = random.choice(WHERE)
+    temp = choice(SLAP_TEMPLATES)
+    item = choice(ITEMS)
+    hit = choice(HIT)
+    throw = choice(THROW)
+    where = choice(WHERE)
 
     caption = "..." + temp.format(
         victim=slapped, item=item, hits=hit, throws=throw, where=where)
@@ -716,8 +703,7 @@ async def slap(replied_user, event):
     return caption
 
 
-@register(outgoing=True, pattern="^-_-$")
-@errors_handler
+@register(outgoing=True, pattern="^-_-$", ignore_unsafe=True)
 async def lol(lel):
     """ Ok... """
     okay = "-_-"
@@ -726,34 +712,22 @@ async def lol(lel):
         await lel.edit(okay)
 
 
-@register(outgoing=True, pattern="^.decide(?: |$)(.*)")
-@errors_handler
+@register(outgoing=True, pattern="^.(yes|no|maybe|decide)$")
 async def decide(event):
     decision = event.pattern_match.group(1).lower()
-    message_id = None
-    if event.reply_to_msg_id:
-        message_id = event.reply_to_msg_id
-    if not decision:
-        r = requests.get("https://yesno.wtf/api").json()
+    message_id = event.reply_to_msg_id if event.reply_to_msg_id else None
+    if decision != "decide":
+        r = requests.get(f"https://yesno.wtf/api?force={decision}").json()
     else:
-        try:
-            options = ["yes", "no", "maybe"]
-            if decision not in options:
-                await event.edit("`Available decisions:` *yes*, *no*, *maybe*")
-                return
-            r = requests.get(f"https://yesno.wtf/api?force={decision}").json()
-        except Excepption as err:
-            await event.edit(f"`Error:` {str(err)}")
-            return
+        r = requests.get(f"https://yesno.wtf/api").json()
+    await event.delete()
     await event.client.send_message(event.chat_id,
                                     str(r["answer"]).upper(),
                                     reply_to=message_id,
                                     file=r["image"])
-    await event.delete()
 
 
-@register(outgoing=True, pattern="^;_;$")
-@errors_handler
+@register(outgoing=True, pattern="^;_;$", ignore_unsafe=True)
 async def fun(e):
     t = ";_;"
     for j in range(10):
@@ -762,28 +736,24 @@ async def fun(e):
 
 
 @register(outgoing=True, pattern="^.fp$")
-@errors_handler
 async def facepalm(e):
     """ Facepalm  🤦‍♂ """
     await e.edit("🤦‍♂")
 
 
 @register(outgoing=True, pattern="^.cry$")
-@errors_handler
 async def cry(e):
     """ y u du dis, i cry everytime !! """
-    await e.edit(random.choice(CRI))
+    await e.edit(choice(CRI))
 
 
 @register(outgoing=True, pattern="^.insult$")
-@errors_handler
 async def insult(e):
     """ I make you cry !! """
-    await e.edit(random.choice(INSULT_STRINGS))
+    await e.edit(choice(INSULT_STRINGS))
 
 
 @register(outgoing=True, pattern="^.cp(?: |$)(.*)")
-@errors_handler
 async def copypasta(cp_e):
     """ Copypasta the famous meme """
     textx = await cp_e.get_reply_message()
@@ -797,28 +767,27 @@ async def copypasta(cp_e):
         await cp_e.edit("`😂🅱️IvE👐sOME👅text👅for✌️Me👌tO👐MAkE👀iT💞funNy!💦`")
         return
 
-    reply_text = random.choice(EMOJIS)
+    reply_text = choice(EMOJIS)
     # choose a random character in the message to be substituted with 🅱️
-    b_char = random.choice(message).lower()
+    b_char = choice(message).lower()
     for owo in message:
         if owo == " ":
-            reply_text += random.choice(EMOJIS)
+            reply_text += choice(EMOJIS)
         elif owo in EMOJIS:
             reply_text += owo
-            reply_text += random.choice(EMOJIS)
+            reply_text += choice(EMOJIS)
         elif owo.lower() == b_char:
             reply_text += "🅱️"
         else:
-            if bool(random.getrandbits(1)):
+            if bool(getrandbits(1)):
                 reply_text += owo.upper()
             else:
                 reply_text += owo.lower()
-    reply_text += random.choice(EMOJIS)
+    reply_text += choice(EMOJIS)
     await cp_e.edit(reply_text)
 
 
 @register(outgoing=True, pattern="^.vapor(?: |$)(.*)")
-@errors_handler
 async def vapor(vpr):
     """ Vaporize everything! """
     reply_text = list()
@@ -844,7 +813,6 @@ async def vapor(vpr):
 
 
 @register(outgoing=True, pattern="^.str(?: |$)(.*)")
-@errors_handler
 async def stretch(stret):
     """ Stretch it."""
     textx = await stret.get_reply_message()
@@ -858,14 +826,13 @@ async def stretch(stret):
         await stret.edit("`GiiiiiiiB sooooooomeeeeeee teeeeeeext!`")
         return
 
-    count = random.randint(3, 10)
-    reply_text = re.sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count),
-                        message)
+    count = randint(3, 10)
+    reply_text = sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count),
+                     message)
     await stret.edit(reply_text)
 
 
 @register(outgoing=True, pattern="^.zal(?: |$)(.*)")
-@errors_handler
 async def zal(zgfy):
     """ Invoke the feeling of chaos. """
     reply_text = list()
@@ -887,17 +854,17 @@ async def zal(zgfy):
             continue
 
         for _ in range(0, 3):
-            randint = random.randint(0, 2)
+            randint = randint(0, 2)
 
             if randint == 0:
                 charac = charac.strip() + \
-                    random.choice(ZALG_LIST[0]).strip()
+                    choice(ZALG_LIST[0]).strip()
             elif randint == 1:
                 charac = charac.strip() + \
-                    random.choice(ZALG_LIST[1]).strip()
+                    choice(ZALG_LIST[1]).strip()
             else:
                 charac = charac.strip() + \
-                    random.choice(ZALG_LIST[2]).strip()
+                    choice(ZALG_LIST[2]).strip()
 
         reply_text.append(charac)
 
@@ -905,14 +872,12 @@ async def zal(zgfy):
 
 
 @register(outgoing=True, pattern="^.hi$")
-@errors_handler
 async def hoi(hello):
     """ Greet everyone! """
-    await hello.edit(random.choice(HELLOSTR))
+    await hello.edit(choice(HELLOSTR))
 
 
 @register(outgoing=True, pattern="^.owo(?: |$)(.*)")
-@errors_handler
 async def faces(owo):
     """ UwU """
     textx = await owo.get_reply_message()
@@ -925,53 +890,47 @@ async def faces(owo):
         await owo.edit("` UwU no text given! `")
         return
 
-    reply_text = re.sub(r"(r|l)", "w", message)
-    reply_text = re.sub(r"(R|L)", "W", reply_text)
-    reply_text = re.sub(r"n([aeiou])", r"ny\1", reply_text)
-    reply_text = re.sub(r"N([aeiouAEIOU])", r"Ny\1", reply_text)
-    reply_text = re.sub(r"\!+", " " + random.choice(UWUS), reply_text)
+    reply_text = sub(r"(r|l)", "w", message)
+    reply_text = sub(r"(R|L)", "W", reply_text)
+    reply_text = sub(r"n([aeiou])", r"ny\1", reply_text)
+    reply_text = sub(r"N([aeiouAEIOU])", r"Ny\1", reply_text)
+    reply_text = sub(r"\!+", " " + choice(UWUS), reply_text)
     reply_text = reply_text.replace("ove", "uv")
-    reply_text += " " + random.choice(UWUS)
+    reply_text += " " + choice(UWUS)
     await owo.edit(reply_text)
 
 
 @register(outgoing=True, pattern="^.react$")
-@errors_handler
 async def react_meme(react):
     """ Make your userbot react to everything. """
-    await react.edit(random.choice(FACEREACTS))
+    await react.edit(choice(FACEREACTS))
 
 
 @register(outgoing=True, pattern="^.shg$")
-@errors_handler
 async def shrugger(shg):
     r""" ¯\_(ツ)_/¯ """
-    await shg.edit(random.choice(SHGS))
+    await shg.edit(choice(SHGS))
 
 
 @register(outgoing=True, pattern="^.chase$")
-@errors_handler
 async def police(chase):
     """ Run boi run, i'm gonna catch you !! """
-    await chase.edit(random.choice(CHASE_STR))
+    await chase.edit(choice(CHASE_STR))
 
 
 @register(outgoing=True, pattern="^.run$")
-@errors_handler
 async def runner_lol(run):
     """ Run, run, RUNNN! """
-    await run.edit(random.choice(RUNS_STR))
+    await run.edit(choice(RUNS_STR))
 
 
 @register(outgoing=True, pattern="^.metoo$")
-@errors_handler
 async def metoo(hahayes):
     """ Haha yes """
-    await hahayes.edit(random.choice(METOOSTR))
+    await hahayes.edit(choice(METOOSTR))
 
 
-@register(outgoing=True, pattern="^.oof$")
-@errors_handler
+@register(outgoing=True, pattern="^Oof$")
 async def Oof(e):
     t = "Oof"
     for j in range(15):
@@ -980,18 +939,16 @@ async def Oof(e):
 
 
 @register(outgoing=True, pattern="^.10iq$")
-@errors_handler
 async def iqless(e):
     await e.edit("♿")
 
 
 @register(outgoing=True, pattern="^.moon$")
-@errors_handler
 async def moon(event):
     deq = deque(list("🌗🌘🌑🌒🌓🌔🌕🌖"))
     try:
         for x in range(32):
-            await asyncio.sleep(0.1)
+            await sleep(0.1)
             await event.edit("".join(deq))
             deq.rotate(1)
     except BaseException:
@@ -999,12 +956,11 @@ async def moon(event):
 
 
 @register(outgoing=True, pattern="^.clock$")
-@errors_handler
 async def clock(event):
     deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
     try:
         for x in range(32):
-            await asyncio.sleep(0.1)
+            await sleep(0.1)
             await event.edit("".join(deq))
             deq.rotate(1)
     except BaseException:
@@ -1012,7 +968,6 @@ async def clock(event):
 
 
 @register(outgoing=True, pattern="^.mock(?: |$)(.*)")
-@errors_handler
 async def spongemocktext(mock):
     """ Do it and find the real fun. """
     reply_text = list()
@@ -1027,7 +982,7 @@ async def spongemocktext(mock):
         return
 
     for charac in message:
-        if charac.isalpha() and random.randint(0, 1):
+        if charac.isalpha() and randint(0, 1):
             to_app = charac.upper() if charac.islower() else charac.lower()
             reply_text.append(to_app)
         else:
@@ -1037,7 +992,6 @@ async def spongemocktext(mock):
 
 
 @register(outgoing=True, pattern="^.clap(?: |$)(.*)")
-@errors_handler
 async def claptext(memereview):
     """ Praise people! """
     textx = await memereview.get_reply_message()
@@ -1056,18 +1010,15 @@ async def claptext(memereview):
 
 
 @register(outgoing=True, pattern="^.bt$")
-@errors_handler
 async def bluetext(bt_e):
     """ Believe me, you will find this useful. """
     if await bt_e.get_reply_message() and bt_e.is_group:
         await bt_e.edit(
             "/BLUETEXT /MUST /CLICK.\n"
-            "/ARE /YOU /A /STUPID /ANIMAL /WHICH /IS /ATTRACTED /TO /COLOURS ?"
-        )
+            "/ARE /YOU /A /STUPID /ANIMAL /WHICH /IS /ATTRACTED /TO /COLOURS?")
 
 
 @register(outgoing=True, pattern=r"^.f (.*)")
-@errors_handler
 async def payf(event):
     paytext = event.pattern_match.group(1)
     pay = "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(
@@ -1078,7 +1029,6 @@ async def payf(event):
 
 
 @register(outgoing=True, pattern="^.lfy (.*)")
-@errors_handler
 async def let_me_google_that_for_you(lmgtfy_q):
     textx = await lmgtfy_q.get_reply_message()
     qry = lmgtfy_q.pattern_match.group(1)
@@ -1096,7 +1046,6 @@ async def let_me_google_that_for_you(lmgtfy_q):
 
 
 @register(pattern=r".scam(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def scam(event):
     """ Just a small command to fake chat actions for fun !! """
     options = [
@@ -1106,14 +1055,14 @@ async def scam(event):
     input_str = event.pattern_match.group(1)
     args = input_str.split()
     if len(args) is 0:  # Let bot decide action and time
-        scam_action = random.choice(options)
-        scam_time = random.randint(30, 60)
+        scam_action = choice(options)
+        scam_time = randint(30, 60)
     elif len(args) is 1:  # User decides time/action, bot decides the other.
         try:
             scam_action = str(args[0]).lower()
-            scam_time = random.randint(30, 60)
+            scam_time = randint(30, 60)
         except ValueError:
-            scam_action = random.choice(options)
+            scam_action = choice(options)
             scam_time = int(args[0])
     elif len(args) is 2:  # User decides both action and time
         scam_action = str(args[0]).lower()
@@ -1125,13 +1074,12 @@ async def scam(event):
         if (scam_time > 0):
             await event.delete()
             async with event.client.action(event.chat_id, scam_action):
-                await asyncio.sleep(scam_time)
+                await sleep(scam_time)
     except BaseException:
         return
 
 
 @register(pattern=r".type(?: |$)(.*)", outgoing=True)
-@errors_handler
 async def typewriter(typew):
     """ Just a small command to make your keyboard become a typewriter! """
     textx = await typew.get_reply_message()
@@ -1147,14 +1095,14 @@ async def typewriter(typew):
     typing_symbol = "|"
     old_text = ""
     await typew.edit(typing_symbol)
-    await asyncio.sleep(sleep_time)
+    await sleep(sleep_time)
     for character in message:
         old_text = old_text + "" + character
         typing_text = old_text + "" + typing_symbol
         await typew.edit(typing_text)
-        await asyncio.sleep(sleep_time)
+        await sleep(sleep_time)
         await typew.edit(old_text)
-        await asyncio.sleep(sleep_time)
+        await sleep(sleep_time)
 
 
 CMD_HELP.update({
@@ -1217,7 +1165,7 @@ CMD_HELP.update({
 \nUsage: Just a small command to make your keyboard become a typewriter!\
 \n\n.lfy <query>\
 \nUsage: Let me Google that for you real quick !!\
-\n\n.decide [Optional: (yes, no, maybe)]\
+\n\n.decide [Alternates: (.yes, .no, .maybe)]\
 \nUsage: Make a quick decision.\
 \n\n.scam <action> <time>\
 \n[Available Actions: (typing, contact, game, location, voice, round, video, photo, document, cancel)]\

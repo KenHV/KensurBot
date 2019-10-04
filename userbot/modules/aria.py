@@ -1,22 +1,34 @@
-#This Lit Module By:- @Zero_cool7870 Sar
-#Special thanks to @spechide who modified this aria
+# Copyright (C) 2019 The Raphielscape Company LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
+# you may not use this file except in compliance with the License.
 
 import aria2p
 from asyncio import sleep
 from os import system
 from userbot import LOGS, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
+from requests import get
 
-cmd = "aria2c \
+# Get best trackers for improved download speeds, thanks K-E-N-W-A-Y.
+trackers_list = get(
+    'https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt'
+).text.replace('\n\n', ',')
+trackers = f"[{trackers_list}]"
+
+cmd = f"aria2c \
 --enable-rpc \
 --rpc-listen-all=false \
 --rpc-listen-port 6800 \
 --max-connection-per-server=10 \
 --rpc-max-request-size=1024M \
 --seed-time=0.01 \
+--max-upload-limit=5K \
+--max-concurrent-downloads=5 \
 --min-split-size=10M \
 --follow-torrent=mem \
 --split=10 \
+--bt-tracker={trackers} \
 --daemon=true \
 --allow-overwrite=true"
 
@@ -27,7 +39,6 @@ aria2 = aria2p.API(aria2p.Client(host="http://localhost", port=6800,
 
 
 @register(outgoing=True, pattern="^.amag(?: |$)(.*)")
-@errors_handler
 async def magnet_download(event):
     magnet_uri = event.pattern_match.group(1)
     # Add Magnet URI Into Queue
@@ -45,7 +56,6 @@ async def magnet_download(event):
 
 
 @register(outgoing=True, pattern="^.ator(?: |$)(.*)")
-@errors_handler
 async def torrent_download(event):
     torrent_file_path = event.pattern_match.group(1)
     # Add Torrent Into Queue
@@ -62,7 +72,6 @@ async def torrent_download(event):
 
 
 @register(outgoing=True, pattern="^.aurl(?: |$)(.*)")
-@errors_handler
 async def magnet_download(event):
     uri = [event.pattern_match.group(1)]
     try:  # Add URL Into Queue
@@ -80,7 +89,6 @@ async def magnet_download(event):
 
 
 @register(outgoing=True, pattern="^.aclear(?: |$)(.*)")
-@errors_handler
 async def remove_all(event):
     try:
         removed = aria2.remove_all(force=True)
@@ -96,7 +104,6 @@ async def remove_all(event):
 
 
 @register(outgoing=True, pattern="^.apause(?: |$)(.*)")
-@errors_handler
 async def pause_all(event):
     # Pause ALL Currently Running Downloads.
     paused = aria2.pause_all(force=True)
@@ -107,7 +114,6 @@ async def pause_all(event):
 
 
 @register(outgoing=True, pattern="^.aresume(?: |$)(.*)")
-@errors_handler
 async def resume_all(event):
     resumed = aria2.resume_all()
     await event.edit("`Resuming downloads...`")
@@ -118,7 +124,6 @@ async def resume_all(event):
 
 
 @register(outgoing=True, pattern="^.ashow(?: |$)(.*)")
-@errors_handler
 async def show_all(event):
     output = "output.txt"
     downloads = aria2.get_downloads()
@@ -163,7 +168,7 @@ async def check_progress_for_dl(gid, event, previous):
         file = aria2.get_download(gid)
         complete = file.is_complete
         try:
-            if not file.error_message:
+            if not complete and not file.error_message:
                 msg = f"\nDownloading File: `{file.name}`"
                 msg += f"\nSpeed: {file.download_speed_string()}"
                 msg += f"\nProgress: {file.progress_string()}"
@@ -181,10 +186,11 @@ async def check_progress_for_dl(gid, event, previous):
             file = aria2.get_download(gid)
             complete = file.is_complete
             if complete:
-                await event.edit(f"File Downloaded Successfully:`{file.name}`")
+                await event.edit(f"File Downloaded Successfully: `{file.name}`"
+                                 )
                 return False
         except Exception as e:
-            if "not found" in str(e) or "'file'" in str(e):
+            if " not found" in str(e) or "'file'" in str(e):
                 await event.edit("Download Canceled :\n`{}`".format(file.name))
                 await sleep(2.5)
                 await event.delete()

@@ -13,7 +13,7 @@ from os import remove
 from telethon import version
 
 from userbot import CMD_HELP, ALIVE_NAME
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 # ================= CONSTANT =================
 DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
@@ -21,7 +21,6 @@ DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
 
 
 @register(outgoing=True, pattern="^.sysd$")
-@errors_handler
 async def sysdetails(sysd):
     """ For .sysd command, get system info using neofetch. """
     try:
@@ -42,7 +41,6 @@ async def sysdetails(sysd):
 
 
 @register(outgoing=True, pattern="^.botver$")
-@errors_handler
 async def bot_ver(event):
     """ For .botver command, get the bot version. """
     if which("git") is not None:
@@ -79,7 +77,6 @@ async def bot_ver(event):
 
 
 @register(outgoing=True, pattern="^.pip(?: |$)(.*)")
-@errors_handler
 async def pipcheck(pip):
     """ For .pip command, do a pip search. """
     pipmodule = pip.pattern_match.group(1)
@@ -123,7 +120,6 @@ async def pipcheck(pip):
 
 
 @register(outgoing=True, pattern="^.alive$")
-@errors_handler
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
@@ -135,7 +131,6 @@ async def amireallyalive(alive):
 
 
 @register(outgoing=True, pattern="^.aliveu")
-@errors_handler
 async def amireallyaliveuser(username):
     """ For .aliveu command, change the username in the .alive command. """
     message = username.text
@@ -149,7 +144,6 @@ async def amireallyaliveuser(username):
 
 
 @register(outgoing=True, pattern="^.resetalive$")
-@errors_handler
 async def amireallyalivereset(ureset):
     """ For .resetalive command, reset the username in the .alive command. """
     global DEFAULTUSER

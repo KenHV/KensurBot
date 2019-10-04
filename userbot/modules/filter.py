@@ -8,11 +8,10 @@
 from asyncio import sleep
 from re import fullmatch, IGNORECASE, escape
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 
-@register(incoming=True, disable_edited=True)
-@errors_handler
+@register(incoming=True, disable_edited=True, disable_errors=True)
 async def filter_incoming_handler(handler):
     """ Checks if the incoming message contains handler of a filter """
     try:
@@ -28,16 +27,17 @@ async def filter_incoming_handler(handler):
                 return
             for trigger in filters:
                 pro = fullmatch(trigger.keyword, name, flags=IGNORECASE)
-                if pro:
+                if pro and trigger.f_mesg_id:
                     msg_o = await handler.client.get_messages(
                         entity=BOTLOG_CHATID, ids=int(trigger.f_mesg_id))
                     await handler.reply(msg_o.message, file=msg_o.media)
+                elif pro and trigger.reply:
+                    await handler.reply(trigger.reply)
     except AttributeError:
         pass
 
 
-@register(outgoing=True, pattern="^.filter (.*)")
-@errors_handler
+@register(outgoing=True, pattern="^.filter (\w*)")
 async def add_new_filter(new_handler):
     """ For .filter command, allows adding new filters in a chat """
     try:
@@ -46,35 +46,39 @@ async def add_new_filter(new_handler):
         await new_handler.edit("`Running on Non-SQL mode!`")
         return
     keyword = new_handler.pattern_match.group(1)
+    string = new_handler.text.partition(keyword)[2]
     msg = await new_handler.get_reply_message()
-    if not msg:
-        await new_handler.edit(
-            "`I need something to save as reply to the filter.`")
-    elif BOTLOG_CHATID:
-        await new_handler.client.send_message(
-            BOTLOG_CHATID, f"#FILTER\
-        \nCHAT: {new_handler.chat.title}\
-        \nTRIGGER: {keyword}\
-        \nThe following message is saved as the filter's reply data for the chat, please do NOT delete it !!"
-        )
-        msg_o = await new_handler.client.forward_messages(
-            entity=BOTLOG_CHATID,
-            messages=msg,
-            from_peer=new_handler.chat_id,
-            silent=True)
-    else:
-        await new_handler.edit(
-            "`This feature requires the BOTLOG_CHATID to be set.`")
-        return
+    msg_id = None
+    if msg and msg.media and not string:
+        if BOTLOG_CHATID:
+            await new_handler.client.send_message(
+                BOTLOG_CHATID, f"#FILTER\
+            \nCHAT ID: {new_handler.chat_id}\
+            \nTRIGGER: {keyword}\
+            \n\nThe following message is saved as the filter's reply data for the chat, please do NOT delete it !!"
+            )
+            msg_o = await new_handler.client.forward_messages(
+                entity=BOTLOG_CHATID,
+                messages=msg,
+                from_peer=new_handler.chat_id,
+                silent=True)
+            msg_id = msg_o.id
+        else:
+            await new_handler.edit(
+                "`Saving media as reply to the filter requires the BOTLOG_CHATID to be set.`"
+            )
+            return
+    elif new_handler.reply_to_msg_id and not string:
+        rep_msg = await new_handler.get_reply_message()
+        string = rep_msg.text
     success = "`Filter` **{}** `{} successfully`"
-    if add_filter(str(new_handler.chat_id), keyword, msg_o.id) is True:
+    if add_filter(str(new_handler.chat_id), keyword, string, msg_id) is True:
         await new_handler.edit(success.format(keyword, 'added'))
     else:
         await new_handler.edit(success.format(keyword, 'updated'))
 
 
-@register(outgoing=True, pattern="^.stop (.*)")
-@errors_handler
+@register(outgoing=True, pattern="^.stop (\w*)")
 async def remove_a_filter(r_handler):
     """ For .stop command, allows you to remove a filter from a chat. """
     try:
@@ -91,7 +95,6 @@ async def remove_a_filter(r_handler):
 
 
 @register(outgoing=True, pattern="^.rmbotfilters (.*)")
-@errors_handler
 async def kick_marie_filter(event):
     """ For .rmfilters command, allows you to kick all \
         Marie(or her clones) filters from a chat. """
@@ -119,7 +122,6 @@ async def kick_marie_filter(event):
 
 
 @register(outgoing=True, pattern="^.filters$")
-@errors_handler
 async def filters_active(event):
     """ For .filters command, lists all of the active filters in a chat. """
     try:
@@ -143,7 +145,7 @@ CMD_HELP.update({
     "filter":
     ".filters\
     \nUsage: Lists all active userbot filters in a chat.\
-    \n\n.filter <keyword>\
+    \n\n.filter <keyword> <reply text> or reply to a message with .filter <keyword>\
     \nUsage: Saves the replied message as a reply to the 'keyword'.\
     \nThe bot will reply to the message whenever 'keyword' is mentioned.\
     \nWorks with everything from files to stickers.\
