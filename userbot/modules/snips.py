@@ -32,7 +32,7 @@ async def on_snip(event):
                                         file=msg_o.media)
     elif snip and snip.reply:
         await event.client.send_message(event.chat_id,
-                                        note.reply,
+                                        snip.reply,
                                         reply_to=message_id_to_reply)
 
 
