@@ -6,18 +6,24 @@
 """ Userbot module for getting the weather of a city. """
 
 import json
-import requests
+from requests import get
 from datetime import datetime
-from pytz import country_timezones as c_tz, timezone as tz, country_names as c_n
+from pytz import country_timezones as c_tz
+from pytz import timezone as tz
+from pytz import country_names as c_n
 
-from userbot import OPEN_WEATHER_MAP_APPID as OWM_API, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot import CMD_HELP, WEATHER_DEFCITY
+from userbot import OPEN_WEATHER_MAP_APPID as OWM_API
+from userbot.events import register
 
 # ===== CONSTANT =====
-DEFCITY = ''
-
-
+if WEATHER_DEFCITY:
+    DEFCITY = WEATHER_DEFCITY
+else:
+    DEFCITY = None
 # ====================
+
+
 async def get_tz(con):
     """ Get time zone of the given country. """
     """ Credits: @aragon12 and @zakaryan2004. """
@@ -32,7 +38,6 @@ async def get_tz(con):
 
 
 @register(outgoing=True, pattern="^.weather(?: |$)(.*)")
-@errors_handler
 async def get_weather(weather):
     """ For .weather command, gets the current weather of a city. """
 
@@ -46,8 +51,9 @@ async def get_weather(weather):
     if not weather.pattern_match.group(1):
         CITY = DEFCITY
         if not CITY:
-            await weather.edit("`Please specify a city or set one as default.`"
-                               )
+            await weather.edit(
+                "`Please specify a city or set one as default using the WEATHER_DEFCITY config variable.`"
+            )
             return
     else:
         CITY = weather.pattern_match.group(1)
@@ -71,7 +77,7 @@ async def get_weather(weather):
             CITY = newcity[0].strip() + "," + countrycode.strip()
 
     url = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}'
-    request = requests.get(url)
+    request = get(url)
     result = json.loads(request.text)
 
     if request.status_code != 200:
@@ -94,8 +100,7 @@ async def get_weather(weather):
     ctimezone = tz(c_tz[country][0])
     time = datetime.now(ctimezone).strftime("%A, %I:%M %p")
     fullc_n = c_n[f"{country}"]
-    # dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-    #        "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
+
     dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
     div = (360 / len(dirs))
@@ -125,70 +130,12 @@ async def get_weather(weather):
         + f"**Humidity:** `{humidity}%`\n" +
         f"**Wind:** `{kmph[0]} kmh | {mph[0]} mph, {findir}`\n" +
         f"**Sunrise:** `{sun(sunrise)}`\n" +
-        f"**Sunset:** `{sun(sunset)}`\n\n\n" + f"**{desc}**\n" +
+        f"**Sunset:** `{sun(sunset)}`\n\n" + f"**{desc}**\n" +
         f"`{cityname}, {fullc_n}`\n" + f"`{time}`")
-
-
-@register(outgoing=True, pattern="^.setcity(?: |$)(.*)")
-@errors_handler
-async def set_default_city(city):
-    """ For .ctime command, change the default userbot country for date and time commands. """
-
-    if not OWM_API:
-        await city.edit(
-            "`Get an API key from` https://openweathermap.org/ `first.`")
-        return
-
-    global DEFCITY
-    APPID = OWM_API
-
-    if not city.pattern_match.group(1):
-        CITY = DEFCITY
-        if not CITY:
-            await city.edit("`Please specify a city to set one as default.`")
-            return
-    else:
-        CITY = city.pattern_match.group(1)
-
-    timezone_countries = {
-        timezone: country
-        for country, timezones in c_tz.items() for timezone in timezones
-    }
-
-    if "," in CITY:
-        newcity = CITY.split(",")
-        if len(newcity[1]) == 2:
-            CITY = newcity[0].strip() + "," + newcity[1].strip()
-        else:
-            country = await get_tz((newcity[1].strip()).title())
-            try:
-                countrycode = timezone_countries[f'{country}']
-            except KeyError:
-                await city.edit("`Invalid country.`")
-                return
-            CITY = newcity[0].strip() + "," + countrycode.strip()
-
-    url = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}'
-    request = requests.get(url)
-    result = json.loads(request.text)
-
-    if request.status_code != 200:
-        await city.edit(f"`Invalid country.`")
-        return
-
-    DEFCITY = CITY
-    cityname = result['name']
-    country = result['sys']['country']
-
-    fullc_n = c_n[f"{country}"]
-
-    await city.edit(f"`Set default city as {cityname}, {fullc_n}.`")
 
 
 CMD_HELP.update({
     "weather":
     ".weather <city> or .weather <city>, <country name/code>\
-    \nUsage: Gets the weather of a city.\n\
-    \n.setcity <city> or .setcity <city>, <country name/code>\
-    \nUsage: Sets your default city so you can just use .weather."
+    \nUsage: Gets the weather of a city."
 })

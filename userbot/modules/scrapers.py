@@ -38,7 +38,7 @@ from youtube_dl.utils import (DownloadError, ContentTooShortError,
                               UnavailableVideoError, XAttrMetadataError)
 from asyncio import sleep
 from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY, CHROME_DRIVER, GOOGLE_CHROME_BIN
-from userbot.events import register, errors_handler
+from userbot.events import register
 from telethon.tl.types import DocumentAttributeAudio
 from userbot.modules.upload_download import progress, humanbytes, time_formatter
 
@@ -48,7 +48,6 @@ TRT_LANG = "en"
 
 
 @register(outgoing=True, pattern="^.crblang (.*)")
-@errors_handler
 async def setlang(prog):
     global CARBONLANG
     CARBONLANG = prog.pattern_match.group(1)
@@ -56,7 +55,6 @@ async def setlang(prog):
 
 
 @register(outgoing=True, pattern="^.carbon")
-@errors_handler
 async def carbon_api(e):
     """ A Wrapper for carbon.now.sh """
     await e.edit("`Processing..`")
@@ -71,7 +69,7 @@ async def carbon_api(e):
     code = quote_plus(pcode)  # Converting to urlencoded
     await e.edit("`Processing..\n25%`")
     if os.path.isfile("./carbon.png"):
-    	os.remove("./carbon.png")
+        os.remove("./carbon.png")
     url = CARBON.format(code=code, lang=CARBONLANG)
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -103,7 +101,7 @@ async def carbon_api(e):
     await e.edit("`Processing..\n75%`")
     # Waiting for downloading
     while not os.path.isfile("./carbon.png"):
-    	await sleep(0.5)
+        await sleep(0.5)
     await e.edit("`Processing..\n100%`")
     file = './carbon.png'
     await e.edit("`Uploading..`")
@@ -123,7 +121,6 @@ async def carbon_api(e):
 
 
 @register(outgoing=True, pattern="^.img (.*)")
-@errors_handler
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
     await event.edit("Processing...")
@@ -155,7 +152,6 @@ async def img_sampler(event):
 
 
 @register(outgoing=True, pattern="^.currency (.*)")
-@errors_handler
 async def moni(event):
     input_str = event.pattern_match.group(1)
     input_sgra = input_str.split(" ")
@@ -184,7 +180,6 @@ async def moni(event):
 
 
 @register(outgoing=True, pattern=r"^.google (.*)")
-@errors_handler
 async def gsearch(q_event):
     """ For .google command, do a Google search. """
     match = q_event.pattern_match.group(1)
@@ -197,7 +192,7 @@ async def gsearch(q_event):
         page = 1
     search_args = (str(match), int(page))
     gsearch = GoogleSearch()
-    gresults = gsearch.search(*search_args)
+    gresults = await gsearch.async_search(*search_args)
     msg = ""
     for i in range(10):
         try:
@@ -219,7 +214,6 @@ async def gsearch(q_event):
 
 
 @register(outgoing=True, pattern=r"^.wiki (.*)")
-@errors_handler
 async def wiki(wiki_q):
     """ For .wiki command, fetch content from Wikipedia. """
     match = wiki_q.pattern_match.group(1)
@@ -252,7 +246,6 @@ async def wiki(wiki_q):
 
 
 @register(outgoing=True, pattern="^.ud (.*)")
-@errors_handler
 async def urban_dict(ud_e):
     """ For .ud command, fetch content from Urban Dictionary. """
     await ud_e.edit("Processing...")
@@ -293,7 +286,6 @@ async def urban_dict(ud_e):
 
 
 @register(outgoing=True, pattern=r"^.tts(?: |$)([\s\S]*)")
-@errors_handler
 async def text_to_speech(query):
     """ For .tts command, a wrapper for Google Text-to-Speech. """
     textx = await query.get_reply_message()
@@ -340,7 +332,6 @@ async def text_to_speech(query):
 
 # kanged from Blank-x ;---;
 @register(outgoing=True, pattern="^.imdb (.*)")
-@errors_handler
 async def imdb(e):
     try:
         movie_name = e.pattern_match.group(1)
@@ -424,7 +415,6 @@ async def imdb(e):
 
 
 @register(outgoing=True, pattern=r"^.trt(?: |$)([\s\S]*)")
-@errors_handler
 async def translateme(trans):
     """ For .trt command, translate the given text using Google Translate. """
     translator = Translator()
@@ -457,7 +447,6 @@ async def translateme(trans):
 
 
 @register(pattern=".lang (trt|tts) (.*)", outgoing=True)
-@errors_handler
 async def lang(value):
     """ For .lang command, change the default langauge of userbot scrapers. """
     util = value.pattern_match.group(1).lower()
@@ -493,7 +482,6 @@ async def lang(value):
 
 
 @register(outgoing=True, pattern="^.yt (.*)")
-@errors_handler
 async def yt_search(video_q):
     """ For .yt command, do a YouTube search from Telegram. """
     query = video_q.pattern_match.group(1)
@@ -557,7 +545,6 @@ async def youtube_search(query,
 
 
 @register(outgoing=True, pattern=r".rip(audio|video) (.*)")
-@errors_handler
 async def download_video(v_url):
     """ For .rip command, download media from YouTube and many other sites. """
     url = v_url.pattern_match.group(2)
@@ -569,6 +556,8 @@ async def download_video(v_url):
         opts = {
             'format':
             'bestaudio',
+            'addmetadata':
+            True,
             'key':
             'FFmpegMetadata',
             'writethumbnail':
@@ -598,6 +587,8 @@ async def download_video(v_url):
         opts = {
             'format':
             'best',
+            'addmetadata':
+            True,
             'key':
             'FFmpegMetadata',
             'prefer_ffmpeg':

@@ -54,7 +54,7 @@
       "value": "False"
     },
     "BOTLOG_CHATID": {
-      "description": "ChatID of the Log group. Set it to '0' if BOTLOG = False",
+      "description": "ChatID of the Log group. Set it to '0' if BOTLOG = False and/or if LOGSPAMMER = False.",
       "value": "0"
     },
     "CONSOLE_LOGGER_VERBOSE": {
@@ -119,6 +119,7 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
+      "value": "[PM = Report Spam] I ❤ ️@PaperplaneExtended",
       "required": false
     },
     "ALIVE_NAME": {
@@ -128,6 +129,18 @@
     "G_DRIVE_CLIENT_SECRET": {
       "description": "Enter Your Client Secret for Google Drive.",
       "required": false
+    },
+    "G_DRIVE_AUTH_TOKEN_DATA": {
+      "description": "Enter the Google Drive authentication data, as a JSON structure.",
+      "required": false
+    },
+    "WEATHER_DEFCITY": {
+      "description": "Set the default city for the userbot's weather module.",
+      "required": false
+    },
+    "LOGSPAMMER": {
+      "description": "Set this to True in case you want the error logs to be stored in the userbot log group, instead of spitting out the file in the current chat, requires a valid BOTLOG_CHATID to be set.",
+      "value": "True"
     }
   },
   "addons": [

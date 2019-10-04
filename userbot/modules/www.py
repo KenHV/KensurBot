@@ -4,22 +4,21 @@
 # you may not use this file except in compliance with the License.
 #
 """ Userbot module containing commands related to the \
-    Information Superhighway(yes, Internet). """
+    Information Superhighway (yes, Internet). """
 
 from datetime import datetime
 
-import speedtest
+from speedtest import Speedtest
 from telethon import functions
 from userbot import CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 
 @register(outgoing=True, pattern="^.speed$")
-@errors_handler
 async def speedtst(spd):
     """ For .speed command, use SpeedTest to check server speeds. """
     await spd.edit("`Running speed test . . .`")
-    test = speedtest.Speedtest()
+    test = Speedtest()
 
     test.get_best_server()
     test.download()
@@ -55,7 +54,6 @@ def speed_convert(size):
 
 
 @register(outgoing=True, pattern="^.dc$")
-@errors_handler
 async def neardc(event):
     """ For .dc command, get the nearest datacenter information. """
     result = await event.client(functions.help.GetNearestDcRequest())
@@ -65,7 +63,6 @@ async def neardc(event):
 
 
 @register(outgoing=True, pattern="^.ping$")
-@errors_handler
 async def pingme(pong):
     """ For .ping command, ping the userbot from any chat.  """
     start = datetime.now()

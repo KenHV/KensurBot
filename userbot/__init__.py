@@ -11,7 +11,7 @@ from sys import version_info
 from logging import basicConfig, getLogger, INFO, DEBUG
 from distutils.util import strtobool as sb
 
-import pylast
+from pylast import LastFMNetwork, md5
 from pySmartDL import SmartDL
 from dotenv import load_dotenv
 from requests import get
@@ -35,7 +35,7 @@ LOGS = getLogger(__name__)
 
 if version_info[0] < 3 or version_info[1] < 6:
     LOGS.info("You MUST have a python version of at least 3.6."
-               "Multiple features depend on this. Bot quitting.")
+              "Multiple features depend on this. Bot quitting.")
     quit(1)
 
 # Check if the config was edited by using the already used variable.
@@ -56,11 +56,12 @@ API_HASH = os.environ.get("API_HASH", None)
 # Userbot Session String
 STRING_SESSION = os.environ.get("STRING_SESSION", None)
 
-# Logging channel/group configuration.
+# Logging channel/group ID configuration.
 BOTLOG_CHATID = int(os.environ.get("BOTLOG_CHATID", None))
 
 # Userbot logging feature switch.
 BOTLOG = sb(os.environ.get("BOTLOG", "False"))
+LOGSPAMMER = sb(os.environ.get("LOGSPAMMER", "False"))
 
 # Bleep Blop, this is a bot ;)
 PM_AUTO_BAN = sb(os.environ.get("PM_AUTO_BAN", "False"))
@@ -83,10 +84,10 @@ GOOGLE_CHROME_BIN = os.environ.get("GOOGLE_CHROME_BIN", None)
 
 # OpenWeatherMap API Key
 OPEN_WEATHER_MAP_APPID = os.environ.get("OPEN_WEATHER_MAP_APPID", None)
+WEATHER_DEFCITY = os.environ.get("WEATHER_DEFCITY", None)
 
 # Anti Spambot Config
 ANTI_SPAMBOT = sb(os.environ.get("ANTI_SPAMBOT", "False"))
-
 ANTI_SPAMBOT_SHOUT = sb(os.environ.get("ANTI_SPAMBOT_SHOUT", "False"))
 
 # Youtube API key
@@ -97,7 +98,6 @@ ALIVE_NAME = os.environ.get("ALIVE_NAME", None)
 
 # Time & Date - Country and Time Zone
 COUNTRY = str(os.environ.get("COUNTRY", ""))
-
 TZ_NUMBER = int(os.environ.get("TZ_NUMBER", 1))
 
 # Clean Welcome
@@ -111,12 +111,12 @@ LASTFM_API = os.environ.get("LASTFM_API", None)
 LASTFM_SECRET = os.environ.get("LASTFM_SECRET", None)
 LASTFM_USERNAME = os.environ.get("LASTFM_USERNAME", None)
 LASTFM_PASSWORD_PLAIN = os.environ.get("LASTFM_PASSWORD", None)
-LASTFM_PASS = pylast.md5(LASTFM_PASSWORD_PLAIN)
-if not LASTFM_USERNAME == "None":
-    lastfm = pylast.LastFMNetwork(api_key=LASTFM_API,
-                                  api_secret=LASTFM_SECRET,
-                                  username=LASTFM_USERNAME,
-                                  password_hash=LASTFM_PASS)
+LASTFM_PASS = md5(LASTFM_PASSWORD_PLAIN)
+if LASTFM_API and LASTFM_SECRET and LASTFM_USERNAME and LASTFM_PASS:
+    lastfm = LastFMNetwork(api_key=LASTFM_API,
+                           api_secret=LASTFM_SECRET,
+                           username=LASTFM_USERNAME,
+                           password_hash=LASTFM_PASS)
 else:
     lastfm = None
 
@@ -155,11 +155,20 @@ else:
 
 
 async def check_botlog_chatid():
-    if not BOTLOG_CHATID:
+    if not BOTLOG_CHATID and LOGSPAMMER:
         LOGS.info(
-            "You must set up the BOTLOG_CHATID variable in the config.env or environment variables, "
-            "many critical features depend on it. KTHXBye.")
+            "You must set up the BOTLOG_CHATID variable in the config.env or environment variables, for the private error log storage to work."
+        )
         quit(1)
+
+    elif not BOTLOG_CHATID and BOTLOG:
+        LOGS.info(
+            "You must set up the BOTLOG_CHATID variable in the config.env or environment variables, for the userbot logging feature to work."
+        )
+        quit(1)
+
+    elif not BOTLOG or not LOGSPAMMER:
+        return
 
     entity = await bot.get_entity(BOTLOG_CHATID)
     if entity.default_banned_rights.send_messages:
@@ -167,6 +176,7 @@ async def check_botlog_chatid():
             "Your account doesn't have rights to send messages to BOTLOG_CHATID "
             "group. Check if you typed the Chat ID correctly.")
         quit(1)
+
 
 with bot:
     try:

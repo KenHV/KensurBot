@@ -24,7 +24,7 @@ from telethon.tl.functions.photos import (DeletePhotosRequest,
 from telethon.tl.types import InputPhoto, MessageMediaPhoto, User, Chat, Channel
 
 from userbot import bot, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 
 # ====================== CONSTANT ===============================
 INVALID_MEDIA = "```The extension of the media entity is invalid.```"
@@ -41,7 +41,6 @@ USERNAME_TAKEN = "```This username is already taken.```"
 
 
 @register(outgoing=True, pattern="^.reserved$")
-@errors_handler
 async def mine(event):
     """ For .reserved command, get a list of your reserved usernames. """
     result = await bot(GetAdminedPublicChannelsRequest())
@@ -52,7 +51,6 @@ async def mine(event):
 
 
 @register(outgoing=True, pattern="^.name")
-@errors_handler
 async def update_name(name):
     """ For .name command, change your name in Telegram. """
     newname = name.text[6:]
@@ -70,7 +68,6 @@ async def update_name(name):
 
 
 @register(outgoing=True, pattern="^.setpfp$")
-@errors_handler
 async def set_profilepic(propic):
     """ For .profilepic command, change your profile picture in Telegram. """
     replymsg = await propic.get_reply_message()
@@ -99,7 +96,6 @@ async def set_profilepic(propic):
 
 
 @register(outgoing=True, pattern="^.setbio (.*)")
-@errors_handler
 async def set_biograph(setbio):
     """ For .setbio command, set a new bio for your profile in Telegram. """
     newbio = setbio.pattern_match.group(1)
@@ -108,7 +104,6 @@ async def set_biograph(setbio):
 
 
 @register(outgoing=True, pattern="^.username (.*)")
-@errors_handler
 async def update_username(username):
     """ For .username command, set a new username in Telegram. """
     newusername = username.pattern_match.group(1)
@@ -120,7 +115,6 @@ async def update_username(username):
 
 
 @register(outgoing=True, pattern="^.count$")
-@errors_handler
 async def count(event):
     """ For .count command, get profile stats. """
     u = 0
@@ -158,7 +152,6 @@ async def count(event):
 
 
 @register(outgoing=True, pattern=r"^.delpfp")
-@errors_handler
 async def remove_profilepic(delpfp):
     """ For .delpfp command, delete your current profile picture in Telegram. """
     group = delpfp.text[8:]

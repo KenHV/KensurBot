@@ -1,16 +1,20 @@
+# Copyright (C) 2019 The Raphielscape Company LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
+# you may not use this file except in compliance with the License.
+
 # (c) Shrimadhav U K - UniBorg
 # Thanks to Prakasaka for porting.
 
 import io
 import os
 import requests
-from userbot.events import register, errors_handler
+from userbot.events import register
 from telethon.tl.types import MessageMediaPhoto
 from userbot import CMD_HELP, REM_BG_API_KEY, TEMP_DOWNLOAD_DIRECTORY
 
 
 @register(outgoing=True, pattern="^.rbg(?: |$)(.*)")
-@errors_handler
 async def kbg(remob):
     """ For .rbg command, Remove Image Background. """
     if REM_BG_API_KEY is None:
