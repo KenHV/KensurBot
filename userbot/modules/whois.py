@@ -22,7 +22,7 @@ from userbot.events import register, errors_handler
 async def who(event):
 
     await event.edit(
-        "`Sit tight while I steal some data from Mark Zuckerburg...`")
+        "`Sit tight while I steal some data from *Global Network Zone*...`")
 
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
