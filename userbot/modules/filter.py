@@ -145,7 +145,7 @@ CMD_HELP.update({
     "filter":
     ".filters\
     \nUsage: Lists all active userbot filters in a chat.\
-    \n\n.filter <keyword>\
+    \n\n.filter <keyword> <reply text> or reply to a message with .filter <keyword>\
     \nUsage: Saves the replied message as a reply to the 'keyword'.\
     \nThe bot will reply to the message whenever 'keyword' is mentioned.\
     \nWorks with everything from files to stickers.\
