@@ -974,9 +974,19 @@ async def metoo(hahayes):
 @errors_handler
 async def Oof(e):
     t = "Oof"
-    for j in range(15):
+    for j in range(16):
         t = t[:-1] + "of"
         await e.edit(t)
+
+                      
+@register(outgoing=True, pattern="^.oem$")
+@errors_handler
+async def Oem(e):
+    t = "Oem"
+    for j in range(16):
+        t = t[:-1] + "oem"
+        await e.edit(t)
+
 
 
 @register(outgoing=True, pattern="^.10iq$")
@@ -1177,6 +1187,8 @@ CMD_HELP.update({
 \nUsage: You retard !!\
 \n\n.zal\
 \nUsage: Invoke the feeling of chaos.\
+\n\nOem\
+\nUsage: Oeeeem\
 \n\nOof\
 \nUsage: Ooooof\
 \n\n.fp\
