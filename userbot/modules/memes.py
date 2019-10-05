@@ -984,7 +984,7 @@ async def Oof(e):
 async def Oem(e):
     t = "Oem"
     for j in range(16):
-        t = t[:-1] + "oem"
+        t = t[:-1] + "em"
         await e.edit(t)
 
 
