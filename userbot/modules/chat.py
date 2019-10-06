@@ -4,14 +4,13 @@
 # you may not use this file except in compliance with the License.
 """ Userbot module containing userid, chatid and log commands"""
 
-from time import sleep
+from asyncio import sleep
 from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, bot
-from userbot.events import register, errors_handler
+from userbot.events import register
 from userbot.modules.admin import get_user_from_event
 
 
 @register(outgoing=True, pattern="^.userid$")
-@errors_handler
 async def useridgetter(target):
     """ For .userid command, returns the ID of the target user. """
     message = await target.get_reply_message()
@@ -32,13 +31,11 @@ async def useridgetter(target):
             name, user_id))
 
 
-@register(outgoing=True, pattern="^.mention(?: |$)(.*)")
-@errors_handler
+@register(outgoing=True, pattern="^.link(?: |$)(.*)")
 async def permalink(mention):
-    """ For .mention command, generates a link to the user's PM with a custom text. """
+    """ For .link command, generates a link to the user's PM with a custom text. """
     user, custom = await get_user_from_event(mention)
     if not user:
-        await mention.edit("`User not found.`")
         return
     if custom:
         await mention.edit(f"[{custom}](tg://user?id={user.id})")
@@ -49,14 +46,12 @@ async def permalink(mention):
 
 
 @register(outgoing=True, pattern="^.chatid$")
-@errors_handler
 async def chatidgetter(chat):
     """ For .chatid, returns the ID of the chat you are in at that moment. """
     await chat.edit("Chat ID: `" + str(chat.chat_id) + "`")
 
 
 @register(outgoing=True, pattern=r"^.log(?: |$)([\s\S]*)")
-@errors_handler
 async def log(log_text):
     """ For .log command, forwards a message or the command argument to the bot logs group """
     if BOTLOG:
@@ -73,12 +68,11 @@ async def log(log_text):
         await log_text.edit("`Logged Successfully`")
     else:
         await log_text.edit("`This feature requires Logging to be enabled!`")
-    sleep(2)
+    await sleep(2)
     await log_text.delete()
 
 
 @register(outgoing=True, pattern="^.kickme$")
-@errors_handler
 async def kickme(leave):
     """ Basically it's .kickme command """
     await leave.edit("Nope, no, no, I go away")
@@ -86,7 +80,6 @@ async def kickme(leave):
 
 
 @register(outgoing=True, pattern="^.unmutechat$")
-@errors_handler
 async def unmute_chat(unm_e):
     """ For .unmutechat command, unmute a muted chat. """
     try:
@@ -96,12 +89,11 @@ async def unmute_chat(unm_e):
         return
     unkread(str(unm_e.chat_id))
     await unm_e.edit("```Unmuted this chat Successfully```")
-    sleep(2)
+    await sleep(2)
     await unm_e.delete()
 
 
 @register(outgoing=True, pattern="^.mutechat$")
-@errors_handler
 async def mute_chat(mute_e):
     """ For .mutechat command, mute any chat. """
     try:
@@ -112,7 +104,7 @@ async def mute_chat(mute_e):
     await mute_e.edit(str(mute_e.chat_id))
     kread(str(mute_e.chat_id))
     await mute_e.edit("`Shush! This chat will be silenced!`")
-    sleep(2)
+    await sleep(2)
     await mute_e.delete()
     if BOTLOG:
         await mute_e.client.send_message(
@@ -120,8 +112,7 @@ async def mute_chat(mute_e):
             str(mute_e.chat_id) + " was silenced.")
 
 
-@register(incoming=True)
-@errors_handler
+@register(incoming=True, disable_errors=True)
 async def keep_read(message):
     """ The mute logic. """
     try:
@@ -133,6 +124,34 @@ async def keep_read(message):
         for i in kread:
             if i.groupid == str(message.chat_id):
                 await message.client.send_read_acknowledge(message.chat_id)
+
+
+# Regex-Ninja module by @Kandnub
+regexNinja = False
+
+
+@register(outgoing=True, pattern="^s/")
+async def sedNinja(event):
+    """For regex-ninja module, auto delete command starting with s/"""
+    if regexNinja:
+        await sleep(.5)
+        await event.delete()
+
+
+@register(outgoing=True, pattern="^.regexninja (on|off)$")
+async def sedNinjaToggle(event):
+    """ Enables or disables the regex ninja module. """
+    global regexNinja
+    if event.pattern_match.group(1) == "on":
+        regexNinja = True
+        await event.edit("`Successfully enabled ninja mode for Regexbot.`")
+        await sleep(1)
+        await event.delete()
+    elif event.pattern_match.group(1) == "off":
+        regexNinja = False
+        await event.edit("`Successfully disabled ninja mode for Regexbot.`")
+        await sleep(1)
+        await event.delete()
 
 
 CMD_HELP.update({
@@ -149,6 +168,9 @@ CMD_HELP.update({
 \nUsage: Unmutes a muted chat.\
 \n\n.mutechat\
 \nUsage: Allows you to mute any chat.\
-\n\n.mention <reply/tag> <optional text>\
-\nUsage: Generate a permanent link to the user's profile with optional custom text."
+\n\n.link <username/userid> : <optional text> (or) reply to someone's message with .link <optional text>\
+\nUsage: Generate a permanent link to the user's profile with optional custom text.\
+\n\n.regexninja on/off\
+\nUsage: Globally enable/disables the regex ninja module.\
+\nRegex Ninja module helps to delete the regex bot's triggering messages."
 })

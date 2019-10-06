@@ -9,10 +9,12 @@ from sqlalchemy import Column, UnicodeText, LargeBinary, Numeric
 class Snips(BASE):
     __tablename__ = "snips"
     snip = Column(UnicodeText, primary_key=True)
+    reply = Column(UnicodeText)
     f_mesg_id = Column(Numeric)
 
-    def __init__(self, snip, f_mesg_id):
+    def __init__(self, snip, reply, f_mesg_id):
         self.snip = snip
+        self.reply = reply
         self.f_mesg_id = f_mesg_id
 
 
@@ -33,10 +35,10 @@ def get_snips():
         SESSION.close()
 
 
-def add_snip(keyword, f_mesg_id):
+def add_snip(keyword, reply, f_mesg_id):
     to_check = get_snip(keyword)
     if not to_check:
-        adder = Snips(keyword, f_mesg_id)
+        adder = Snips(keyword, reply, f_mesg_id)
         SESSION.add(adder)
         SESSION.commit()
         return True
@@ -44,7 +46,7 @@ def add_snip(keyword, f_mesg_id):
         rem = SESSION.query(Snips).filter(Snips.snip == keyword)
         SESSION.delete(rem)
         SESSION.commit()
-        adder = Snips(keyword, f_mesg_id)
+        adder = Snips(keyword, reply, f_mesg_id)
         SESSION.add(adder)
         SESSION.commit()
         return False

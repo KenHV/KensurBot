@@ -13,7 +13,7 @@ from PIL import Image
 import random
 from telethon.tl.types import DocumentAttributeFilename, MessageMediaPhoto
 from userbot import bot, CMD_HELP
-from userbot.events import register, errors_handler
+from userbot.events import register
 from telethon.tl.functions.messages import GetStickerSetRequest
 from telethon.tl.types import InputStickerSetID
 from telethon.tl.types import DocumentAttributeSticker
@@ -33,7 +33,6 @@ KANGING_STR = [
 
 
 @register(outgoing=True, pattern="^.kang")
-@errors_handler
 async def kang(args):
     """ For .kang command, kangs stickers or creates new ones. """
     user = await bot.get_me()
@@ -167,11 +166,10 @@ async def kang(args):
                         await conv.get_response()
                         # Ensure user doesn't get spamming notifications
                         await bot.send_read_acknowledge(conv.chat_id)
-                        await args.edit(
-                            f"`Sticker added in a Different Pack !\
+                        await args.edit(f"`Sticker added in a Different Pack !\
                             \nThis Pack is Newly created!\
                             \nYour pack can be found [here](t.me/addstickers/{packname})",
-                            parse_mode='md')
+                                        parse_mode='md')
                         return
                 if is_anim:
                     await conv.send_file('AnimatedSticker.tgs')
@@ -238,10 +236,9 @@ async def kang(args):
                 # Ensure user doesn't get spamming notifications
                 await bot.send_read_acknowledge(conv.chat_id)
 
-        await args.edit(
-            f"`Sticker kanged successfully!`\
+        await args.edit(f"`Sticker kanged successfully!`\
             \nPack can be found [here](t.me/addstickers/{packname})",
-            parse_mode='md')
+                        parse_mode='md')
 
 
 async def resize_photo(photo):
@@ -270,7 +267,6 @@ async def resize_photo(photo):
 
 
 @register(outgoing=True, pattern="^.stkrinfo$")
-@errors_handler
 async def get_pack_info(event):
     if not event.is_reply:
         await event.edit("`I can't fetch info from nothing, can I ?!`")
