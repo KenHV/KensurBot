@@ -538,10 +538,10 @@ async def rm_deletedacc(show):
         return
     con = show.pattern_match.group(1)
     del_u = 0
-    del_status = "`No deleted accounts found, Group is cleaned`"
+    del_status = "`No deleted accounts found, Group is already cleaned`"
 
     if con != "clean":
-        await show.edit("`Searching for zombie accounts...`")
+        await show.edit("`Searching for ghost/deleted accounts...`")
         async for user in show.client.iter_participants(show.chat_id,
                                                         aggressive=True):
             if user.deleted:
