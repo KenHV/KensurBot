@@ -938,6 +938,16 @@ async def Oof(e):
         await e.edit(t)
 
 
+
+@register(outgoing=True, pattern="^.Oem$")
+async def Oem(e):
+    t = "Oem"
+    for j in range(16):
+        t = t[:-1] + "em"
+        await e.edit(t)
+
+
+
 @register(outgoing=True, pattern="^.10iq$")
 async def iqless(e):
     await e.edit("♿")
