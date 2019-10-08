@@ -526,13 +526,13 @@ async def gspider(gspdr):
 
 @register(outgoing=True, group_only=True, pattern="^.delusers(?: |$)(.*)")
 async def rm_deletedacc(show):
-    """ For .delusers command, clean deleted accounts. """
+    """ For .delusers command, kick deleted accounts. """
     con = show.pattern_match.group(1)
     del_u = 0
-    del_status = "`No deleted accounts found, Group is already cleaned`"
+    del_status = "`No deleted accounts found, Group is already clean`"
 
     if con != "clean":
-        await show.edit("`Searching for zombie accounts...`")
+        await show.edit("`Searching for deleted accounts...`")
         async for user in show.client.iter_participants(show.chat_id,
                                                         aggressive=True):
             if user.deleted:
