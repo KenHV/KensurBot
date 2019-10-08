@@ -41,7 +41,7 @@ if version_info[0] < 3 or version_info[1] < 6:
 # Check if the config was edited by using the already used variable.
 # Basically, its the 'virginity check' for the config file ;)
 CONFIG_CHECK = os.environ.get(
-    "", None)
+    "___________PLOX_______REMOVE_____THIS_____LINE__________", None)
 
 if CONFIG_CHECK:
     LOGS.info(
@@ -50,8 +50,9 @@ if CONFIG_CHECK:
     quit(1)
 
 # Telegram App KEY and HASH
-API_KEY = os.environ.get("API_KEY", "911026")
-API_HASH = os.environ.get("API_HASH", "a46d256fbc56d2fea7e969fdf3eaaad2")
+API_KEY = os.environ.get("API_KEY", None)
+API_HASH = os.environ.get("API_HASH", None)
+
 
 # Userbot Session String
 STRING_SESSION = os.environ.get("STRING_SESSION", None)
