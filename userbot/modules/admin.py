@@ -525,135 +525,78 @@ async def gspider(gspdr):
 
 
 @register(outgoing=True, pattern="^.zombies(?: |$)(.*)", groups_only=True)
-
 async def rm_deletedacc(show):
-
-    """ For .zombies command, list all the ghost/deleted accounts in a chat. """
-
-
+    """ For .zombies command, list all the ghost/deleted/zombie accounts in a chat. """
 
     con = show.pattern_match.group(1).lower()
-
     del_u = 0
-
     del_status = "`No deleted accounts found, Group is clean`"
 
-
-
     if con != "clean":
-
-        await show.edit("`Searching for zombie accounts...`")
-
+        await show.edit("`Searching for ghost/deleted/zombie accounts...`")
         async for user in show.client.iter_participants(show.chat_id):
 
-            if user.deleted:
-
+          if user.deleted:
                 del_u += 1
-
                 await sleep(1)
 
         if del_u > 0:
-
-            del_status = f"`Found` **{del_u}** `deleted account(s) in this group,\
-
+            del_status = f"`Found` **{del_u}** `ghost/deleted/zombie account(s) in this group,\
             \nclean them by using .zombies clean`"
 
 
-
         await show.edit(del_status)
-
         return
 
 
 
     # Here laying the sanity check
-
     chat = await show.get_chat()
-
     admin = chat.admin_rights
-
     creator = chat.creator
 
-
-
     # Well
-
     if not admin and not creator:
-
         await show.edit("`I am not an admin here!`")
-
         return
 
-
-
     await show.edit("`Deleting deleted accounts...\nOh I can do that?!?!`")
-
     del_u = 0
-
     del_a = 0
 
-
-
     async for user in show.client.iter_participants(show.chat_id):
-
         if user.deleted:
-
             try:
-
                 await show.client(
-
                     EditBannedRequest(show.chat_id, user.id, BANNED_RIGHTS))
-
             except ChatAdminRequiredError:
-
                 await show.edit("`I don't have ban rights in this group`")
-
                 return
 
             except UserAdminInvalidError:
-
                 del_u -= 1
-
                 del_a += 1
-
             await show.client(
-
                 EditBannedRequest(show.chat_id, user.id, UNBAN_RIGHTS))
-
             del_u += 1
 
-
-
     if del_u > 0:
-
         del_status = f"Cleaned **{del_u}** deleted account(s)"
 
-
-
     if del_a > 0:
-
         del_status = f"Cleaned **{del_u}** deleted account(s) \
-
         \n**{del_a}** deleted admin accounts are not removed"
 
 
-
     await show.edit(del_status)
-
     await sleep(2)
-
     await show.delete()
 
-
-
+    
     if BOTLOG:
-
         await show.client.send_message(
-
             BOTLOG_CHATID, "#CLEANUP\n"
-
             f"Cleaned **{del_u}** deleted account(s) !!\
-
             \nCHAT: {show.chat.title}(`{show.chat_id}`)")
 
 
