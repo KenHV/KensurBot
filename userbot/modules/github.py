@@ -1,5 +1,5 @@
 import aiohttp
-from userbot.events import register, errors_handler
+from userbot.events import register
 from userbot import CMD_HELP
 
 
