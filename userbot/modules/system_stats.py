@@ -124,10 +124,19 @@ async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
                      "i am ON My Mastor \n\n"
+                     " \n\n"
+                     "botdo is ON \n\n"
                      f"Telethon version: {version.__version__} \n"
                      f"Python: {python_version()} \n"
-                     f"Creator: {DEFAULTUSER}"
-                     "`")
+                     f"User: {DEFAULTUSER} \n"
+                     " \n\n"
+                     f"Creator: Mayur Karaniya \n"
+                     " \n\n"
+                     f"Owner: 3Cube TeKnoways \n"
+                     " \n\n"
+                     f"Userbot: testuserbot "
+                     "`")    
+
 
 
 @register(outgoing=True, pattern="^.aliveu")
