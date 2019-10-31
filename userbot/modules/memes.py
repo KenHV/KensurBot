@@ -939,7 +939,6 @@ async def Oof(e):
 
                       
 @register(outgoing=True, pattern="^.oem$")
-@errors_handler
 async def Oem(e):
     t = "Oem"
     for j in range(16):
