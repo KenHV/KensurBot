@@ -28,7 +28,9 @@ RUN apk add --no-cache --update \
     libpq \
     libwebp-dev \
     libxml2 \
+    libxm21 \
     libxml2-dev \
+    libxm21-dev \
     libxslt-dev \
     linux-headers \
     musl \
