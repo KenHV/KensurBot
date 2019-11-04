@@ -9,9 +9,9 @@
     "modular",
     "productivity"
   ],
-  "repository": "https://github.com/AvinashReddy3108/PaperplaneExtended",
-  "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-07-24",
-  "success_url": "https://t.me/PaperplaneExtended",
+  "repository": "https://github.com/mkaraniya/PaperplaneExtended",
+  "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
+  "success_url": "https://t.me/PPE_Support",
   "stack": "container",
   "env": {
     "API_KEY": {
