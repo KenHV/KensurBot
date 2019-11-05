@@ -9,7 +9,7 @@ RUN sed -e 's;^#http\(.*\)/edge/community;http\1/edge/community;g' -i /etc/apk/r
 #
 # Installing Packages
 #
-RUN apk add --no-cache --update \
+RUN apk add --no-cache=true --update \
     bash \
     build-base \
     bzip2-dev \
@@ -20,6 +20,14 @@ RUN apk add --no-cache --update \
     git \
     sudo \
     aria2 \
+    .. toctree:: \
+   :maxdepth: 2 \
+
+   oauth1_workflow \
+   oauth2_workflow \
+   examples/examples \
+
+   api \
     util-linux \
     chromium \
     chromium-chromedriver \
