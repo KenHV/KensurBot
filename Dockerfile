@@ -1,16 +1,14 @@
-# We're using Alpine Edge
+# We're using Alpine stable
 FROM alpine:edge
 
 #
 # We have to uncomment Community repo for some packages
 #
-RUN sed -e 's;^#http\(.*\)/edge/community;http\1/edge/community;g' -i /etc/apk/repositories
+RUN sed -e 's;^#http\(.*\)/v3.9/community;http\1/v3.9/community;g' -i /etc/apk/repositories
 
-#
-# Installing Packages
-#
-RUN apk add --no-cache=true --update \
-    bash \
+# Installing Python
+RUN apk add --no-cache --update \
+        bash \
     build-base \
     bzip2-dev \
     curl \
@@ -20,25 +18,14 @@ RUN apk add --no-cache=true --update \
     git \
     sudo \
     aria2 \
-    .. toctree:: \
-   :maxdepth: 2 \
-
-   oauth1_workflow \
-   oauth2_workflow \
-   examples/examples \
-
-   api \
     util-linux \
-    chromium \
-    chromium-chromedriver \
+    libevent \
     jpeg-dev \
     libffi-dev \
     libpq \
     libwebp-dev \
     libxml2 \
-    libxm21 \
     libxml2-dev \
-    libxm21-dev \
     libxslt-dev \
     linux-headers \
     musl \
@@ -59,32 +46,39 @@ RUN apk add --no-cache=true --update \
     ffmpeg \
     sqlite-dev \
     sudo \
-    zlib-dev \
-    jpeg-dev \
-    python-dev
+    zlib-dev
 
+RUN pip3 install --upgrade pip setuptools
 
-RUN python3 -m ensurepip \
-    && pip3 install --upgrade pip setuptools \
-    && rm -r /usr/lib/python*/ensurepip && \
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
-    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
-    rm -r /root/.cache
+# Copy Python Requirements to /app
 
-#
-# Clone repo and prepare working directory
-#
-RUN git clone -b sql-extended https://github.com/mkaraniya/PaperplaneExtended /root/userbot
-RUN mkdir /root/userbot/bin/
-WORKDIR /root/userbot/
+RUN  sed -e 's;^# \(%wheel.*NOPASSWD.*\);\1;g' -i /etc/sudoers
+RUN adduser userbot --disabled-password --home /home/userbot
+RUN adduser userbot wheel
+USER userbot
+RUN mkdir /home/userbot/userbot
+RUN mkdir /home/userbot/bin
+RUN git clone https://github.com/mkaraniya/PaperPlaneExtended /home/userbot/userbot
+WORKDIR /home/userbot/userbot
+ADD ./requirements.txt /home/userbot/userbot/requirements.txt
 
 #
-# Copies session and config (if it exists)
+# Copies session and config(if it exists)
 #
-COPY ./sample_config.env ./userbot.session* ./config.env* /root/userbot/
+COPY ./sample_config.env ./userbot.session* ./config.env* /home/userbot/userbot/
+
+#
+# Clone helper scripts
+#
+RUN curl -s https://raw.githubusercontent.com/yshalsager/megadown/master/megadown -o /home/userbot/bin/megadown && sudo chmod a+x /home/userbot/bin/megadown
+RUN curl -s https://raw.githubusercontent.com/yshalsager/cmrudl.py/master/cmrudl.py -o /home/userbot/bin/cmrudl && sudo chmod a+x /home/userbot/bin/cmrudl
+ENV PATH="/home/userbot/bin:$PATH"
 
 #
 # Install requirements
 #
-RUN pip3 install -r requirements.txt
+RUN sudo pip3 install -r requirements.txt
+ADD . /home/userbot/userbot
+RUN sudo chown -R userbot /home/userbot/userbot
+RUN sudo chmod -R 777 /home/userbot/userbot
 CMD ["python3","-m","userbot"]
