@@ -50,7 +50,8 @@ RUN apk add --no-cache --update \
     sudo \
     zlib-dev \
     jpeg \
-    jpeg-dev 
+    jpeg-dev \
+    Python-dev 
 
 
 RUN python3 -m ensurepip \
