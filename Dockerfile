@@ -48,7 +48,9 @@ RUN apk add --no-cache --update \
     ffmpeg \
     sqlite-dev \
     sudo \
-    zlib-dev
+    zlib-dev \
+    jpeg \
+    jpeg-dev 
 
 
 RUN python3 -m ensurepip \
