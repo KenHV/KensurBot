@@ -50,8 +50,8 @@ RUN apk add --no-cache=True --update \
     sqlite-dev \
     sudo \
     zlib-dev \
-    jpeg \
-    jpeg-dev 
+    jpeg 
+    
   
 
 
