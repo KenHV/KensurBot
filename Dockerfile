@@ -1,14 +1,16 @@
-# We're using Alpine stable
+# We're using Alpine Edge
 FROM alpine:edge
 
 #
 # We have to uncomment Community repo for some packages
 #
-RUN sed -e 's;^#http\(.*\)/v3.9/community;http\1/v3.9/community;g' -i /etc/apk/repositories
+RUN sed -e 's;^#http\(.*\)/edge/community;http\1/edge/community;g' -i /etc/apk/repositories
 
-# Installing Python
+#
+# Installing Packages
+#
 RUN apk add --no-cache --update \
-        bash \
+    bash \
     build-base \
     bzip2-dev \
     curl \
@@ -19,7 +21,8 @@ RUN apk add --no-cache --update \
     sudo \
     aria2 \
     util-linux \
-    libevent \
+    chromium \
+    chromium-chromedriver \
     jpeg-dev \
     libffi-dev \
     libpq \
@@ -46,39 +49,32 @@ RUN apk add --no-cache --update \
     ffmpeg \
     sqlite-dev \
     sudo \
-    zlib-dev
+    zlib-dev \
+    jpeg-dev \
+    python-dev
 
-RUN pip3 install --upgrade pip setuptools
 
-# Copy Python Requirements to /app
-
-RUN  sed -e 's;^# \(%wheel.*NOPASSWD.*\);\1;g' -i /etc/sudoers
-RUN adduser userbot --disabled-password --home /home/userbot
-RUN adduser userbot wheel
-USER userbot
-RUN mkdir /home/userbot/userbot
-RUN mkdir /home/userbot/bin
-RUN git clone https://github.com/mkaraniya/PaperPlaneExtended /home/userbot/userbot
-WORKDIR /home/userbot/userbot
-ADD ./requirements.txt /home/userbot/userbot/requirements.txt
+RUN python3 -m ensurepip \
+    && pip3 install --upgrade pip setuptools \
+    && rm -r /usr/lib/python*/ensurepip && \
+    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+    rm -r /root/.cache
 
 #
-# Copies session and config(if it exists)
+# Clone repo and prepare working directory
 #
-COPY ./sample_config.env ./userbot.session* ./config.env* /home/userbot/userbot/
+RUN git clone -b sql-extended https://github.com/mkaraniya/PaperPlaneExtended /root/userbot
+RUN mkdir /root/userbot/bin/
+WORKDIR /root/userbot/
 
 #
-# Clone helper scripts
+# Copies session and config (if it exists)
 #
-RUN curl -s https://raw.githubusercontent.com/yshalsager/megadown/master/megadown -o /home/userbot/bin/megadown && sudo chmod a+x /home/userbot/bin/megadown
-RUN curl -s https://raw.githubusercontent.com/yshalsager/cmrudl.py/master/cmrudl.py -o /home/userbot/bin/cmrudl && sudo chmod a+x /home/userbot/bin/cmrudl
-ENV PATH="/home/userbot/bin:$PATH"
+COPY ./sample_config.env ./userbot.session* ./config.env* /root/userbot/
 
 #
 # Install requirements
 #
-RUN sudo pip3 install -r requirements.txt
-ADD . /home/userbot/userbot
-RUN sudo chown -R userbot /home/userbot/userbot
-RUN sudo chmod -R 777 /home/userbot/userbot
+RUN pip3 install -r requirements.txt
 CMD ["python3","-m","userbot"]
