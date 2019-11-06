@@ -30,6 +30,7 @@ LOGS.info("You are running Paperplane Extended [v7.0]")
 
 LOGS.info(
     "Congratulations, your userbot is now running !! Test it by typing .on in any chat."
+    "Once died , but now ON again [A BIG thanks to <a href="https://github.com/Devp73">Dev Patel</a> who have helped make this userbot ON AGAIN with his HUGE FIX!!]
     "If you need assistance, head to https://t.me/PPE_Support")
 
 if len(argv) not in (1, 3, 4):
