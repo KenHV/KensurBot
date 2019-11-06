@@ -1,7 +1,7 @@
 {
   "name": "Telegram User Bot",
   "description": "[Paperplane Extended] A modular Telegram userbot running on Python 3.6+ with an sqlalchemy database.",
-  "logo": "https://i.imgur.com/ATSG4w3.png",
+  "logo": "https://telegra.ph/file/d04a1724c6dd8a957bd0e.png",
   "keywords": [
     "telegram",
     "userbot",
