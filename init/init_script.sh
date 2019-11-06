@@ -26,7 +26,7 @@ echo "$1=y" >> $prog_f
 
 # Welcome Message
 welcome() {
-    echo "*****Welcome to AvinashReddy3108's userbot setup*****
+    echo "*****Welcome to mkaraniya's userbot setup*****
 This Guided Setup shall help you get your own userbot up and running.
 You might be asked for sudo password several number of times."
 }
