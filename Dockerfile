@@ -51,7 +51,7 @@ RUN apk add --no-cache=True --update \
     zlib-dev \
     jpeg \
     jpeg-dev \
-    Python-dev 
+    Python-dev \
 
 
 RUN python3 -m ensurepip \
