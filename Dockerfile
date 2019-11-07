@@ -50,7 +50,6 @@ RUN apk add --no-cache=true --update \
     sqlite-dev \
     sudo \
     chromium \
-    chromium-dev \
     zlib-dev \
     jpeg 
     
