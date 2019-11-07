@@ -49,7 +49,7 @@ RUN apk add --no-cache=true --update \
     ffmpeg \
     sqlite-dev \
     sudo \
-    edge \
+    chromium \
     zlib-dev \
     jpeg 
     
