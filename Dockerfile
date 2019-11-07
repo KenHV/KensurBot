@@ -48,6 +48,7 @@ RUN apk add --no-cache --update \
     ffmpeg \
     sqlite-dev \
     sudo \
+    firefox \
     zlib-dev \
     jpeg 
     
