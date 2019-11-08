@@ -49,7 +49,7 @@ RUN apk add --no-cache=true --update \
     ffmpeg \
     sqlite-dev \
     sudo \
-    chromium \
+   # chromium \
 #    chromeDriver 78.0.3904.70 \
     zlib-dev \
     jpeg 
