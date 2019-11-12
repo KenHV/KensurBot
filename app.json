@@ -1,6 +1,6 @@
 {
-  "name": "Telegram User Bot",
-  "description": "[Paperplane Extended] A modular Telegram userbot running on Python 3.6+ with an sqlalchemy database.",
+  "name": "Telegram Open User Bot",
+  "description": "[OpenUserBot] A modular Telegram userbot running on Python 3.7+ with an sqlalchemy database.",
   "logo": "https://telegra.ph/file/d04a1724c6dd8a957bd0e.png",
   "keywords": [
     "telegram",
@@ -9,7 +9,7 @@
     "modular",
     "productivity"
   ],
-  "repository": "https://github.com/mkaraniya/PaperplaneExtended",
+  "repository": "https://github.com/mkaraniya/OpenUserBot",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
   "success_url": "https://t.me/PPE_Support",
   "stack": "container",
@@ -119,7 +119,7 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
-      "value": "[PM = Report Spam] I ❤ ️@PaperplaneExtended",
+      "value": "[PM = Report Spam] I ❤ ️@OpenUserBot",
       "required": false
     },
     "ALIVE_NAME": {
