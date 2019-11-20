@@ -6,7 +6,7 @@ from telethon import events
 ACC_LYDIA = {}
 SESSION_ID = {}
 
-if Var.LYDIA_API_KEY: "3235fc15c12d1ed9e2fc74f02154f20ec88bda6b60c32d835253af8ef6804ed78c7f3504"
+if Var.LYDIA_API_KEY: ""
     api_key = Var.LYDIA_API_KEY
     api_client = coffeehouse.API(api_key)
 
