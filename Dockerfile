@@ -57,7 +57,7 @@ RUN apk add --no-cache=true --update \
   
 
 
-RUN python3 -m ensurepip \
+RUN python3.8 -m ensurepip \
     && pip3 install --upgrade pip setuptools \
     && rm -r /usr/lib/python*/ensurepip && \
     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
@@ -80,4 +80,4 @@ COPY ./sample_config.env ./userbot.session* ./config.env* /root/userbot/
 # Install requirements
 #
 RUN pip3 install -r requirements.txt
-CMD ["python3","-m","userbot"]
+CMD ["python3.8","-m","userbot"]
