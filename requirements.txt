@@ -4,7 +4,6 @@ async_generator
 bs4
 cowpy
 # cryptg
-criptg
 dnspython
 emoji
 gitpython
