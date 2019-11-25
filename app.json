@@ -61,6 +61,10 @@
       "description": "If you need verbosity on the console logging",
       "value": "False"
     },
+    "LYDIA_API_KEY": {
+      "description": "Obtain Your Lydia api key from https://t.me/IntellivoidDev.",
+      "required": false
+    },
     "PM_AUTO_BAN": {
       "description": "PM Auto-Ban Feature Switch. Also known as the 'bleep blop, this is a bot...' module.",
       "value": "False"
