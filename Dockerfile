@@ -51,6 +51,7 @@ RUN apk add --no-cache=true --update \
     sudo \
     chromium \
     chromium-chromedriver \
+    coffeehouse \
     zlib-dev \
     jpeg 
     
