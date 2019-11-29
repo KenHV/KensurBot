@@ -3,7 +3,7 @@ aria2p
 async_generator
 bs4
 cowpy
-# cryptg
+cryptg
 dnspython
 emoji
 gitpython
