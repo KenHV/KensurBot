@@ -52,7 +52,7 @@ RUN apk add --no-cache=true --update \
     chromium \
     chromium-chromedriver \
     zlib-dev \
-    openblu \
+    # openblu \
     jpeg 
     
   
