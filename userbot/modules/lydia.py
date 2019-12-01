@@ -1,16 +1,18 @@
 import coffeehouse
 import asyncio
+from userbot import LYDIA_API_KEY
+from userbot.events import register
 from telethon import events
 
 # Non-SQL Mode
 ACC_LYDIA = {}
 SESSION_ID = {}
 
-if Var.LYDIA_API_KEY:
-    api_key = Var.LYDIA_API_KEY
+if LYDIA_API_KEY:
+    api_key = LYDIA_API_KEY
     api_client = coffeehouse.API(api_key)
 
-@register(pattern="^.repcf", outgoing=True)
+@register(outgoing=True, pattern="^.repcf$")
 async def repcf(event):
     if event.fwd_from:
         return
@@ -21,15 +23,15 @@ async def repcf(event):
         reply = await event.get_reply_message()
         msg = reply.text
         text_rep = session.think_thought((session_id, msg))
-        await event.edit("**sun bsdk**: {0}".format(text_rep))
+        await event.edit("**Lydia says**: {0}".format(text_rep))
     except Exception as e:
         await event.edit(str(e))
 
-@register(pattern="^.addcf", outgoing=True)
+@register(outgoing=True, pattern="^.addcf$")
 async def addcf(event):
     if event.fwd_from:
         return
-    await event.edit("Running on Non-SQL mode for now...")
+    await event.edit("Running on SQL mode for now...")
     await asyncio.sleep(4)
     await event.edit("Processing...")
     reply_msg = await event.get_reply_message()
@@ -42,11 +44,11 @@ async def addcf(event):
     else:
         await event.edit("Reply to a user to activate Lydia AI on them")
 
-@register(pattern="^.remcf", outgoing=True)
+@register(outgoing=True, pattern="^.remcf$")
 async def remcf(event):
     if event.fwd_from:
         return
-    await event.edit("Running on Non-SQL mode for now...")
+    await event.edit("Running on SQL mode for now...")
     await asyncio.sleep(4)
     await event.edit("Processing...")
     reply_msg = await event.get_reply_message()
@@ -57,7 +59,7 @@ async def remcf(event):
     except KeyError:
         await event.edit("This person does not have Lydia activated on him/her.")
 
-@bot.on(events.NewMessage(incoming=True))
+@register(incoming=True, disable_edited=True)
 async def user(event):
     user_text = event.text
     try:
