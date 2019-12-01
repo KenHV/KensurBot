@@ -134,6 +134,10 @@
       "description": "Enter the Google Drive authentication data, as a JSON structure.",
       "required": false
     },
+    "LYDIA_API_KEY": {
+      "description": "This Module Needs CoffeeHouse API to work. so Join https://telegram.dog/IntellivoidDev and send #activateapi and follow instructions.",
+      "required": false
+    },
     "WEATHER_DEFCITY": {
       "description": "Set the default city for the userbot's weather module.",
       "required": false
