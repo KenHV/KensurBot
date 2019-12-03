@@ -77,7 +77,7 @@ async def user(event):
         return
 
     
-CMD_HELP.update({
+"""CMD_HELP.update({
     "Lydia":
     ".addcf <username/reply>\
 \nUsage: add's lydia auto chat request in the chat.\
@@ -85,4 +85,4 @@ CMD_HELP.update({
 \nUsage: remove's lydia auto chat request in the chat.\
 \n\n.repcf <username/reply>\
 \nUsage: starts lydia repling to perticular person in the chat."
-})
+})"""
