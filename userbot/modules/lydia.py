@@ -75,3 +75,14 @@ async def user(event):
             await event.reply(text_rep)
     except KeyError:
         return
+
+    
+CMD_HELP.update({
+    "Lydia":
+    ".addcf <username/reply>\
+\nUsage: add's lydia auto chat request in the chat.\
+\n\n.remcf <username/reply>\
+\nUsage: remove's lydia auto chat request in the chat.\
+\n\n.repcf <username/reply>\
+\nUsage: starts lydia repling to perticular person in the chat."
+})
