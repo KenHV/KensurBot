@@ -119,23 +119,16 @@ async def pipcheck(pip):
         await pip.edit("`Use .help pip to see an example`")
 
 
-@register(outgoing=True, pattern="^.on$")
-async def amireallyalive(on):
-    """ For .on command, check if the bot is running.  """
+@register(outgoing=True, pattern="^.alive$")
+async def amireallyalive(alive):
+    """ For .alive command, check if the bot is running.  """
     await on.edit("`"
-                     "i am ON My Mastor \n\n"
-                     " \n\n"
-                     "botdo is ON \n\n"
-                     f"Telethon version: {version.__version__} \n"
-                     f"Python: {python_version()} \n"
-                     f"------------------------------------ \n"
-                     f"User: {DEFAULTUSER} \n"
-                     " \n\n"
-                     f"Creator: Mayur Karaniya \n"
-                     " \n\n"
-                     f"Owner: 3Cube TeKnoways \n"
-                     " \n\n"
-                     f"Userbot: testuserbot "
+                     "Holla Amigos!!! \n"
+                     f"Telethon Version: {version.__version__}"
+                     f"Python: {python_version()}"
+                     f"------------------------------------"
+                     f"User: {DEFAULTUSER}"
+                     f"\n https://drive.google.com/drive/u/5/folders/1-JVmnJkPSOBH7Fr69xAkBqdEi3ukxjaO "
                      "`")    
 
 
