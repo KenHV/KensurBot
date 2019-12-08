@@ -125,8 +125,8 @@ async def amireallyalive(alive):
     await alive.edit("`"
                      "Holla Amigos!!! \n"
                      f"Telethon Version: {version.__version__} \n"
-                     f"python          : {python_version()} \n"
-                     f"hi,               {DEFAULTUSER} \n"
+                     f"Python          : {python_version()} \n"
+                     f"Message         : {DEFAULTUSER} \n"
                      "`")    
 
 
