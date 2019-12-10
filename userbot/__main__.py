@@ -29,7 +29,7 @@ for module_name in ALL_MODULES:
 LOGS.info("You are running OpenUserBot [v7.7]")
 
 LOGS.info(
-    "Congratulations, your userbot is now running !! Test it by typing .on in any chat."
+    "Congratulations, your userbot is now running !! Test it by typing .alive in any chat."
     "Once died , but now ON again, A BIG thanks to https://github.com/Devp73 Dev Patel who have helped make this userbot ON AGAIN with his HUGE FIX!!"
     "If you need assistance, head to https://t.me/PPE_Support")
 
