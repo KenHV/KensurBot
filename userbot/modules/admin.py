@@ -877,6 +877,43 @@ async def get_userdel_from_id(user, event):
 
     return user_obj
 
+@register(outgoing=True, pattern="^.bots$", groups_only=True)
+async def get_bots(show):
+    """ For .bots command, list all of the bots of the chat. """
+    info = await show.client.get_entity(show.chat_id)
+    title = info.title if info.title else "this chat"
+    mentions = f'<b>Bots in {title}:</b>\n'
+    try:
+        if isinstance(message.to_id, PeerChat):
+            await show.edit("`I heard that only Supergroups can have bots.`")
+            return
+        else:
+            async for user in show.client.iter_participants(
+                    show.chat_id, filter=ChannelParticipantsBots):
+                if not user.deleted:
+                    link = f"<a href=\"tg://user?id={user.id}\">{user.first_name}</a>"
+                    userid = f"<code>{user.id}</code>"
+                    mentions += f"\n{link} {userid}"
+                else:
+                    mentions += f"\nDeleted Bot <code>{user.id}</code>"
+    except ChatAdminRequiredError as err:
+        mentions += " " + str(err) + "\n"
+    try:
+        await show.edit(mentions, parse_mode="html")
+    except MessageTooLongError:
+        await show.edit(
+            "Damn, too many bots here. Uploading bots list as file.")
+        file = open("botlist.txt", "w+")
+        file.write(mentions)
+        file.close()
+        await show.client.send_file(
+            show.chat_id,
+            "botlist.txt",
+            caption='Bots in {}'.format(title),
+            reply_to=show.id,
+        )
+        remove("botlist.txt")
+
   
 
 CMD_HELP.update({
@@ -901,6 +938,8 @@ CMD_HELP.update({
 \nUsage: Searches for deleted accounts in a group. Use .zombies clean to remove deleted accounts from the group.\
 \n\n.admins\
 \nUsage: Retrieves a list of admins in the chat.\
+\n\n.bots\
+\nUsage: Retrieves a list of bots in the chat.\
 \n\n.users or .users <name of member>\
 \nUsage: Retrieves all (or queried) users in the chat.\
 \n\n.setgppic <reply to image>\
