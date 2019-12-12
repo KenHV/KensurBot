@@ -1,3 +1,11 @@
+# Copyright (C) 2019 The Raphielscape Company LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
+# you may not use this file except in compliance with the License.
+"""
+Userbot module to help you manage a group
+"""
+
 import coffeehouse
 import asyncio
 from userbot import LYDIA_API_KEY
@@ -78,11 +86,12 @@ async def user(event):
 
     
 """CMD_HELP.update({
-    "Lydia":
+    "lydia":
     ".addcf <username/reply>\
 \nUsage: add's lydia auto chat request in the chat.\
 \n\n.remcf <username/reply>\
 \nUsage: remove's lydia auto chat request in the chat.\
 \n\n.repcf <username/reply>\
 \nUsage: starts lydia repling to perticular person in the chat."
-})"""
+})
+"""
