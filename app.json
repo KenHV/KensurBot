@@ -27,7 +27,7 @@
       "required": true
     },
     "HEROKU_MEMEZ": {
-      "description": "This should be True if the userbor is running on a Heroku Dyno.",
+      "description": "This should be True if the userbot is running on a Heroku Dyno.",
       "value": "True",
       "required": true
     },
