@@ -53,11 +53,11 @@ async def upstream(ups):
             repo.__del__()
             return
         origin.fetch()
-        repo.create_head('sql-extended', origin.refs.sql-extended)
-        repo.heads.sql-extended.checkout(True)
+        repo.create_head('master', origin.refs.master)
+        repo.heads.master.checkout(True)
 
     ac_br = repo.active_branch.name
-    if ac_br != "sql-extended":
+    if ac_br != "master":
         await ups.edit(
             f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). \
             in that case, Updater is unable to identify which branch is to be merged. \
@@ -132,7 +132,7 @@ async def upstream(ups):
             remote = repo.remotes['heroku']
             
             try:
-                remote.push(refspec=f'{repo.active_branch.name}:sql-extended', force=True)
+                remote.push(refspec=f'{repo.active_branch.name}:master', force=True)
             except GitCommandError as error:
                 await ups.edit(f"{txt}\n`Here's the error log: {error}`")
             repo.__del__()
