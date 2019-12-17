@@ -39,6 +39,10 @@
       "description": "Add the Heroku app name here. It helps with userbot updates.",
       "required": false
     },
+    "UPSTREAM_REPO_URL": {
+      "description": "In case you maintain a fork, add your repo URL here.",
+      "required": false
+    },
     "COUNTRY": {
       "description": "Set your Country to be used in the .time and .date commands.",
       "required": false
