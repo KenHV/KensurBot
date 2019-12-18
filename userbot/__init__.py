@@ -152,6 +152,8 @@ binaries = {
     "bin/megadown",
     "https://raw.githubusercontent.com/yshalsager/cmrudl.py/master/cmrudl.py":
     "bin/cmrudl"
+    "https://gist.githubusercontent.com/zanculmarktum/170b94764bd9a3da31078580ccea8d7e/raw/22ef93cef5cff01cccc440b1bf69b9bcb6ce69fc/megafetch.sh":
+    "bin/megadirect"
 }
 
 for binary, path in binaries.items():
