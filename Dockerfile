@@ -20,6 +20,7 @@ RUN apk add --no-cache=true --update \
     git \
     sudo \
     aria2 \
+    docker \
     util-linux \
     libevent \
     jpeg-dev \

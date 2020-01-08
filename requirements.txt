@@ -18,6 +18,7 @@ hachoir
 httplib2
 humanize
 lxml
+numpy
 oauth2client
 Pillow>=5.3.0
 psycopg2
@@ -31,6 +32,7 @@ youtube-dl
 pytz
 qrcode
 requests>=2.18.4
+typing
 search-engine-parser>=0.4.2
 speedtest-cli>=2.0.2
 sqlalchemy>=1.2
@@ -39,3 +41,8 @@ telethon-session-sqlalchemy>=0.2.6
 urbandict>=0.5
 wikipedia>=1.4.0
 coffeehouse
+flake8
+flake8-quotes
+flake8-isort
+isort
+opencv-utils
