@@ -53,8 +53,8 @@ async def mention_afk(mention):
         if ISAFK:
             if mention.sender_id not in USERS:
                 if AFKREASON:
-                    await mention.reply(f"Lagi pegi bentar,\
-                        \nReason: `{AFKREASON}`")
+                    await mention.reply(f"I'm AFK right now.\
+                        \nBecause I'm `{AFKREASON}`")
                 else:
                     await mention.reply(str(choice(AFKSTR)))
                 USERS.update({mention.sender_id: 1})

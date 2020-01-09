@@ -91,7 +91,7 @@ kickstart_pub() {
     "Branch <code>${PARSE_BRANCH}</code>" \
     "Commit Point <code>${COMMIT_POINT}</code>" \
     " " \
-    "<b>Github Link: </b> https://github.com/mkaraniya/PaperplaneExtended/commit/${COMMIT_HASH}" \
+    "<b>Github Link: </b> https://github.com/mkaraniya/OpenUserBot/commit/${COMMIT_HASH}" \
     " " \
     "<b>CI Link: </b> https://semaphoreci.com/baalajimaestro/telegram-userbot"
 }

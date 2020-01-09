@@ -40,7 +40,7 @@ packageinstall() {
     sudo apt --yes --force-yes install build-essential checkinstall git \
         libreadline-gplv2-dev libncursesw5-dev libssl-dev wget \
         libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
-    sudo apt --yes --force-yes install python3.7 docker
+    sudo apt --yes --force-yes install python3.8 docker
 }
 
 # Clone the required repo
@@ -48,7 +48,7 @@ botclone() {
     cd ~
     echo "Cloning bot sources..."
     if [ -z "$bot_clone" ]; then
-        git clone https://github.com/mkaraniya/PaperplaneExtended -b sql-extended
+        git clone https://github.com/mkaraniya/OpenUserBot -b sql-extended
         save_prog "bot_clone"
     fi
     echo "DONE!!"
@@ -59,7 +59,7 @@ botclone() {
 reqinstall() {
     echo "***Installing Requirements***"
     if [ -z "$req" ]; then
-        sudo python3.7 -m pip install -r requirements.txt
+        sudo python3.8 -m pip install -r requirements.txt
         clear
         save_prog "req"
     fi
@@ -136,7 +136,7 @@ session() {
     echo "Generating session..."
     if [ -z "$sess" ]; then
         python3 windows_startup_script.py
-        python3.7 -m userbot test
+        python3.8 -m userbot test
         save_prog "sess"
     fi
     echo "DONE!!"
