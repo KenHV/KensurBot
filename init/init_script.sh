@@ -48,7 +48,7 @@ botclone() {
     cd ~
     echo "Cloning bot sources..."
     if [ -z "$bot_clone" ]; then
-        git clone https://github.com/mkaraniya/PaperplaneExtended -b sql-extended
+        git clone https://github.com/mkaraniya/OpenUserBot -b sql-extended
         save_prog "bot_clone"
     fi
     echo "DONE!!"
@@ -136,7 +136,7 @@ session() {
     echo "Generating session..."
     if [ -z "$sess" ]; then
         python3 windows_startup_script.py
-        python3.7 -m userbot test
+        python3.8 -m userbot test
         save_prog "sess"
     fi
     echo "DONE!!"
