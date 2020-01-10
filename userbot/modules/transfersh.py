@@ -17,7 +17,7 @@ import logging
 import requests
 import asyncio
 
-from telehton import events
+from telethon import events
 from userbot import CMD_HELP, LOGS, BOTLOG_CHATID
 from userbot.events import register
 
