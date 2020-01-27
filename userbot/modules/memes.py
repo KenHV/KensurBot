@@ -1045,8 +1045,16 @@ async def payf(event):
         paytext * 6, paytext * 6, paytext * 2, paytext * 2, paytext * 2,
         paytext * 2, paytext * 2)
     await event.edit(pay)
-
-
+    
+@register(outgoing=True, pattern=r"^.p (.*)")
+async def payp(event):
+    paytext =  event.pattern_match.group(1)
+    pay ="{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(
+        paytext*7, paytext*10, paytext*11, paytext*10, paytext*7,
+        paytext*3, paytext*2, paytext*2, paytext*2, paytext*2,
+        paytext*2, paytext*2,)
+    await event.edit(pay)
+        
 @register(outgoing=True, pattern="^.lfy (.*)")
 async def let_me_google_that_for_you(lmgtfy_q):
     textx = await lmgtfy_q.get_reply_message()
@@ -1073,10 +1081,10 @@ async def scam(event):
     ]
     input_str = event.pattern_match.group(1)
     args = input_str.split()
-    if len(args) is 0:  # Let bot decide action and time
+    if len(args) == 0:  # Let bot decide action and time
         scam_action = choice(options)
         scam_time = randint(30, 60)
-    elif len(args) is 1:  # User decides time/action, bot decides the other.
+    elif len(args) == 1:  # User decides time/action, bot decides the other.
         try:
             scam_action = str(args[0]).lower()
             scam_time = randint(30, 60)
@@ -1180,6 +1188,8 @@ CMD_HELP.update({
 \nUsage: Praise people!\
 \n\n.f <emoji/character>\
 \nUsage: Pay Respects.\
+\n\n.p <pa pe pa pe mulu>\
+\nUsage: Calling someone without Respects.\
 \n\n.bt\
 \nUsage: Believe me, you will find this useful.\
 \n\n.type\
