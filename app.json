@@ -136,7 +136,7 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
-      "value": "[PM = Report Spam] I ❤ ️@OpenUserBot",
+      "value": "pecinta shitpost @userbotindo",
       "required": false
     },
     "ALIVE_NAME": {
