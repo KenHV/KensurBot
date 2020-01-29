@@ -1,5 +1,9 @@
-build: 
-  docker:
-      worker: Dockerfile
-run:
-   worker: python3 -m userbot
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.8.1-buster
+    steps:
+      - checkout
+      - run: pip install -r requirements.txt
+      
