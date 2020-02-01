@@ -15,7 +15,7 @@ google_images_download>=2.7.1
 gTTS>=2.0.1
 gTTS-token>=1.1.3
 hachoir
-httplib2
+httplib2==0.15.0
 humanize
 lxml
 #numpy
@@ -41,8 +41,6 @@ telethon-session-sqlalchemy>=0.2.6
 urbandict>=0.5
 wikipedia>=1.4.0
 coffeehouse
-#flake8
-#flake8-quotes
-#flake8-isort
-#isort
-#opencv-utils
+telegraph
+wget
+python-dateutil
