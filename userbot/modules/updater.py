@@ -2,7 +2,7 @@
 #
 # Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
-# credits to AvinashReddy
+# credits to @AvinashReddy3108
 #
 """
 This module updates the userbot based on Upstream revision
@@ -75,12 +75,12 @@ async def upstream(ups):
         origin = repo.create_remote('upstream', off_repo)
         origin.fetch()
         force_update = True
-        repo.create_head('master', origin.refs.master)
-        repo.heads.master.set_tracking_branch(origin.refs.master)
-        repo.heads.master.checkout(True)
+        repo.create_head('sql-extended', origin.refs.sql-extended)
+        repo.heads.sql-extended.set_tracking_branch(origin.refs.sql-extended)
+        repo.heads.sql-extended.checkout(True)
 
     ac_br = repo.active_branch.name
-    if ac_br != 'master':
+    if ac_br != 'sql-extended':
         await ups.edit(
             f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). '
             'in that case, Updater is unable to identify '
@@ -163,7 +163,7 @@ async def upstream(ups):
         else:
             remote = repo.create_remote("heroku", heroku_git_url)
         try:
-            remote.push(refspec="HEAD:refs/heads/master", force=True)
+            remote.push(refspec="HEAD:refs/heads/sql-extended", force=True)
         except GitCommandError as error:
             await ups.edit(f'{txt}\n`Here is the error log:\n{error}`')
             repo.__del__()
