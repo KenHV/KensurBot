@@ -114,8 +114,8 @@ async def chtream(ch):
 
 CMD_HELP.update({
     'update':
-    ".update\
+    ".chl\
 \nUsage: Checks if the main userbot repository has any updates and shows a changelog if so.\
-\n\n.update w\
+\n\n.update\
 \nUsage: Updates your userbot, if there are any updates in the main userbot repository."
 })
