@@ -181,13 +181,13 @@ async def terminal_runner(term):
         await term.edit("`" f"{curruser}:~# {command}" f"\n{result}" "`")
     else:
         await term.edit("`" f"{curruser}:~$ {command}" f"\n{result}" "`")
-
+'''
     if BOTLOG:
         await term.client.send_message(
             BOTLOG_CHATID,
             "Terminal Command " + command + " was executed sucessfully",
         )
-
+'''
 
 CMD_HELP.update({"eval": ".eval 2 + 3\nUsage: Evalute mini-expressions."})
 CMD_HELP.update(
