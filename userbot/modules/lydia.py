@@ -4,13 +4,19 @@
 # you may not use this file except in compliance with the License.
 # credit goes to @snapdragon and @devpatel_73 for making it work on this userbot.
 #
+# Original author of the UniBorg module 'lydia' @Zero_cool7870 (Jaskaran)
+#
 """
-Userbot module to help you manage a group
+Userbot module to use an AI To respond to people
 """
 
 import coffeehouse
 import asyncio
 from userbot import LYDIA_API_KEY
+
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
+
+
 from userbot.events import register
 from telethon import events
 
@@ -87,7 +93,7 @@ async def user(event):
         return
 
     
-"""CMD_HELP.update({
+CMD_HELP.update({
     "lydia":
     ".addcf <username/reply>\
 \nUsage: add's lydia auto chat request in the chat.\
@@ -96,4 +102,4 @@ async def user(event):
 \n\n.repcf <username/reply>\
 \nUsage: starts lydia repling to perticular person in the chat."
 })
-"""
+

@@ -4,6 +4,7 @@ async_generator
 bs4
 cowpy
 # cryptg
+cffi>=1.0.0
 dnspython
 emoji
 gitpython
@@ -14,7 +15,9 @@ google_images_download>=2.7.1
 gTTS>=2.0.1
 gTTS-token>=1.1.3
 hachoir
-httplib2
+heroku
+heroku3
+httplib2==0.15.0
 humanize
 lxml
 oauth2client
