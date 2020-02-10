@@ -312,16 +312,11 @@ async def typewriter(typew):
 	sleep(0.03)
 	await typew.edit(str(number) + "%   ████████████████▌")
 	sleep(1)
-	await typew.edit("`Tokek Goreng Siap di Santap!`")
-	# I did it for two hours :D just ctrl+c - crtl+v
-
-
-
-
+	await typew.edit("`Get rekt!`")
 
 
 CMD_HELP.update({
     'fakeload':
     '.fl\
-        \nUsage: Tokek Goreng.'
+        \nUsage: Get Rekt.'
 })
