@@ -30,7 +30,7 @@ async def evaluate(query):
             return await query.edit(
                 "`That's a dangerous operation! Not Permitted!`")
 
-    if not re.search(r"echo[ \-\w]*\$\w+", expression) is None:
+    if re.search(r"echo[ \-\w]*\$\w+", expression) is not None:
         return await expression.edit(
             "`That's a dangerous operation! Not Permitted!`")
 
@@ -87,7 +87,7 @@ async def run(run_q):
             return await run_q.edit(
                 "`That's a dangerous operation! Not Permitted!`")
 
-    if not re.search(r"echo[ \-\w]*\$\w+", run_q) is None:
+    if re.search(r"echo[ \-\w]*\$\w+", run_q) is not None:
         return await run_q.edit(
             "`That's a dangerous operation! Not Permitted!`")
 
@@ -161,7 +161,7 @@ async def terminal_runner(term):
             return await term.edit(
                 "`That's a dangerous operation! Not Permitted!`")
 
-    if not re.search(r"echo[ \-\w]*\$\w+", command) is None:
+    if re.search(r"echo[ \-\w]*\$\w+", command) is not None:
         return await term.edit("`That's a dangerous operation! Not Permitted!`"
                                )
 

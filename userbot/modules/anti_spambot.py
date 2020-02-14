@@ -112,17 +112,16 @@ async def ANTI_SPAMBOTS(welcm):
                         reason = "Match on `bit.ly` URLs"
                         spambot = True
                     else:
-                        if check_user.first_name in (
+                        if (check_user.first_name in (
                                 "Bitmex",
                                 "Promotion",
                                 "Information",
                                 "Dex",
                                 "Announcements",
                                 "Info",
-                        ):
-                            if users.last_name == "Bot":
-                                reason = "Known spambot"
-                                spambot = True
+                        ) and users.last_name == "Bot"):
+                            reason = "Known spambot"
+                            spambot = True
 
                     if spambot:
                         print(f"Potential Spam Message: {message.text}")
@@ -169,18 +168,17 @@ async def ANTI_SPAMBOTS(welcm):
                             kicked = False
                             reported = True
 
-                if BOTLOG:
-                    if kicked or reported:
-                        await welcm.client.send_message(
-                            BOTLOG_CHATID,
-                            "#ANTI_SPAMBOT REPORT\n"
-                            f"USER: [{check_user.first_name}](tg://user?id={check_user.id})\n"
-                            f"USER ID: `{check_user.id}`\n"
-                            f"CHAT: {welcm.chat.title}\n"
-                            f"CHAT ID: `{welcm.chat_id}`\n"
-                            f"REASON: {reason}\n"
-                            f"MESSAGE:\n\n{message.text}",
-                        )
+                if BOTLOG and (kicked or reported):
+                    await welcm.client.send_message(
+                        BOTLOG_CHATID,
+                        "#ANTI_SPAMBOT REPORT\n"
+                        f"USER: [{check_user.first_name}](tg://user?id={check_user.id})\n"
+                        f"USER ID: `{check_user.id}`\n"
+                        f"CHAT: {welcm.chat.title}\n"
+                        f"CHAT ID: `{welcm.chat_id}`\n"
+                        f"REASON: {reason}\n"
+                        f"MESSAGE:\n\n{message.text}",
+                    )
     except ValueError:
         pass
 

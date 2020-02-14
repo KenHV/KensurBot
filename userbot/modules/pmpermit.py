@@ -41,11 +41,7 @@ async def permitpm(event):
 
         # Use user custom unapproved message
         getmsg = gvarstatus("unapproved_msg")
-        if getmsg is not None:
-            UNAPPROVED_MSG = getmsg
-        else:
-            UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
-
+        UNAPPROVED_MSG = getmsg if getmsg is not None else DEF_UNAPPROVED_MSG
         # This part basically is a sanity check
         # If the message that sent before is Unapproved Message
         # then stop sending it again to prevent FloodHit
@@ -118,11 +114,7 @@ async def auto_accept(event):
 
         # Use user custom unapproved message
         get_message = gvarstatus("unapproved_msg")
-        if get_message is not None:
-            UNAPPROVED_MSG = get_message
-        else:
-            UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
-
+        UNAPPROVED_MSG = get_message if get_message is not None else DEF_UNAPPROVED_MSG
         chat = await event.get_chat()
         if isinstance(chat, User):
             if is_approved(event.chat_id) or chat.bot:
@@ -190,11 +182,7 @@ async def approvepm(apprvpm):
 
     # Get user custom msg
     getmsg = gvarstatus("unapproved_msg")
-    if getmsg is not None:
-        UNAPPROVED_MSG = getmsg
-    else:
-        UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
-
+    UNAPPROVED_MSG = getmsg if getmsg is not None else DEF_UNAPPROVED_MSG
     async for message in apprvpm.client.iter_messages(apprvpm.chat_id,
                                                       from_user='me',
                                                       search=UNAPPROVED_MSG):
@@ -318,15 +306,14 @@ async def add_pmsg(cust_msg):
             sql.delgvar("unapproved_msg")
             status = "Updated"
 
-        if message:
-            # TODO: allow user to have a custom text formatting
-            # eg: bold, underline, striketrough, link
-            # for now all text are in monoscape
-            msg = message.message  # get the plain text
-            sql.addgvar("unapproved_msg", msg)
-        else:
+        if not message:
             return await cust_msg.edit("`Reply to a message.`")
 
+        # TODO: allow user to have a custom text formatting
+        # eg: bold, underline, striketrough, link
+        # for now all text are in monoscape
+        msg = message.message  # get the plain text
+        sql.addgvar("unapproved_msg", msg)
         await cust_msg.edit("`Message saved as PMPermit message.`")
 
         if BOTLOG:
@@ -334,14 +321,14 @@ async def add_pmsg(cust_msg):
                 BOTLOG_CHATID, f"***{status} PMPermit message :*** \n\n{msg}")
 
     if conf.lower() == "reset":
-        if custom_message is not None:
-            sql.delgvar("unapproved_msg")
-            await cust_msg.edit("`Pmpermit message has been reset to default.`"
-                                )
-        else:
+        if custom_message is None:
             await cust_msg.edit(
                 "`You haven't set a custom PMPermit message yet.`")
 
+        else:
+            sql.delgvar("unapproved_msg")
+            await cust_msg.edit("`Pmpermit message has been reset to default.`"
+                                )
     if conf.lower() == "get":
         if custom_message is not None:
             await cust_msg.edit("**This is your current PMPermit message:**"

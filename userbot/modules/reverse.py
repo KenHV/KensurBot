@@ -33,12 +33,11 @@ async def okgoogle(img):
         os.remove("okgoogle.png")
 
     message = await img.get_reply_message()
-    if message and message.media:
-        photo = io.BytesIO()
-        await bot.download_media(message, photo)
-    else:
+    if not message or not message.media:
         return await img.edit("`Reply to photo or sticker nigger.`")
 
+    photo = io.BytesIO()
+    await bot.download_media(message, photo)
     if photo:
         await img.edit("`Processing...`")
         try:
@@ -59,12 +58,12 @@ async def okgoogle(img):
                                  allow_redirects=False)
         fetchUrl = response.headers["Location"]
 
-        if response != 400:
-            await img.edit("`Image successfully uploaded to Google. Maybe.`"
-                           "\n`Parsing source now. Maybe.`")
-        else:
+        if response == 400:
             return await img.edit("`Google told me to fuck off.`")
 
+        else:
+            await img.edit("`Image successfully uploaded to Google. Maybe.`"
+                           "\n`Parsing source now. Maybe.`")
         os.remove(name)
         match = await ParseSauce(fetchUrl +
                                  "&preferences?hl=en&fg=1#languages")
@@ -76,7 +75,7 @@ async def okgoogle(img):
         else:
             return await img.edit("`Couldn't find anything for your uglyass.`")
 
-        lim = img.pattern_match.group(1) if img.pattern_match.group(1) else 3
+        lim = img.pattern_match.group(1) or 3
         images = await scam(match, lim)
         yeet = []
         for i in images:
