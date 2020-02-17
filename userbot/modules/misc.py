@@ -12,7 +12,6 @@ from os import execl
 import sys
 import os
 import io
-import sys
 import json
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
 from userbot.events import register
