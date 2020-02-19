@@ -48,40 +48,35 @@ def subprocess_run(cmd):
 
 
 @register(outgoing=True, pattern=r"^.mega(?: |$)(.*)")
-async def mega_downloader(event):
-    await event.edit("`Processing...`")
-    textx = await event.get_reply_message()
-    link = event.pattern_match.group(1)
+async def mega_downloader(megadl):
+    await megadl.edit("`Processing...`")
+    textx = await megadl.get_reply_message()
+    link = megadl.pattern_match.group(1)
     if link:
         pass
     elif textx:
         link = textx.text
     else:
-        await event.edit("`Usage: .mega <mega url>`")
+        await megadl.edit("`Usage: .mega <mega url>`")
         return
-    reply = ''
     if not link:
-        reply = "`No MEGA.nz link found!`"
-        await event.edit(reply)
-    await event.edit("`Downloading...`")
-    reply += mega_download(link)
-    await event.edit(reply)
+        await megadl.edit("`No MEGA.nz link found!`")
+    await mega_download(link, megadl)
 
 
-def mega_download(url: str) -> str:
-    reply = ''
+async def mega_download(url, megadl):
     try:
         link = re.findall(r'\bhttps?://.*mega.*\.nz\S+', url)[0]
     except IndexError:
-        reply = "`No MEGA.nz link found`\n"
-        return reply
+        await megadl.edit("`No MEGA.nz link found`\n")
+        return
     cmd = f'bin/megadirect {link}'
     result = subprocess_run(cmd)
     try:
         data = json.loads(result[0])
     except json.JSONDecodeError:
-        reply += "`Error: Can't extract the link`\n"
-        return reply
+        await megadl.edit("`Error: Can't extract the link`\n")
+        return
     file_name = data['file_name']
     file_size = naturalsize(int(data['file_size']))
     file_url = data['url']
@@ -90,15 +85,19 @@ def mega_download(url: str) -> str:
     if exists(file_name):
         os.remove(file_name)
     if not exists(file_name):
+        await megadl.edit('Downloading...\n\n'
+                          f'File: `{file_name}`\n'
+                          f'Size: {file_size}\n'
+                          '...')
         wget.download(file_url, out=file_name)
         if exists(file_name):
+            await megadl.edit('Encrypting file...')
             encrypt_file(file_name, file_hex, file_raw_hex)
-            reply += (f"`{file_name}`\n"
-                      f"Size: {file_size}\n\n"
-                      "Successfully downloaded...")
+            await megadl.edit(f"`{file_name}`\n\n"
+                              "Successfully downloaded...")
         else:
-            reply += "Failed to download..."
-    return reply
+            await megadl.edit("Failed to download...")
+    return
 
 
 def encrypt_file(file_name, file_hex, file_raw_hex):
