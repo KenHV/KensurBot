@@ -119,7 +119,7 @@ async def carbon_api(e):
     # Removing carbon.png after uploading
     await e.delete()  # Deleting msg
 
-
+"""
 @register(outgoing=True, pattern="^.img (.*)")
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
@@ -149,7 +149,7 @@ async def img_sampler(event):
         await event.client.get_input_entity(event.chat_id), lst)
     shutil.rmtree(os.path.dirname(os.path.abspath(lst[0])))
     await event.delete()
-
+"""
 
 @register(outgoing=True, pattern="^.currency (.*)")
 async def moni(event):
