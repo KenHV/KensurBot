@@ -154,8 +154,8 @@ def yandex_disk(url: str) -> str:
 
 """
 def mega_dl(url: str) -> str:
-    """ MEGA.nz direct links generator
-    Using https://github.com/tonikelope/megadown"""
+    #MEGA.nz direct links generator
+    #Using https://github.com/tonikelope/megadown
     reply = ''
     try:
         link = re.findall(r'\bhttps?://.*mega.*\.nz\S+', url)[0]
