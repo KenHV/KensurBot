@@ -44,3 +44,5 @@ coffeehouse
 telegraph
 wget
 python-dateutil
+progress
+file-downloader
