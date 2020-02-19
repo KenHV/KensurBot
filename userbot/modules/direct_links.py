@@ -41,8 +41,6 @@ async def direct_link_generator(request):
             reply += gdrive(link)
         elif 'zippyshare.com' in link:
             reply += zippy_share(link)
-        elif 'mega.' in link:
-            reply += mega_dl(link)
         elif 'yadi.sk' in link:
             reply += yandex_disk(link)
         elif 'cloud.mail.ru' in link:
@@ -154,7 +152,7 @@ def yandex_disk(url: str) -> str:
         return reply
     return reply
 
-
+"""
 def mega_dl(url: str) -> str:
     """ MEGA.nz direct links generator
     Using https://github.com/tonikelope/megadown"""
@@ -177,7 +175,7 @@ def mega_dl(url: str) -> str:
     size = naturalsize(int(data['file_size']))
     reply += f'[{name} ({size})]({dl_url})\n'
     return reply
-
+"""
 
 def cm_ru(url: str) -> str:
     """ cloud.mail.ru direct links generator
