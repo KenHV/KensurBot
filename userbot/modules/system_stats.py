@@ -161,9 +161,9 @@ CMD_HELP.update(
     {"pip": ".pip <module(s)>\
     \nUsage: Does a search of pip modules(s)."})
 CMD_HELP.update({
-    "on":
-    ".on\
-    \nUsage: Type .on to see wether your bot is working or not.\
+    "alive":
+    ".alive\
+    \nUsage: Type .alive to see wether your bot is working or not.\
     \n\n.aliveu <text>\
     \nUsage: Changes the 'user' in alive to the text you want.\
     \n\n.resetalive\
