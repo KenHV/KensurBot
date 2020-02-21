@@ -23,9 +23,7 @@ from subprocess import PIPE, Popen
 import re
 import json
 import os
-import asyncio
 import time
-import math
 
 from pySmartDL import SmartDL
 from os.path import exists
@@ -97,19 +95,17 @@ async def mega_download(url, megadl):
             downloaded = downloader.get_dl_size()
             now = time.time()
             diff = now - c_time
-            percentage = downloader.get_progress() * 100
-            progress_str = "[{0}{1}] {2}%".format(
-                ''.join(["█" for i in range(math.floor(percentage / 10))]),
-                ''.join(["∙"
-                         for i in range(10 - math.floor(percentage / 10))]),
-                round(percentage, 2))
+            percentage = int(downloader.get_progress() * 100)
+            progress = downloader.get_progress_bar()
+            speed = downloader.get_speed(human=True)
             estimated_total_time = downloader.get_eta(human=True)
             try:
                 current_message = (
-                    f"File Name: `{file_name}`"
-                    f"\n{status}...\n"
-                    f"\n{progress_str}"
+                    f"**{status}**..."
+                    f"\nFile Name: `{file_name}`\n"
+                    f"\n{progress} `{percentage}%`"
                     f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
+                    f" @ {speed}"
                     f"\nETA: {estimated_total_time}"
                 )
 
@@ -120,13 +116,18 @@ async def mega_download(url, megadl):
             except Exception as e:
                 LOGS.info(str(e))
         if downloader.isSuccessful():
+            download_time = downloader.get_dl_time(human=True)
             if exists(file_name):
                 await megadl.edit('Encrypting file...')
                 encrypt_file(file_name, file_hex, file_raw_hex)
                 await megadl.edit(f"`{file_name}`\n\n"
-                                  "Successfully downloaded...")
+                                  "Successfully downloaded\n"
+                                  f"Download took: {download_time}")
         else:
             await megadl.edit("Failed to download...")
+            for e in downloader.get_errors():
+                await megadl.edit(str(e))
+                LOGS.info(str(e))
     return
 
 
