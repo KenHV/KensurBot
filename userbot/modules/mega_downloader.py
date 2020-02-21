@@ -18,17 +18,19 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from humanize import naturalsize
 from subprocess import PIPE, Popen
 
 import re
 import json
-import wget
 import os
+import asyncio
+import time
+import math
 
+from pySmartDL import SmartDL
 from os.path import exists
 
-from userbot import CMD_HELP
+from userbot import CMD_HELP, LOGS
 from userbot.events import register
 
 
@@ -78,23 +80,51 @@ async def mega_download(url, megadl):
         await megadl.edit("`Error: Can't extract the link`\n")
         return
     file_name = data['file_name']
-    file_size = naturalsize(int(data['file_size']))
     file_url = data['url']
     file_hex = data['hex']
     file_raw_hex = data['raw_hex']
     if exists(file_name):
         os.remove(file_name)
     if not exists(file_name):
-        await megadl.edit('Downloading...\n\n'
-                          f'File: `{file_name}`\n'
-                          f'Size: {file_size}\n'
-                          '...')
-        wget.download(file_url, out=file_name)
-        if exists(file_name):
-            await megadl.edit('Encrypting file...')
-            encrypt_file(file_name, file_hex, file_raw_hex)
-            await megadl.edit(f"`{file_name}`\n\n"
-                              "Successfully downloaded...")
+        downloaded_file_name = "./" + "" + file_name
+        downloader = SmartDL(file_url, downloaded_file_name, progress_bar=False)
+        downloader.start(blocking=False)
+        c_time = time.time()
+        display_message = None
+        while not downloader.isFinished():
+            status = downloader.get_status().capitalize()
+            total_length = downloader.filesize if downloader.filesize else None
+            downloaded = downloader.get_dl_size()
+            now = time.time()
+            diff = now - c_time
+            percentage = downloader.get_progress() * 100
+            progress_str = "[{0}{1}] {2}%".format(
+                ''.join(["█" for i in range(math.floor(percentage / 10))]),
+                ''.join(["∙"
+                         for i in range(10 - math.floor(percentage / 10))]),
+                round(percentage, 2))
+            estimated_total_time = downloader.get_eta(human=True)
+            try:
+                current_message = (
+                    f"File Name: `{file_name}`"
+                    f"\n{status}...\n"
+                    f"\n{progress_str}"
+                    f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
+                    f"\nETA: {estimated_total_time}"
+                )
+
+                if round(diff %
+                         10.00) == 0 and current_message != display_message:
+                    await megadl.edit(current_message)
+                    display_message = current_message
+            except Exception as e:
+                LOGS.info(str(e))
+        if downloader.isSuccessful():
+            if exists(file_name):
+                await megadl.edit('Encrypting file...')
+                encrypt_file(file_name, file_hex, file_raw_hex)
+                await megadl.edit(f"`{file_name}`\n\n"
+                                  "Successfully downloaded...")
         else:
             await megadl.edit("Failed to download...")
     return
@@ -107,6 +137,22 @@ def encrypt_file(file_name, file_hex, file_raw_hex):
     subprocess_run(cmd)
     os.remove(r"old_{}".format(file_name))
     return
+
+
+def humanbytes(size):
+    """Input size in bytes,
+    outputs in a human readable format"""
+    # https://stackoverflow.com/a/49361727/4723940
+    if not size:
+        return ""
+    # 2 ** 10 = 1024
+    power = 2**10
+    raised_to_pow = 0
+    dict_power_n = {0: "", 1: "Ki", 2: "Mi", 3: "Gi", 4: "Ti"}
+    while size > power:
+        size /= power
+        raised_to_pow += 1
+    return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
 
 
 CMD_HELP.update({
