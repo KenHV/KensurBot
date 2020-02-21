@@ -113,6 +113,11 @@ async def mega_download(url, megadl):
                 )
                 await megadl.edit(current_message)
                 time.sleep(0.2)
+                if status == 'Combining':
+                    if int(total_length) > 10000000000:
+                        time.sleep(11)
+                    elif int(total_length) < 10000000000:
+                        time.sleep(5)
             except Exception as e:
                 LOGS.info(str(e))
         if downloader.isSuccessful():
