@@ -88,6 +88,7 @@ async def mega_download(url, megadl):
         temp_file_name = file_name + ".temp"
         downloaded_file_name = "./" + "" + temp_file_name
         downloader = SmartDL(file_url, downloaded_file_name, progress_bar=False)
+        display_message = None
         try:
             downloader.start(blocking=False)
         except HTTPError as e:
@@ -111,13 +112,13 @@ async def mega_download(url, megadl):
                     f" @ {speed}"
                     f"\nETA: {estimated_total_time}"
                 )
-                await megadl.edit(current_message)
-                time.sleep(0.2)
-                if status == 'Combining':
-                    if int(total_length) > 10000000000:
-                        time.sleep(11)
-                    elif int(total_length) < 10000000000:
-                        time.sleep(5)
+                if status == "Downloading":
+                    await megadl.edit(current_message)
+                    time.sleep(0.2)
+                elif status == "Combining":
+                    if display_message != current_message:
+                        await megadl.edit(current_message)
+                        display_message = current_message
             except Exception as e:
                 LOGS.info(str(e))
         if downloader.isSuccessful():
