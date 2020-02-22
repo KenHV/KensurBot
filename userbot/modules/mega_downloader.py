@@ -79,62 +79,62 @@ async def mega_download(url, megadl):
     except json.JSONDecodeError:
         await megadl.edit("`Error: Can't extract the link`\n")
         return
+    except TypeError as e:  # in case file exists log to heroku then return
+        LOGS.info(str(e))
+        return
     file_name = data["file_name"]
     file_url = data["url"]
     hex_key = data["hex_key"]
     hex_raw_key = data["hex_raw_key"]
-    if exists(file_name):
-        os.remove(file_name)
-    if not exists(file_name):
-        temp_file_name = file_name + ".temp"
-        downloaded_file_name = "./" + "" + temp_file_name
-        downloader = SmartDL(
-            file_url, downloaded_file_name, progress_bar=False)
-        display_message = None
+    temp_file_name = file_name + ".temp"
+    downloaded_file_name = "./" + "" + temp_file_name
+    downloader = SmartDL(
+        file_url, downloaded_file_name, progress_bar=False)
+    display_message = None
+    try:
+        downloader.start(blocking=False)
+    except HTTPError as e:
+        await megadl.edit("`" + str(e) + "`")
+        LOGS.info(str(e))
+        return
+    while not downloader.isFinished():
+        status = downloader.get_status().capitalize()
+        total_length = downloader.filesize if downloader.filesize else None
+        downloaded = downloader.get_dl_size()
+        percentage = int(downloader.get_progress() * 100)
+        progress = downloader.get_progress_bar()
+        speed = downloader.get_speed(human=True)
+        estimated_total_time = downloader.get_eta(human=True)
         try:
-            downloader.start(blocking=False)
-        except HTTPError as e:
-            await megadl.edit("`" + str(e) + "`")
-            LOGS.info(str(e))
-            return
-        while not downloader.isFinished():
-            status = downloader.get_status().capitalize()
-            total_length = downloader.filesize if downloader.filesize else None
-            downloaded = downloader.get_dl_size()
-            percentage = int(downloader.get_progress() * 100)
-            progress = downloader.get_progress_bar()
-            speed = downloader.get_speed(human=True)
-            estimated_total_time = downloader.get_eta(human=True)
-            try:
-                current_message = (
-                    f"**{status}**..."
-                    f"\nFile Name: `{file_name}`\n"
-                    f"\n{progress} `{percentage}%`"
-                    f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
-                    f" @ {speed}"
-                    f"\nETA: {estimated_total_time}"
-                )
-                if status == "Downloading":
+            current_message = (
+                f"**{status}**..."
+                f"\nFile Name: `{file_name}`\n"
+                f"\n{progress} `{percentage}%`"
+                f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
+                f" @ {speed}"
+                f"\nETA: {estimated_total_time}"
+            )
+            if status == "Downloading":
+                await megadl.edit(current_message)
+                time.sleep(0.2)
+            elif status == "Combining":
+                if display_message != current_message:
                     await megadl.edit(current_message)
-                    time.sleep(0.2)
-                elif status == "Combining":
-                    if display_message != current_message:
-                        await megadl.edit(current_message)
-                        display_message = current_message
-            except Exception as e:
-                LOGS.info(str(e))
-        if downloader.isSuccessful():
-            download_time = downloader.get_dl_time(human=True)
-            if exists(temp_file_name):
-                await decrypt_file(
-                    file_name, temp_file_name, hex_key, hex_raw_key, megadl)
-                await megadl.edit(f"`{file_name}`\n\n"
-                                  "Successfully downloaded\n"
-                                  f"Download took: {download_time}")
-        else:
-            await megadl.edit("Failed to download...")
-            for e in downloader.get_errors():
-                LOGS.info(str(e))
+                    display_message = current_message
+        except Exception as e:
+            LOGS.info(str(e))
+    if downloader.isSuccessful():
+        download_time = downloader.get_dl_time(human=True)
+        if exists(temp_file_name):
+            await decrypt_file(
+                file_name, temp_file_name, hex_key, hex_raw_key, megadl)
+            await megadl.edit(f"`{file_name}`\n\n"
+                              "Successfully downloaded\n"
+                              f"Download took: {download_time}")
+    else:
+        await megadl.edit("Failed to download...")
+        for e in downloader.get_errors():
+            LOGS.info(str(e))
     return
 
 
