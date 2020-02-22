@@ -72,17 +72,17 @@ async def mega_download(url, megadl):
     except IndexError:
         await megadl.edit("`No MEGA.nz link found`\n")
         return
-    cmd = f'bin/megadirect {link}'
+    cmd = f'bin/megadown -q -m {link}'
     result = subprocess_run(cmd)
     try:
         data = json.loads(result[0])
     except json.JSONDecodeError:
         await megadl.edit("`Error: Can't extract the link`\n")
         return
-    file_name = data['file_name']
-    file_url = data['url']
-    file_hex = data['hex']
-    file_raw_hex = data['raw_hex']
+    file_name = data["file_name"]
+    file_url = data["url"]
+    hex_key = data["hex_key"]
+    hex_raw_key = data["hex_raw_key"]
     if exists(file_name):
         os.remove(file_name)
     if not exists(file_name):
@@ -126,7 +126,7 @@ async def mega_download(url, megadl):
             download_time = downloader.get_dl_time(human=True)
             if exists(temp_file_name):
                 await megadl.edit("Decrypting file...")
-                decrypt_file(file_name, temp_file_name, file_hex, file_raw_hex)
+                decrypt_file(file_name, temp_file_name, hex_key, hex_raw_key)
                 await megadl.edit(f"`{file_name}`\n\n"
                                   "Successfully downloaded\n"
                                   f"Download took: {download_time}")
@@ -137,9 +137,9 @@ async def mega_download(url, megadl):
     return
 
 
-def decrypt_file(file_name, temp_file_name, file_hex, file_raw_hex):
+def decrypt_file(file_name, temp_file_name, hex_key, hex_raw_key):
     cmd = ("cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'"
-           .format(temp_file_name, file_hex, file_raw_hex, file_name))
+           .format(temp_file_name, hex_key, hex_raw_key, file_name))
     subprocess_run(cmd)
     os.remove("{}".format(temp_file_name))
     return
