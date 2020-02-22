@@ -34,18 +34,18 @@ from userbot.events import register
 from userbot.modules.upload_download import humanbytes
 
 
-def subprocess_run(cmd):
-    reply = ''
+async def subprocess_run(cmd, megadl):
     subproc = Popen(cmd, stdout=PIPE, stderr=PIPE,
                     shell=True, universal_newlines=True)
     talk = subproc.communicate()
     exitCode = subproc.returncode
     if exitCode != 0:
-        reply += ('An error was detected while running the subprocess:\n'
-                  f'exit code: {exitCode}\n'
-                  f'stdout: {talk[0]}\n'
-                  f'stderr: {talk[1]}')
-        return reply
+        await megadl.edit(
+            '```An error was detected while running the subprocess:\n'
+            f'exit code: {exitCode}\n'
+            f'stdout: {talk[0]}\n'
+            f'stderr: {talk[1]}```')
+        return
     return talk
 
 
@@ -73,7 +73,7 @@ async def mega_download(url, megadl):
         await megadl.edit("`No MEGA.nz link found`\n")
         return
     cmd = f'bin/megadown -q -m {link}'
-    result = subprocess_run(cmd)
+    result = await subprocess_run(cmd, megadl)
     try:
         data = json.loads(result[0])
     except json.JSONDecodeError:
@@ -88,7 +88,8 @@ async def mega_download(url, megadl):
     if not exists(file_name):
         temp_file_name = file_name + ".temp"
         downloaded_file_name = "./" + "" + temp_file_name
-        downloader = SmartDL(file_url, downloaded_file_name, progress_bar=False)
+        downloader = SmartDL(
+            file_url, downloaded_file_name, progress_bar=False)
         display_message = None
         try:
             downloader.start(blocking=False)
@@ -125,8 +126,8 @@ async def mega_download(url, megadl):
         if downloader.isSuccessful():
             download_time = downloader.get_dl_time(human=True)
             if exists(temp_file_name):
-                await megadl.edit("Decrypting file...")
-                decrypt_file(file_name, temp_file_name, hex_key, hex_raw_key)
+                await decrypt_file(
+                    file_name, temp_file_name, hex_key, hex_raw_key, megadl)
                 await megadl.edit(f"`{file_name}`\n\n"
                                   "Successfully downloaded\n"
                                   f"Download took: {download_time}")
@@ -137,11 +138,12 @@ async def mega_download(url, megadl):
     return
 
 
-def decrypt_file(file_name, temp_file_name, hex_key, hex_raw_key):
+async def decrypt_file(file_name, temp_file_name, hex_key, hex_raw_key, megadl):
+    await megadl.edit("Decrypting file...")
     cmd = ("cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'"
            .format(temp_file_name, hex_key, hex_raw_key, file_name))
-    subprocess_run(cmd)
-    os.remove("{}".format(temp_file_name))
+    await subprocess_run(cmd, megadl)
+    os.remove(temp_file_name)
     return
 
 
