@@ -31,6 +31,7 @@ from urllib.error import HTTPError
 
 from userbot import CMD_HELP, LOGS
 from userbot.events import register
+from userbot.modules.upload_download import humanbytes
 
 
 def subprocess_run(cmd):
@@ -140,24 +141,8 @@ def decrypt_file(file_name, temp_file_name, file_hex, file_raw_hex):
     cmd = ("cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'"
            .format(temp_file_name, file_hex, file_raw_hex, file_name))
     subprocess_run(cmd)
-    os.remove(r"{}".format(temp_file_name))
+    os.remove("{}".format(temp_file_name))
     return
-
-
-def humanbytes(size):
-    """Input size in bytes,
-    outputs in a human readable format"""
-    # https://stackoverflow.com/a/49361727/4723940
-    if not size:
-        return ""
-    # 2 ** 10 = 1024
-    power = 2**10
-    raised_to_pow = 0
-    dict_power_n = {0: "", 1: "Ki", 2: "Mi", 3: "Gi", 4: "Ti"}
-    while size > power:
-        size /= power
-        raised_to_pow += 1
-    return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
 
 
 CMD_HELP.update({
