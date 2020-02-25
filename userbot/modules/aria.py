@@ -13,14 +13,15 @@ from requests import get
 
 def subprocess_run(cmd):
     subproc = Popen(cmd, stdout=PIPE, stderr=PIPE,
-                    shell=True, universal_newlines=True)
+                    shell=True, universal_newlines=True,
+                    executable="bash")
     talk = subproc.communicate()
     exitCode = subproc.returncode
     if exitCode != 0:
         print('An error was detected while running the subprocess:\n'
-              'exit code: %d\n'
-              'stdout: %s\n'
-              'stderr: %s' % (exitCode, talk[0], talk[1]))
+              f'exit code: {exitCode}\n'
+              f'stdout: {talk[0]}\n'
+              f'stderr: {talk[1]}')
     return talk
 
 

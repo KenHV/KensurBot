@@ -6,10 +6,9 @@
 """ Userbot module for executing code and terminal commands from Telegram. """
 
 import asyncio
-from getpass import getuser
 from os import remove
 from sys import executable
-from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID
+from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, TERM_ALIAS
 from userbot.events import register
 
 
@@ -135,7 +134,7 @@ execute. Use .help exec for an example.```")
 @register(outgoing=True, pattern="^.term(?: |$)(.*)")
 async def terminal_runner(term):
     """ For .term command, runs bash commands and scripts on your server. """
-    curruser = getuser()
+    curruser = TERM_ALIAS
     command = term.pattern_match.group(1)
     try:
         from os import geteuid
@@ -156,7 +155,9 @@ async def terminal_runner(term):
         await term.edit("`That's a dangerous operation! Not Permitted!`")
         return
 
-    process = await asyncio.create_subprocess_shell(
+    process = await asyncio.create_subprocess_exec(
+        "bash",
+        "-c",
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE)
