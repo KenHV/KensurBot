@@ -69,6 +69,8 @@ RUN python3 -m ensurepip \
 RUN git clone -b master https://github.com/adekmaulana/OpenUserBot /root/userbot
 RUN mkdir /root/userbot/bin/
 WORKDIR /root/userbot/
+# symlink bash
+RUN ln -s /usr/bin/bash /root/userbot/bin/bash
 
 #
 # Copies session and config (if it exists)
