@@ -11,6 +11,9 @@ Userbot module to use an AI To respond to people
 """
 
 import coffeehouse
+from coffeehouse.lydia import LydiaAI
+from coffeehouse.api import API
+
 import asyncio
 from userbot import LYDIA_API_KEY
 
