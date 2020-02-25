@@ -603,8 +603,7 @@ async def get_admin(show):
                 show.chat_id, filter=ChannelParticipantsAdmins):
             if not user.deleted:
                 link = f"<a href=\"tg://user?id={user.id}\">{user.first_name}</a>"
-                userid = f"<code>{user.id}</code>"
-                mentions += f"\n{link} {userid}"
+                mentions += f"\n{link}"
             else:
                 mentions += f"\nDeleted Account <code>{user.id}</code>"
     except ChatAdminRequiredError as err:
