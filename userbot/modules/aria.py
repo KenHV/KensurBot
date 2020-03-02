@@ -18,10 +18,7 @@ def subprocess_run(cmd):
     talk = subproc.communicate()
     exitCode = subproc.returncode
     if exitCode != 0:
-        print('An error was detected while running the subprocess:\n'
-              f'exit code: {exitCode}\n'
-              f'stdout: {talk[0]}\n'
-              f'stderr: {talk[1]}')
+        return
     return talk
 
 
@@ -87,7 +84,7 @@ async def torrent_download(event):
 
 
 @register(outgoing=True, pattern="^.aurl(?: |$)(.*)")
-async def magnet_download(event):
+async def aurl_download(event):
     uri = [event.pattern_match.group(1)]
     try:  # Add URL Into Queue
         download = aria2.add_uris(uri, options=None, position=None)
@@ -100,7 +97,7 @@ async def magnet_download(event):
     file = aria2.get_download(gid)
     if file.followed_by_ids:
         new_gid = await check_metadata(gid)
-        await progress_status(gid=new_gid, event=event, previous=None)
+        await check_progress_for_dl(gid=new_gid, event=event, previous=None)
 
 
 @register(outgoing=True, pattern="^.aclear(?: |$)(.*)")
@@ -108,7 +105,7 @@ async def remove_all(event):
     try:
         removed = aria2.remove_all(force=True)
         aria2.purge_all()
-    except:
+    except Exception:
         pass
     if not removed:  # If API returns False Try to Remove Through System Call.
         subprocess_run("aria2p remove-all")
@@ -121,8 +118,8 @@ async def remove_all(event):
 @register(outgoing=True, pattern="^.apause(?: |$)(.*)")
 async def pause_all(event):
     # Pause ALL Currently Running Downloads.
-    paused = aria2.pause_all(force=True)
     await event.edit("`Pausing downloads...`")
+    aria2.pause_all(force=True)
     await sleep(2.5)
     await event.edit("`Successfully paused on-going downloads.`")
     await sleep(2.5)
@@ -130,8 +127,8 @@ async def pause_all(event):
 
 @register(outgoing=True, pattern="^.aresume(?: |$)(.*)")
 async def resume_all(event):
-    resumed = aria2.resume_all()
     await event.edit("`Resuming downloads...`")
+    aria2.resume_all()
     await sleep(1)
     await event.edit("`Downloads resumed.`")
     await sleep(2.5)

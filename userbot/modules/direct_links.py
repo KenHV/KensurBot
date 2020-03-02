@@ -19,18 +19,19 @@ from userbot.events import register
 
 
 def subprocess_run(cmd):
+    reply = ""
     subproc = Popen(cmd, stdout=PIPE, stderr=PIPE,
                     shell=True, universal_newlines=True,
                     executable="bash")
     talk = subproc.communicate()
     exitCode = subproc.returncode
     if exitCode != 0:
-        print('An error was detected while running the subprocess:\n'
-              f'exit code: {exitCode}\n'
-              f'stdout: {talk[0]}\n'
-              f'stderr: {talk[1]}')
+        reply += ('```An error was detected while running the subprocess:\n'
+                  f'exit code: {exitCode}\n'
+                  f'stdout: {talk[0]}\n'
+                  f'stderr: {talk[1]}```')
+        return reply
     return talk
-
 
 
 @register(outgoing=True, pattern=r"^.direct(?: |$)([\s\S]*)")
@@ -183,9 +184,10 @@ def mega_dl(url: str) -> str:
     result = subprocess_run(cmd)
     try:
         data = json.loads(result[0])
-        print(data)
     except json.JSONDecodeError:
         reply += "`Error: Can't extract the link`\n"
+        return reply
+    except IndexError:
         return reply
     dl_url = data['url']
     name = data['file_name']
@@ -205,11 +207,13 @@ def cm_ru(url: str) -> str:
         return reply
     cmd = f'bin/cmrudl -s {link}'
     result = subprocess_run(cmd)
-    result = result[0].splitlines()[-1]
     try:
+        result = result[0].splitlines()[-1]
         data = json.loads(result)
     except json.decoder.JSONDecodeError:
         reply += "`Error: Can't extract the link`\n"
+        return reply
+    except IndexError:
         return reply
     dl_url = data['download']
     name = data['file_name']
