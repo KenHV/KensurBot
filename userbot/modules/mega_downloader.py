@@ -21,6 +21,7 @@
 from asyncio import create_subprocess_shell as asyncSubprocess
 from asyncio.subprocess import PIPE as asyncPIPE
 
+import asyncio
 import re
 import json
 import os
@@ -109,14 +110,14 @@ async def mega_downloader(megadl):
                 f" @ {speed}"
                 f"\nETA: {estimated_total_time}"
             )
-            if status == "Downloading" and display_message != current_message:
+            if display_message != current_message:
                 await megadl.edit(current_message)
-                display_message = current_message
-            elif status == "Combining" and current_message != display_message:
-                await megadl.edit(current_message)
+                await asyncio.sleep(0.2)
                 display_message = current_message
         except Exception:
             pass
+        if status == "Combining":
+            await asyncio.sleep(estimated_total_time)
     if downloader.isSuccessful():
         download_time = downloader.get_dl_time(human=True)
         try:
