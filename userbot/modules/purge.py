@@ -38,11 +38,12 @@ async def fastpurger(purg):
     done = await purg.client.send_message(
         purg.chat_id, f"`Fast purge complete!`\
         \nPurged {str(count)} messages")
-
+    '''
     if BOTLOG:
         await purg.client.send_message(
             BOTLOG_CHATID,
             "Purge of " + str(count) + " messages done successfully.")
+    '''
     await sleep(2)
     await done.delete()
 
@@ -65,10 +66,12 @@ async def purgeme(delme):
         delme.chat_id,
         "`Purge complete!` Purged " + str(count) + " messages.",
     )
+    '''
     if BOTLOG:
         await delme.client.send_message(
             BOTLOG_CHATID,
             "Purge of " + str(count) + " messages done successfully.")
+    '''
     await sleep(2)
     i = 1
     await smsg.delete()
@@ -82,13 +85,18 @@ async def delete_it(delme):
         try:
             await msg_src.delete()
             await delme.delete()
+            '''
             if BOTLOG:
                 await delme.client.send_message(
                     BOTLOG_CHATID, "Deletion of message was successful")
+            '''
         except rpcbaseerrors.BadRequestError:
+            await delme.edit("Well, I can't delete a message")
+            '''
             if BOTLOG:
                 await delme.client.send_message(
                     BOTLOG_CHATID, "Well, I can't delete a message")
+            '''
 
 
 @register(outgoing=True, pattern="^.edit")
@@ -105,9 +113,11 @@ async def editer(edit):
             await edit.delete()
             break
         i = i + 1
+    '''
     if BOTLOG:
         await edit.client.send_message(BOTLOG_CHATID,
                                        "Edit query was executed successfully")
+   '''
 
 
 @register(outgoing=True, pattern="^.sd")
@@ -120,9 +130,11 @@ async def selfdestruct(destroy):
     smsg = await destroy.client.send_message(destroy.chat_id, text)
     await sleep(counter)
     await smsg.delete()
+    '''
     if BOTLOG:
         await destroy.client.send_message(BOTLOG_CHATID,
                                           "sd query done successfully")
+    '''
 
 
 CMD_HELP.update({

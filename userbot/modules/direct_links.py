@@ -5,7 +5,7 @@
 #
 """ Userbot module containing various sites direct links generators"""
 
-from os import popen
+from subprocess import PIPE, Popen
 import re
 import urllib.parse
 import json
@@ -16,6 +16,22 @@ from humanize import naturalsize
 
 from userbot import CMD_HELP
 from userbot.events import register
+
+
+def subprocess_run(cmd):
+    reply = ""
+    subproc = Popen(cmd, stdout=PIPE, stderr=PIPE,
+                    shell=True, universal_newlines=True,
+                    executable="bash")
+    talk = subproc.communicate()
+    exitCode = subproc.returncode
+    if exitCode != 0:
+        reply += ('```An error was detected while running the subprocess:\n'
+                  f'exit code: {exitCode}\n'
+                  f'stdout: {talk[0]}\n'
+                  f'stderr: {talk[1]}```')
+        return reply
+    return talk
 
 
 @register(outgoing=True, pattern=r"^.direct(?: |$)([\s\S]*)")
@@ -162,13 +178,14 @@ def mega_dl(url: str) -> str:
     except IndexError:
         reply = "`No MEGA.nz links found`\n"
         return reply
-    command = f'bin/megadown -q -m {link}'
-    result = popen(command).read()
+    cmd = f'bin/megadown -q -m {link}'
+    result = subprocess_run(cmd)
     try:
-        data = json.loads(result)
-        print(data)
+        data = json.loads(result[0])
     except json.JSONDecodeError:
         reply += "`Error: Can't extract the link`\n"
+        return reply
+    except IndexError:
         return reply
     dl_url = data['url']
     name = data['file_name']
@@ -186,13 +203,15 @@ def cm_ru(url: str) -> str:
     except IndexError:
         reply = "`No cloud.mail.ru links found`\n"
         return reply
-    command = f'bin/cmrudl -s {link}'
-    result = popen(command).read()
-    result = result.splitlines()[-1]
+    cmd = f'bin/cmrudl -s {link}'
+    result = subprocess_run(cmd)
     try:
+        result = result[0].splitlines()[-1]
         data = json.loads(result)
     except json.decoder.JSONDecodeError:
         reply += "`Error: Can't extract the link`\n"
+        return reply
+    except IndexError:
         return reply
     dl_url = data['download']
     name = data['file_name']

@@ -54,7 +54,8 @@ RUN apk add --no-cache=true --update \
     chromium \
     chromium-chromedriver \
     zlib-dev \
-    jpeg
+    jpeg \
+    zip
 
 
 RUN python3 -m ensurepip \

@@ -854,12 +854,12 @@ async def zal(zgfy):
             continue
 
         for _ in range(0, 3):
-            randint = randint(0, 2)
+            rand = randint(0, 2)
 
-            if randint == 0:
+            if rand == 0:
                 charac = charac.strip() + \
                     choice(ZALG_LIST[0]).strip()
-            elif randint == 1:
+            elif rand == 1:
                 charac = charac.strip() + \
                     choice(ZALG_LIST[1]).strip()
             else:
@@ -937,15 +937,13 @@ async def Oof(e):
         t = t[:-1] + "of"
         await e.edit(t)
 
-                      
+
 @register(outgoing=True, pattern="^.oem$")
-async def Oem(e):
+async def oem(e):
     t = "Oem"
     for j in range(16):
         t = t[:-1] + "em"
         await e.edit(t)
-
-
 
 
 @register(outgoing=True, pattern="^.Oem$")
@@ -954,7 +952,6 @@ async def Oem(e):
     for j in range(16):
         t = t[:-1] + "em"
         await e.edit(t)
-
 
 
 @register(outgoing=True, pattern="^.10iq$")
@@ -1091,7 +1088,7 @@ async def scam(event):
         except ValueError:
             scam_action = choice(options)
             scam_time = int(args[0])
-    elif len(args) is 2:  # User decides both action and time
+    elif len(args) == 2:  # User decides both action and time
         scam_action = str(args[0]).lower()
         scam_time = int(args[1])
     else:
