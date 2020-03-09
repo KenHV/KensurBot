@@ -43,3 +43,4 @@ wikipedia>=1.4.0
 coffeehouse>=2.1.0
 telegraph
 python-dateutil
+git+https://github.com/johnwmillr/LyricsGenius.git
