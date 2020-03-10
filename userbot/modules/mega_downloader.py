@@ -37,8 +37,10 @@ from userbot.modules.upload_download import humanbytes
 
 
 async def subprocess_run(cmd, megadl):
-    subproc = await asyncSubprocess(cmd, stdout=asyncPIPE, stderr=asyncPIPE)
-    stdout, stderr = await subproc.communicate()
+    subproc = Popen(cmd, stdout=PIPE, stderr=PIPE,
+                    shell=True, universal_newlines=True,
+                    executable="bash")
+    talk = subproc.communicate()
     exitCode = subproc.returncode
     if exitCode != 0:
         await megadl.edit(
