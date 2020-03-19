@@ -8,15 +8,14 @@
 This module updates the userbot based on Upstream revision
 """
 
-from os import remove, execle, path, makedirs, getenv, environ
-from shutil import rmtree
+from os import remove, execle, path, environ
 import asyncio
 import sys
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import CMD_HELP, bot, HEROKU_APIKEY, HEROKU_APPNAME, UPSTREAM_REPO_URL
+from userbot import CMD_HELP, HEROKU_API_KEY, HEROKU_APP_NAME
 from userbot.events import register
 
 requirements_path = path.join(
@@ -44,7 +43,7 @@ async def update_requirements():
         return repr(e)
 
 
-@register(outgoing=True, pattern="^\.update(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^.update(?: |$)(.*)")
 async def upstream(ups):
     "For .update command, check if the bot is up to date, update if specified"
     await ups.edit("`Checking for updates, please wait....`")
@@ -67,8 +66,8 @@ async def upstream(ups):
     except InvalidGitRepositoryError as error:
         if conf != "now":
             await ups.edit(
-                f"`Unfortunately, the directory {error} does not seem to be a git repository.\
-            \nBut we can fix that by force updating the userbot using .update now.`"
+                f"`Unfortunately, the directory {error} does not seem to be a git repository."
+                "\nBut we can fix that by force updating the userbot using .update now.`"
             )
             return
         repo = Repo.init()
@@ -120,7 +119,7 @@ async def upstream(ups):
             remove("output.txt")
         else:
             await ups.edit(changelog_str)
-        await ups.respond('`do \".update now\" to update`')
+        await ups.respond('`do ".update now" to update`')
         return
 
     if force_update:
@@ -129,19 +128,19 @@ async def upstream(ups):
     else:
         await ups.edit('`Updating userbot, please wait....`')
     # We're in a Heroku Dyno, handle it's memez.
-    if HEROKU_APIKEY is not None:
+    if HEROKU_API_KEY is not None:
         import heroku3
-        heroku = heroku3.from_key(HEROKU_APIKEY)
+        heroku = heroku3.from_key(HEROKU_API_KEY)
         heroku_app = None
         heroku_applications = heroku.apps()
-        if not HEROKU_APPNAME:
+        if not HEROKU_APP_NAME:
             await ups.edit(
-                '`[HEROKU MEMEZ] Please set up the HEROKU_APPNAME variable to be able to update userbot.`'
+                '`[HEROKU MEMEZ] Please set up the HEROKU_APP_NAME variable to be able to update userbot.`'
             )
             repo.__del__()
             return
         for app in heroku_applications:
-            if app.name == HEROKU_APPNAME:
+            if app.name == HEROKU_APP_NAME:
                 heroku_app = app
                 break
         if heroku_app is None:
@@ -156,7 +155,7 @@ async def upstream(ups):
         ups_rem.fetch(ac_br)
         repo.git.reset("--hard", "FETCH_HEAD")
         heroku_git_url = heroku_app.git_url.replace(
-            "https://", "https://api:" + HEROKU_APIKEY + "@")
+            "https://", "https://api:" + HEROKU_API_KEY + "@")
         if "heroku" in repo.remotes:
             remote = repo.remote("heroku")
             remote.set_url(heroku_git_url)
@@ -176,7 +175,7 @@ async def upstream(ups):
             ups_rem.pull(ac_br)
         except GitCommandError:
             repo.git.reset("--hard", "FETCH_HEAD")
-        reqs_upgrade = await update_requirements()
+        await update_requirements()
         await ups.edit('`Successfully Updated!\n'
                        'Bot is restarting... Wait for a second!`')
         # Spin a new instance of bot
@@ -187,8 +186,8 @@ async def upstream(ups):
 
 CMD_HELP.update({
     'update':
-    ".update\
-\nUsage: Checks if the main userbot repository has any updates and shows a changelog if so.\
-\n\n.update now\
-\nUsage: Updates your userbot, if there are any updates in the main userbot repository."
+    ".update"
+    "\nUsage: Checks if the main userbot repository has any updates and shows a changelog if so."
+    "\n\n.update now"
+    "\nUsage: Update your userbot, if there are any updates in your userbot repository."
 })
