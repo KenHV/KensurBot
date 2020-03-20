@@ -59,9 +59,9 @@ async def mega_downloader_fallback(megadl, link):
     result = await subprocess_run(cmd, megadl)
     if result[2] != 0:
         return
-    async with open('list.txt', 'w+') as list_files:
+    with open('list.txt', 'w+') as list_files:
         for downloaded_files in os.listdir('mega'):
-            await list_files.write(downloaded_files + '\n')
+            list_files.write(downloaded_files + '\n')
     result = open('list.txt', 'r').read()
     if len(result) >= 4096:
         await megadl.client.send_file(
@@ -167,7 +167,7 @@ async def mega_downloader(megadl):
                               f"Download took: {download_time}")
     else:
         await megadl.edit("`Failed to download, check heroku Logs for more details`")
-        async for e in downloader.get_errors():
+        for e in downloader.get_errors():
             LOGS.info(str(e))
     return
 
