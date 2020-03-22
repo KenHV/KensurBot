@@ -22,7 +22,7 @@ humanize
 lxml
 #numpy
 oauth2client
-Pillow>=5.3.0
+Pillow>=6.0.0
 psycopg2
 psycopg2-binary
 pybase64>=0.4.0
@@ -44,5 +44,6 @@ urbandict>=0.5
 wikipedia>=1.4.0
 coffeehouse>=2.1.0
 telegraph
+PyGithub
 python-dateutil
 git+https://github.com/johnwmillr/LyricsGenius.git
