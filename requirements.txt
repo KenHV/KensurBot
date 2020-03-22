@@ -42,7 +42,8 @@ telethon
 telethon-session-sqlalchemy>=0.2.6
 urbandict>=0.5
 wikipedia>=1.4.0
-covid
+coffeehouse>=2.1.0
+telegraph
 PyGithub
 python-dateutil
 git+https://github.com/johnwmillr/LyricsGenius.git
