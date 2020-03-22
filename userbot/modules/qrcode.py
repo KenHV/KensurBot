@@ -16,7 +16,7 @@ from barcode.writer import ImageWriter
 
 from bs4 import BeautifulSoup
 
-from userbot import CMD_HELP
+from userbot import CMD_HELP, LOGS
 from userbot.events import register
 
 
@@ -42,8 +42,8 @@ async def parseqr(qr_e):
     t_response = stdout.decode().strip()
     os.remove(downloaded_file_name)
     if not t_response:
-        logger.info(e_response)
-        logger.info(t_response)
+        LOGS.info(e_response)
+        LOGS.info(t_response)
         await qr_e.edit("Failed to decode.")
         return
     soup = BeautifulSoup(t_response, "html.parser")
@@ -52,7 +52,7 @@ async def parseqr(qr_e):
 
 
 @register(pattern=r".barcode(?: |$)([\s\S]*)", outgoing=True)
-async def barcode(event):
+async def bq(event):
     """ For .barcode command, genrate a barcode containing the given content. """
     await event.edit("`Processing..`")
     input_str = event.pattern_match.group(1)
