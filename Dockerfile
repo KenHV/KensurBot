@@ -56,7 +56,11 @@ RUN apk add --no-cache=true --update \
     zlib-dev \
     jpeg \
     zip \
-    megatools
+    megatools \
+    nodejs
+
+
+RUN curl https://cli-assets.heroku.com/install.sh | sh
 
 
 RUN python3 -m ensurepip \
