@@ -37,7 +37,7 @@ from userbot.events import register
 from userbot.modules.upload_download import humanbytes
 
 
-async def subprocess_run(cmd, megadl):
+async def subprocess_run(megadl, cmd):
     subproc = await asyncSubprocess(cmd, stdout=asyncPIPE, stderr=asyncPIPE)
     stdout, stderr = await subproc.communicate()
     exitCode = subproc.returncode
@@ -48,7 +48,7 @@ async def subprocess_run(cmd, megadl):
             f'stdout: {stdout.decode().strip()}\n'
             f'stderr: {stderr.decode().strip()}```')
         return exitCode
-    return stdout, stderr, exitCode
+    return stdout.decode().strip(), stderr.decode().strip(), exitCode
 
 
 async def mega_downloader_fallback(megadl, link):
@@ -56,7 +56,7 @@ async def mega_downloader_fallback(megadl, link):
         os.mkdir('mega')
     await megadl.edit('`Downloading...`')
     cmd = f'megadl --path mega {link} > /dev/null'
-    result = await subprocess_run(cmd, megadl)
+    result = await subprocess_run(megadl, cmd)
     if result[2] != 0:
         return
     with open('list.txt', 'w+') as list_files:
@@ -100,9 +100,9 @@ async def mega_downloader(megadl):
         await mega_downloader_fallback(megadl, link)
         return
     cmd = f'bin/megadown -q -m {link}'
-    result = await subprocess_run(cmd, megadl)
+    result = await subprocess_run(megadl, cmd)
     try:
-        data = json.loads(result[0].decode().strip())
+        data = json.loads(result[0])
     except json.JSONDecodeError:
         await megadl.edit("`Error: Can't extract the link`\n")
         return
@@ -154,8 +154,9 @@ async def mega_downloader(megadl):
     if downloader.isSuccessful():
         download_time = downloader.get_dl_time(human=True)
         try:
-            P = multiprocessing.Process(target=await decrypt_file(
-                file_name, temp_file_name, hex_key, hex_raw_key, megadl), name="Decrypt_File")
+            P = multiprocessing.Process(target=await decrypt_file(megadl,
+                                        file_name, temp_file_name, hex_key, hex_raw_key),
+                                        name="Decrypt_File")
             P.start()
             P.join()
         except FileNotFoundError as e:
@@ -172,11 +173,11 @@ async def mega_downloader(megadl):
     return
 
 
-async def decrypt_file(file_name, temp_file_name,
-                       hex_key, hex_raw_key, megadl):
+async def decrypt_file(megadl, file_name, temp_file_name,
+                       hex_key, hex_raw_key):
     cmd = ("cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'"
            .format(temp_file_name, hex_key, hex_raw_key, file_name))
-    if await subprocess_run(cmd, megadl):
+    if await subprocess_run(megadl, cmd):
         os.remove(temp_file_name)
     else:
         raise FileNotFoundError(
@@ -186,7 +187,9 @@ async def decrypt_file(file_name, temp_file_name,
 
 CMD_HELP.update({
     "mega":
-    "```.mega <MEGA.nz link>\n"
+    "```"
+    ".mega <MEGA.nz link>\n"
     "Usage: Reply to a MEGA.nz link or paste your MEGA.nz link to\n"
-    "download the file into your userbot server.```"
+    "download the file into your userbot server."
+    "```"
 })
