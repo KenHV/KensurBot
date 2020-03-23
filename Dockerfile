@@ -58,7 +58,8 @@ RUN apk add --no-cache=true --update \
     jpeg \
     zip \
     megatools \
-    nodejs
+    nodejs \
+    freetype-dev
 
 
 RUN curl https://cli-assets.heroku.com/install.sh | sh
