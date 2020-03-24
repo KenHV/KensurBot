@@ -60,9 +60,7 @@ RUN apk add --no-cache=true --update \
     nodejs \
     freetype-dev
 
-
 RUN curl https://cli-assets.heroku.com/install.sh | sh
-
 
 RUN python3 -m ensurepip \
     && pip3 install --upgrade pip setuptools \
@@ -74,14 +72,9 @@ RUN python3 -m ensurepip \
 #
 # Clone repo and prepare working directory
 #
-RUN git clone -b master https://github.com/adekmaulana/OpenUserBot /root/userbot
-RUN mkdir /root/userbot/bin/
-WORKDIR /root/userbot/
-
-#
-# Copies session and config (if it exists)
-#
-COPY ./sample_config.env ./userbot.session* ./config.env* /root/userbot/
+RUN git clone -b master https://github.com/adekmaulana/ProjectBish /home/projectbish/
+RUN mkdir /home/projectbish/bin/
+WORKDIR /home/projectbish/
 
 #
 # Install requirements

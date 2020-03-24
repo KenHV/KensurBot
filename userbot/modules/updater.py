@@ -111,7 +111,7 @@ async def upstream(event):
     "For .update command, check if the bot is up to date, update if specified"
     await event.edit("`Checking for updates, please wait....`")
     conf = event.pattern_match.group(1)
-    off_repo = 'https://github.com/adekmaulana/OpenUserBot.git'
+    off_repo = 'https://github.com/adekmaulana/ProjectBish.git'
     force_update = False
     try:
         txt = "`Oops.. Updater cannot continue due to "

@@ -1,7 +1,6 @@
 {
-  "name": "Telegram Open User Bot",
-  "description": "[OpenUserBot] A modular Telegram userbot running on Python 3.7+ with an sqlalchemy database.",
-  "logo": "https://telegra.ph/file/d04a1724c6dd8a957bd0e.png",
+  "name": "Project Bish UserBot",
+  "description": "[projectbish] A modular Telegram userbot running on Python 3.8",
   "keywords": [
     "telegram",
     "userbot",
@@ -9,7 +8,7 @@
     "modular",
     "productivity"
   ],
-  "repository": "https://github.com/mkaraniya/OpenUserBot",
+  "repository": "https://github.com/adekmaulana/ProjectBish",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
   "success_url": "https://t.me/PPE_Support",
   "stack": "container",
@@ -136,11 +135,7 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
-      "value": "[PM = Report Spam] I ❤ ️@OpenUserBot",
-      "required": false
-    },
-    "ALIVE_NAME": {
-      "description": "Name to show in .alive message",
+      "value": "Hoooman",
       "required": false
     },
     "G_DRIVE_CLIENT_SECRET": {

@@ -86,8 +86,8 @@ async def bot_community(community):
 async def bot_support(wannahelp):
     """ For .support command, just returns the group link. """
     await wannahelp.edit(
-        "Join the OpenUserBot Channel: @PaperPlaneExtended_news \
-        \nJoin the OpenUserBot Chat: @PPE_Support")
+        "Join the Channel: @PaperPlaneExtended_news \
+        \nJoin the Chat: @PPE_Support")
 
 
 @register(outgoing=True, pattern="^.creator$")
@@ -99,7 +99,7 @@ async def creator(e):
 async def reedme(e):
     await e.edit(
         "Here's something for you to read:\n"
-        "\n[OpenUserBot's README.md file](https://github.com/mkaraniya/OpenUserBot/blob/sql-extended/README.md)"
+        "\n[ProjectBishUserBot's README.md file](https://github.com/adekmaulana/ProjectBish/blob/master/README.md)"
         "\n[Setup Guide - Basic](https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02)"
         "\n[Setup Guide - Google Drive](https://telegra.ph/How-To-Setup-GDrive-11-02)"
         "\n[Setup Guide - LastFM Module](https://telegra.ph/How-to-set-up-LastFM-module-for-Paperplane-userbot-11-02)"
@@ -127,7 +127,7 @@ async def repeat(rep):
 async def repo_is_here(wannasee):
     """ For .repo command, just returns the repo URL. """
     await wannasee.edit(
-        "Click [here](https://github.com/mkaraniya/OpenUserBot) to open OpenUserBot's GitHub page."
+        "Click [here](https://github.com/adekmaulana/ProjectBish) to open ProjectBishUserBot's GitHub page."
     )
 
 
