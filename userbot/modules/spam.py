@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 
 import asyncio
-from asyncio import wait, sleep
+from asyncio import sleep
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
@@ -24,7 +24,7 @@ async def tmeme(e):
 
 
 @register(outgoing=True, pattern="^.wspam (.*)")
-async def tmeme(e):
+async def t_meme(e):
     wspam = str(e.pattern_match.group(1))
     message = wspam.split()
     await e.delete()
@@ -37,7 +37,7 @@ async def tmeme(e):
 
 
 @register(outgoing=True, pattern="^.spam (.*)")
-async def spammer(e):
+async def spammers(e):
     counter = int(e.pattern_match.group(1).split(' ', 1)[0])
     spam_message = str(e.pattern_match.group(1).split(' ', 1)[1])
     await e.delete()

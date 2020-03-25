@@ -11,13 +11,11 @@ import asyncio
 import shutil
 from bs4 import BeautifulSoup
 import re
-from time import sleep
 from html import unescape
 from re import findall
 from selenium import webdriver
 from urllib.parse import quote_plus
 from urllib.error import HTTPError
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
@@ -39,7 +37,7 @@ from asyncio import sleep
 from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY, CHROME_DRIVER, GOOGLE_CHROME_BIN
 from userbot.events import register
 from telethon.tl.types import DocumentAttributeAudio
-from userbot.modules.upload_download import progress, humanbytes, time_formatter
+from userbot.modules.upload_download import progress
 from userbot.google_images_download import googleimagesdownload
 
 CARBONLANG = "auto"
@@ -94,7 +92,7 @@ async def carbon_api(e):
             'downloadPath': download_path
         }
     }
-    command_result = driver.execute("send_command", params)
+    driver.execute("send_command", params)
     driver.find_element_by_xpath("//button[contains(text(),'Export')]").click()
     driver.find_element_by_xpath("//button[contains(text(),'4x')]").click()
     driver.find_element_by_xpath("//button[contains(text(),'PNG')]").click()
@@ -339,7 +337,6 @@ async def imdb(e):
         final_name = '+'.join(remove_space)
         page = get("https://www.imdb.com/find?ref_=nv_sr_fn&q=" + final_name +
                    "&s=all")
-        lnk = str(page.status_code)
         soup = BeautifulSoup(page.content, 'lxml')
         odds = soup.findAll("tr", "odd")
         mov_title = odds[0].findNext('td').findNext('td').text

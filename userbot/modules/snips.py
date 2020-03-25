@@ -36,12 +36,12 @@ async def on_snip(event):
                                         reply_to=message_id_to_reply)
 
 
-@register(outgoing=True, pattern="^.snip (\w*)")
+@register(outgoing=True, pattern=r"^.snip (\w*)")
 async def on_snip_save(event):
     """ For .snip command, saves snips for future use. """
     try:
         from userbot.modules.sql_helper.snips_sql import add_snip
-    except AtrributeError:
+    except AttributeError:
         await event.edit("`Running on Non-SQL mode!`")
         return
     keyword = event.pattern_match.group(1)
@@ -97,7 +97,7 @@ async def on_snip_list(event):
     await event.edit(message)
 
 
-@register(outgoing=True, pattern="^.remsnip (\w*)")
+@register(outgoing=True, pattern=r"^.remsnip (\w*)")
 async def on_snip_delete(event):
     """ For .remsnip command, deletes a snip. """
     try:

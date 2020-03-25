@@ -155,7 +155,8 @@ async def mega_downloader(megadl):
         download_time = downloader.get_dl_time(human=True)
         try:
             P = multiprocessing.Process(target=await decrypt_file(megadl,
-                                        file_name, temp_file_name, hex_key, hex_raw_key),
+                                        file_name, temp_file_name,
+                                        hex_key, hex_raw_key),
                                         name="Decrypt_File")
             P.start()
             P.join()
@@ -167,7 +168,8 @@ async def mega_downloader(megadl):
                               "Successfully downloaded\n"
                               f"Download took: {download_time}")
     else:
-        await megadl.edit("`Failed to download, check heroku Logs for more details`")
+        await megadl.edit("`Failed to download, "
+                          "check heroku Logs for more details`")
         for e in downloader.get_errors():
             LOGS.info(str(e))
     return
@@ -187,9 +189,7 @@ async def decrypt_file(megadl, file_name, temp_file_name,
 
 CMD_HELP.update({
     "mega":
-    "```"
     ".mega <MEGA.nz link>\n"
-    "Usage: Reply to a MEGA.nz link or paste your MEGA.nz link to\n"
+    "Usage: Reply to a MEGA.nz link or paste your MEGA.nz link to "
     "download the file into your userbot server."
-    "```"
 })

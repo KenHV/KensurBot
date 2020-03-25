@@ -72,7 +72,6 @@ async def gdrive_upload_function(dryb):
             diff = now - c_time
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed()
-            elapsed_time = round(diff) * 1000
             progress_str = "[{0}{1}] {2}%".format(
                 ''.join(["▰" for i in range(math.floor(percentage / 10))]),
                 ''.join(["▱"
@@ -80,12 +79,16 @@ async def gdrive_upload_function(dryb):
                 round(percentage, 2))
             estimated_total_time = downloader.get_eta(human=True)
             try:
-                current_message = f"{status}...\
-                \nURL: {url}\
-                \nFile Name: {file_name}\
-                \n{progress_str}\
-                \n{humanbytes(downloaded)} of {humanbytes(total_length)}\
-                \nETA: {estimated_total_time}"
+                current_message = (
+                    f"URL: {url}\n"
+                    "File Name:"
+                    f"\n`{file_name}`\n\n"
+                    "Status:"
+                    f"\n**{status}** | {progress_str} `{percentage}%`"
+                    f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
+                    f" @ {speed}"
+                    f"\nETA: {estimated_total_time}"
+                )
 
                 if round(diff %
                          10.00) == 0 and current_message != display_message:
@@ -147,7 +150,7 @@ async def gdrive_upload_function(dryb):
                                              file_name, mime_type, dryb,
                                              parent_id)
             await dryb.edit(
-                f"File:`{required_file_name}`\nwas Successfully Uploaded to [Google Drive]({g_drive_link})!"
+                f"File: `{required_file_name}`\nwas Successfully Uploaded to [Google Drive]({g_drive_link})!"
             )
         except Exception as e:
             await dryb.edit(

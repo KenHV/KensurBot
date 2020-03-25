@@ -51,7 +51,8 @@ async def addcf(event):
     if reply_msg:
         session = lydiaAI.create_session()
         ACC_LYDIA.update({str(event.chat_id) + " " + str(reply_msg.from_id): session})
-        await event.edit("Lydia successfully enabled for user: {} in chat: {}".format(str(reply_msg.from_id), str(event.chat_id)))
+        await event.edit("Lydia successfully enabled for user: {} in chat: {}"
+                         .format(str(reply_msg.from_id), str(event.chat_id)))
     else:
         await event.edit("Reply to a user to activate Lydia AI on them")
 
@@ -66,7 +67,8 @@ async def remcf(event):
     reply_msg = await event.get_reply_message()
     try:
         del ACC_LYDIA[str(event.chat_id) + " " + str(reply_msg.from_id)]
-        await event.edit("Lydia successfully disabled for user: {} in chat: {}".format(str(reply_msg.from_id), str(event.chat_id)))
+        await event.edit("Lydia successfully disabled for user: {} in chat: {}"
+                         .format(str(reply_msg.from_id), str(event.chat_id)))
     except KeyError:
         await event.edit("This person does not have Lydia activated on him/her.")
 

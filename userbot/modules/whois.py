@@ -101,7 +101,7 @@ async def fetch_info(replied_user, event):
     replied_user_profile_photos_count = "Person needs help with uploading profile picture."
     try:
         replied_user_profile_photos_count = replied_user_profile_photos.count
-    except AttributeError as e:
+    except AttributeError:
         pass
     user_id = replied_user.user.id
     first_name = replied_user.user.first_name
