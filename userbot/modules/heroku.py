@@ -4,6 +4,7 @@
    Heroku manager for your userbot
 """
 
+import os
 import heroku3
 import asyncio
 
@@ -30,7 +31,50 @@ async def subprocess_run(cmd, heroku):
     return stdout.decode().strip(), stderr.decode().strip(), exitCode
 
 
-@register(outgoing=True, pattern=r"^.heroku(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^.(set|get) var(?: |$)(.*)(?: |$)")
+async def variable(var):
+    if HEROKU_APP_NAME is not None:
+        app = Heroku.app(HEROKU_APP_NAME)
+    else:
+        var.edit("`[HEROKU]:\nPlease setup your` **HEROKU_APP_NAME**")
+    exe = var.pattern_match.group(1)
+    heroku_var = app.config()
+    if exe == "get":
+        await var.edit("`Getting information...`")
+        with open('configs.txt', 'w+') as variables:
+            for config, value in heroku_var:
+                variables.write(f"{config}: {value}" + "\n")
+        result = open('configs.txt').read()
+        if len(result) >= 4096:
+            await var.client.send_file(
+                var.chat_id,
+                "configs.txt",
+                reply_to=var.id,
+                caption="`Output configs is too large, sending it as file...`",
+            )
+        else:
+            var.edit("`[HEROKU]`:\n"
+                     "================================"
+                     f"    **{HEROKU_APP_NAME}**  configs are:"
+                     "================================"
+                     f"\n\n```{result}```"
+                     )
+        result.close()
+        os.remove('configs.txt')
+        return
+    else:
+        await var.edit("`Setting information...`")
+        val = var.pattern_match.group(2).split()
+        heroku_var[val[0]] = val[1]
+        await asyncio.sleep(3)
+        if val[0] in heroku_var:
+            await var.edit(f"**{val[0]}**  `successfully changed to`  **{val[1]}**")
+        else:
+            await var.edit(f"**{val[0]}**  `successfully added with value: **{val[1]}**")
+        return
+
+
+@register(outgoing=True, pattern=r"^.heroku(?: |$)")
 async def heroku_manager(heroku):
     await heroku.edit("`Processing...`")
     await asyncio.sleep(3)
@@ -45,6 +89,11 @@ async def heroku_manager(heroku):
 
 CMD_HELP.update({
     "heroku":
-    "`.heroku`"
-    "Usage: Check your heroku dyno hours remaining"
+    ".heroku"
+    "\nUsage: Check your heroku dyno hours remaining",
+    "variable":
+    ".set var <NEW VAR> <VALUE>"
+    "\nUsage: add new variable or update existing value variable"
+    "\n\n.get var"
+    "\nUsage: get your existing varibles"
 })
