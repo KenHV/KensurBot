@@ -15,7 +15,8 @@ import sys
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import CMD_HELP, HEROKU_API_KEY, HEROKU_APP_NAME
+from userbot import (CMD_HELP, HEROKU_API_KEY,
+                     HEROKU_APP_NAME, UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH)
 from userbot.events import register
 
 requirements_path = path.join(
@@ -51,7 +52,8 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         heroku_applications = heroku.apps()
         if not HEROKU_APP_NAME:
             await event.edit(
-                '`[HEROKU MEMEZ] Please set up the HEROKU_APP_NAME variable to be able to update userbot.`'
+                '`[HEROKU]: Please set up the` **HEROKU_APP_NAME** `variable'
+                ' to be able to deploy newest changes of userbot.`'
             )
             repo.__del__()
             return
@@ -61,12 +63,12 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
                 break
         if heroku_app is None:
             await event.edit(
-                f'{txt}\n`Invalid Heroku credentials for updating userbot dyno.`'
+                f'{txt}\n`Invalid Heroku credentials for deploying userbot dyno.`'
             )
             repo.__del__()
             return
-        await event.edit('`[HEROKU MEMEZ]'
-                         '\nUserbot dyno build in progress, please wait for it to complete.`'
+        await event.edit('`[HEROKU]:'
+                         '\nUserbot dyno build in progress, please wait...`'
                          )
         ups_rem.fetch(ac_br)
         repo.git.reset("--hard", "FETCH_HEAD")
@@ -86,8 +88,8 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         await event.edit('`Successfully Updated!\n'
                          'Restarting, please wait...`')
     else:
-        await event.edit('`[HEROKU MEMEZ]'
-                         '\nPlease set up HEROKU_API_KEY variable to be able to use the deploy.`'
+        await event.edit('`[HEROKU]:'
+                         '\nPlease set up` **HEROKU_API_KEY** `variable.`'
                          )
     return
 
@@ -111,7 +113,7 @@ async def upstream(event):
     "For .update command, check if the bot is up to date, update if specified"
     await event.edit("`Checking for updates, please wait....`")
     conf = event.pattern_match.group(1)
-    off_repo = 'https://github.com/adekmaulana/ProjectBish.git'
+    off_repo = UPSTREAM_REPO_URL
     force_update = False
     try:
         txt = "`Oops.. Updater cannot continue due to "
@@ -141,9 +143,10 @@ async def upstream(event):
         repo.heads.master.checkout(True)
 
     ac_br = repo.active_branch.name
-    if ac_br != 'master':
+    if ac_br != UPSTREAM_REPO_BRANCH:
         await event.edit(
-            f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). '
+            f'**[UPDATER]:**'
+            '` Looks like you are using your own custom branch ({ac_br}). '
             'in that case, Updater is unable to identify '
             'which branch is to be merged. '
             'please checkout to any official branch`')
@@ -162,7 +165,7 @@ async def upstream(event):
 
     if not changelog and not force_update:
         await event.edit(
-            f'\n`Your BOT is`  **up-to-date**  `with`  **{ac_br}**\n')
+            f'\n`Your USERBOT is`  **up-to-date**  `with`  **{UPSTREAM_REPO_BRANCH}**\n')
         repo.__del__()
         return
     elif changelog and not force_update:

@@ -76,6 +76,9 @@ HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", None)
 UPSTREAM_REPO_URL = os.environ.get(
     "UPSTREAM_REPO_URL",
     "https://github.com/adekmaulana/ProjectBish.git")
+# UPSTREAM_REPO_URL branch, the default is master
+UPSTREAM_REPO_BRANCH = os.environ.get(
+    "UPSTREAM_REPO_BRANCH", "master")
 
 # Console verbose logging
 CONSOLE_LOGGER_VERBOSE = sb(os.environ.get("CONSOLE_LOGGER_VERBOSE", "False"))
