@@ -50,7 +50,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         heroku = heroku3.from_key(HEROKU_API_KEY)
         heroku_app = None
         heroku_applications = heroku.apps()
-        if not HEROKU_APP_NAME:
+        if HEROKU_APP_NAME is None:
             await event.edit(
                 '`[HEROKU]: Please set up the` **HEROKU_APP_NAME** `variable'
                 ' to be able to deploy newest changes of userbot.`'
@@ -128,7 +128,7 @@ async def upstream(event):
         repo.__del__()
         return
     except InvalidGitRepositoryError as error:
-        if not conf:
+        if conf is None:
             await event.edit(
                 f"`Unfortunately, the directory {error} does not seem to be a git repository."
                 "\nBut we can fix that by force updating the userbot using .update now.`"
@@ -163,29 +163,29 @@ async def upstream(event):
 
     changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
 
-    if not changelog and not force_update:
+    if changelog == '' and force_update is False:
         await event.edit(
             f'\n`Your USERBOT is`  **up-to-date**  `with`  **{UPSTREAM_REPO_BRANCH}**\n')
         repo.__del__()
         return
-    elif changelog and not force_update:
-        if not conf:
-            changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
-            if len(changelog_str) > 4096:
-                await event.edit("`Changelog is too big, view the file to see it.`")
-                file = open("output.txt", "w+")
-                file.write(changelog_str)
-                file.close()
-                await event.client.send_file(
-                    event.chat_id,
-                    "output.txt",
-                    reply_to=event.id,
-                )
-                remove("output.txt")
-            else:
-                await event.edit(changelog_str)
-            await event.respond('`do ".update now/deploy" to update`')
-            return
+
+    if conf is None and force_update is False:
+        changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
+        if len(changelog_str) > 4096:
+            await event.edit("`Changelog is too big, view the file to see it.`")
+            file = open("output.txt", "w+")
+            file.write(changelog_str)
+            file.close()
+            await event.client.send_file(
+                event.chat_id,
+                "output.txt",
+                reply_to=event.id,
+            )
+            remove("output.txt")
+        else:
+            await event.edit(changelog_str)
+        await event.respond('`do ".update now/deploy" to update`')
+        return
 
     if force_update:
         await event.edit(
