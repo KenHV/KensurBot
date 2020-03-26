@@ -282,6 +282,10 @@ def authorize(token_file, storage):
     credentials = storage.get()
     # Create an httplib2.Http object and authorize it with our credentials
     http = httplib2.Http()
+    try:
+        http.redirect_codes = http.redirect_codes - {308}
+    except AttributeError:
+        pass
     credentials.refresh(http)
     http = credentials.authorize(http)
     return http
