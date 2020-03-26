@@ -43,29 +43,45 @@ async def variable(var):
     heroku_var = app.config()
     if exe == "get":
         await var.edit("`Getting information...`")
-        configs = prettyjson(heroku_var.to_dict(), indent=2)
-        with open("configs.json", "w") as fp:
-            fp.write(configs)
-        with open("configs.json", "r") as fp:
-            result = fp.read()
-            if len(result) >= 4096:
-                await var.client.send_file(
-                    var.chat_id,
-                    "configs.json",
-                    reply_to=var.id,
-                    caption="`Output too large, sending it as a file`",
-                )
+        try:
+            val = var.pattern_match.group(2).split()[0]
+            await asyncio.sleep(3)
+            if val in heroku_var:
+                await var.edit("**Config vars**:"
+                               f"\n\n`{val} = {heroku_var[val]}`\n")
             else:
-                await var.edit("`[HEROKU]` variables:\n\n"
-                               "================================"
-                               f"\n```{result}```\n"
-                               "================================"
-                               )
-        os.remove("configs.json")
-        return
+                await var.edit("**Config vars**:"
+                               f"\n\n`Error -> {val} not exists`")
+            return
+        except IndexError:
+            configs = prettyjson(heroku_var.to_dict(), indent=2)
+            with open("configs.json", "w") as fp:
+                fp.write(configs)
+            with open("configs.json", "r") as fp:
+                result = fp.read()
+                if len(result) >= 4096:
+                    await var.client.send_file(
+                        var.chat_id,
+                        "configs.json",
+                        reply_to=var.id,
+                        caption="`Output too large, sending it as a file`",
+                    )
+                else:
+                    await var.edit("`[HEROKU]` variables:\n\n"
+                                   "================================"
+                                   f"\n```{result}```\n"
+                                   "================================"
+                                   )
+            os.remove("configs.json")
+            return
     elif exe == "set":
         await var.edit("`Setting information...`")
         val = var.pattern_match.group(2).split()
+        try:
+            val[1]
+        except IndexError:
+            await var.edit("`.set var <config name> <value>`")
+            return
         await asyncio.sleep(3)
         if val[0] in heroku_var:
             await var.edit(f"**{val[0]}**  `successfully changed to`  **{val[1]}**")
@@ -75,7 +91,12 @@ async def variable(var):
         return
     elif exe == "del":
         await var.edit("`Getting information to deleting vars...`")
-        val = var.pattern_match.group(2).split()[0]
+        try:
+            val = var.pattern_match.group(2).split()[0]
+        except IndexError:
+            await var.edit("`Please specify config vars you want to delete`")
+            return
+        await asyncio.sleep(3)
         if val in heroku_var:
             await var.edit(f"**{val}**  `successfully deleted`")
             del heroku_var[val]
@@ -103,8 +124,9 @@ CMD_HELP.update({
     "variable":
     ".set var <NEW VAR> <VALUE>"
     "\nUsage: add new variable or update existing value variable"
-    "\n\n.get var"
-    "\nUsage: get your existing varibles"
+    "\n\n.get var or .get var <VAR>"
+    "\nUsage: get your existing varibles, use it only on your private group!"
+    "\nThis returns all of your private information, please be caution..."
     "\n\n.del var <VAR>"
     "\nUsage: delete existing variable"
 })
