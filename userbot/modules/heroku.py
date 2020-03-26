@@ -32,7 +32,7 @@ async def subprocess_run(cmd, heroku):
     return stdout.decode().strip(), stderr.decode().strip(), exitCode
 
 
-@register(outgoing=True, pattern=r"^.(set|get) var(?: |$)(.*)(?: |$)")
+@register(outgoing=True, pattern=r"^.(set|get|del) var(?: |$)(.*)(?: |$)")
 async def variable(var):
     if HEROKU_APP_NAME is not None:
         app = Heroku.app(HEROKU_APP_NAME)
@@ -63,7 +63,7 @@ async def variable(var):
                                )
         os.remove("configs.json")
         return
-    else:
+    elif exe == "set":
         await var.edit("`Setting information...`")
         val = var.pattern_match.group(2).split()
         await asyncio.sleep(3)
@@ -73,13 +73,21 @@ async def variable(var):
             await var.edit(f"**{val[0]}**  `successfully added with value: **{val[1]}**")
         heroku_var[val[0]] = val[1]
         return
+    elif exe == "del":
+        await var.edit("`Getting information to deleting vars...`")
+        val = var.pattern_match.group(2).split()[0]
+        if val in heroku_var:
+            await var.edit(f"**{val}**  `successfully deleted`")
+            del heroku_var[val]
+        else:
+            await var.edit(f"**{val}**  `is not exists`")
+        return
 
 
 @register(outgoing=True, pattern=r"^.heroku(?: |$)")
 async def heroku_manager(heroku):
     await heroku.edit("`Processing...`")
     await asyncio.sleep(3)
-    conf = heroku.pattern_match.group(1)
     result = await subprocess_run(f'heroku ps -a {HEROKU_APP_NAME}', heroku)
     if result[2] != 0:
         return
@@ -97,4 +105,6 @@ CMD_HELP.update({
     "\nUsage: add new variable or update existing value variable"
     "\n\n.get var"
     "\nUsage: get your existing varibles"
+    "\n\n.del var <VAR>"
+    "\nUsage: delete existing variable"
 })
