@@ -7,6 +7,8 @@
 import heroku3
 import asyncio
 import os
+import requests
+import math
 
 from asyncio import create_subprocess_shell as asyncSubprocess
 from asyncio.subprocess import PIPE as asyncPIPE
@@ -16,6 +18,7 @@ from userbot.events import register
 from userbot.prettyjson import prettyjson
 
 Heroku = heroku3.from_key(HEROKU_API_KEY)
+heroku_api = "https://api.heroku.com"
 
 
 async def subprocess_run(cmd, heroku):
@@ -34,6 +37,10 @@ async def subprocess_run(cmd, heroku):
 
 @register(outgoing=True, pattern=r"^.(set|get|del) var(?: |$)(.*)(?: |$)")
 async def variable(var):
+    """
+        Manage most of ConfigVars setting, set new var, get current var,
+        or delete var...
+    """
     if HEROKU_APP_NAME is not None:
         app = Heroku.app(HEROKU_APP_NAME)
     else:
@@ -43,9 +50,9 @@ async def variable(var):
     heroku_var = app.config()
     if exe == "get":
         await var.edit("`Getting information...`")
+        await asyncio.sleep(3)
         try:
             val = var.pattern_match.group(2).split()[0]
-            await asyncio.sleep(3)
             if val in heroku_var:
                 await var.edit("**Config vars**:"
                                f"\n\n`{val} = {heroku_var[val]}`\n")
@@ -105,28 +112,68 @@ async def variable(var):
         return
 
 
-@register(outgoing=True, pattern=r"^.heroku(?: |$)")
-async def heroku_manager(heroku):
-    await heroku.edit("`Processing...`")
-    await asyncio.sleep(3)
-    result = await subprocess_run(f'heroku ps -a {HEROKU_APP_NAME}', heroku)
-    if result[2] != 0:
+@register(outgoing=True, pattern=r"^.usage(?: |$)")
+async def dyno_usage(dyno):
+    """
+        Get your account Dyno Usage
+    """
+    await dyno.edit("`Processing...`")
+    useragent = ('Mozilla/5.0 (Linux; Android 10; SM-G975F) '
+                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                 'Chrome/80.0.3987.149 Mobile Safari/537.36'
+                 )
+    user_id = Heroku.account().id
+    headers = {
+     'User-Agent': useragent,
+     'Authorization': f'Bearer {HEROKU_API_KEY}',
+     'Accept': 'application/vnd.heroku+json; version=3.account-quotas',
+    }
+    path = "/accounts/" + user_id + "/actions/get-quota"
+    r = requests.get(heroku_api + path, headers=headers)
+    if r.status_code != 200:
+        await dyno.edit(f"`Error: something bad happened`\n\n > `{r.reason}`\n")
         return
-    hours_remaining = result[0]
-    await heroku.edit('`' + hours_remaining + '`')
+    result = r.json()
+    quota = result['account_quota']
+    quota_used = result['quota_used']
+
+    """ - Used - """
+    remaining_quota = quota - quota_used
+    percentage = math.floor(remaining_quota / quota * 100)
+    minutes_remaining = remaining_quota / 60
+    hours = math.floor(minutes_remaining / 60)
+    minutes = math.floor(minutes_remaining % 60)
+
+    """ - Current - """
+    App = result['apps']
+    AppQuotaUsed = App[0]['quota_used'] / 60
+    AppPercentage = math.floor(App[0]['quota_used'] * 100 / quota)
+    AppHours = math.floor(AppQuotaUsed / 60)
+    AppMinutes = math.floor(AppQuotaUsed % 60)
+
+    await asyncio.sleep(3)
+
+    await dyno.edit("**Dyno Usage**:\n\n"
+                    f" -> `Dyno usage for`  **{HEROKU_APP_NAME}**:\n"
+                    f"     •  `{AppHours}`**h**  `{AppMinutes}`**m**  **|**  [`{AppPercentage}`**%**]"
+                    "\n"
+                    " -> `Dyno hours quota remaining this month`:\n"
+                    f"     •  `{hours}`**h**  `{minutes}`**m**  **|**  [`{percentage}`**%**]"
+                    )
     return
 
 
 CMD_HELP.update({
     "heroku":
-    ".heroku"
-    "\nUsage: Check your heroku dyno hours remaining",
-    "variable":
-    ".set var <NEW VAR> <VALUE>"
+    ".usage"
+    "\nUsage: Check your heroku dyno hours remaining"
+    "\n\n.set var <NEW VAR> <VALUE>"
     "\nUsage: add new variable or update existing value variable"
+    "\n!!! WARNING !!!, after setting a variable the bot will restarted"
     "\n\n.get var or .get var <VAR>"
     "\nUsage: get your existing varibles, use it only on your private group!"
     "\nThis returns all of your private information, please be caution..."
     "\n\n.del var <VAR>"
     "\nUsage: delete existing variable"
+    "\n!!! WARNING !!!, after deleting variable the bot will restarted"
 })
