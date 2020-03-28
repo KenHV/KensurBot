@@ -155,6 +155,11 @@
       "description": "Set the default city for the userbot's weather module.",
       "required": false
     },
+    "TELEGRAPH_SHORT_NAME": {
+      "description": "For telegraph module",
+      "value": "0",
+      "required": true
+    },
     "LOGSPAMMER": {
       "description": "Set this to True in case you want the error logs to be stored in the userbot log group, instead of spitting out the file in the current chat, requires a valid BOTLOG_CHATID to be set.",
       "value": "True"
