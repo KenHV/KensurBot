@@ -22,13 +22,11 @@ async def lyrics(lyric):
     if r"-" in lyric.text:
         pass
     else:
-        await lyric.edit("`Aborted: Please use '-' as divider for **<artist> "
-                         "& <song name>**`\n"
-                         "eg: `Nicki Minaj - Super Bass`")
-        return
+        return await lyric.edit("`Aborted: Please use '-' as divider for **<artist> "
+                                "& <song name>**`\neg: `Nicki Minaj - Super Bass`")
 
     if GENIUS is None:
-        await lyric.edit(
+        return await lyric.edit(
             "`Provide genius access token to Heroku Var first kthxbye!`")
     else:
         genius = lyricsgenius.Genius(GENIUS)
@@ -37,12 +35,10 @@ async def lyrics(lyric):
             artist = args[0].strip(' ')
             song = args[1].strip(' ')
         except Exception:
-            await lyric.edit("`LMAO please provide artist and song names`")
-            return
+            return await lyric.edit("`LMAO please provide artist and song names`")
 
     if len(args) < 1:
-        await lyric.edit("`Please provide artist and song names`")
-        return
+        return await lyric.edit("`Please provide artist and song names`")
 
     await lyric.edit(f"`Searching lyrics for {artist} - {song}...`")
 
@@ -52,8 +48,7 @@ async def lyrics(lyric):
         songs = None
 
     if songs is None:
-        await lyric.edit(f"Song **{artist} - {song}** not found!")
-        return
+        return await lyric.edit(f"Song **{artist} - {song}** not found!")
     if len(songs.lyrics) > 4096:
         await lyric.edit("`Lyrics is too big, view the file to see it.`")
         with open("lyrics.txt", "w+") as f:
@@ -72,5 +67,6 @@ async def lyrics(lyric):
 
 CMD_HELP.update({
     "lyrics":
-    "**Usage:** `.lyrics` <artist name> - <song name>\n"
+    ">`.lyrics <artist name> - <song name>`"
+    "\nUsage: Get lyrics for song"
 })

@@ -15,7 +15,7 @@ from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, ANTI_SPAMBOT, ANTI_SPAMBOT_
 
 
 @bot.on(ChatAction)
-async def ANTI_SPAMBOT(welcm):
+async def ANTI_SPAMBOTS(welcm):
     try:
         ''' Ban a recently joined user if it
            matches the spammer checking algorithm. '''
@@ -115,7 +115,7 @@ async def ANTI_SPAMBOT(welcm):
                         if check_user.first_name in ("Bitmex", "Promotion",
                                                      "Information", "Dex",
                                                      "Announcements", "Info"):
-                            if user.last_name == "Bot":
+                            if users.last_name == "Bot":
                                 reason = "Known spambot"
                                 spambot = True
 
@@ -168,7 +168,7 @@ async def ANTI_SPAMBOT(welcm):
                     if kicked or reported:
                         await welcm.client.send_message(
                             BOTLOG_CHATID, "#ANTI_SPAMBOT REPORT\n"
-                            f"USER: [{user.first_name}](tg://user?id={check_user.id})\n"
+                            f"USER: [{users.first_name}](tg://user?id={check_user.id})\n"
                             f"USER ID: `{check_user.id}`\n"
                             f"CHAT: {welcm.chat.title}\n"
                             f"CHAT ID: `{welcm.chat_id}`\n"
@@ -179,8 +179,8 @@ async def ANTI_SPAMBOT(welcm):
 
 
 CMD_HELP.update({
-    'anti_spambot':
-    "If enabled in config.env or env var,\
-        \nthis module will ban(or inform the admins of the group about) the\
-        \nspammer(s) if they match the userbot's anti-spam algorithm."
+    "anti_spambot":
+    "If enabled in config.env or env var,"
+    "\nthis module will ban(or inform the admins of the group about) the"
+    "\nspammer(s) if they match the userbot's anti-spam algorithm."
 })

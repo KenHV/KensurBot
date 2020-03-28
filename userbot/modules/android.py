@@ -38,6 +38,7 @@ async def magisk(request):
                     f'[Uninstaller]({data["uninstaller"]["link"]})\n'
     await request.edit(releases)
 
+
 @register(outgoing=True, pattern=r"^.device(?: |$)(\S*)")
 async def device_info(request):
     """ get android device basic info from its codename """
@@ -48,8 +49,7 @@ async def device_info(request):
     elif textx:
         device = textx.text
     else:
-        await request.edit("`Usage: .device <codename> / <model>`")
-        return
+        return await request.edit("`Usage: .device <codename> / <model>`")
     found = [
         i for i in get(DEVICES_DATA).json()
         if i["device"] == device or i["model"] == device
@@ -81,8 +81,7 @@ async def codename_info(request):
         brand = textx.text.split(' ')[0]
         device = ' '.join(textx.text.split(' ')[1:])
     else:
-        await request.edit("`Usage: .codename <brand> <device>`")
-        return
+        return await request.edit("`Usage: .codename <brand> <device>`")
     found = [
         i for i in get(DEVICES_DATA).json()
         if i["brand"].lower() == brand and device in i["name"].lower()
@@ -116,8 +115,7 @@ async def devices_specifications(request):
         brand = textx.text.split(' ')[0]
         device = ' '.join(textx.text.split(' ')[1:])
     else:
-        await request.edit("`Usage: .specs <brand> <device>`")
-        return
+        return await request.edit("`Usage: .specs <brand> <device>`")
     all_brands = BeautifulSoup(
         get('https://www.devicespecifications.com/en/brand-more').content,
         'lxml').find('div', {
@@ -167,13 +165,11 @@ async def twrp(request):
     elif textx:
         device = textx.text.split(' ')[0]
     else:
-        await request.edit("`Usage: .twrp <codename>`")
-        return
+        return await request.edit("`Usage: .twrp <codename>`")
     url = get(f'https://dl.twrp.me/{device}/')
     if url.status_code == 404:
         reply = f"`Couldn't find twrp downloads for {device}!`\n"
-        await request.edit(reply)
-        return
+        return await request.edit(reply)
     page = BeautifulSoup(url.content, 'lxml')
     download = page.find('table').find('tr').find('a')
     dl_link = f"https://dl.twrp.me{download['href']}"
@@ -188,14 +184,14 @@ async def twrp(request):
 
 CMD_HELP.update({
     "android":
-    ".magisk\
-\nGet latest Magisk releases\
-\n\n.device <codename>\
-\nUsage: Get info about android device codename or model.\
-\n\n.codename <brand> <device>\
-\nUsage: Search for android device codename.\
-\n\n.specs <brand> <device>\
-\nUsage: Get device specifications info.\
-\n\n.twrp <codename>\
-\nUsage: Get latest twrp download for android device."
+    ">`.magisk`"
+    "\nGet latest Magisk releases"
+    "\n\n>`.device <codename>`"
+    "\nUsage: Get info about android device codename or model."
+    "\n\n>`.codename <brand> <device>`"
+    "\nUsage: Search for android device codename."
+    "\n\n>`.specs <brand> <device>`"
+    "\nUsage: Get device specifications info."
+    "\n\n>`.twrp <codename>`"
+    "\nUsage: Get latest twrp download for android device."
 })

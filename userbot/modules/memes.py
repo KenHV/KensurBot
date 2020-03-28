@@ -764,8 +764,7 @@ async def copypasta(cp_e):
     elif textx:
         message = textx.text
     else:
-        await cp_e.edit("`😂🅱️IvE👐sOME👅text👅for✌️Me👌tO👐MAkE👀iT💞funNy!💦`")
-        return
+        return await cp_e.edit("`😂🅱️IvE👐sOME👅text👅for✌️Me👌tO👐MAkE👀iT💞funNy!💦`")
 
     reply_text = choice(EMOJIS)
     # choose a random character in the message to be substituted with 🅱️
@@ -798,8 +797,7 @@ async def vapor(vpr):
     elif textx:
         message = textx.text
     else:
-        await vpr.edit("`Ｇｉｖｅ ｓｏｍｅ ｔｅｘｔ ｆｏｒ ｖａｐｏｒ！`")
-        return
+        return await vpr.edit("`Ｇｉｖｅ ｓｏｍｅ ｔｅｘｔ ｆｏｒ ｖａｐｏｒ！`")
 
     for charac in message:
         if 0x21 <= ord(charac) <= 0x7F:
@@ -823,8 +821,7 @@ async def stretch(stret):
     elif textx:
         message = textx.text
     else:
-        await stret.edit("`GiiiiiiiB sooooooomeeeeeee teeeeeeext!`")
-        return
+        return await stret.edit("`GiiiiiiiB sooooooomeeeeeee teeeeeeext!`")
 
     count = randint(3, 10)
     reply_text = sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count),
@@ -843,10 +840,9 @@ async def zal(zgfy):
     elif textx:
         message = textx.text
     else:
-        await zgfy.edit(
+        return await zgfy.edit(
             "`gͫ ̆ i̛ ̺ v͇̆ ȅͅ   a̢ͦ   s̴̪ c̸̢ ä̸ rͩͣ y͖͞   t̨͚ é̠ x̢͖  t͔͛`"
         )
-        return
 
     for charac in message:
         if not charac.isalpha():
@@ -887,8 +883,7 @@ async def faces(owo):
     elif textx:
         message = textx.text
     else:
-        await owo.edit("` UwU no text given! `")
-        return
+        return await owo.edit("` UwU no text given! `")
 
     reply_text = sub(r"(r|l)", "w", message)
     reply_text = sub(r"(R|L)", "W", reply_text)
@@ -994,8 +989,7 @@ async def spongemocktext(mock):
     elif textx:
         message = textx.text
     else:
-        await mock.edit("`gIvE sOMEtHInG tO MoCk!`")
-        return
+        return await mock.edit("`gIvE sOMEtHInG tO MoCk!`")
 
     for charac in message:
         if charac.isalpha() and randint(0, 1):
@@ -1017,8 +1011,7 @@ async def claptext(memereview):
     elif textx:
         message = textx.text
     else:
-        await memereview.edit("`Hah, I don't clap pointlessly!`")
-        return
+        return await memereview.edit("`Hah, I don't clap pointlessly!`")
     reply_text = "👏 "
     reply_text += message.replace(" ", " 👏 ")
     reply_text += " 👏"
@@ -1056,9 +1049,9 @@ async def let_me_google_that_for_you(lmgtfy_q):
     query_encoded = query.replace(" ", "+")
     lfy_url = f"http://lmgtfy.com/?s=g&iie=1&q={query_encoded}"
     payload = {'format': 'json', 'url': lfy_url}
-    r = requests.get('http://is.gd/create.php', params=payload)
-    await lmgtfy_q.edit(f"Here you are, help yourself.\
-    \n[{query}]({r.json()['shorturl']})")
+    requests.get('http://is.gd/create.php', params=payload)
+    await lmgtfy_q.edit(f"Here you are, help yourself."
+                        "\n[{query}]({r.json()['shorturl']})")
 
 
 @register(pattern=r".scam(?: |$)(.*)", outgoing=True)
@@ -1105,8 +1098,7 @@ async def typewriter(typew):
     elif textx:
         message = textx.text
     else:
-        await typew.edit("`Give a text to type!`")
-        return
+        return await typew.edit("`Give a text to type!`")
     sleep_time = 0.03
     typing_symbol = "|"
     old_text = ""
@@ -1123,70 +1115,70 @@ async def typewriter(typew):
 
 CMD_HELP.update({
     "memes":
-    ".cowsay\
-\nUsage: cow which says things.\
-\n\n:/\
-\nUsage: Check yourself ;)\
-\n\n-_-\
-\nUsage: Ok...\
-\n\n;_;\
-\nUsage: Like `-_-` but crying.\
-\n\n.cp\
-\nUsage: Copypasta the famous meme\
-\n\n.vapor\
-\nUsage: Vaporize everything!\
-\n\n.str\
-\nUsage: Stretch it.\
-\n\n.10iq\
-\nUsage: You retard !!\
-\n\n.zal\
-\nUsage: Invoke the feeling of chaos.\
-\n\nOem\
-\nUsage: Oeeeem\
-\n\nOof\
-\nUsage: Ooooof\
-\n\n.fp\
-\nUsage: Facepalm :P\
-\n\n.moon\
-\nUsage: kensar moon animation.\
-\n\n.clock\
-\nUsage: kensar clock animation.\
-\n\n.hi\
-\nUsage: Greet everyone!\
-\n\n.coinflip <heads/tails>\
-\nUsage: Flip a coin !!\
-\n\n.owo\
-\nUsage: UwU\
-\n\n.react\
-\nUsage: Make your userbot react to everything.\
-\n\n.slap\
-\nUsage: reply to slap them with random objects !!\
-\n\n.cry\
-\nUsage: y u du dis, i cri.\
-\n\n.shg\
-\nUsage: Shrug at it !!\
-\n\n.run\
-\nUsage: Let Me Run, run, RUNNN!\
-\n\n.chase\
-\nUsage: You better start running\
-\n\n.metoo\
-\nUsage: Haha yes\
-\n\n.mock\
-\nUsage: Do it and find the real fun.\
-\n\n.clap\
-\nUsage: Praise people!\
-\n\n.f <emoji/character>\
-\nUsage: Pay Respects.\
-\n\n.bt\
-\nUsage: Believe me, you will find this useful.\
-\n\n.type\
-\nUsage: Just a small command to make your keyboard become a typewriter!\
-\n\n.lfy <query>\
-\nUsage: Let me Google that for you real quick !!\
-\n\n.decide [Alternates: (.yes, .no, .maybe)]\
-\nUsage: Make a quick decision.\
-\n\n.scam <action> <time>\
-\n[Available Actions: (typing, contact, game, location, voice, round, video, photo, document, cancel)]\
-\nUsage: Create fake chat actions, for fun. (Default action: typing)\
-\n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
+    ">`.cowsay`"
+    "\nUsage: cow which says things."
+    "\n\n>`:/`"
+    "\nUsage: Check yourself ;)"
+    "\n\n>`-_-`"
+    "\nUsage: Ok..."
+    "\n\n>`;_;`"
+    "\nUsage: Like `-_-` but crying."
+    "\n\n>`.cp`"
+    "\nUsage: Copypasta the famous meme"
+    "\n\n>`.vapor`"
+    "\nUsage: Vaporize everything!"
+    "\n\n>`.str`"
+    "\nUsage: Stretch it."
+    "\n\n>`.10iq`"
+    "\nUsage: You retard !!"
+    "\n\n>`.zal`"
+    "\nUsage: Invoke the feeling of chaos."
+    "\n\n>`Oem`"
+    "\nUsage: Oeeeem"
+    "\n\n>`Oof`"
+    "\nUsage: Ooooof"
+    "\n\n>`.fp`"
+    "\nUsage: Facepalm :P"
+    "\n\n>`.moon`"
+    "\nUsage: kensar moon animation."
+    "\n\n>`.clock`"
+    "\nUsage: kensar clock animation."
+    "\n\n>`.hi`"
+    "\nUsage: Greet everyone!"
+    "\n\n>`.coinflip <heads/tails>`"
+    "\nUsage: Flip a coin !!"
+    "\n\n>`.owo`"
+    "\nUsage: UwU"
+    "\n\n>`.react`"
+    "\nUsage: Make your userbot react to everything."
+    "\n\n>`.slap`"
+    "\nUsage: reply to slap them with random objects !!"
+    "\n\n>`.cry`"
+    "\nUsage: y u du dis, i cri."
+    "\n\n>`.shg`"
+    "\nUsage: Shrug at it !!"
+    "\n\n>`.run`"
+    "\nUsage: Let Me Run, run, RUNNN!"
+    "\n\n>`.chase`"
+    "\nUsage: You better start running"
+    "\n\n>`.metoo`"
+    "\nUsage: Haha yes"
+    "\n\n>`.mock`"
+    "\nUsage: Do it and find the real fun."
+    "\n\n>`.clap`"
+    "\nUsage: Praise people!"
+    "\n\n>`.f <emoji/character>`"
+    "\nUsage: Pay Respects."
+    "\n\n>`.bt`"
+    "\nUsage: Believe me, you will find this useful."
+    "\n\n>`.type`"
+    "\nUsage: Just a small command to make your keyboard become a typewriter!"
+    "\n\n>`.lfy <query>`"
+    "\nUsage: Let me Google that for you real quick !!"
+    "\n\n>`.decide [Alternates: (.yes, .no, .maybe)]`"
+    "\nUsage: Make a quick decision."
+    "\n\n>`.scam <action> <time>`"
+    "\n[Available Actions: (typing, contact, game, location, voice, round, video, photo, document, cancel)]"
+    "\nUsage: Create fake chat actions, for fun. (Default action: typing)"
+    "\n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
 })

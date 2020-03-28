@@ -63,8 +63,7 @@ async def log(log_text):
             textx = user + log_text.pattern_match.group(1)
             await bot.send_message(BOTLOG_CHATID, textx)
         else:
-            await log_text.edit("`What am I supposed to log?`")
-            return
+            return await log_text.edit("`What am I supposed to log?`")
         await log_text.edit("`Logged Successfully`")
     else:
         await log_text.edit("`This feature requires Logging to be enabled!`")
@@ -85,8 +84,7 @@ async def unmute_chat(unm_e):
     try:
         from userbot.modules.sql_helper.keep_read_sql import unkread
     except AttributeError:
-        await unm_e.edit('`Running on Non-SQL Mode!`')
-        return
+        return await unm_e.edit('`Running on Non-SQL Mode!`')
     unkread(str(unm_e.chat_id))
     await unm_e.edit("```Unmuted this chat Successfully```")
     await sleep(2)
@@ -99,8 +97,7 @@ async def mute_chat(mute_e):
     try:
         from userbot.modules.sql_helper.keep_read_sql import kread
     except AttributeError:
-        await mute_e.edit("`Running on Non-SQL mode!`")
-        return
+        return await mute_e.edit("`Running on Non-SQL mode!`")
     await mute_e.edit(str(mute_e.chat_id))
     kread(str(mute_e.chat_id))
     await mute_e.edit("`Shush! This chat will be silenced!`")
@@ -156,21 +153,22 @@ async def sedNinjaToggle(event):
 
 CMD_HELP.update({
     "chat":
-    ".chatid\
-\nUsage: Fetches the current chat's ID\
-\n\n.userid\
-\nUsage: Fetches the ID of the user in reply, if its a forwarded message, finds the ID for the source.\
-\n\n.log\
-\nUsage: Forwards the message you've replied to in your bot logs group.\
-\n\n.kickme\
-\nUsage: Leave from a targeted group.\
-\n\n.unmutechat\
-\nUsage: Unmutes a muted chat.\
-\n\n.mutechat\
-\nUsage: Allows you to mute any chat.\
-\n\n.link <username/userid> : <optional text> (or) reply to someone's message with .link <optional text>\
-\nUsage: Generate a permanent link to the user's profile with optional custom text.\
-\n\n.regexninja on/off\
-\nUsage: Globally enable/disables the regex ninja module.\
-\nRegex Ninja module helps to delete the regex bot's triggering messages."
+    ">`.chatid`"
+    "\nUsage: Fetches the current chat's ID"
+    "\n\n>`.userid`"
+    "\nUsage: Fetches the ID of the user in reply, if its a forwarded message, finds the ID for the source."
+    "\n\n>`.log`"
+    "\nUsage: Forwards the message you've replied to in your bot logs group."
+    "\n\n>`.kickme`"
+    "\nUsage: Leave from a targeted group."
+    "\n\n>`.unmutechat`"
+    "\nUsage: Unmutes a muted chat."
+    "\n\n>`.mutechat`"
+    "\nUsage: Allows you to mute any chat."
+    "\n\n>`.link <username/userid> : <optional text>` (or) reply to someone's message with"
+    "\n\n>`.link <optional text>`"
+    "\nUsage: Generate a permanent link to the user's profile with optional custom text."
+    "\n\n>`.regexninja on/off`"
+    "\nUsage: Globally enable/disables the regex ninja module."
+    "\nRegex Ninja module helps to delete the regex bot's triggering messages."
 })

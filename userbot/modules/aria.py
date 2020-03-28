@@ -58,8 +58,7 @@ async def magnet_download(event):
         download = aria2.add_magnet(magnet_uri)
     except Exception as e:
         LOGS.info(str(e))
-        await event.edit("Error:\n`" + str(e) + "`")
-        return
+        return await event.edit("Error:\n`" + str(e) + "`")
     gid = download.gid
     await check_progress_for_dl(gid=gid, event=event, previous=None)
     await sleep(5)
@@ -77,8 +76,7 @@ async def torrent_download(event):
                                      options=None,
                                      position=None)
     except Exception as e:
-        await event.edit(str(e))
-        return
+        return await event.edit(str(e))
     gid = download.gid
     await check_progress_for_dl(gid=gid, event=event, previous=None)
 
@@ -90,8 +88,7 @@ async def aurl_download(event):
         download = aria2.add_uris(uri, options=None, position=None)
     except Exception as e:
         LOGS.info(str(e))
-        await event.edit("Error :\n`{}`".format(str(e)))
-        return
+        return await event.edit("Error :\n`{}`".format(str(e)))
     gid = download.gid
     await check_progress_for_dl(gid=gid, event=event, previous=None)
     file = aria2.get_download(gid)
@@ -198,15 +195,12 @@ async def check_progress_for_dl(gid, event, previous):
             file = aria2.get_download(gid)
             complete = file.is_complete
             if complete:
-                await event.edit(f"File Downloaded Successfully: `{file.name}`"
-                                 )
-                return False
+               return await event.edit(f"File Downloaded Successfully: `{file.name}`")
         except Exception as e:
             if " not found" in str(e) or "'file'" in str(e):
                 await event.edit("Download Canceled :\n`{}`".format(file.name))
                 await sleep(2.5)
-                await event.delete()
-                return
+                return await event.delete()
             elif " depth exceeded" in str(e):
                 file.remove(force=True)
                 await event.edit(
@@ -216,12 +210,12 @@ async def check_progress_for_dl(gid, event, previous):
 
 CMD_HELP.update({
     "aria":
-    ".aurl [URL] (or) .amag [Magnet Link] (or) .ator [path to torrent file]\
-    \nUsage: Downloads the file into your userbot server storage.\
-    \n\n.apause (or) .aresume\
-    \nUsage: Pauses/resumes on-going downloads.\
-    \n\n.aclear\
-    \nUsage: Clears the download queue, deleting all on-going downloads.\
-    \n\n.ashow\
-    \nUsage: Shows progress of the on-going downloads."
+    ">`.aurl [URL]` (or) >`.amag [Magnet Link]` (or) >`.ator [path to torrent file]`"
+    "\nUsage: Downloads the file into your userbot server storage."
+    "\n\n>`.apause (or) .aresume`"
+    "\nUsage: Pauses/resumes on-going downloads."
+    "\n\n>`.aclear`"
+    "\nUsage: Clears the download queue, deleting all on-going downloads."
+    "\n\n>`.ashow`"
+    "\nUsage: Shows progress of the on-going downloads."
 })

@@ -34,8 +34,7 @@ async def capture(url):
     if link_match:
         link = link_match.group()
     else:
-        await url.edit("`I need a valid link to take screenshots from.`")
-        return
+        return await url.edit("`I need a valid link to take screenshots from.`")
     driver.get(link)
     height = driver.execute_script(
         "return Math.max(document.body.scrollHeight, document.body.offsetHeight, "
@@ -49,10 +48,11 @@ async def capture(url):
     )
     driver.set_window_size(width + 125, height + 125)
     wait_for = height / 1000
-    await url.edit(f"`Generating screenshot of the page...`\
-    \n`Height of page = {height}px`\
-    \n`Width of page = {width}px`\
-    \n`Waiting ({int(wait_for)}s) for the page to load.`")
+    await url.edit(
+        f"`Generating screenshot of the page...`"
+        "\n`Height of page = {height}px`"
+        "\n`Width of page = {width}px`"
+        "\n`Waiting ({int(wait_for)}s) for the page to load.`")
     await sleep(int(wait_for))
     im_png = driver.get_screenshot_as_png()
     # saves screenshot of entire page
@@ -72,7 +72,7 @@ async def capture(url):
 
 CMD_HELP.update({
     "ss":
-    ".ss <url>\
-    \nUsage: Takes a screenshot of a website and sends the screenshot.\
-    \nExample of a valid URL : `https://www.google.com`"
+    ">`.ss <url>`"
+    "\nUsage: Takes a screenshot of a website and sends the screenshot."
+    "\nExample of a valid URL : `https://www.google.com`"
 })

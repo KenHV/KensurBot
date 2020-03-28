@@ -37,16 +37,14 @@ async def okgoogle(img):
         photo = io.BytesIO()
         await bot.download_media(message, photo)
     else:
-        await img.edit("`Reply to photo or sticker nigger.`")
-        return
+        return await img.edit("`Reply to photo or sticker nigger.`")
 
     if photo:
         await img.edit("`Processing...`")
         try:
             image = Image.open(photo)
         except OSError:
-            await img.edit('`Unsupported sexuality, most likely.`')
-            return
+            return await img.edit('`Unsupported sexuality, most likely.`')
         name = "okgoogle.png"
         image.save(name, "PNG")
         image.close()
@@ -65,8 +63,7 @@ async def okgoogle(img):
             await img.edit("`Image successfully uploaded to Google. Maybe.`"
                            "\n`Parsing source now. Maybe.`")
         else:
-            await img.edit("`Google told me to fuck off.`")
-            return
+            return await img.edit("`Google told me to fuck off.`")
 
         os.remove(name)
         match = await ParseSauce(fetchUrl +
@@ -77,8 +74,7 @@ async def okgoogle(img):
         if guess and imgspage:
             await img.edit(f"[{guess}]({fetchUrl})\n\n`Looking for images...`")
         else:
-            await img.edit("`Couldn't find anything for your uglyass.`")
-            return
+            return await img.edit("`Couldn't find anything for your uglyass.`")
 
         if img.pattern_match.group(1):
             lim = img.pattern_match.group(1)
@@ -145,7 +141,7 @@ async def scam(results, lim):
 
 
 CMD_HELP.update({
-    'reverse':
-    '.reverse\
-        \nUsage: Reply to a pic/sticker to revers-search it on Google Images !!'
+    "reverse":
+    ">`.reverse`"
+    "\nUsage: Reply to a pic/sticker to revers-search it on Google Images !!"
 })

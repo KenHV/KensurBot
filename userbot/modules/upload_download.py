@@ -243,8 +243,7 @@ async def upload(u_event):
     await u_event.edit("Processing ...")
     input_str = u_event.pattern_match.group(1)
     if input_str in ("userbot.session", "config.env"):
-        await u_event.edit("`That's a dangerous operation! Not Permitted!`")
-        return
+        return await u_event.edit("`That's a dangerous operation! Not Permitted!`")
     if os.path.exists(input_str):
         c_time = time.time()
         await u_event.client.send_file(
@@ -396,8 +395,7 @@ async def uploadas(uas_event):
                         progress(d, t, uas_event, c_time, "Uploading...",
                                  file_name)))
             elif spam_big_messages:
-                await uas_event.edit("TBD: Not (yet) Implemented")
-                return
+                return await uas_event.edit("TBD: Not (yet) Implemented")
             os.remove(thumb)
             await uas_event.edit("Uploaded successfully !!")
         except FileNotFoundError as err:
@@ -408,8 +406,8 @@ async def uploadas(uas_event):
 
 CMD_HELP.update({
     "download":
-    ".download <link|filename> or reply to media\
-\nUsage: Downloads file to the server.\
-\n\n.upload <path in server>\
-\nUsage: Uploads a locally stored file to the chat."
+    ">`.download <link|filename> or reply to media`"
+    "\nUsage: Downloads file to the server."
+    "\n\n>`.upload <path in server>`"
+    "\nUsage: Uploads a locally stored file to the chat."
 })

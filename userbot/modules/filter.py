@@ -52,10 +52,8 @@ async def add_new_filter(new_handler):
     if msg and msg.media and not string:
         if BOTLOG_CHATID:
             await new_handler.client.send_message(
-                BOTLOG_CHATID, f"#FILTER\
-            \nCHAT ID: {new_handler.chat_id}\
-            \nTRIGGER: {keyword}\
-            \n\nThe following message is saved as the filter's reply data for the chat, please do NOT delete it !!"
+                BOTLOG_CHATID, f"#FILTER\nCHAT ID: {new_handler.chat_id}\nTRIGGER: {keyword}"
+                "\n\nThe following message is saved as the filter's reply data for the chat, please do NOT delete it !!"
             )
             msg_o = await new_handler.client.forward_messages(
                 entity=BOTLOG_CHATID,
@@ -64,10 +62,9 @@ async def add_new_filter(new_handler):
                 silent=True)
             msg_id = msg_o.id
         else:
-            await new_handler.edit(
+            return await new_handler.edit(
                 "`Saving media as reply to the filter requires the BOTLOG_CHATID to be set.`"
             )
-            return
     elif new_handler.reply_to_msg_id and not string:
         rep_msg = await new_handler.get_reply_message()
         string = rep_msg.text
@@ -84,8 +81,7 @@ async def remove_a_filter(r_handler):
     try:
         from userbot.modules.sql_helper.filter_sql import remove_filter
     except AttributeError:
-        await r_handler.edit("`Running on Non-SQL mode!`")
-        return
+        return await r_handler.edit("`Running on Non-SQL mode!`")
     filt = r_handler.pattern_match.group(1)
     if not remove_filter(r_handler.chat_id, filt):
         await r_handler.edit("`Filter` **{}** `doesn't exist.`".format(filt))
@@ -101,8 +97,7 @@ async def kick_marie_filter(event):
     cmd = event.text[0]
     bot_type = event.pattern_match.group(1).lower()
     if bot_type not in ["marie", "rose"]:
-        await event.edit("`That bot is not yet supported!`")
-        return
+        return await event.edit("`That bot is not yet supported!`")
     await event.edit("```Will be kicking away all Filters!```")
     await sleep(3)
     resp = await event.get_reply_message()
@@ -127,8 +122,7 @@ async def filters_active(event):
     try:
         from userbot.modules.sql_helper.filter_sql import get_filters
     except AttributeError:
-        await event.edit("`Running on Non-SQL mode!`")
-        return
+        return await event.edit("`Running on Non-SQL mode!`")
     transact = "`There are no filters in this chat.`"
     filters = get_filters(event.chat_id)
     for filt in filters:
@@ -143,14 +137,14 @@ async def filters_active(event):
 
 CMD_HELP.update({
     "filter":
-    ".filters\
-    \nUsage: Lists all active userbot filters in a chat.\
-    \n\n.filter <keyword> <reply text> or reply to a message with .filter <keyword>\
-    \nUsage: Saves the replied message as a reply to the 'keyword'.\
-    \nThe bot will reply to the message whenever 'keyword' is mentioned.\
-    \nWorks with everything from files to stickers.\
-    \n\n.stop <filter>\
-    \nUsage: Stops the specified filter.\
-    \n\n.rmbotfilters <marie/rose>\
-    \nUsage: Removes all filters of admin bots (Currently supported: Marie, Rose and their clones.) in the chat."
+    ">`.filters`"
+    "\nUsage: Lists all active userbot filters in a chat."
+    "\n\n>`.filter <keyword> <reply text>` or reply to a message with >`.filter <keyword>`"
+    "\nUsage: Saves the replied message as a reply to the 'keyword'."
+    "\nThe bot will reply to the message whenever 'keyword' is mentioned."
+    "\nWorks with everything from files to stickers."
+    "\n\n>`.stop <filter>`"
+    "\nUsage: Stops the specified filter."
+    "\n\n>`.rmbotfilters <marie/rose>`"
+    "\nUsage: Removes all filters of admin bots (Currently supported: Marie, Rose and their clones.) in the chat."
 })

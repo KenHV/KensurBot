@@ -82,6 +82,7 @@ def resize_image(image):
 
 
 CMD_HELP.update({
-    'telegraph': '.telegraph media | text\
-        \nUsage: Upload text & media on Telegraph.'
+    "telegraph":
+    ">`.telegraph media|text`"
+    "\nUsage: Upload text & media on Telegraph."
 })

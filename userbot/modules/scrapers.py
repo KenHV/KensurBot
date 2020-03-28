@@ -34,7 +34,8 @@ from youtube_dl.utils import (DownloadError, ContentTooShortError,
                               MaxDownloadsReached, PostProcessingError,
                               UnavailableVideoError, XAttrMetadataError)
 from asyncio import sleep
-from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY, CHROME_DRIVER, GOOGLE_CHROME_BIN
+from userbot import (CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY,
+                     CHROME_DRIVER, GOOGLE_CHROME_BIN)
 from userbot.events import register
 from telethon.tl.types import DocumentAttributeAudio
 from userbot.modules.upload_download import progress
@@ -106,8 +107,8 @@ async def carbon_api(e):
     await e.client.send_file(
         e.chat_id,
         file,
-        caption="Made using [Carbon](https://carbon.now.sh/about/),\
-        \na project by [Dawn Labs](https://dawnlabs.io/)",
+        caption=("Made using [Carbon](https://carbon.now.sh/about/),"
+                 "\na project by [Dawn Labs](https://dawnlabs.io/)"),
         force_document=True,
         reply_to=e.message.reply_to_msg_id,
     )
@@ -173,8 +174,7 @@ async def moni(event):
         except Exception as e:
             await event.edit(str(e))
     else:
-        await event.edit("`Invalid syntax.`")
-        return
+        return await event.edit("`Invalid syntax.`")
 
 
 @register(outgoing=True, pattern=r"^.google (.*)")
@@ -218,11 +218,9 @@ async def wiki(wiki_q):
     try:
         summary(match)
     except DisambiguationError as error:
-        await wiki_q.edit(f"Disambiguated page found.\n\n{error}")
-        return
+        return await wiki_q.edit(f"Disambiguated page found.\n\n{error}")
     except PageError as pageerror:
-        await wiki_q.edit(f"Page not found.\n\n{pageerror}")
-        return
+        return await wiki_q.edit(f"Page not found.\n\n{pageerror}")
     result = summary(match)
     if len(result) >= 4096:
         file = open("output.txt", "w+")
@@ -235,8 +233,7 @@ async def wiki(wiki_q):
             caption="`Output too large, sending as file`",
         )
         if os.path.exists("output.txt"):
-            os.remove("output.txt")
-        return
+            return os.remove("output.txt")
     await wiki_q.edit("**Search:**\n`" + match + "`\n\n**Result:**\n" + result)
     if BOTLOG:
         await wiki_q.client.send_message(
@@ -251,8 +248,7 @@ async def urban_dict(ud_e):
     try:
         define(query)
     except HTTPError:
-        await ud_e.edit(f"Sorry, couldn't find any results for: {query}")
-        return
+        return await ud_e.edit(f"Sorry, couldn't find any results for: {query}")
     mean = define(query)
     deflen = sum(len(i) for i in mean[0]["def"])
     exalen = sum(len(i) for i in mean[0]["example"])
@@ -270,8 +266,7 @@ async def urban_dict(ud_e):
                 caption="`Output was too large, sent it as a file.`")
             if os.path.exists("output.txt"):
                 os.remove("output.txt")
-            await ud_e.delete()
-            return
+            return await ud_e.delete()
         await ud_e.edit("Text: **" + query + "**\n\nMeaning: **" +
                         mean[0]["def"] + "**\n\n" + "Example: \n__" +
                         mean[0]["example"] + "__")
@@ -293,24 +288,20 @@ async def text_to_speech(query):
     elif textx:
         message = textx.text
     else:
-        await query.edit(
+        return await query.edit(
             "`Give a text or reply to a message for Text-to-Speech!`")
-        return
 
     try:
         gTTS(message, lang=TTS_LANG)
     except AssertionError:
-        await query.edit(
+        return await query.edit(
             'The text is empty.\n'
             'Nothing left to speak after pre-precessing, tokenizing and cleaning.'
         )
-        return
     except ValueError:
-        await query.edit('Language is not supported.')
-        return
+        return await query.edit('Language is not supported.')
     except RuntimeError:
-        await query.edit('Error loading the languages dictionary.')
-        return
+        return await query.edit('Error loading the languages dictionary.')
     tts = gTTS(message, lang=TTS_LANG)
     tts.save("k.mp3")
     with open("k.mp3", "rb") as audio:
@@ -422,14 +413,12 @@ async def translateme(trans):
     elif textx:
         message = textx.text
     else:
-        await trans.edit("`Give a text or reply to a message to translate!`")
-        return
+        return await trans.edit("`Give a text or reply to a message to translate!`")
 
     try:
         reply_text = translator.translate(deEmojify(message), dest=TRT_LANG)
     except ValueError:
-        await trans.edit("Invalid destination language.")
-        return
+        return await trans.edit("Invalid destination language.")
 
     source_lan = LANGUAGES[f'{reply_text.src.lower()}']
     transl_lan = LANGUAGES[f'{reply_text.dest.lower()}']
@@ -455,10 +444,9 @@ async def lang(value):
             TRT_LANG = arg
             LANG = LANGUAGES[arg]
         else:
-            await value.edit(
+            return await value.edit(
                 f"`Invalid Language code !!`\n`Available language codes for TRT`:\n\n`{LANGUAGES}`"
             )
-            return
     elif util == "tts":
         scraper = "Text to Speech"
         global TTS_LANG
@@ -467,10 +455,9 @@ async def lang(value):
             TTS_LANG = arg
             LANG = tts_langs()[arg]
         else:
-            await value.edit(
+            return await value.edit(
                 f"`Invalid Language code !!`\n`Available language codes for TTS`:\n\n`{tts_langs()}`"
             )
-            return
     await value.edit(f"`Language for {scraper} changed to {LANG.title()}.`")
     if BOTLOG:
         await value.client.send_message(
@@ -485,10 +472,9 @@ async def yt_search(video_q):
     result = ''
 
     if not YOUTUBE_API_KEY:
-        await video_q.edit(
+        return await video_q.edit(
             "`Error: YouTube API key missing! Add it to environment vars or config.env.`"
         )
-        return
 
     await video_q.edit("```Processing...```")
 
@@ -613,39 +599,31 @@ async def download_video(v_url):
         with YoutubeDL(opts) as rip:
             rip_data = rip.extract_info(url)
     except DownloadError as DE:
-        await v_url.edit(f"`{str(DE)}`")
-        return
+        return await v_url.edit(f"`{str(DE)}`")
     except ContentTooShortError:
-        await v_url.edit("`The download content was too short.`")
-        return
+        return await v_url.edit("`The download content was too short.`")
     except GeoRestrictedError:
-        await v_url.edit(
-            "`Video is not available from your geographic location due to geographic restrictions imposed by a website.`"
+        return await v_url.edit(
+            "`Video is not available from your geographic location "
+            "due to geographic restrictions imposed by a website.`"
         )
-        return
     except MaxDownloadsReached:
-        await v_url.edit("`Max-downloads limit has been reached.`")
-        return
+        return await v_url.edit("`Max-downloads limit has been reached.`")
     except PostProcessingError:
-        await v_url.edit("`There was an error during post processing.`")
-        return
+        return await v_url.edit("`There was an error during post processing.`")
     except UnavailableVideoError:
-        await v_url.edit("`Media is not available in the requested format.`")
-        return
+        return await v_url.edit("`Media is not available in the requested format.`")
     except XAttrMetadataError as XAME:
-        await v_url.edit(f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
-        return
+        return await v_url.edit(f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
     except ExtractorError:
-        await v_url.edit("`There was an error during info extraction.`")
-        return
+        return await v_url.edit("`There was an error during info extraction.`")
     except Exception as e:
-        await v_url.edit(f"{str(type(e)): {str(e)}}")
-        return
+        return await v_url.edit(f"{str(type(e)): {str(e)}}")
     c_time = time.time()
     if song:
-        await v_url.edit(f"`Preparing to upload song:`\
-        \n**{rip_data['title']}**\
-        \nby *{rip_data['uploader']}*")
+        await v_url.edit(
+            f"`Preparing to upload song:`\n**{rip_data['title']}**"
+            "\nby *{rip_data['uploader']}*")
         await v_url.client.send_file(
             v_url.chat_id,
             f"{rip_data['id']}.mp3",
@@ -662,9 +640,9 @@ async def download_video(v_url):
         os.remove(f"{rip_data['id']}.mp3")
         await v_url.delete()
     elif video:
-        await v_url.edit(f"`Preparing to upload video:`\
-        \n**{rip_data['title']}**\
-        \nby *{rip_data['uploader']}*")
+        await v_url.edit(
+            f"`Preparing to upload video:`\n**{rip_data['title']}**"
+            "\nby *{rip_data['uploader']}*")
         await v_url.client.send_file(
             v_url.chat_id,
             f"{rip_data['id']}.mp4",
@@ -684,45 +662,41 @@ def deEmojify(inputString):
 
 
 CMD_HELP.update({
-    'img':
-    '.img <search_query>\
-        \nUsage: Does an image search on Google and shows 5 images.'
-})
-CMD_HELP.update({
-    'currency':
-    '.currency <amount> <from> <to>\
-        \nUsage: Converts various currencies for you.'
-})
-CMD_HELP.update({
-    'carbon':
-    '.carbon <text> [or reply]\
-        \nUsage: Beautify your code using carbon.now.sh\nUse .crblang <text> to set language for your code.'
-})
-CMD_HELP.update(
-    {'google': '.google <query>\
-        \nUsage: Does a search on Google.'})
-CMD_HELP.update(
-    {'wiki': '.wiki <query>\
-        \nUsage: Does a search on Wikipedia.'})
-CMD_HELP.update(
-    {'ud': '.ud <query>\
-        \nUsage: Does a search on Urban Dictionary.'})
-CMD_HELP.update({
-    'tts':
-    '.tts <text> [or reply]\
-        \nUsage: Translates text to speech for the language which is set.\nUse .lang tts <language code> to set language for tts. (Default is English.)'
-})
-CMD_HELP.update({
-    'trt':
-    '.trt <text> [or reply]\
-        \nUsage: Translates text to the language which is set.\nUse .lang trt <language code> to set language for trt. (Default is English)'
-})
-CMD_HELP.update({'yt': '.yt <text>\
-        \nUsage: Does a YouTube search.'})
-CMD_HELP.update(
-    {"imdb": ".imdb <movie-name>\nShows movie info and other stuff."})
-CMD_HELP.update({
-    'rip':
-    '.ripaudio <url> or ripvideo <url>\
-        \nUsage: Download videos and songs from YouTube (and [many other sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html)).'
+    "img":
+    ">`.img <search_query>`"
+    "\nUsage: Does an image search on Google and shows 5 images.",
+    "currency":
+    ">`.currency <amount> <from> <to>`"
+    "\nUsage: Converts various currencies for you.",
+    "carbon":
+    ">`.carbon <text> [or reply]`"
+    "\nUsage: Beautify your code using carbon.now.sh\n"
+    "Use .crblang <text> to set language for your code.",
+    "google":
+    ">`.google <query>`"
+    "\nUsage: Does a search on Google.",
+    "wiki":
+    ">`.wiki <query>`"
+    "\nUsage: Does a search on Wikipedia.",
+    "ud":
+    ">`.ud <query>`"
+    "\nUsage: Does a search on Urban Dictionary.",
+    "tts":
+    ">`.tts <text> [or reply]`"
+    "\nUsage: Translates text to speech for the language which is set."
+    "\nUse >`.lang tts <language code>` to set language for tts. (Default is English.)",
+    "trt":
+    ">`.trt <text> [or reply]`"
+    "\nUsage: Translates text to the language which is set."
+    "\nUse >`.lang trt <language code>` to set language for trt. (Default is English)",
+    "yt":
+    ">`.yt <text>`"
+    "\nUsage: Does a YouTube search.",
+    "imdb":
+    ">`.imdb <movie-name>`"
+    "\nUsage: Shows movie info and other stuff.",
+    "rip":
+    ">`.ripaudio <url> or ripvideo <url>`"
+    "\nUsage: Download videos and songs from YouTube "
+    "(and [many other sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html))."
 })

@@ -7,6 +7,7 @@ import asyncio
 import math
 import os
 import time
+import json
 from pySmartDL import SmartDL
 from telethon import events
 from apiclient.discovery import build
@@ -21,8 +22,7 @@ from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET,
 from userbot.events import register
 from mimetypes import guess_type
 import httplib2
-import subprocess
-from userbot.modules.upload_download import progress, humanbytes, time_formatter
+from userbot.modules.upload_download import progress, humanbytes
 
 # Path to token json file, it should be in same directory as script
 G_DRIVE_TOKEN_FILE = "./auth_token.txt"
@@ -150,7 +150,8 @@ async def gdrive_upload_function(dryb):
                                              file_name, mime_type, dryb,
                                              parent_id)
             await dryb.edit(
-                f"File: `{required_file_name}`\nwas Successfully Uploaded to [Google Drive]({g_drive_link})!"
+                f"File: `{required_file_name}`\n"
+                f"was Successfully Uploaded to [Google Drive]({g_drive_link})!"
             )
         except Exception as e:
             await dryb.edit(
@@ -206,8 +207,7 @@ async def gdrive_search_list(event):
 
 
 @register(
-    pattern=
-    r"^.gsetf https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})",
+    pattern=r"^.gsetf https?://drive\.google\.com/drive/u/\d/folders/([-\w]{25,})",
     outgoing=True)
 async def download(set):
     """For .gsetf command, allows you to set path"""
@@ -216,7 +216,8 @@ async def download(set):
     if input_str:
         parent_id = input_str
         await set.edit(
-            "Custom Folder ID set successfully. The next uploads will upload to {parent_id} till `.gdriveclear`"
+            "Custom Folder ID set successfully. "
+            "The next uploads will upload to {parent_id} till `.gdriveclear`"
         )
         await set.delete()
     else:
@@ -241,8 +242,8 @@ async def show_current_gdrove_folder(event):
             f"My userbot is currently uploading files [here]({folder_link})")
     else:
         await event.edit(
-            f"My userbot is currently uploading files to the root of my Google Drive storage.\
-            \nFind uploaded files [here](https://drive.google.com/drive/my-drive)"
+            "My userbot is currently uploading files to the root of my Google Drive storage."
+            "\nFind uploaded files [here](https://drive.google.com/drive/my-drive)"
         )
 
 
@@ -325,7 +326,10 @@ async def upload_file(http, file_path, file_name, mime_type, event, parent_id):
                 "".join(["▱"
                          for i in range(10 - math.floor(percentage / 10))]),
                 round(percentage, 2))
-            current_message = f"Uploading to Google Drive\nFile Name: {file_name}\n{progress_str}"
+            current_message = (
+                f"Uploading to Google Drive\n"
+                f"File Name: {file_name}\n{progress_str}"
+            )
             if display_message != current_message:
                 try:
                     await event.edit(current_message)
@@ -449,16 +453,16 @@ async def gdrive_search(http, search_query):
 
 CMD_HELP.update({
     "gdrive":
-    ".gdrive <file_path / reply / URL|file_name>\
-    \nUsage: Uploads the file in reply , URL or file path in server to your Google Drive.\
-    \n\n.gsetf <GDrive Folder URL>\
-    \nUsage: Sets the folder to upload new files to.\
-    \n\n.gsetclear\
-    \nUsage: Reverts to default upload destination.\
-    \n\n.gfolder\
-    \nUsage: Shows your current upload destination/folder.\
-    \n\n.list <query>\
-    \nUsage: Looks for files and folders in your Google Drive.\
-    \n\n.ggd <path_to_folder_in_server>\
-    \nUsage: Uploads all the files in the directory to a folder in Google Drive."
+    ">`.gdrive <file_path/reply/URL|file_name>`"
+    "\nUsage: Uploads the file in reply , URL or file path in server to your GoogleDrive."
+    "\n\n>`.gsetf <Folder ID GoogleDrive>`"
+    "\nUsage: Sets the folder to upload new files to."
+    "\n\n>`.gsetclear`"
+    "\nUsage: Reverts to default upload destination."
+    "\n\n>`.gfolder`"
+    "\nUsage: Shows your current upload destination/folder."
+    "\n\n>`.list <query>`"
+    "\nUsage: Looks for files and folders in your GoogleDrive."
+    "\n\n>`.ggd <path_to_folder_in_server>`"
+    "\nUsage: Uploads all the files in the directory to a folder in GoogleDrive."
 })

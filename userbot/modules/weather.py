@@ -42,19 +42,17 @@ async def get_weather(weather):
     """ For .weather command, gets the current weather of a city. """
 
     if not OWM_API:
-        await weather.edit(
+        return await weather.edit(
             "`Get an API key from` https://openweathermap.org/ `first.`")
-        return
 
     APPID = OWM_API
 
     if not weather.pattern_match.group(1):
         CITY = DEFCITY
         if not CITY:
-            await weather.edit(
+            return await weather.edit(
                 "`Please specify a city or set one as default using the WEATHER_DEFCITY config variable.`"
             )
-            return
     else:
         CITY = weather.pattern_match.group(1)
 
@@ -72,8 +70,7 @@ async def get_weather(weather):
             try:
                 countrycode = timezone_countries[f'{country}']
             except KeyError:
-                await weather.edit("`Invalid country.`")
-                return
+                return await weather.edit("`Invalid country.`")
             CITY = newcity[0].strip() + "," + countrycode.strip()
 
     url = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}'
@@ -81,8 +78,7 @@ async def get_weather(weather):
     result = json.loads(request.text)
 
     if request.status_code != 200:
-        await weather.edit(f"`Invalid country.`")
-        return
+        return await weather.edit(f"`Invalid country.`")
 
     cityname = result['name']
     curtemp = result['main']['temp']
@@ -136,6 +132,6 @@ async def get_weather(weather):
 
 CMD_HELP.update({
     "weather":
-    ".weather <city> or .weather <city>, <country name/code>\
-    \nUsage: Gets the weather of a city."
+    ">`.weather <city> or .weather <city>, <country name/code>`"
+    "\nUsage: Gets the weather of a city."
 })

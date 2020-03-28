@@ -65,8 +65,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
             await event.edit(
                 f'{txt}\n`Invalid Heroku credentials for deploying userbot dyno.`'
             )
-            repo.__del__()
-            return
+            return repo.__del__()
         await event.edit('`[HEROKU]:'
                          '\nUserbot dyno build in progress, please wait...`'
                          )
@@ -83,8 +82,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
             remote.push(refspec="HEAD:refs/heads/master", force=True)
         except GitCommandError as error:
             await event.edit(f'{txt}\n`Here is the error log:\n{error}`')
-            repo.__del__()
-            return
+            return repo.__del__()
         await event.edit('`Successfully Updated!\n'
                          'Restarting, please wait...`')
     else:
@@ -121,19 +119,16 @@ async def upstream(event):
         repo = Repo()
     except NoSuchPathError as error:
         await event.edit(f'{txt}\n`directory {error} is not found`')
-        repo.__del__()
-        return
+        return repo.__del__()
     except GitCommandError as error:
         await event.edit(f'{txt}\n`Early failure! {error}`')
-        repo.__del__()
-        return
+        return repo.__del__()
     except InvalidGitRepositoryError as error:
         if conf is None:
-            await event.edit(
+            return await event.edit(
                 f"`Unfortunately, the directory {error} does not seem to be a git repository."
                 "\nBut we can fix that by force updating the userbot using .update now.`"
             )
-            return
         repo = Repo.init()
         origin = repo.create_remote('upstream', off_repo)
         origin.fetch()
@@ -150,9 +145,7 @@ async def upstream(event):
             'in that case, Updater is unable to identify '
             'which branch is to be merged. '
             'please checkout to any official branch`')
-        repo.__del__()
-        return
-
+        return repo.__del__()
     try:
         repo.create_remote('upstream', off_repo)
     except BaseException:
@@ -166,8 +159,7 @@ async def upstream(event):
     if changelog == '' and force_update is False:
         await event.edit(
             f'\n`Your USERBOT is`  **up-to-date**  `with`  **{UPSTREAM_REPO_BRANCH}**\n')
-        repo.__del__()
-        return
+        return repo.__del__()
 
     if conf is None and force_update is False:
         changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
@@ -184,8 +176,7 @@ async def upstream(event):
             remove("output.txt")
         else:
             await event.edit(changelog_str)
-        await event.respond('`do ".update now/deploy" to update`')
-        return
+        return await event.respond('`do ".update now/deploy" to update`')
 
     if force_update:
         await event.edit(
@@ -201,10 +192,10 @@ async def upstream(event):
 
 CMD_HELP.update({
     'update':
-    ".update"
+    ">`.update`"
     "\nUsage: Checks if the main userbot repository has any updates and shows a changelog if so."
-    "\n\n.update now"
+    "\n\n>`.update now`"
     "\nUsage: Update your userbot, if there are any updates in your userbot repository."
-    "\n\n.update deploy"
+    "\n\n>`.update deploy`"
     "\nUsage: Deploy your userbot, if there are any updates in your userbot repository."
 })
