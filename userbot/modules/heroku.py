@@ -124,8 +124,14 @@ async def dyno_usage(dyno):
 
     """ - Current - """
     App = result['apps']
-    AppQuotaUsed = App[0]['quota_used'] / 60
-    AppPercentage = math.floor(App[0]['quota_used'] * 100 / quota)
+    try:
+        App[0]['quota_used']
+    except IndexError:
+        AppQuotaUsed = 0
+        AppPercentage = 0
+    else:
+        AppQuotaUsed = App[0]['quota_used'] / 60
+        AppPercentage = math.floor(App[0]['quota_used'] * 100 / quota)
     AppHours = math.floor(AppQuotaUsed / 60)
     AppMinutes = math.floor(AppQuotaUsed % 60)
 
