@@ -66,7 +66,7 @@ async def paste(pstl):
     if BOTLOG:
         await pstl.client.send_message(
             BOTLOG_CHATID,
-            f"Paste query was executed successfully",
+            "Paste query was executed successfully",
         )
 
 

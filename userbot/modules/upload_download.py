@@ -6,8 +6,8 @@
 # The entire source code is OSSRPL except
 # 'download, uploadir, uploadas, upload' which is MPL
 # License: MPL and OSSRPL
-""" Userbot module which contains everything related to \
-    downloading/uploading from/to the server. """
+""" Userbot module which contains everything related to
+     downloading/uploading from/to the server. """
 
 import json
 import os

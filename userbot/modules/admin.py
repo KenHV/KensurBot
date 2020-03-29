@@ -555,7 +555,7 @@ async def rm_deletedacc(show):
 
     if del_a > 0:
         del_status = (f"Cleaned **{del_u}** deleted account(s) "
-                      "\n**{del_a}** deleted admin accounts are not removed"
+                      f"\n**{del_a}** deleted admin accounts are not removed"
         )
     await show.edit(del_status)
     await sleep(2)
@@ -565,7 +565,7 @@ async def rm_deletedacc(show):
         await show.client.send_message(
             BOTLOG_CHATID, "#CLEANUP\n"
             f"Cleaned **{del_u}** deleted account(s) !!"
-            "\nCHAT: {show.chat.title}(`{show.chat_id}`)")
+            f"\nCHAT: {show.chat.title}(`{show.chat_id}`)")
 
 
 @register(outgoing=True, pattern="^.admins$")

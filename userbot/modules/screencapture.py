@@ -49,10 +49,10 @@ async def capture(url):
     driver.set_window_size(width + 125, height + 125)
     wait_for = height / 1000
     await url.edit(
-        f"`Generating screenshot of the page...`"
-        "\n`Height of page = {height}px`"
-        "\n`Width of page = {width}px`"
-        "\n`Waiting ({int(wait_for)}s) for the page to load.`")
+        "`Generating screenshot of the page...`"
+        f"\n`Height of page = {height}px`"
+        f"\n`Width of page = {width}px`"
+        f"\n`Waiting ({int(wait_for)}s) for the page to load.`")
     await sleep(int(wait_for))
     im_png = driver.get_screenshot_as_png()
     # saves screenshot of entire page

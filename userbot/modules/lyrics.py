@@ -61,7 +61,7 @@ async def lyrics(lyric):
         os.remove("lyrics.txt")
     else:
         await lyric.edit(f"**Search query**: \n`{artist} - {song}`"
-                         "\n\n```{songs.lyrics}```")
+                         f"\n\n```{songs.lyrics}```")
     return
 
 
