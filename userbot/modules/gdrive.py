@@ -17,7 +17,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.file import Storage
 from oauth2client import file, client, tools
 from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET,
-                     G_DRIVE_AUTH_TOKEN_DATA, GDRIVE_FOLDER_ID, BOTLOG_CHATID,
+                     G_DRIVE_AUTH_TOKEN_DATA, G_DRIVE_FOLDER_ID, BOTLOG_CHATID,
                      TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS)
 from userbot.events import register
 from mimetypes import guess_type
@@ -34,7 +34,7 @@ OAUTH_SCOPE = "https://www.googleapis.com/auth/drive.file"
 # Redirect URI for installed apps, can be left as is
 REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
 # global variable to set Folder ID to upload to
-parent_id = GDRIVE_FOLDER_ID
+parent_id = G_DRIVE_FOLDER_ID
 # global variable to indicate mimeType of directories in gDrive
 G_DRIVE_DIR_MIME_TYPE = "application/vnd.google-apps.folder"
 
@@ -230,7 +230,7 @@ async def download(set):
 async def download(gclr):
     """For .gsetclear command, allows you clear ur curnt custom path"""
     await gclr.reply("Processing ...")
-    parent_id = GDRIVE_FOLDER_ID
+    parent_id = G_DRIVE_FOLDER_ID
     await gclr.edit("Custom Folder ID cleared successfully.")
 
 
