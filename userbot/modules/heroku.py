@@ -66,9 +66,15 @@ async def variable(var):
     elif exe == "set":
         await var.edit("`Setting information...`")
         variable = var.pattern_match.group(2)
+        if not variable:
+            return await var.edit(">`.set var <ConfigVars-name> <value>`")
         value = var.pattern_match.group(3)
         if not value:
-            return await var.edit("`.set var <config name> <value>`")
+            variable = variable.split()[0]
+            try:
+                value = var.pattern_match.group(2).split()[1]
+            except IndexError:
+                return await var.edit(">`.set var <ConfigVars-name> <value>`")
         await asyncio.sleep(1.5)
         if variable in heroku_var:
             await var.edit(f"**{variable}**  `successfully changed to`  ->  **{value}**")
