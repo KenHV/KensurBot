@@ -30,7 +30,7 @@ from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET,
                      G_DRIVE_FOLDER_ID)
 from userbot.events import register
 from userbot.modules.upload_download import humanbytes, time_formatter
-
+# =========================================================== #
 #                          STATIC                             #
 # =========================================================== #
 GOOGLE_AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
@@ -40,7 +40,45 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive.metadata"
 ]
 REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
-# ============================================================ #
+# =========================================================== #
+#      STATIC CASE FOR G_DRIVE_FOLDER_ID IF VALUE IS URL      #
+# =========================================================== #
+__ = G_DRIVE_FOLDER_ID
+if __ is not None:
+    if "uc?id=" in G_DRIVE_FOLDER_ID:
+        LOGS.info(
+            "G_DRIVE_FOLDER_ID is not a valid folderURL...")
+        G_DRIVE_FOLDER_ID = None
+    try:
+        G_DRIVE_FOLDER_ID = __.split("folders/")[1]
+    except IndexError:
+        try:
+            G_DRIVE_FOLDER_ID = __.split("open?id=")[1]
+        except IndexError:
+            try:
+                if "/view" in __:
+                    G_DRIVE_FOLDER_ID = __.split("/")[-2]
+            except IndexError:
+                try:
+                    G_DRIVE_FOLDER_ID = __.split(
+                                      "folderview?id=")[1]
+                except IndexError:
+                    if any(map(str.isdigit, __)):
+                        _1 = True
+                    else:
+                        _1 = False
+                    if "-" in __ or "_" in __:
+                        _2 = True
+                    else:
+                        _2 = False
+                    if True in [_1 or _2]:
+                        pass
+                    else:
+                        LOGS.info(
+                           "G_DRIVE_FOLDER_ID not valid...")
+# =========================================================== #
+#                                                             #
+# =========================================================== #
 
 
 async def progress(current, total, event, start, type_of_ps, file_name=None):
@@ -399,6 +437,12 @@ async def set_upload_folder(gdrive):
     """ - Value for .gdfset (put|rm) can be folderId or folder link - """
     ext_id = re.findall(r'\bhttps?://drive\.google\.com\S+', inp)[0]
     if ext_id:
+        if "uc?id=" in ext_id:
+            return await gdrive.edit(
+                "`[URL - ERROR]`\n\n"
+                " • `Status :` **BAD**\n"
+                " • `Reason :` Not a valid folderURL"
+            )
         try:
             parent_Id = ext_id.split("folders/")[1]
         except IndexError:
@@ -407,21 +451,18 @@ async def set_upload_folder(gdrive):
                 parent_Id = ext_id.split("open?id=")[1]
             except IndexError:
                 try:
-                    """ - Last attemp to catch - """
-                    if "view" in ext_id:
+                    if "/view" in ext_id:
                         parent_Id = ext_id.split("/")[-2]
                 except IndexError:
-                    return await gdrive.edit(
-                        "`[URL - ERROR]`\n\n"
-                        " • `Status :` **BAD**\n"
-                        " • `Reason :` Not a valid folderURL or empty"
-                    )
-        if "uc?id=" in ext_id:
-            return await gdrive.edit(
-                "`[URL - ERROR]`\n\n"
-                " • `Status :` **BAD**\n"
-                " • `Reason :` Not a valid folderURL"
-            )
+                    """ - Last attemp to catch - """
+                    try:
+                        parent_Id = ext_id.split("folderview?id=")[1]
+                    except IndexError:
+                        return await gdrive.edit(
+                            "`[URL - ERROR]`\n\n"
+                            " • `Status :` **BAD**\n"
+                            " • `Reason :` Not a valid folderURL or empty"
+                        )
         await gdrive.edit(
                 "`[PARENT - FOLDER]`\n\n"
                 " • `Status :` **OK**\n"
