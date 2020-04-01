@@ -433,10 +433,29 @@ async def set_upload_folder(gdrive):
                 "    upload will use root dir.")
     inp = gdrive.pattern_match.group(2)
     if not inp:
-        return await(">`.gdfset put <folderURL/folderID>`")
+        return await gdrive.edit(">`.gdfset put <folderURL/folderID>`")
     """ - Value for .gdfset (put|rm) can be folderId or folder link - """
-    ext_id = re.findall(r'\bhttps?://drive\.google\.com\S+', inp)[0]
-    if ext_id:
+    try:
+        ext_id = re.findall(r'\bhttps?://drive\.google\.com\S+', inp)[0]
+    except IndexError:
+        """ - if given value isn't folderURL assume it's an Id - """
+        if any(map(str.isdigit, inp)):
+            c1 = True
+        else:
+            c1 = False
+        if "-" in inp or "_" in inp:
+            c2 = True
+        else:
+            c2 = False
+        if True in [c1 or c2]:
+            parent_Id = inp
+            await gdrive.edit(
+                "`[PARENT - FOLDER]`\n\n"
+                " • `Status :` **OK**\n"
+                " • `Reason :` Successfully changed."
+            )
+        parent_Id = inp
+    else:
         if "uc?id=" in ext_id:
             return await gdrive.edit(
                 "`[URL - ERROR]`\n\n"
@@ -468,24 +487,6 @@ async def set_upload_folder(gdrive):
                 " • `Status :` **OK**\n"
                 " • `Reason :` Successfully changed."
         )
-    else:
-        """ - if given value isn't folderURL assume it's an Id - """
-        # Do depency check
-        if any(map(str.isdigit, inp)):
-            c1 = True
-        else:
-            c1 = False
-        if "-" in inp or "_" in inp:
-            c2 = True
-        else:
-            c2 = False
-        if True in [c1 or c2]:
-            parent_Id = inp
-            await gdrive.edit(
-                "`[PARENT - FOLDER]`\n\n"
-                " • `Status :` **OK**\n"
-                " • `Reason :` Successfully changed."
-            )
     return parent_Id
 
 
