@@ -222,8 +222,10 @@ async def folders(gdrive):
 @register(pattern="^.gd(?: |$)(.*)", outgoing=True)
 async def google_drive(gdrive):
     """ - Parsing all google drive function - """
-    service = await create_app(gdrive)
     file_path = gdrive.pattern_match.group(1)
+    if not file_path and not gdrive.reply_to_msg_id:
+        return
+    service = await create_app(gdrive)
     if not file_path and gdrive.reply_to_msg_id:
         return await download(gdrive, service)
     mimeType = await get_mimeType(file_path)
