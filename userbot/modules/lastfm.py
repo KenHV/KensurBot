@@ -48,7 +48,7 @@ LastLog = False
 @register(outgoing=True, pattern="^.lastfm$")
 async def last_fm(lastFM):
     """ For .lastfm command, fetch scrobble data from last.fm. """
-    await lastFM.edit("Processing...")
+    await lastFM.edit("`Processing...`")
     preview = None
     playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
     username = f"https://www.last.fm/user/{LASTFM_USERNAME}"
@@ -65,11 +65,11 @@ async def last_fm(lastFM):
                        rectrack)
         if image:
             output = (f"[‎]({image})[{LASTFM_USERNAME}]({username}) __is now listening to:"
-                      "__\n\n• [{playing}]({rectrack})\n`{tags}`")
+                      f"__\n\n• [{playing}]({rectrack})\n`{tags}`")
             preview = True
         else:
             output = (f"[{LASTFM_USERNAME}]({username}) __is now listening to:"
-                      "__\n\n• [{playing}]({rectrack})\n`{tags}`")
+                      f"__\n\n• [{playing}]({rectrack})\n`{tags}`")
     else:
         recent = User(LASTFM_USERNAME, lastfm).get_recent_tracks(limit=3)
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
