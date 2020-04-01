@@ -300,7 +300,7 @@ async def download(gdrive, service, file_path=None, file_name=None, url=None):
                     f" • `Name   :` `{file_name}`\n"
                     " • `Status :` **BAD**\n"
                     f" • `Reason :` failed to upload.\n"
-                    f"   `{str(e)}`"
+                    f"    `{str(e)}`"
                 )
     return
 
@@ -558,4 +558,9 @@ CMD_HELP.update({
     "\n\n>`.gdf rm <folder/file|name/id>`"
     "\nUsage: delete a file/folder, and can't be undone"
     "\nThis method skipping file trash, so be caution..."
+    "\n\n>`.gdfset put <folderURL/folderID>`"
+    "\nUsage: change upload directory"
+    "\n\n>`.gdfset rm`"
+    "\nUsage: remove set parentId from >`.gdfset put <value>` "
+    "to **G_DRIVE_FOLDER_ID** and if empty upload will go to root."
 })
