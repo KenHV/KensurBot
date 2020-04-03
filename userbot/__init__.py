@@ -71,10 +71,16 @@ PM_AUTO_BAN = sb(os.environ.get("PM_AUTO_BAN", "False"))
 HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME", None)
 HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY", None)
 
-# Custom (forked) repo URL for updater.
+# Github Credentials for updater and Gitupload.
+GIT_REPO_NAME = os.environ.get("GIT_REPO_NAME", None)
+GITHUB_ACCESS_TOKEN = os.environ.get("GITHUB_ACCESS_TOKEN", None)
+
+# Custom (forked) repo URL and BRANCH for updater.
 UPSTREAM_REPO_URL = os.environ.get(
     "UPSTREAM_REPO_URL",
-    "https://github.com/mkaraniya/OpenUserBot.git")
+    "https://github.com/goodmeow/openubot.git")
+UPSTREAM_REPO_BRANCH = os.environ.get(
+    "UPSTREAM_REPO_BRANCH", "sql-extended")
 
 # Console verbose logging
 CONSOLE_LOGGER_VERBOSE = sb(os.environ.get("CONSOLE_LOGGER_VERBOSE", "False"))
