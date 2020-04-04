@@ -60,7 +60,6 @@ RUN apk add --no-cache=true --update \
     megatools \
     nodejs \
     freetype-dev
-    freetype-dev
 
 RUN python3 -m ensurepip \
     && pip3 install --upgrade pip setuptools \
