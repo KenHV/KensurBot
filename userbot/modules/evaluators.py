@@ -145,9 +145,7 @@ async def terminal_runner(term):
     if command in ("userbot.session", "config.env"):
         return await term.edit("`That's a dangerous operation! Not Permitted!`")
 
-    process = await asyncio.create_subprocess_exec(
-        "bash",
-        "-c",
+    process = await asyncio.create_subprocess_shell(
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE)

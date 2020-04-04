@@ -278,6 +278,7 @@ def get_video_thumb(file, output=None, width=90):
             "1",
             output,
         ],
+        shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
     )

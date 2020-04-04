@@ -78,4 +78,5 @@ WORKDIR /home/projectbish/
 # Install requirements
 #
 RUN pip3 install -r requirements.txt
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 CMD ["python3","-m","userbot"]
