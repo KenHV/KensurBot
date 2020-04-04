@@ -280,6 +280,12 @@ async def google_drive(gdrive):
             " • `Status :` **BAD**\n"
             " • `Reason :` Folder upload not supported."
         )
+    if file_path and gdrive.reply_to_msg_id:
+        return await gdrive.edit(
+            "`[UNKNOWN - ERROR]`\n\n"
+            " • `Status :` **FAILED**\n"
+            f" • `Reason :` Confused to upload file or the replied message/media."
+        )
     service = await create_app(gdrive)
     if not file_path and gdrive.reply_to_msg_id:
         return await download(gdrive, service)
