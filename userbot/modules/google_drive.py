@@ -1,10 +1,7 @@
 # Copyright (C) 2019 Adek Maulana
 #
 # Ported and add more features from my script inside build-kernel.py
-
-"""
-    Google Drive manager for Userbot
-"""
+""" - ProjectBish Google Drive managers - """
 import os
 import pickle
 import codecs
@@ -498,6 +495,15 @@ async def set_upload_folder(gdrive):
 
 async def generate_credentials(gdrive):
     """ - Generate credentials - """
+    error_msg = (
+        "`[TOKEN - ERROR]`\n\n"
+        " • `Status :` **RISK**\n"
+        " • `Reason :` There is data corruption or a security violation.\n\n"
+        "`It's probably your` **G_DRIVE_TOKEN_DATA** `is not match\n"
+        "Or you still use the old gdrive module token data!.\n"
+        "Please change it, by deleting` **G_DRIVE_TOKEN_DATA** "
+        "`from your ConfigVars and regenerate the token and put it again`."
+    )
     configs = {
         "installed": {
             "client_id": G_DRIVE_CLIENT_ID,
@@ -510,20 +516,26 @@ async def generate_credentials(gdrive):
     try:
         if G_DRIVE_AUTH_TOKEN_DATA is not None:
             """ - Repack credential objects from strings - """
-            creds = pickle.loads(
-                  codecs.decode(G_DRIVE_AUTH_TOKEN_DATA.encode(), "base64"))
+            try:
+                creds = pickle.loads(
+                      codecs.decode(G_DRIVE_AUTH_TOKEN_DATA.encode(), "base64"))
+            except pickle.UnpicklingError:
+                return await gdrive.edit(error_msg)
         else:
             if isfile("auth.txt"):
                 """ - Load credentials from file if exists - """
                 with open("auth.txt", "r") as token:
                     creds = token.read()
-                    creds = pickle.loads(
-                          codecs.decode(creds.encode(), "base64"))
+                    try:
+                        creds = pickle.loads(
+                              codecs.decode(creds.encode(), "base64"))
+                    except pickle.UnpicklingError:
+                        return await gdrive.edit(error_msg)
     except binascii.Error as e:
         return await gdrive.edit(
             "`[TOKEN - ERROR]`\n\n"
             " • `Status :` **BAD**\n"
-            " • `Reason :` Invalid credentials or token data\n"
+            " • `Reason :` Invalid credentials or token data.\n"
             f"    -> `{str(e)}`\n\n"
             "`if you copy paste from 'auth.txt' file and still error "
             "try use MiXplorer file manager and open as code editor or "
