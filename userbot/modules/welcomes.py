@@ -81,17 +81,16 @@ async def save_welcome(event):
     try:
         from userbot.modules.sql_helper.welcome_sql import add_welcome_setting
     except AttributeError:
-        await event.edit("`Running on Non-SQL mode!`")
-        return
+        return await event.edit("`Running on Non-SQL mode!`")
     msg = await event.get_reply_message()
     string = event.pattern_match.group(1)
     msg_id = None
     if msg and msg.media and not string:
         if BOTLOG_CHATID:
             await event.client.send_message(
-                BOTLOG_CHATID, f"#WELCOME_NOTE\
-            \nCHAT ID: {event.chat_id}\
-            \nThe following message is saved as the new welcome note for the chat, please do NOT delete it !!"
+                BOTLOG_CHATID, f"#WELCOME_NOTE \nCHAT ID: {event.chat_id}"
+                "\nThe following message is saved as the new welcome note "
+                "for the chat, please do NOT delete it !!"
             )
             msg_o = await event.client.forward_messages(
                 entity=BOTLOG_CHATID,
@@ -100,10 +99,9 @@ async def save_welcome(event):
                 silent=True)
             msg_id = msg_o.id
         else:
-            await event.edit(
+            return await event.edit(
                 "`Saving media as part of the welcome note requires the BOTLOG_CHATID to be set.`"
             )
-            return
     elif event.reply_to_msg_id and not string:
         rep_msg = await event.get_reply_message()
         string = rep_msg.text
@@ -119,12 +117,10 @@ async def show_welcome(event):
     try:
         from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
     except AttributeError:
-        await event.edit("`Running on Non-SQL mode!`")
-        return
+        return await event.edit("`Running on Non-SQL mode!`")
     cws = get_current_welcome_settings(event.chat_id)
     if not cws:
-        await event.edit("`No welcome message saved here.`")
-        return
+        return await event.edit("`No welcome message saved here.`")
     elif cws and cws.f_mesg_id:
         msg_o = await event.client.get_messages(entity=BOTLOG_CHATID,
                                                 ids=int(cws.f_mesg_id))
@@ -142,8 +138,7 @@ async def del_welcome(event):
     try:
         from userbot.modules.sql_helper.welcome_sql import rm_welcome_setting
     except AttributeError:
-        await event.edit("`Running on Non-SQL mode!`")
-        return
+        return await event.edit("`Running on Non-SQL mode!`")
     if rm_welcome_setting(event.chat_id) is True:
         await event.edit("`Welcome note deleted for this chat.`")
     else:
@@ -152,14 +147,14 @@ async def del_welcome(event):
 
 CMD_HELP.update({
     "welcome":
-    "\
-.setwelcome <welcome message> or reply to a message with .setwelcome\
-\nUsage: Saves the message as a welcome note in the chat.\
-\n\nAvailable variables for formatting welcome messages :\
-\n`{mention}, {title}, {count}, {first}, {last}, {fullname}, {userid}, {username}, {my_first}, {my_fullname}, {my_last}, {my_mention}, {my_username}`\
-\n\n.checkwelcome\
-\nUsage: Check whether you have a welcome note in the chat.\
-\n\n.rmwelcome\
-\nUsage: Deletes the welcome note for the current chat.\
-"
+    ">`.setwelcome <welcome message> or reply to a message with .setwelcome`"
+    "\nUsage: Saves the message as a welcome note in the chat."
+    "\n\nAvailable variables for formatting welcome messages :"
+    "\n`{mention}, {title}, {count}, {first}, {last}, {fullname}, "
+    "{userid}, {username}, {my_first}, {my_fullname}, {my_last}, "
+    "{my_mention}, {my_username}`"
+    "\n\n>`.checkwelcome`"
+    "\nUsage: Check whether you have a welcome note in the chat."
+    "\n\n>`.rmwelcome`"
+    "\nUsage: Deletes the welcome note for the current chat."
 })

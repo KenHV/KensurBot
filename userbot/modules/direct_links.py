@@ -21,8 +21,7 @@ from userbot.events import register
 def subprocess_run(cmd):
     reply = ""
     subproc = Popen(cmd, stdout=PIPE, stderr=PIPE,
-                    shell=True, universal_newlines=True,
-                    executable="bash")
+                    shell=True, universal_newlines=True)
     talk = subproc.communicate()
     exitCode = subproc.returncode
     if exitCode != 0:
@@ -364,8 +363,8 @@ def useragent():
 
 CMD_HELP.update({
     "direct":
-    ".direct <url>\n"
-    "Usage: Reply to a link or paste a URL to\n"
+    ">`.direct <url>`"
+    "\nUsage: Reply to a link or paste a URL to\n"
     "generate a direct download link\n\n"
     "List of supported URLs:\n"
     "`Google Drive - MEGA.nz - Cloud Mail - Yandex.Disk - AFH - "

@@ -1,9 +1,8 @@
-from telethon import events
 import os
 from PIL import Image
 from datetime import datetime
 from telegraph import Telegraph, upload_file, exceptions
-from userbot import (TELEGRAPH_SHORT_NAME, TEMP_DOWNLOAD_DIRECTORY, BOTLOG_CHATID, CMD_HELP, bot)
+from userbot import (TELEGRAPH_SHORT_NAME, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, bot)
 from userbot.events import register
 
 telegraph = Telegraph()
@@ -14,7 +13,7 @@ auth_url = r["auth_url"]
 @register(outgoing=True, pattern="^.telegraph (media|text)$")
 async def telegraphs(graph):
     """ For .telegraph command, upload media & text to telegraph site. """
-    await graph.edit("`Processing...`") 
+    await graph.edit("`Processing...`")
     if not graph.text[0].isalpha() and graph.text[0] not in ("/", "#", "@", "!"):
         if graph.fwd_from:
             return
@@ -44,10 +43,11 @@ async def telegraphs(graph):
                     end = datetime.now()
                     ms_two = (end - start).seconds
                     os.remove(downloaded_file_name)
-                    await graph.edit("Successfully Uploaded to [telegra.ph](https://telegra.ph{}).".format(media_urls[0], (ms + ms_two)), link_preview=True)
+                    await graph.edit("Successfully Uploaded to [telegra.ph](https://telegra.ph{})."
+                                     .format(media_urls[0], (ms + ms_two)), link_preview=True)
             elif input_str == "text":
                 user_object = await bot.get_entity(r_message.from_id)
-                title_of_page = user_object.first_name # + " " + user_object.last_name
+                title_of_page = user_object.first_name  # + " " + user_object.last_name
                 # apparently, all Users do not have last_name field
                 page_content = r_message.message
                 if r_message.media:
@@ -70,7 +70,8 @@ async def telegraphs(graph):
                 )
                 end = datetime.now()
                 ms = (end - start).seconds
-                await graph.edit("Successfully uploaded to [telegra.ph](https://telegra.ph/{}).".format(response["path"], ms), link_preview=True)
+                await graph.edit("Successfully uploaded to [telegra.ph](https://telegra.ph/{})."
+                                 .format(response["path"], ms), link_preview=True)
         else:
             await graph.edit("`Reply to a message to get a permanent telegra.ph link.`")
 
@@ -81,6 +82,7 @@ def resize_image(image):
 
 
 CMD_HELP.update({
-    'telegraph': '.telegraph media | text\
-        \nUsage: Upload text & media on Telegraph.'
+    "telegraph":
+    ">`.telegraph media|text`"
+    "\nUsage: Upload text & media on Telegraph."
 })

@@ -60,10 +60,7 @@ RUN apk add --no-cache=true --update \
     megatools \
     nodejs \
     freetype-dev
-
-
-RUN curl https://cli-assets.heroku.com/install.sh | sh
-
+    freetype-dev
 
 RUN python3 -m ensurepip \
     && pip3 install --upgrade pip setuptools \
@@ -80,12 +77,8 @@ RUN mkdir /root/userbot/bin/
 WORKDIR /root/userbot/
 
 #
-# Copies session and config (if it exists)
-#
-COPY ./sample_config.env ./userbot.session* ./config.env* /root/userbot/
-
-#
 # Install requirements
 #
 RUN pip3 install -r requirements.txt
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 CMD ["python3","-m","userbot"]

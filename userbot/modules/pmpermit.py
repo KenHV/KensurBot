@@ -82,8 +82,7 @@ async def permitpm(event):
                                 BOTLOG_CHATID,
                                 "Count PM is seemingly going retard, plis restart bot!",
                             )
-                        LOGS.info("CountPM wen't rarted boi")
-                        return
+                        return LOGS.info("CountPM wen't rarted boi")
 
                     await event.client(BlockRequest(event.chat_id))
                     await event.client(ReportSpamRequest(peer=event.chat_id))
@@ -140,8 +139,7 @@ async def notifoff(noff_event):
     try:
         from userbot.modules.sql_helper.globals import addgvar
     except AttributeError:
-        await noff_event.edit("`Running on Non-SQL mode!`")
-        return
+        return await noff_event.edit("`Running on Non-SQL mode!`")
     addgvar("NOTIF_OFF", True)
     await noff_event.edit("`Notifications from unapproved PM's are silenced!`")
 
@@ -152,8 +150,7 @@ async def notifon(non_event):
     try:
         from userbot.modules.sql_helper.globals import delgvar
     except AttributeError:
-        await non_event.edit("`Running on Non-SQL mode!`")
-        return
+        return await non_event.edit("`Running on Non-SQL mode!`")
     delgvar("NOTIF_OFF")
     await non_event.edit("`Notifications from unapproved PM's unmuted!`")
 
@@ -164,8 +161,7 @@ async def approvepm(apprvpm):
     try:
         from userbot.modules.sql_helper.pm_permit_sql import approve
     except AttributeError:
-        await apprvpm.edit("`Running on Non-SQL mode!`")
-        return
+        return await apprvpm.edit("`Running on Non-SQL mode!`")
 
     if apprvpm.reply_to_msg_id:
         reply = await apprvpm.get_reply_message()
@@ -182,8 +178,7 @@ async def approvepm(apprvpm):
     try:
         approve(uid)
     except IntegrityError:
-        await apprvpm.edit("`User may already be approved.`")
-        return
+        return await apprvpm.edit("`User may already be approved.`")
 
     await apprvpm.edit(f"[{name0}](tg://user?id={uid}) `approved to PM!`")
 
@@ -204,8 +199,7 @@ async def disapprovepm(disapprvpm):
     try:
         from userbot.modules.sql_helper.pm_permit_sql import dissprove
     except BaseException:
-        await disapprvpm.edit("`Running on Non-SQL mode!`")
-        return
+        return await disapprvpm.edit("`Running on Non-SQL mode!`")
 
     if disapprvpm.reply_to_msg_id:
         reply = await disapprvpm.get_reply_message()
@@ -280,17 +274,16 @@ async def unblockpm(unblock):
 
 CMD_HELP.update({
     "pmpermit":
-    "\
-.approve\
-\nUsage: Approves the mentioned/replied person to PM.\
-\n\n.disapprove\
-\nUsage: Disapproves the mentioned/replied person to PM.\
-\n\n.block\
-\nUsage: Blocks the person.\
-\n\n.unblock\
-\nUsage: Unblocks the person so they can PM you.\
-\n\n.notifoff\
-\nUsage: Clears/Disables any notifications of unapproved PMs.\
-\n\n.notifon\
-\nUsage: Allows notifications for unapproved PMs."
+    ">`.approve`"
+    "\nUsage: Approves the mentioned/replied person to PM."
+    "\n\n>`.disapprove`"
+    "\nUsage: Disapproves the mentioned/replied person to PM."
+    "\n\n>`.block`"
+    "\nUsage: Blocks the person."
+    "\n\n>`.unblock`"
+    "\nUsage: Unblocks the person so they can PM you."
+    "\n\n>`.notifoff`"
+    "\nUsage: Clears/Disables any notifications of unapproved PMs."
+    "\n\n>`.notifon`"
+    "\nUsage: Allows notifications for unapproved PMs."
 })

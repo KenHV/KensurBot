@@ -27,6 +27,7 @@ def register(**args):
     groups_only = args.get('groups_only', False)
     trigger_on_fwd = args.get('trigger_on_fwd', False)
     disable_errors = args.get('disable_errors', False)
+    insecure = args.get('insecure', False)
 
     if pattern is not None and not pattern.startswith('(?i)'):
         args['pattern'] = '(?i)' + pattern
@@ -46,6 +47,9 @@ def register(**args):
     if "trigger_on_fwd" in args:
         del args['trigger_on_fwd']
 
+    if "insecure" in args:
+        del args['insecure']
+
     if pattern:
         if not ignore_unsafe:
             args['pattern'] = pattern.replace('^.', unsafe_pattern, 1)
@@ -62,6 +66,9 @@ def register(**args):
 
             if groups_only and not check.is_group:
                 await check.respond("`I don't think this is a group.`")
+                return
+
+            if check.via_bot_id and not insecure:
                 return
 
             try:
@@ -86,7 +93,7 @@ def register(**args):
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
                     text = "**USERBOT ERROR REPORT**\n"
-                    link = "[OUB Support Chat](https://t.me/PPE_Support)"
+                    link = "Support chat PM: @adekmaulana"
                     text += "If you want to, you can report it"
                     text += f"- just forward this message to {link}.\n"
                     text += "Nothing is logged except the fact of error and date\n"
@@ -129,14 +136,14 @@ def register(**args):
 
                     if LOGSPAMMER:
                         await check.client.respond(
-                            "`Sorry, my userbot has crashed.\
-                        \nThe error logs are stored in the userbot's log chat.`"
+                            "`Sorry, my userbot has crashed."
+                            "\nThe error logs are stored in the userbot's log chat.`"
                         )
 
-                    await check.client.send_file(send_to,
-                                                 "error.log",
-                                                 caption=text)
-                    remove("error.log")
+                        await check.client.send_file(send_to,
+                                                     "error.log",
+                                                     caption=text)
+                        remove("error.log")
             else:
                 pass
 

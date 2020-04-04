@@ -16,8 +16,7 @@ async def notes_active(svd):
     try:
         from userbot.modules.sql_helper.notes_sql import get_notes
     except AttributeError:
-        await svd.edit("`Running on Non-SQL mode!`")
-        return
+        return await svd.edit("`Running on Non-SQL mode!`")
     message = "`There are no saved notes in this chat`"
     notes = get_notes(svd.chat_id)
     for note in notes:
@@ -35,8 +34,7 @@ async def remove_notes(clr):
     try:
         from userbot.modules.sql_helper.notes_sql import rm_note
     except AttributeError:
-        await clr.edit("`Running on Non-SQL mode!`")
-        return
+        return await clr.edit("`Running on Non-SQL mode!`")
     notename = clr.pattern_match.group(1)
     if rm_note(clr.chat_id, notename) is False:
         return await clr.edit("`Couldn't find note:` **{}**".format(notename))
@@ -51,8 +49,7 @@ async def add_note(fltr):
     try:
         from userbot.modules.sql_helper.notes_sql import add_note
     except AttributeError:
-        await fltr.edit("`Running on Non-SQL mode!`")
-        return
+        return await fltr.edit("`Running on Non-SQL mode!`")
     keyword = fltr.pattern_match.group(1)
     string = fltr.text.partition(keyword)[2]
     msg = await fltr.get_reply_message()
@@ -60,10 +57,8 @@ async def add_note(fltr):
     if msg and msg.media and not string:
         if BOTLOG_CHATID:
             await fltr.client.send_message(
-                BOTLOG_CHATID, f"#NOTE\
-            \nCHAT ID: {fltr.chat_id}\
-            \nKEYWORD: {keyword}\
-            \n\nThe following message is saved as the note's reply data for the chat, please do NOT delete it !!"
+                BOTLOG_CHATID, f"#NOTE\nCHAT ID: {fltr.chat_id}\nKEYWORD: {keyword}"
+                "\n\nThe following message is saved as the note's reply data for the chat, please do NOT delete it !!"
             )
             msg_o = await fltr.client.forward_messages(entity=BOTLOG_CHATID,
                                                        messages=msg,
@@ -71,10 +66,9 @@ async def add_note(fltr):
                                                        silent=True)
             msg_id = msg_o.id
         else:
-            await fltr.edit(
+            return await fltr.edit(
                 "`Saving media as data for the note requires the BOTLOG_CHATID to be set.`"
             )
-            return
     elif fltr.reply_to_msg_id and not string:
         rep_msg = await fltr.get_reply_message()
         string = rep_msg.text
@@ -124,8 +118,7 @@ async def kick_marie_notes(kick):
         Marie(or her clones) notes from a chat. """
     bot_type = kick.pattern_match.group(1).lower()
     if bot_type not in ["marie", "rose"]:
-        await kick.edit("`That bot is not yet supported!`")
-        return
+        return await kick.edit("`That bot is not yet supported!`")
     await kick.edit("```Will be kicking away all Notes!```")
     await sleep(3)
     resp = await kick.get_reply_message()
@@ -146,15 +139,16 @@ async def kick_marie_notes(kick):
 
 CMD_HELP.update({
     "notes":
-    "\
-#<notename>\
-\nUsage: Gets the specified note.\
-\n\n.save <notename> <notedata> or reply to a message with .save <notename>\
-\nUsage: Saves the replied message as a note with the notename. (Works with pics, docs, and stickers too!)\
-\n\n.notes\
-\nUsage: Gets all saved notes in a chat.\
-\n\n.clear <notename>\
-\nUsage: Deletes the specified note.\
-\n\n.rmbotnotes <marie/rose>\
-\nUsage: Removes all notes of admin bots (Currently supported: Marie, Rose and their clones.) in the chat."
+    "`#<notename>`"
+    "\nUsage: Gets the specified note."
+    "\n\n>`.save <notename> <notedata>` or reply to a message with >`.save <notename>`"
+    "\nUsage: Saves the replied message as a note with the notename. "
+    "(Works with pics, docs, and stickers too!)"
+    "\n\n>`.notes`"
+    "\nUsage: Gets all saved notes in a chat."
+    "\n\n>`.clear <notename>`"
+    "\nUsage: Deletes the specified note."
+    "\n\n>`.rmbotnotes <marie/rose>`"
+    "\nUsage: Removes all notes of admin bots"
+    " (Currently supported: Marie, Rose and their clones.) in the chat."
 })

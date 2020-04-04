@@ -30,7 +30,6 @@ import errno
 
 from pySmartDL import SmartDL
 from urllib.error import HTTPError
-from os.path import exists
 
 from userbot import CMD_HELP, LOGS
 from userbot.events import register
@@ -51,32 +50,6 @@ async def subprocess_run(megadl, cmd):
     return stdout.decode().strip(), stderr.decode().strip(), exitCode
 
 
-async def mega_downloader_fallback(megadl, link):
-    if not exists('mega'):
-        os.mkdir('mega')
-    await megadl.edit('`Downloading...`')
-    cmd = f'megadl --path mega {link} > /dev/null'
-    result = await subprocess_run(megadl, cmd)
-    if result[2] != 0:
-        return
-    with open('list.txt', 'w+') as list_files:
-        for downloaded_files in os.listdir('mega'):
-            list_files.write(downloaded_files + '\n')
-    result = open('list.txt', 'r').read()
-    if len(result) >= 4096:
-        await megadl.client.send_file(
-            megadl.chat_id,
-            "list.txt",
-            reply_to=megadl.id,
-            caption="`List files is too many, sending it as a file`",
-         )
-    else:
-        await megadl.edit(f'**Downloaded files**:\n`{result}`')
-    result.close()
-    os.remove('list.txt')
-    return
-
-
 @register(outgoing=True, pattern=r"^.mega(?: |$)(.*)")
 async def mega_downloader(megadl):
     await megadl.edit("`Processing...`")
@@ -87,28 +60,24 @@ async def mega_downloader(megadl):
     elif msg_link:
         link = msg_link.text
     else:
-        await megadl.edit("Usage: `.mega <MEGA.nz link>`")
-        return
+        return await megadl.edit("Usage: `.mega <MEGA.nz link>`")
     try:
         link = re.findall(r'\bhttps?://.*mega.*\.nz\S+', link)[0]
+        """ - Mega changed their URL again - """
+        if "file" in link:
+            link = link.replace("#", "!").replace("file/", "#!")
+        elif "folder" in link or "#F" in link or "#N" in link:
+            await megadl.edit("`Currently support folder download are removed`.")
+            return
     except IndexError:
-        await megadl.edit("`No MEGA.nz link found`\n")
-        return
-    if "#F" in link:
-        await megadl.edit('`MEGA.nz link is a folder...`')
-        await asyncio.sleep(2)
-        await mega_downloader_fallback(megadl, link)
-        return
+        return await megadl.edit("`No MEGA.nz link found`\n")
     cmd = f'bin/megadown -q -m {link}'
     result = await subprocess_run(megadl, cmd)
     try:
         data = json.loads(result[0])
     except json.JSONDecodeError:
-        await megadl.edit("`Error: Can't extract the link`\n")
-        return
-    except TypeError:
-        return
-    except IndexError:
+        return await megadl.edit("`Error: Can't extract the link`\n")
+    except (IndexError, TypeError):
         return
     file_name = data["file_name"]
     file_url = data["url"]
@@ -122,8 +91,7 @@ async def mega_downloader(megadl):
     try:
         downloader.start(blocking=False)
     except HTTPError as e:
-        await megadl.edit("`" + str(e) + "`")
-        return
+        return await megadl.edit("`" + str(e) + "`")
     while not downloader.isFinished():
         status = downloader.get_status().capitalize()
         total_length = downloader.filesize if downloader.filesize else None
@@ -155,19 +123,20 @@ async def mega_downloader(megadl):
         download_time = downloader.get_dl_time(human=True)
         try:
             P = multiprocessing.Process(target=await decrypt_file(megadl,
-                                        file_name, temp_file_name, hex_key, hex_raw_key),
+                                        file_name, temp_file_name,
+                                        hex_key, hex_raw_key),
                                         name="Decrypt_File")
             P.start()
             P.join()
         except FileNotFoundError as e:
-            await megadl.edit(str(e))
-            return
+            return await megadl.edit(str(e))
         else:
-            await megadl.edit(f"`{file_name}`\n\n"
-                              "Successfully downloaded\n"
-                              f"Download took: {download_time}")
+            return await megadl.edit(f"`{file_name}`\n\n"
+                                     "Successfully downloaded\n"
+                                     f"Download took: {download_time}")
     else:
-        await megadl.edit("`Failed to download, check heroku Logs for more details`")
+        await megadl.edit("`Failed to download, "
+                          "check heroku Logs for more details`")
         for e in downloader.get_errors():
             LOGS.info(str(e))
     return
@@ -187,9 +156,7 @@ async def decrypt_file(megadl, file_name, temp_file_name,
 
 CMD_HELP.update({
     "mega":
-    "```"
-    ".mega <MEGA.nz link>\n"
-    "Usage: Reply to a MEGA.nz link or paste your MEGA.nz link to\n"
+    ">`.mega <MEGA.nz link>`"
+    "\nUsage: Reply to a MEGA.nz link or paste your MEGA.nz link to "
     "download the file into your userbot server."
-    "```"
 })

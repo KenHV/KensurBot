@@ -44,8 +44,7 @@ async def parseqr(qr_e):
     if not t_response:
         LOGS.info(e_response)
         LOGS.info(t_response)
-        await qr_e.edit("Failed to decode.")
-        return
+        return await qr_e.edit("Failed to decode.")
     soup = BeautifulSoup(t_response, "html.parser")
     qr_contents = soup.find_all("pre")[0].text
     await qr_e.edit(qr_contents)
@@ -76,8 +75,7 @@ async def bq(event):
         else:
             message = previous_message.message
     else:
-        event.edit("SYNTAX: `.barcode <long text to include>`")
-        return
+        return event.edit("SYNTAX: `.barcode <long text to include>`")
 
     bar_code_type = "code128"
     try:
@@ -90,8 +88,7 @@ async def bq(event):
                                      reply_to=reply_msg_id)
         os.remove(filename)
     except Exception as e:
-        await event.edit(str(e))
-        return
+        return await event.edit(str(e))
     await event.delete()
 
 
@@ -137,17 +134,14 @@ async def make_qr(makeqr):
 
 
 CMD_HELP.update({
-    'qr':
-    ".makeqr <content>\
-\nUsage: Make a QR Code from the given content.\
-\nExample: .makeqr www.google.com\
-\nNote: use .decode <reply to barcode/qrcode> to get decoded content."
-})
-
-CMD_HELP.update({
-    'barcode':
-    ".barcode <content>\
-\nUsage: Make a BarCode from the given content.\
-\nExample: .barcode www.google.com\
-\nNote: use .decode <reply to barcode/qrcode> to get decoded content."
+    "qr":
+    ">`.makeqr <content>`"
+    "\nUsage: Make a QR Code from the given content."
+    "\nExample: .makeqr www.google.com"
+    "\nNote: use `.decode <reply to barcode/qrcode>` to get decoded content.",
+    "barcode":
+    ">`.barcode <content>`"
+    "\nUsage: Make a BarCode from the given content."
+    "\nExample: .barcode www.google.com"
+    "\nNote: use `.decode <reply to barcode/qrcode>` to get decoded content."
 })

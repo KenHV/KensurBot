@@ -16,18 +16,15 @@ from userbot.events import register
 async def evaluate(query):
     """ For .eval command, evaluates the given Python expression. """
     if query.is_channel and not query.is_group:
-        await query.edit("`Eval isn't permitted on channels`")
-        return
+        return await query.edit("`Eval isn't permitted on channels`")
 
     if query.pattern_match.group(1):
         expression = query.pattern_match.group(1)
     else:
-        await query.edit("``` Give an expression to evaluate. ```")
-        return
+        return await query.edit("``` Give an expression to evaluate. ```")
 
     if expression in ("userbot.session", "config.env"):
-        await query.edit("`That's a dangerous operation! Not Permitted!`")
-        return
+        return await query.edit("`That's a dangerous operation! Not Permitted!`")
 
     try:
         evaluation = str(eval(expression))
@@ -72,17 +69,14 @@ async def run(run_q):
     code = run_q.pattern_match.group(1)
 
     if run_q.is_channel and not run_q.is_group:
-        await run_q.edit("`Exec isn't permitted on channels!`")
-        return
+        return await run_q.edit("`Exec isn't permitted on channels!`")
 
     if not code:
-        await run_q.edit("``` At least a variable is required to \
-execute. Use .help exec for an example.```")
-        return
+        return await run_q.edit("``` At least a variable is required to"
+                                "execute. Use .help exec for an example.```")
 
     if code in ("userbot.session", "config.env"):
-        await run_q.edit("`That's a dangerous operation! Not Permitted!`")
-        return
+        return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
 
     if len(code.splitlines()) <= 5:
         codepre = code
@@ -143,21 +137,15 @@ async def terminal_runner(term):
         uid = "This ain't it chief!"
 
     if term.is_channel and not term.is_group:
-        await term.edit("`Term commands aren't permitted on channels!`")
-        return
+        return await term.edit("`Term commands aren't permitted on channels!`")
 
     if not command:
-        await term.edit("``` Give a command or use .help term for \
-            an example.```")
-        return
+        return await term.edit("``` Give a command or use .help term for an example.```")
 
     if command in ("userbot.session", "config.env"):
-        await term.edit("`That's a dangerous operation! Not Permitted!`")
-        return
+        return await term.edit("`That's a dangerous operation! Not Permitted!`")
 
-    process = await asyncio.create_subprocess_exec(
-        "bash",
-        "-c",
+    process = await asyncio.create_subprocess_shell(
         command,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE)
@@ -190,8 +178,14 @@ async def terminal_runner(term):
         )
 '''
 
-CMD_HELP.update({"eval": ".eval 2 + 3\nUsage: Evalute mini-expressions."})
-CMD_HELP.update(
-    {"exec": ".exec print('hello')\nUsage: Execute small python scripts."})
-CMD_HELP.update(
-    {"term": ".term ls\nUsage: Run bash commands and scripts on your server."})
+CMD_HELP.update({
+    "eval":
+    ">`.eval 2 + 3`"
+    "\nUsage: Evalute mini-expressions.",
+    "exec":
+    ">`.exec print('hello')`"
+    "\nUsage: Execute small python scripts.",
+    "term":
+    ">`.term <cmd>`"
+    "\nUsage: Run bash commands and scripts on your server."
+})

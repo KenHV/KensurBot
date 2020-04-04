@@ -1,10 +1,7 @@
 # Copyright (C) 2019 Adek Maulana
 #
 # Ported and add more features from my script inside build-kernel.py
-
-"""
-    Google Drive manager for Userbot
-"""
+""" - ProjectBish Google Drive managers - """
 import os
 import pickle
 import codecs
@@ -102,10 +99,10 @@ async def progress(current, total, event, start, type_of_ps, file_name=None):
         if file_name:
             await event.edit(f"{type_of_ps}\n\n"
                              f" • `Name   :` `{file_name}`"
-                             f" • `Status :`\n   {tmp}")
+                             f" • `Status :`\n    {tmp}")
         else:
             await event.edit(f"{type_of_ps}\n\n"
-                             f" • `Status :`\n   {tmp}")
+                             f" • `Status :`\n    {tmp}")
 
 
 async def get_raw_name(file_path):
@@ -259,7 +256,7 @@ async def google_drive_managers(gdrive):
         if mimeType != "application/vnd.google-apps.folder":
             msg += f" • `Download :` [{f_name}]({downloadURL})\n"
         if description:
-            msg += f" • `About    :`\n   `{description}`"
+            msg += f" • `About    :`\n    `{description}`"
         await gdrive.edit(msg)
     page_token = result.get('nextPageToken', None)
     return
@@ -271,17 +268,29 @@ async def google_drive(gdrive):
     file_path = gdrive.pattern_match.group(1)
     if not file_path and not gdrive.reply_to_msg_id:
         return
-    service = await create_app(gdrive)
-    if not file_path and gdrive.reply_to_msg_id:
-        return await download(gdrive, service)
-    mimeType = await get_mimeType(file_path)
-    file_name = await get_raw_name(file_path)
+    if not isfile(file_path):
+        return await gdrive.edit(
+            "`[UNKNOWN - ERROR]`\n\n"
+            " • `Status :` **BAD**\n"
+            f" • `Reason :` {file_path} is not a file!."
+        )
     if isdir(file_path):
         return await gdrive.edit(
             "`[FOLDER - ERROR]`\n\n"
             " • `Status :` **BAD**\n"
             " • `Reason :` Folder upload not supported."
         )
+    if file_path and gdrive.reply_to_msg_id:
+        return await gdrive.edit(
+            "`[UNKNOWN - ERROR]`\n\n"
+            " • `Status :` **FAILED**\n"
+            f" • `Reason :` Confused to upload file or the replied message/media."
+        )
+    service = await create_app(gdrive)
+    if not file_path and gdrive.reply_to_msg_id:
+        return await download(gdrive, service)
+    mimeType = await get_mimeType(file_path)
+    file_name = await get_raw_name(file_path)
     viewURL, downloadURL = await upload(
                          gdrive, service, file_path, file_name, mimeType)
     if viewURL and downloadURL:
@@ -390,7 +399,7 @@ async def upload(gdrive, service, file_path, file_name, mimeType):
                 "`[FILE - UPLOAD]`\n\n"
                 f" • `Name   :` `{file_name}`\n"
                 " • `Status :`\n"
-                f"   {prog_str}"
+                f"    {prog_str}"
             )
             if display_message != current_message:
                 try:
@@ -492,6 +501,15 @@ async def set_upload_folder(gdrive):
 
 async def generate_credentials(gdrive):
     """ - Generate credentials - """
+    error_msg = (
+        "`[TOKEN - ERROR]`\n\n"
+        " • `Status :` **RISK**\n"
+        " • `Reason :` There is data corruption or a security violation.\n\n"
+        "`It's probably your` **G_DRIVE_TOKEN_DATA** `is not match\n"
+        "Or you still use the old gdrive module token data!.\n"
+        "Please change it, by deleting` **G_DRIVE_TOKEN_DATA** "
+        "`from your ConfigVars and regenerate the token and put it again`."
+    )
     configs = {
         "installed": {
             "client_id": G_DRIVE_CLIENT_ID,
@@ -504,20 +522,26 @@ async def generate_credentials(gdrive):
     try:
         if G_DRIVE_AUTH_TOKEN_DATA is not None:
             """ - Repack credential objects from strings - """
-            creds = pickle.loads(
-                  codecs.decode(G_DRIVE_AUTH_TOKEN_DATA.encode(), "base64"))
+            try:
+                creds = pickle.loads(
+                      codecs.decode(G_DRIVE_AUTH_TOKEN_DATA.encode(), "base64"))
+            except pickle.UnpicklingError:
+                return await gdrive.edit(error_msg)
         else:
             if isfile("auth.txt"):
                 """ - Load credentials from file if exists - """
                 with open("auth.txt", "r") as token:
                     creds = token.read()
-                    creds = pickle.loads(
-                          codecs.decode(creds.encode(), "base64"))
+                    try:
+                        creds = pickle.loads(
+                              codecs.decode(creds.encode(), "base64"))
+                    except pickle.UnpicklingError:
+                        return await gdrive.edit(error_msg)
     except binascii.Error as e:
         return await gdrive.edit(
             "`[TOKEN - ERROR]`\n\n"
             " • `Status :` **BAD**\n"
-            " • `Reason :` Invalid credentials or token data\n"
+            " • `Reason :` Invalid credentials or token data.\n"
             f"    -> `{str(e)}`\n\n"
             "`if you copy paste from 'auth.txt' file and still error "
             "try use MiXplorer file manager and open as code editor or "
@@ -542,7 +566,8 @@ async def generate_credentials(gdrive):
             auth_url, _ = flow.authorization_url(
                         access_type='offline', prompt='consent')
             msg = await gdrive.respond(
-                "`Go to your BOTLOG chat to authenticate` **G_DRIVE_AUTH_TOKEN_DATA**"
+                "`Go to your BOTLOG chat to authenticate`"
+                " **G_DRIVE_AUTH_TOKEN_DATA**"
             )
             async with gdrive.client.conversation(BOTLOG_CHATID) as conv:
                 await conv.send_message(
@@ -555,7 +580,7 @@ async def generate_credentials(gdrive):
                 code = r.message.message.strip()
                 flow.fetch_token(code=code)
                 creds = flow.credentials
-            await msg.delete()
+                await gdrive.client.delete_messages(gdrive.chat_id, msg.id)
             """ - Unpack credential objects into strings - """
             if G_DRIVE_AUTH_TOKEN_DATA is None:
                 with open("auth.txt", "w") as f:
@@ -567,7 +592,7 @@ async def generate_credentials(gdrive):
                 BOTLOG_CHATID, "auth.txt",
                 caption=("This is your `G_DRIVE_AUTH_TOKEN_DATA`, "
                          "open then copy and paste to your heroku ConfigVars, "
-                         "or you can do\n>`.set var G_DRIVE_AUTH_TOKEN_DATA "
+                         "or do:\n>`.set var G_DRIVE_AUTH_TOKEN_DATA "
                          "<value inside auth.txt>`")
             )
             msg = await gdrive.respond(
@@ -578,7 +603,7 @@ async def generate_credentials(gdrive):
                 " to your heroku app ConfigVars.` **G_DRIVE_AUTH_TOKEN_DATA**"
             )
             await asyncio.sleep(3.5)
-            await msg.delete()
+            await gdrive.client.delete_messages(gdrive.chat_id, msg.id)
     return creds
 
 
@@ -594,15 +619,15 @@ CMD_HELP.update({
     ">.`gd`"
     "\nUsage: Upload file into google drive"
     "\n\n>`.gdf mkdir <folder name>`"
-    "\nUsage: create google drive folder"
+    "\nUsage: create google drive folder."
     "\n\n>`.gdf chck <folder/file|name/id>`"
-    "\nUsage: check given value is exist or no"
+    "\nUsage: check given value is exist or not."
     "\n\n>`.gdf rm <folder/file|name/id>`"
     "\nUsage: delete a file/folder, and can't be undone"
     "\nThis method skipping file trash, so be caution..."
     "\n\n>`.gdfset put <folderURL/folderID>`"
-    "\nUsage: change upload directory"
+    "\nUsage: change upload directory."
     "\n\n>`.gdfset rm`"
-    "\nUsage: remove set parentId from >`.gdfset put <value>` "
+    "\nUsage: remove set parentId from\n>`.gdfset put <value>` "
     "to **G_DRIVE_FOLDER_ID** and if empty upload will go to root."
 })

@@ -123,7 +123,7 @@ async def pipcheck(pip):
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
-                     "Hello World! \n\n"
+                     "Service Running! \n\n"
                      f"Telethon V: {version.__version__} \n"
                      f"Python V: {python_version()} \n"
                      f"hmu: {DEFAULTUSER}"
@@ -151,20 +151,21 @@ async def amireallyalivereset(ureset):
     await ureset.edit("`" "Successfully reset user for alive!" "`")
 
 
-CMD_HELP.update(
-    {"sysd": ".sysd\
-    \nUsage: Shows system information using neofetch."})
-CMD_HELP.update({"botver": ".botver\
-    \nUsage: Shows the userbot version."})
-CMD_HELP.update(
-    {"pip": ".pip <module(s)>\
-    \nUsage: Does a search of pip modules(s)."})
 CMD_HELP.update({
+    "sysd":
+    ">`.sysd`"
+    "\nUsage: Shows system information using neofetch.",
+    "botver":
+    ">`.botver`"
+    "\nUsage: Shows the userbot version.",
+    "pip":
+    ">`.pip <module(s)>`"
+    "\nUsage: Does a search of pip modules(s).",
     "alive":
-    ".alive\
-    \nUsage: Type .alive to see wether your bot is working or not.\
-    \n\n.aliveu <text>\
-    \nUsage: Changes the 'user' in alive to the text you want.\
-    \n\n.resetalive\
-    \nUsage: Resets the user to default."
+    ">`.alive`"
+    "\nUsage: Type .alive to see wether your bot is working or not."
+    "\n\n>`.aliveu <text>`"
+    "\nUsage: Changes the 'user' in alive to the text you want."
+    "\n\n>`.resetalive`"
+    "\nUsage: Resets the user to default."
 })

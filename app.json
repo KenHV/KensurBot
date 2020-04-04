@@ -1,6 +1,6 @@
 {
   "name": "Telegram OpenUbot",
-  "description": "[OpenUserBot] A modular Telegram userbot running on Python 3.7+ with an sqlalchemy database.",
+  "description": "[OpenUbot] A modular Telegram userbot running on Python 3.8+ with an sqlalchemy database.",
   "logo": "#",
   "keywords": [
     "telegram",
@@ -138,10 +138,6 @@
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
       "value": "pecinta shitpost @userbotindo",
-      "required": false
-    },
-    "ALIVE_NAME": {
-      "description": "Name to show in .alive message",
       "required": false
     },
     "G_DRIVE_CLIENT_SECRET": {

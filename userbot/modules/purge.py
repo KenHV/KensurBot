@@ -30,14 +30,13 @@ async def fastpurger(purg):
                 await purg.client.delete_messages(chat, msgs)
                 msgs = []
     else:
-        await purg.edit("`I need a mesasge to start purging from.`")
-        return
+        return await purg.edit("`I need a mesasge to start purging from.`")
 
     if msgs:
         await purg.client.delete_messages(chat, msgs)
     done = await purg.client.send_message(
-        purg.chat_id, f"`Fast purge complete!`\
-        \nPurged {str(count)} messages")
+        purg.chat_id, "`Fast purge complete!`"
+        f"\nPurged {str(count)} messages")
     '''
     if BOTLOG:
         await purg.client.send_message(
@@ -138,29 +137,20 @@ async def selfdestruct(destroy):
 
 
 CMD_HELP.update({
-    'purge':
-    '.purge\
-        \nUsage: Purges all messages starting from the reply.'
-})
-
-CMD_HELP.update({
-    'purgeme':
-    '.purgeme <x>\
-        \nUsage: Deletes x amount of your latest messages.'
-})
-
-CMD_HELP.update({"del": ".del\
-\nUsage: Deletes the message you replied to."})
-
-CMD_HELP.update({
-    'edit':
-    ".edit <newmessage>\
-\nUsage: Replace your last message with <newmessage>."
-})
-
-CMD_HELP.update({
-    'sd':
-    '.sd <x> <message>\
-\nUsage: Creates a message that selfdestructs in x seconds.\
-\nKeep the seconds under 100 since it puts your bot to sleep.'
+    "purge":
+    ">`.purge`"
+    "\nUsage: Purges all messages starting from the reply.",
+    "purgeme":
+    ">`.purgeme <x>`"
+    "\nUsage: Deletes x amount of your latest messages.",
+    "del":
+    ">`.del`"
+    "\nUsage: Deletes the message you replied to.",
+    "edit":
+    ">`.edit <newmessage>`"
+    "\nUsage: Replace your last message with <newmessage>.",
+    "sd":
+    ">`.sd <x> <message>`"
+    "\nUsage: Creates a message that selfdestructs in x seconds."
+    "\nKeep the seconds under 100 since it puts your bot to sleep."
 })

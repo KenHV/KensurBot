@@ -5,7 +5,7 @@
 #
 # The entire source code is OSSRPL except 'whois' which is MPL
 # License: MPL and OSSRPL
-""" Userbot module for getiing info about any user on Telegram(including you!). """
+""" Userbot module for getting info about any user on Telegram(including you!). """
 
 import os
 
@@ -31,8 +31,7 @@ async def who(event):
     try:
         photo, caption = await fetch_info(replied_user, event)
     except AttributeError:
-        event.edit("`Could not fetch info of that user.`")
-        return
+        return event.edit("`Could not fetch info of that user.`")
 
     message_id_to_reply = event.message.reply_to_msg_id
 
@@ -85,8 +84,7 @@ async def get_user(event):
             replied_user = await event.client(
                 GetFullUserRequest(user_object.id))
         except (TypeError, ValueError) as err:
-            await event.edit(str(err))
-            return None
+            return await event.edit(str(err))
 
     return replied_user
 
@@ -101,7 +99,7 @@ async def fetch_info(replied_user, event):
     replied_user_profile_photos_count = "Person needs help with uploading profile picture."
     try:
         replied_user_profile_photos_count = replied_user_profile_photos.count
-    except AttributeError as e:
+    except AttributeError:
         pass
     user_id = replied_user.user.id
     first_name = replied_user.user.first_name
@@ -149,6 +147,6 @@ async def fetch_info(replied_user, event):
 
 CMD_HELP.update({
     "whois":
-    ".whois <username> or reply to someones text with .whois\
-    \nUsage: Gets info of an user."
+    ">`.whois <username> or reply to someones text with .whois`"
+    "\nUsage: Gets info of an user."
 })

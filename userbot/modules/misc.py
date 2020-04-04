@@ -10,9 +10,7 @@ from random import randint
 from asyncio import sleep
 from os import execl
 import sys
-import os
 import io
-import json
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
 from userbot.events import register
 
@@ -22,10 +20,9 @@ async def randomise(items):
     """ For .random command, get a random item from the list of items. """
     itemo = (items.text[8:]).split()
     if len(itemo) < 2:
-        await items.edit(
+        return await items.edit(
             "`2 or more items are required! Check .help random for more info.`"
         )
-        return
     index = randint(1, len(itemo) - 1)
     await items.edit("**Query: **\n`" + items.text[8:] + "`\n**Output: **\n`" +
                      itemo[index] + "`")
@@ -34,7 +31,6 @@ async def randomise(items):
 @register(outgoing=True, pattern="^.sleep( [0-9]+)?$")
 async def sleepybot(time):
     """ For .sleep command, let the userbot snooze for a few second. """
-    message = time.text
     if " " not in time.pattern_match.group(1):
         await time.reply("Syntax: `.sleep [seconds]`")
     else:
@@ -51,9 +47,9 @@ async def sleepybot(time):
 
 
 @register(outgoing=True, pattern="^.shutdown$")
-async def killdabot(event):
+async def killthebot(event):
     """ For .shutdown command, shut the bot down."""
-    await event.edit("`Goodbye *Windows XP shutdown sound*....`")
+    await event.edit("`Goodbye...`")
     if BOTLOG:
         await event.client.send_message(BOTLOG_CHATID, "#SHUTDOWN \n"
                                         "Bot shut down")
@@ -72,9 +68,18 @@ async def killdabot(event):
     # Shut the existing one down
     exit()
 
-@register(outgoing=True, pattern="^.creator$")
-async def creator(e):
-    await e.edit("[Nobody]")
+
+@register(outgoing=True, pattern="^.readme$")
+async def reedme(e):
+    await e.edit(
+        "Here's something for you to read:\n"
+        "\n[ProjectBishUserBot's README.md file](https://github.com/adekmaulana/ProjectBish/blob/master/README.md)"
+        "\n[Setup Guide - Basic](https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02)"
+        "\n[Setup Guide - Google Drive](https://telegra.ph/How-To-Setup-Google-Drive-04-03)"
+        "\n[Setup Guide - LastFM Module](https://telegra.ph/How-to-set-up-LastFM-module-for-Paperplane-userbot-11-02)"
+        "\n[Video Tutorial - 576p](https://mega.nz/#!ErwCESbJ!1ZvYAKdTEfb6y1FnqqiLhHH9vZg4UB2QZNYL9fbQ9vs)"
+        "\n[Video Tutorial - 1080p](https://mega.nz/#!x3JVhYwR!u7Uj0nvD8_CyyARrdKrFqlZEBFTnSVEiqts36HBMr-o)"
+        "\n[Special - Note](https://telegra.ph/Special-Note-11-02)")
 
 
 # Copyright (c) Gegham Zakaryan | 2019
@@ -125,51 +130,28 @@ async def raw(event):
 
 
 CMD_HELP.update({
-    'random':
-    '.random <item1> <item2> ... <itemN>\
-\nUsage: Get a random item from the list of items.'
-})
-
-CMD_HELP.update({
-    'sleep':
-    '.sleep <seconds>\
-\nUsage: Userbots get tired too. Let yours snooze for a few seconds.'
-})
-
-CMD_HELP.update({
+    "random":
+    ">`.random <item1> <item2> ... <itemN>`"
+    "\nUsage: Get a random item from the list of items.",
+    "sleep":
+    ">`.sleep <seconds>`"
+    "\nUsage: Let yours snooze for a few seconds.",
     "shutdown":
-    ".shutdown\
-\nUsage: Sometimes you need to shut down your bot. Sometimes you just hope to\
-hear Windows XP shutdown sound... but you don't."
-})
-
-CMD_HELP.update({
-    'repo':
-    '.repo\
-\nUsage: If you are curious what makes the userbot work, this is what you need.'
-})
-
-CMD_HELP.update({
+    ">`.shutdown`"
+    "\nUsage: Shutdown bot",
+    "repo":
+    ">`.repo`"
+    "\nUsage: Github Repo of this bot",
     "readme":
-    ".readme\
-\nUsage: Provide links to setup the userbot and it's modules."
-})
-
-CMD_HELP.update(
-    {"creator": ".creator\
-\nUsage: Know who created this awesome userbot !!"})
-
-CMD_HELP.update({
+    ">`.readme`"
+    "\nUsage: Provide links to setup the userbot and it's modules.",
     "repeat":
-    ".repeat <no.> <text>\
-\nUsage: Repeats the text for a number of times. Don't confuse this with spam tho."
-})
-
-CMD_HELP.update({"restart": ".restart\
-\nUsage: Restarts the bot !!"})
-
-CMD_HELP.update({
+    ">`.repeat <no> <text>`"
+    "\nUsage: Repeats the text for a number of times. Don't confuse this with spam tho.",
+    "restart":
+    ">`.restart`"
+    "\nUsage: Restarts the bot !!",
     "raw":
-    ".raw\
-\nUsage: Get detailed JSON-like formatted data about replied message."
+    ">`.raw`"
+    "\nUsage: Get detailed JSON-like formatted data about replied message."
 })

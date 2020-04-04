@@ -10,9 +10,8 @@ async def github(event):
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as request:
             if request.status == 404:
-                await event.reply("`" + event.pattern_match.group(1) +
-                                  " not found`")
-                return
+                return await event.reply("`" + event.pattern_match.group(1) +
+                                         " not found`")
 
             result = await request.json()
 
@@ -22,21 +21,18 @@ async def github(event):
             bio = result.get("bio", None)
             created_at = result.get("created_at", "Not Found")
 
-            REPLY = f"GitHub Info for `{event.pattern_match.group(1)}`\
-            \nUsername: `{name}`\
-            \nBio: `{bio}`\
-            \nURL: {url}\
-            \nCompany: `{company}`\
-            \nCreated at: `{created_at}`"
+            REPLY = (
+                f"GitHub Info for `{event.pattern_match.group(1)}`"
+                f"\nUsername: `{name}`\nBio: `{bio}`\nURL: {url}"
+                f"\nCompany: `{company}`\nCreated at: `{created_at}`"
+            )
 
             if not result.get("repos_url", None):
-                await event.edit(REPLY)
-                return
+                return await event.edit(REPLY)
             async with session.get(result.get("repos_url", None)) as request:
                 result = request.json
                 if request.status == 404:
-                    await event.edit(REPLY)
-                    return
+                    return await event.edit(REPLY)
 
                 result = await request.json()
 
@@ -48,4 +44,8 @@ async def github(event):
                 await event.edit(REPLY)
 
 
-CMD_HELP.update({"git": "Like .whois but for GitHub usernames."})
+CMD_HELP.update({
+    "git":
+    ">`.git <username>`"
+    "\nUsage: Like .whois but for GitHub usernames."
+})

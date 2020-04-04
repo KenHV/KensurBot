@@ -65,12 +65,10 @@ async def time_func(tdata):
         tz_num = TZ_NUMBER
         timezones = await get_tz(COUNTRY)
     else:
-        await tdata.edit(f"`It's`  **{dt.now().strftime(t_form)}**  `here.`")
-        return
+        return await tdata.edit(f"`It's`  **{dt.now().strftime(t_form)}**  `here.`")
 
     if not timezones:
-        await tdata.edit("`Invaild country.`")
-        return
+        return await tdata.edit("`Invaild country.`")
 
     if len(timezones) == 1:
         time_zone = timezones[0]
@@ -88,20 +86,16 @@ async def time_func(tdata):
             return_str += "in the command.`\n"
             return_str += f"`Example: .time {c_name} 2`"
 
-            await tdata.edit(return_str)
-            return
+            return await tdata.edit(return_str)
 
     dtnow = dt.now(tz(time_zone)).strftime(t_form)
 
     if c_name != COUNTRY:
-        await tdata.edit(
+        return await tdata.edit(
             f"`It's`  **{dtnow}**  `in {c_name}({time_zone} timezone).`")
-        return
-
     elif COUNTRY:
-        await tdata.edit(f"`It's`  **{dtnow}**  `here, in {COUNTRY}"
-                         f"({time_zone} timezone).`")
-        return
+        return await tdata.edit(f"`It's`  **{dtnow}**  `here, in {COUNTRY}"
+                                f"({time_zone} timezone).`")
 
 
 @register(outgoing=True, pattern="^.date(?: |$)(.*)(?<![0-9])(?: |$)([0-9]+)?")
@@ -128,12 +122,10 @@ async def date_func(dat):
         tz_num = TZ_NUMBER
         timezones = await get_tz(COUNTRY)
     else:
-        await dat.edit(f"`It's`  **{dt.now().strftime(d_form)}**  `here.`")
-        return
+        return await dat.edit(f"`It's`  **{dt.now().strftime(d_form)}**  `here.`")
 
     if not timezones:
-        await dat.edit("`Invaild country.`")
-        return
+        return await dat.edit("`Invaild country.`")
 
     if len(timezones) == 1:
         time_zone = timezones[0]
@@ -151,33 +143,25 @@ async def date_func(dat):
             return_str += "in the command.`\n"
             return_str += f"Example: .date {c_name} 2"
 
-            await dat.edit(return_str)
-            return
+            return await dat.edit(return_str)
 
     dtnow = dt.now(tz(time_zone)).strftime(d_form)
 
     if c_name != COUNTRY:
-        await dat.edit(
+        return await dat.edit(
             f"`It's`  **{dtnow}**  `in {c_name}({time_zone} timezone).`")
-        return
-
     elif COUNTRY:
-        await dat.edit(f"`It's`  **{dtnow}**  `here, in {COUNTRY}"
-                       f"({time_zone} timezone).`")
-        return
+        return await dat.edit(f"`It's`  **{dtnow}**  `here, in {COUNTRY}"
+                              f"({time_zone} timezone).`")
 
 
 CMD_HELP.update({
     "time":
-    ".time <country name/code> <timezone number>"
+    ">`.time <country name/code> <timezone number>`"
     "\nUsage: Get the time of a country. If a country has "
-    "multiple timezones, it will list all of them "
-    "and let you select one."
-})
-CMD_HELP.update({
+    "multiple timezones, it will list all of them and let you select one.",
     "date":
-    ".date <country name/code> <timezone number>"
+    ">`.date <country name/code> <timezone number>`"
     "\nUsage: Get the date of a country. If a country has "
-    "multiple timezones, it will list all of them "
-    "and let you select one."
+    "multiple timezones, it will list all of them and let you select one."
 })

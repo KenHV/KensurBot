@@ -15,8 +15,8 @@ import sys
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import (BOTLOG, BOTLOG_CHATID, CMD_HELP, HEROKU_API_KEY, HEROKU_APP_NAME, UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH)
-from userbot import (CMD_HELP, HEROKU_API_KEY, HEROKU_APP_NAME, UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH)
+from userbot import (CMD_HELP, HEROKU_API_KEY,
+                     HEROKU_APP_NAME, UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH)
 from userbot.events import register
 
 requirements_path = path.join(
@@ -79,7 +79,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         else:
             remote = repo.create_remote("heroku", heroku_git_url)
         try:
-            remote.push(refspec="HEAD:refs/heads/sql-extended", force=True)
+            remote.push(refspec="HEAD:refs/heads/master", force=True)
         except GitCommandError as error:
             await event.edit(f'{txt}\n`Here is the error log:\n{error}`')
             return repo.__del__()
@@ -182,7 +182,7 @@ async def upstream(event):
         await event.edit(
             '`Force-Syncing to latest stable userbot code, please wait...`')
     else:
-        await event.edit('`Updating Bot, please wait....`')
+        await event.edit('`Updating userbot, please wait....`')
     if conf == "now":
         await update(event, repo, ups_rem, ac_br)
     elif conf == "deploy":
@@ -192,10 +192,10 @@ async def upstream(event):
 
 CMD_HELP.update({
     'update':
-    ".update"
+    ">`.update`"
     "\nUsage: Checks if the main userbot repository has any updates and shows a changelog if so."
-    "\n\n.update now"
+    "\n\n>`.update now`"
     "\nUsage: Update your userbot, if there are any updates in your userbot repository."
-    "\n\n.update deploy"
-    "\nUsage: Deploy your userbot at heroku, if there are any updates in your userbot repository."
+    "\n\n>`.update deploy`"
+    "\nUsage: Deploy your userbot, if there are any updates in your userbot repository."
 })

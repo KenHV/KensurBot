@@ -7,7 +7,6 @@
 # License: MPL and OSSRPL
 
 import io
-import traceback
 from re import match
 from selenium import webdriver
 from asyncio import sleep
@@ -35,21 +34,25 @@ async def capture(url):
     if link_match:
         link = link_match.group()
     else:
-        await url.edit("`I need a valid link to take screenshots from.`")
-        return
+        return await url.edit("`I need a valid link to take screenshots from.`")
     driver.get(link)
     height = driver.execute_script(
-        "return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"
+        "return Math.max(document.body.scrollHeight, document.body.offsetHeight, "
+        "document.documentElement.clientHeight, document.documentElement.scrollHeight, "
+        "document.documentElement.offsetHeight);"
     )
     width = driver.execute_script(
-        "return Math.max(document.body.scrollWidth, document.body.offsetWidth, document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth);"
+        "return Math.max(document.body.scrollWidth, document.body.offsetWidth, "
+        "document.documentElement.clientWidth, document.documentElement.scrollWidth, "
+        "document.documentElement.offsetWidth);"
     )
     driver.set_window_size(width + 125, height + 125)
     wait_for = height / 1000
-    await url.edit(f"`Generating screenshot of the page...`\
-    \n`Height of page = {height}px`\
-    \n`Width of page = {width}px`\
-    \n`Waiting ({int(wait_for)}s) for the page to load.`")
+    await url.edit(
+        "`Generating screenshot of the page...`"
+        f"\n`Height of page = {height}px`"
+        f"\n`Width of page = {width}px`"
+        f"\n`Waiting ({int(wait_for)}s) for the page to load.`")
     await sleep(int(wait_for))
     im_png = driver.get_screenshot_as_png()
     # saves screenshot of entire page
@@ -69,7 +72,7 @@ async def capture(url):
 
 CMD_HELP.update({
     "ss":
-    ".ss <url>\
-    \nUsage: Takes a screenshot of a website and sends the screenshot.\
-    \nExample of a valid URL : `https://www.google.com`"
+    ">`.ss <url>`"
+    "\nUsage: Takes a screenshot of a website and sends the screenshot."
+    "\nExample of a valid URL : `https://www.google.com`"
 })

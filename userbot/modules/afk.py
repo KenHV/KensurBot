@@ -53,8 +53,8 @@ async def mention_afk(mention):
         if ISAFK:
             if mention.sender_id not in USERS:
                 if AFKREASON:
-                    await mention.reply(f"I'm AFK right now.\
-                        \nBecause I'm `{AFKREASON}`")
+                    await mention.reply("I'm AFK right now."
+                                        f"\nBecause I'm `{AFKREASON}`")
                 else:
                     await mention.reply(str(choice(AFKSTR)))
                 USERS.update({mention.sender_id: 1})
@@ -121,8 +121,8 @@ async def set_afk(afk_e):
     global AFKREASON
     if string:
         AFKREASON = string
-        await afk_e.edit(f"Going AFK!\
-        \nReason: `{string}`")
+        await afk_e.edit("Going AFK!"
+                         f"\nReason: `{string}`")
     else:
         await afk_e.edit("Going AFK!")
     if BOTLOG:
@@ -140,8 +140,9 @@ async def type_afk_is_not_true(notafk):
     global AFKREASON
     if ISAFK:
         ISAFK = False
-        await notafk.respond("I'm no longer AFK.")
+        msg = await notafk.respond("I'm no longer AFK.")
         await sleep(2)
+        await msg.delete()
         if BOTLOG:
             await notafk.client.send_message(
                 BOTLOG_CHATID,
@@ -163,8 +164,8 @@ async def type_afk_is_not_true(notafk):
 
 CMD_HELP.update({
     "afk":
-    ".afk [Optional Reason]\
-\nUsage: Sets you as afk.\nReplies to anyone who tags/PM's \
-you telling them that you are AFK(reason).\n\nSwitches off AFK when you type back anything, anywhere.\
-"
+    ">`.afk [Optional Reason]`"
+    "\nUsage: Sets you as afk.\nReplies to anyone who tags/PM's "
+    "you telling them that you are AFK(reason)."
+    "\n\nSwitches off AFK when you type back anything, anywhere."
 })

@@ -6,8 +6,8 @@
 # The entire source code is OSSRPL except
 # 'download, uploadir, uploadas, upload' which is MPL
 # License: MPL and OSSRPL
-""" Userbot module which contains everything related to \
-    downloading/uploading from/to the server. """
+""" Userbot module which contains everything related to
+     downloading/uploading from/to the server. """
 
 import json
 import os
@@ -113,7 +113,6 @@ async def download(target_file):
             diff = now - c_time
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed()
-            elapsed_time = round(diff) * 1000
             progress_str = "[{0}{1}] {2}%".format(
                 ''.join(["▰" for i in range(math.floor(percentage / 10))]),
                 ''.join(["▱"
@@ -121,12 +120,16 @@ async def download(target_file):
                 round(percentage, 2))
             estimated_total_time = downloader.get_eta(human=True)
             try:
-                current_message = f"{status}..\
-                \nURL: {url}\
-                \nFile Name: {file_name}\
-                \n{progress_str}\
-                \n{humanbytes(downloaded)} of {humanbytes(total_length)}\
-                \nETA: {estimated_total_time}"
+                current_message = (
+                    f"URL: {url}\n"
+                    "File Name:"
+                    f"\n`{file_name}`\n\n"
+                    "Status:"
+                    f"\n**{status}** | {progress_str} `{percentage}%`"
+                    f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
+                    f" @ {speed}"
+                    f"\nETA: {estimated_total_time}"
+                )
 
                 if round(diff %
                          10.00) == 0 and current_message != display_message:
@@ -240,8 +243,7 @@ async def upload(u_event):
     await u_event.edit("Processing ...")
     input_str = u_event.pattern_match.group(1)
     if input_str in ("userbot.session", "config.env"):
-        await u_event.edit("`That's a dangerous operation! Not Permitted!`")
-        return
+        return await u_event.edit("`That's a dangerous operation! Not Permitted!`")
     if os.path.exists(input_str):
         c_time = time.time()
         await u_event.client.send_file(
@@ -276,6 +278,7 @@ def get_video_thumb(file, output=None, width=90):
             "1",
             output,
         ],
+        shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
     )
@@ -393,8 +396,7 @@ async def uploadas(uas_event):
                         progress(d, t, uas_event, c_time, "Uploading...",
                                  file_name)))
             elif spam_big_messages:
-                await uas_event.edit("TBD: Not (yet) Implemented")
-                return
+                return await uas_event.edit("TBD: Not (yet) Implemented")
             os.remove(thumb)
             await uas_event.edit("Uploaded successfully !!")
         except FileNotFoundError as err:
@@ -405,8 +407,8 @@ async def uploadas(uas_event):
 
 CMD_HELP.update({
     "download":
-    ".download <link|filename> or reply to media\
-\nUsage: Downloads file to the server.\
-\n\n.upload <path in server>\
-\nUsage: Uploads a locally stored file to the chat."
+    ">`.download <link|filename> or reply to media`"
+    "\nUsage: Downloads file to the server."
+    "\n\n>`.upload <path in server>`"
+    "\nUsage: Uploads a locally stored file to the chat."
 })
