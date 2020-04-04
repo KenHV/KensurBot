@@ -69,7 +69,6 @@ def register(**args):
                 return
 
             if check.via_bot_id and not insecure:
-                await check.respond("`Inline bots are disabled for security reasons`")
                 return
 
             try:
