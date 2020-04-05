@@ -268,12 +268,6 @@ async def google_drive(gdrive):
     file_path = gdrive.pattern_match.group(1)
     if not file_path and not gdrive.reply_to_msg_id:
         return
-    if not isfile(file_path):
-        return await gdrive.edit(
-            "`[UNKNOWN - ERROR]`\n\n"
-            " • `Status :` **BAD**\n"
-            f" • `Reason :` {file_path} is not a file!."
-        )
     if isdir(file_path):
         return await gdrive.edit(
             "`[FOLDER - ERROR]`\n\n"
