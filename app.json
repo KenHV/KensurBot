@@ -10,7 +10,6 @@
   ],
   "repository": "https://github.com/adekmaulana/ProjectBish",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
-  "success_url": "https://t.me/PPE_Support",
   "stack": "container",
   "env": {
     "API_KEY": {
