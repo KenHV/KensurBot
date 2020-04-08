@@ -418,7 +418,6 @@ async def muter(moot):
             await moot.delete()
 
 
-@register(outgoing=True, pattern="^.ungmute(?: |$)(.*)")
 async def ungmoot(un_gmute):
     """ For .ungmute command, ungmutes the target in the userbot """
     # Admin or creator check
@@ -459,7 +458,6 @@ async def ungmoot(un_gmute):
                 f"CHAT: {un_gmute.chat.title}(`{un_gmute.chat_id}`)")
 
 
-@register(outgoing=True, pattern="^.gmute(?: |$)(.*)")
 async def gspider(gspdr):
     """ For .gmute command, globally mutes the replied/tagged person """
     # Admin or creator check
@@ -893,10 +891,6 @@ CMD_HELP.update({
     "\nUsage: Mutes the person in the chat, works on admins too."
     "\n\n>`.unmute <username/reply>`"
     "\nUsage: Removes the person from the muted list."
-    "\n\n>`.gmute <username/reply> <reason (optional)>`"
-    "\nUsage: Mutes the person in all groups you have in common with them."
-    "\n\n>`.ungmute <username/reply>`"
-    "\nUsage: Reply someone's message with .ungmute to remove them from the gmuted list."
     "\n\n>`.zombies`"
     "\nUsage: Searches for deleted accounts in a group. "
     "Use .zombies clean to remove deleted accounts from the group."
