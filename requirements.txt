@@ -41,8 +41,6 @@ telethon
 telethon-session-sqlalchemy
 urbandict
 wikipedia
-coffeehouse
-typing
 telegraph
 PyGithub
 python-dateutil
