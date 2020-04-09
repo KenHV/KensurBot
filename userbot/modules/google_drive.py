@@ -90,7 +90,7 @@ async def progress(current, total, event, start, type_of_ps, file_name=None):
         time_to_completion = round((total - current) / speed) * 1000
         estimated_total_time = elapsed_time + time_to_completion
         progress_str = "`Downloading...` | [{0}{1}] `{2}%`\n".format(
-            ''.join(["**#**" for i in range(math.floor(percentage / 10))]),
+            ''.join(["#" for i in range(math.floor(percentage / 10))]),
             ''.join(["**-**" for i in range(10 - math.floor(percentage / 10))]),
             round(percentage, 2))
         tmp = (progress_str + "\n" +
@@ -99,7 +99,7 @@ async def progress(current, total, event, start, type_of_ps, file_name=None):
                )
         if file_name:
             await event.edit(f"{type_of_ps}\n\n"
-                             f" • `Name   :` `{file_name}`"
+                             f" • `Name   :`\n    `{file_name}`"
                              f" • `Status :`\n    {tmp}")
         else:
             await event.edit(f"{type_of_ps}\n\n"
@@ -174,7 +174,7 @@ async def generate_credentials(gdrive):
                         access_type='offline', prompt='consent')
             msg = await gdrive.respond(
                 "`Go to your BOTLOG chat to authenticate`"
-                " **G_DRIVE_AUTH_TOKEN_DATA**"
+                " **G_DRIVE_AUTH_TOKEN_DATA**."
             )
             async with gdrive.client.conversation(BOTLOG_CHATID) as conv:
                 await conv.send_message(
@@ -200,14 +200,14 @@ async def generate_credentials(gdrive):
                 caption=("This is your `G_DRIVE_AUTH_TOKEN_DATA`, "
                          "open then copy and paste to your heroku ConfigVars, "
                          "or do:\n>`.set var G_DRIVE_AUTH_TOKEN_DATA "
-                         "<value inside auth.txt>`")
+                         "<value inside auth.txt>`.")
             )
             msg = await gdrive.respond(
                 "`Go to your BOTLOG chat to get` **G_DRIVE_AUTH_TOKEN_DATA**\n"
                 "`The next time you called the command you didn't need to "
                 "authenticate anymore as long there is a valid file 'auth.txt'"
                 " or, you already put the value from 'auth.txt'"
-                " to your heroku app ConfigVars.` **G_DRIVE_AUTH_TOKEN_DATA**"
+                " to your heroku app ConfigVars.` **G_DRIVE_AUTH_TOKEN_DATA**."
             )
             await asyncio.sleep(3.5)
             await gdrive.client.delete_messages(gdrive.chat_id, msg.id)
@@ -300,15 +300,15 @@ async def download(gdrive, service, uri=None):
                               file_name, mimeType)
         return await gdrive.edit(
             "`[FILE - DOWNLOAD]`\n\n"
-            f" • `Name     :` `{file_name}`\n"
+            f" • `Name     :`\n    `{file_name}`\n"
             " • `Status   :` **OK**\n"
-            f" • `URL      :` [{file_name}]({result[0]})\n"
-            f" • `Download :` [{file_name}]({result[1]})"
+            f" • `URL      :`\n    [{file_name}]({result[0]})\n"
+            f" • `Download :`\n    [{file_name}]({result[1]})"
         )
     except Exception as e:
         return await gdrive.edit(
             "`[FILE - ERROR]`\n\n"
-            f" • `Name   :` `{file_name}`\n"
+            f" • `Name   :`\n    `{file_name}`\n"
             " • `Status :` **FAILED**\n"
             " • `Reason :` failed to upload.\n"
             f"    `{str(e)}`"
@@ -361,7 +361,7 @@ async def upload(gdrive, service, file_path, file_name, mimeType):
                 round(percentage, 2))
             current_message = (
                 "`[FILE - UPLOAD]`\n\n"
-                f" • `Name   :` `{file_name}`\n"
+                f" • `Name   :`\n    `{file_name}`\n"
                 " • `Status :`\n"
                 f"    {prog_str}"
             )
@@ -442,9 +442,9 @@ async def google_drive_managers(gdrive):
                 return await gdrive.edit("`" + str(e) + "`")
         await gdrive.edit(
             f"`{status}`\n\n"
-            f" • `Name :` `{f_name}`\n"
+            f" • `Name :`\n    `{f_name}`\n"
             f" • `ID   :` `{folder_id}`\n"
-            f" • `URL  :` [Open]({webViewURL})"
+            f" • `URL  :`\n    [Open]({webViewURL})"
         )
     elif exe == "rm":
         """ - Permanently delete, skipping the trash - """
@@ -480,7 +480,7 @@ async def google_drive_managers(gdrive):
         else:
             await gdrive.edit(
                     f"`{status}`\n\n"
-                    f" • `Name   :` `{name}`\n"
+                    f" • `Name   :`\n    `{name}`\n"
                     " • `Status :` `OK`"
             )
     elif exe == "chck":
@@ -515,12 +515,12 @@ async def google_drive_managers(gdrive):
             status = "[FILE - EXIST]"
         msg = (
             f"`{status}`\n\n"
-            f" • `Name     :` `{f_name}`\n"
+            f" • `Name     :`\n    `{f_name}`\n"
             f" • `ID       :` `{f_id}`\n"
-            f" • `URL      :` [Open]({webViewLink})\n"
+            f" • `URL      :`\n    [Open]({webViewLink})\n"
         )
         if mimeType != "application/vnd.google-apps.folder":
-            msg += f" • `Download :` [{f_name}]({downloadURL})\n"
+            msg += f" • `Download :`\n    [{f_name}]({downloadURL})\n"
         if description:
             msg += f" • `About    :`\n    `{description}`"
         await gdrive.edit(msg)
@@ -575,10 +575,10 @@ async def google_drive(gdrive):
     if viewURL and downloadURL:
         await gdrive.edit(
             "`[FILE - UPLOAD]`\n\n"
-            f" • `Name     :` `{file_name}`\n"
+            f" • `Name     :`\n    `{file_name}`\n"
             " • `Status   :` **OK**\n"
-            f" • `URL      :` [{file_name}]({viewURL})\n"
-            f" • `Download :` [{file_name}]({downloadURL})"
+            f" • `URL      :`\n    [{file_name}]({viewURL})\n"
+            f" • `Download :`\n    [{file_name}]({downloadURL})"
         )
     return
 
@@ -634,7 +634,7 @@ async def set_upload_folder(gdrive):
             return await gdrive.edit(
                 "`[URL - ERROR]`\n\n"
                 " • `Status :` **BAD**\n"
-                " • `Reason :` Not a valid folderURL"
+                " • `Reason :` Not a valid folderURL."
             )
         try:
             parent_Id = ext_id.split("folders/")[1]
@@ -654,7 +654,7 @@ async def set_upload_folder(gdrive):
                         return await gdrive.edit(
                             "`[URL - ERROR]`\n\n"
                             " • `Status :` **BAD**\n"
-                            " • `Reason :` Not a valid folderURL or empty"
+                            " • `Reason :` Not a valid folderURL or empty."
                         )
         await gdrive.edit(
                 "`[PARENT - FOLDER]`\n\n"
@@ -667,7 +667,7 @@ async def set_upload_folder(gdrive):
 CMD_HELP.update({
     "gdrive":
     ">.`gd`"
-    "\nUsage: Upload file into google drive"
+    "\nUsage: Upload file from local or uri into google drive."
     "\n\n>`.gdf mkdir <folder name>`"
     "\nUsage: create google drive folder."
     "\n\n>`.gdf chck <folder/file|name/id>`"
