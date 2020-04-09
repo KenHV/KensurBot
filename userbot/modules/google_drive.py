@@ -241,7 +241,20 @@ async def download(gdrive, service, uri=None):
         required_file_name = None
     if uri:
         try:
-            downloads = aria2.add_uris(uri, options=None, position=None)
+            if uri.endswith(".torrent"):
+                pass
+        except AttributeError:
+            torrent = False
+        else:
+            torrent = True
+        try:
+            if torrent is True:
+                downloads = aria2.add_torrent(uri,
+                                              uris=None,
+                                              options=None,
+                                              position=None)
+            else:
+                downloads = aria2.add_uris(uri, options=None, position=None)
         except Exception as e:
             return await gdrive.edit(
                 "`[FILE - ERROR]`\n\n"
@@ -531,6 +544,9 @@ async def google_drive(gdrive):
         )
     if isfile(value):
         file_path = value
+        if file_path.endswith(".torrent"):
+            uri = file_path
+            file_path = None
     elif isdir(value):
         return await gdrive.edit(
             "`[FOLDER - ERROR]`\n\n"
@@ -539,6 +555,8 @@ async def google_drive(gdrive):
         )
     else:
         uri = re.findall(r'\bhttps?://.*\.\S+', value)
+        if "magnet:?" in value:
+            uri = [value]
         if not uri and not gdrive.reply_to_msg_id:
             return await gdrive.edit(
                 "`[VALUE - ERROR]`\n\n"
