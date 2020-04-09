@@ -5,7 +5,6 @@
 """
 
 import heroku3
-import asyncio
 import os
 import requests
 import math
@@ -28,20 +27,19 @@ async def variable(var):
         app = Heroku.app(HEROKU_APP_NAME)
     else:
         return await var.edit("`[HEROKU]:"
-                              "\nPlease setup your` **HEROKU_APP_NAME**")
+                              "\nPlease setup your` **HEROKU_APP_NAME**.")
     exe = var.pattern_match.group(1)
     heroku_var = app.config()
     if exe == "get":
         await var.edit("`Getting information...`")
-        await asyncio.sleep(1.5)
         try:
             variable = var.pattern_match.group(2).split()[0]
             if variable in heroku_var:
                 return await var.edit("**ConfigVars**:"
-                                      f"\n\n`{variable} = {heroku_var[variable]}`\n")
+                                      f"\n`{variable}` = `{heroku_var[variable]}`.\n")
             else:
                 return await var.edit("**ConfigVars**:"
-                                      f"\n\n`Error:\n-> {variable} don't exists`")
+                                      f"\n`Error > {variable} don't exists`.")
         except IndexError:
             configs = prettyjson(heroku_var.to_dict(), indent=2)
             with open("configs.json", "w") as fp:
@@ -53,7 +51,7 @@ async def variable(var):
                         var.chat_id,
                         "configs.json",
                         reply_to=var.id,
-                        caption="`Output too large, sending it as a file`",
+                        caption="`Output too large, sending it as a file`.",
                     )
                 else:
                     await var.edit("`[HEROKU]` ConfigVars:\n\n"
@@ -75,24 +73,22 @@ async def variable(var):
                 value = var.pattern_match.group(2).split()[1]
             except IndexError:
                 return await var.edit(">`.set var <ConfigVars-name> <value>`")
-        await asyncio.sleep(1.5)
         if variable in heroku_var:
-            await var.edit(f"**{variable}**  `successfully changed to`  ->  **{value}**")
+            await var.edit(f"**{variable}** `successfully changed to` > **{value}**")
         else:
-            await var.edit(f"**{variable}**  `successfully added with value`  ->  **{value}**")
+            await var.edit(f"**{variable}** `successfully added with value` > **{value}**")
         heroku_var[variable] = value
     elif exe == "del":
         await var.edit("`Getting information to deleting variable...`")
         try:
             variable = var.pattern_match.group(2).split()[0]
         except IndexError:
-            return await var.edit("`Please specify ConfigVars you want to delete`")
-        await asyncio.sleep(1.5)
+            return await var.edit("`Please specify ConfigVars you want to delete`.")
         if variable in heroku_var:
-            await var.edit(f"**{variable}**  `successfully deleted`")
+            await var.edit(f"**{variable}** `successfully deleted`.")
             del heroku_var[variable]
         else:
-            return await var.edit(f"**{variable}**  `is not exists`")
+            return await var.edit(f"**{variable}** `is not exists`.")
 
 
 @register(outgoing=True, pattern=r"^.usage(?: |$)")
@@ -100,7 +96,7 @@ async def dyno_usage(dyno):
     """
         Get your account Dyno Usage
     """
-    await dyno.edit("`Processing...`")
+    await dyno.edit("`Getting Information...`")
     useragent = ('Mozilla/5.0 (Linux; Android 10; SM-G975F) '
                  'AppleWebKit/537.36 (KHTML, like Gecko) '
                  'Chrome/80.0.3987.149 Mobile Safari/537.36'
@@ -139,8 +135,6 @@ async def dyno_usage(dyno):
         AppPercentage = math.floor(App[0]['quota_used'] * 100 / quota)
     AppHours = math.floor(AppQuotaUsed / 60)
     AppMinutes = math.floor(AppQuotaUsed % 60)
-
-    await asyncio.sleep(1.5)
 
     return await dyno.edit("**Dyno Usage**:\n\n"
                            f" -> `Dyno usage for`  **{HEROKU_APP_NAME}**:\n"
