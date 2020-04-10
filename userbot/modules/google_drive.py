@@ -27,7 +27,7 @@ from userbot import (G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET,
                      G_DRIVE_FOLDER_ID)
 from userbot.events import register
 from userbot.modules.upload_download import humanbytes, time_formatter
-from userbot.modules.aria import aria2, check_progress_for_dl, check_metadata
+from userbot.modules.aria import aria2, check_metadata
 # =========================================================== #
 #                          STATIC                             #
 # =========================================================== #
@@ -80,7 +80,7 @@ if __ is not None:
 # =========================================================== #
 
 
-async def progress(current, total, event, start, type_of_ps, file_name=None):
+async def progress(current, total, gdrive, start, type_of_ps, file_name=None):
     """Generic progress_callback for uploads and downloads."""
     now = time.time()
     diff = now - start
@@ -99,12 +99,12 @@ async def progress(current, total, event, start, type_of_ps, file_name=None):
                f"ETA: {time_formatter(estimated_total_time)}"
                )
         if file_name:
-            await event.edit(f"{type_of_ps}\n\n"
-                             f" • `Name   :`\n    `{file_name}`"
-                             f" • `Status :`\n    {tmp}")
+            await gdrive.edit(f"{type_of_ps}\n\n"
+                              f" • `Name   :`\n    `{file_name}`"
+                              f" • `Status :`\n    {tmp}")
         else:
-            await event.edit(f"{type_of_ps}\n\n"
-                             f" • `Status :`\n    {tmp}")
+            await gdrive.edit(f"{type_of_ps}\n\n"
+                              f" • `Status :`\n    {tmp}")
 
 
 async def generate_credentials(gdrive):
@@ -264,16 +264,12 @@ async def download(gdrive, service, uri=None):
                 f"    `{str(e)}`"
             )
         gid = downloads.gid
-        await check_progress_for_dl(gid=gid, event=gdrive, previous=None)
-        File = aria2.get_download(gid)
-        if File.followed_by_ids:
+        await check_progress_for_dl(gdrive, gid, previous=None)
+        file = aria2.get_download(gid)
+        if file.followed_by_ids:
             new_gid = await check_metadata(gid)
-            await check_progress_for_dl(gid=new_gid,
-                                        event=gdrive, previous=None)
-        for root, dirs, files in os.walk('.'):
-            for entry in files:
-                if File.name == entry:
-                    required_file_name = join(root, entry)
+            await check_progress_for_dl(gdrive, new_gid, previous=None)
+        required_file_name = filename
     else:
         try:
             current_time = time.time()
@@ -292,23 +288,39 @@ async def download(gdrive, service, uri=None):
     except AttributeError:
         return await gdrive.edit(
             "`[ENTRY - ERROR]`\n\n"
+            f" • `Name   :` {file_name}\n"
             " • `Status :` **BAD**\n"
             " • `Reason :` Replied entry is not media/file it's a messages."
         )
     mimeType = await get_mimeType(required_file_name)
     try:
-        result = await upload(gdrive, service, required_file_name,
-                              file_name, mimeType)
-        return await gdrive.edit(
-            "`[FILE - DOWNLOAD]`\n\n"
-            f" • `Name     :`\n    `{file_name}`\n"
-            " • `Status   :` **OK**\n"
-            f" • `URL      :`\n    [{file_name}]({result[0]})\n"
-            f" • `Download :`\n    [{file_name}]({result[1]})"
-        )
+        status = "[FILE - DOWNLOAD]"
+        if isfile(required_file_name):
+            result = await upload(gdrive, service, required_file_name,
+                                  file_name, mimeType)
+            return await gdrive.edit(
+                f"`{status}`\n\n"
+                f" • `Name     :`\n    `{file_name}`\n"
+                " • `Status   :` **OK**\n"
+                f" • `URL      :`\n    [{file_name}]({result[0]})\n"
+                f" • `Download :`\n    [{file_name}]({result[1]})"
+            )
+        else:
+            status = status.replace("[FILE", "[FOLDER")
+            global parent_Id
+            parent_Id = await create_dir(service, file_name)
+            await task_directory(gdrive, service, required_file_name)
+            webViewURL = "https://drive.google.com/drive/folders/" + parent_Id
+            return await gdrive.edit(
+                f"`{status}`\n\n"
+                f" • `Name     :`\n    `{file_name}`\n"
+                " • `Status   :` **OK**\n"
+                f" • `URL      :`\n    [{file_name}]({webViewURL})\n"
+            )
     except Exception as e:
+        status = status.replace("DOWNLOAD]", "ERROR]")
         return await gdrive.edit(
-            "`[FILE - ERROR]`\n\n"
+            f"`{status}`\n\n"
             f" • `Name   :`\n    `{file_name}`\n"
             " • `Status :` **FAILED**\n"
             " • `Reason :` failed to upload.\n"
@@ -317,8 +329,42 @@ async def download(gdrive, service, uri=None):
     return
 
 
+async def create_dir(service, folder_name):
+    metadata = {
+        'name': folder_name,
+        'mimeType': 'application/vnd.google-apps.folder',
+    }
+    permission = {
+        "role": "reader",
+        "type": "anyone",
+        "allowFileDiscovery": True,
+        "value": None,
+    }
+    try:
+        if parent_Id is not None:
+            pass
+    except NameError:
+        """ - Fallback to G_DRIVE_FOLDER_ID else root dir - """
+        if G_DRIVE_FOLDER_ID is not None:
+            metadata['parents'] = [G_DRIVE_FOLDER_ID]
+    else:
+        """ - Override G_DRIVE_FOLDER_ID because parent_Id not empty - """
+        metadata['parents'] = [parent_Id]
+    folder = service.files().create(body=metadata, fields="id").execute()
+    folder_id = folder.get('id')
+    try:
+        service.permissions().create(fileId=folder_id, body=permission
+                                     ).execute()
+    except Exception:
+        pass
+    return folder_id
+
+
 async def upload(gdrive, service, file_path, file_name, mimeType):
-    await gdrive.edit("`Processing upload...`")
+    try:
+        await gdrive.edit("`Processing upload...`")
+    except Exception:
+        pass
     body = {
         "name": file_name,
         "description": "Uploaded from Telegram using ProjectBish userbot.",
@@ -383,6 +429,26 @@ async def upload(gdrive, service, file_path, file_name, mimeType):
     return viewURL, downloadURL
 
 
+async def task_directory(gdrive, service, folder_path):
+    global parent_Id
+    lists = os.listdir(folder_path)
+    if len(lists) == 0:
+        return parent_Id
+    root_parent_Id = None
+    for f in lists:
+        current_f_name = join(folder_path, f)
+        if isdir(current_f_name):
+            parent_Id = await create_dir(service, f)
+            root_parent_Id = await task_directory(gdrive,
+                                                  service, current_f_name)
+        else:
+            file_name = await get_raw_name(current_f_name)
+            mimeType = await get_mimeType(current_f_name)
+            await upload(gdrive, service, current_f_name, file_name, mimeType)
+            root_parent_Id = parent_Id
+    return root_parent_Id
+
+
 @register(pattern="^.gdf (mkdir|rm|chck)(.*)", outgoing=True)
 async def google_drive_managers(gdrive):
     """ - Google Drive folder/file management - """
@@ -439,8 +505,8 @@ async def google_drive_managers(gdrive):
             try:
                 service.permissions().create(
                    fileId=folder_id, body=permission).execute()
-            except HttpError as e:
-                return await gdrive.edit("`" + str(e) + "`")
+            except Exception:
+                pass
         await gdrive.edit(
             f"`{status}`\n\n"
             f" • `Name :`\n    `{f_name}`\n"
@@ -516,9 +582,9 @@ async def google_drive_managers(gdrive):
             status = "[FILE - EXIST]"
         msg = (
             f"`{status}`\n\n"
-            f" • `Name     :`\n    `{f_name}`\n"
-            f" • `ID       :` `{f_id}`\n"
-            f" • `URL      :`\n    [Open]({webViewLink})\n"
+            f" • `Name :`\n    `{f_name}`\n"
+            f" • `ID   :` `{f_id}`\n"
+            f" • `URL  :`\n    [Open]({webViewLink})\n"
         )
         if mimeType != "application/vnd.google-apps.folder":
             msg += f" • `Download :`\n    [{f_name}]({downloadURL})\n"
@@ -543,30 +609,37 @@ async def google_drive(gdrive):
             " • `Status :` **FAILED**\n"
             f" • `Reason :` Confused to upload file or the replied message/media."
         )
+    service = await create_app(gdrive)
     if isfile(value):
         file_path = value
         if file_path.endswith(".torrent"):
             uri = file_path
             file_path = None
     elif isdir(value):
+        folder_path = value
+        global parent_Id
+        folder_name = await get_raw_name(folder_path)
+        parent_Id = await create_dir(service, folder_name)
+        await task_directory(gdrive, service, folder_path)
+        webViewURL = "https://drive.google.com/drive/folders/" + parent_Id
         return await gdrive.edit(
-            "`[FOLDER - ERROR]`\n\n"
-            " • `Status :` **BAD**\n"
-            " • `Reason :` Folder upload not supported."
+            "`[FOLDER - UPLOAD]`\n\n"
+            f" • `Name     :`\n    `{folder_name}`\n"
+            " • `Status   :` **OK**\n"
+            f" • `URL      :`\n    [{folder_name}]({webViewURL})\n"
         )
     else:
         uri = re.findall(r'\bhttps?://.*\.\S+', value)
         if "magnet:?" in value:
             uri = [value]
+        if uri and not gdrive.reply_to_msg_id:
+            return await download(gdrive, service, uri)
         if not uri and not gdrive.reply_to_msg_id:
             return await gdrive.edit(
                 "`[VALUE - ERROR]`\n\n"
                 " • `Status :` **BAD**\n"
                 " • `Reason :` given value is not URL nor file path."
             )
-    service = await create_app(gdrive)
-    if uri and not gdrive.reply_to_msg_id:
-        return await download(gdrive, service, uri)
     if not file_path and gdrive.reply_to_msg_id:
         return await download(gdrive, service)
     mimeType = await get_mimeType(file_path)
@@ -662,7 +735,56 @@ async def set_upload_folder(gdrive):
                 " • `Status :` **OK**\n"
                 " • `Reason :` Successfully changed."
         )
-    return parent_Id
+
+
+async def check_progress_for_dl(gdrive, gid, previous):
+    complete = None
+    global filename
+    while not complete:
+        file = aria2.get_download(gid)
+        complete = file.is_complete
+        filename = file.name
+        try:
+            if not complete and not file.error_message:
+                msg = (
+                    "`[URI - DOWNLOAD]`\n\n"
+                    f"`Name        :` `{file.name}`\n"
+                    f"`Status` -> **{file.status.capitalize()}**\n"
+                    f"`Speed      :` {file.download_speed_string()}\n"
+                    f"`Progress   :` {file.progress_string()}\n"
+                    f"`Total Size :` {file.total_length_string()}\n"
+                    f"`ETA        :` {file.eta_string()}\n"
+                )
+                if msg != previous:
+                    await gdrive.edit(msg)
+                    msg = previous
+            else:
+                await gdrive.edit(f"`{msg}`")
+            await asyncio.sleep(5)
+            await check_progress_for_dl(gdrive, gid, previous)
+            file = aria2.get_download(gid)
+            complete = file.is_complete
+            if complete:
+                return await gdrive.edit(f"`{file.name}`\n\n"
+                                         "Successfully downloaded...")
+        except Exception as e:
+            if " not found" in str(e) or "'file'" in str(e):
+                await gdrive.edit(
+                     "`[URI - DOWNLOAD]`\n\n"
+                     f" • `Name   :` `{filename}`\n"
+                     " • `Status :` **OK**\n"
+                     " • `Reason :` Download cancelled."
+                )
+                await asyncio.sleep(2.5)
+                return await gdrive.delete()
+            elif " depth exceeded" in str(e):
+                file.remove(force=True)
+                await gdrive.edit(
+                    "`[URI - DOWNLOAD]`\n\n"
+                    f" • `Name   :` `{filename}`\n"
+                    " • `Status :` **BAD**\n"
+                    " • `Reason :` Auto cancelled download, URI/Torrent dead."
+                )
 
 
 CMD_HELP.update({
