@@ -20,6 +20,7 @@ RUN apk add --no-cache=true --update \
     g++ \
     git \
     aria2 \
+    docker \
     util-linux \
     libevent \
     jpeg-dev \
@@ -52,6 +53,8 @@ RUN apk add --no-cache=true --update \
     zlib-dev \
     jpeg \
     zip \
+    megatools \
+    nodejs \
     freetype-dev
 
 RUN python3 -m ensurepip \
@@ -64,9 +67,9 @@ RUN python3 -m ensurepip \
 #
 # Clone repo and prepare working directory
 #
-RUN git clone -b master https://github.com/adekmaulana/ProjectBish /home/projectbish/
-RUN mkdir /home/projectbish/bin/
-WORKDIR /home/projectbish/
+RUN git clone -b sql-extended https://github.com/goodmeow/OpenUbot /root/userbot
+RUN mkdir /root/userbot/bin/
+WORKDIR /root/userbot/
 
 #
 # Install requirements

@@ -20,6 +20,7 @@ heroku3
 httplib2
 humanize
 lxml
+#numpy
 oauth2client
 Pillow
 psycopg2
@@ -41,5 +42,6 @@ telethon-session-sqlalchemy
 urbandict
 wikipedia
 telegraph
+PyGithub
 python-dateutil
 git+https://github.com/johnwmillr/LyricsGenius.git

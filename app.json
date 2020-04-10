@@ -1,6 +1,7 @@
 {
-  "name": "Project Bish UserBot",
-  "description": "[projectbish] A modular Telegram userbot running on Python 3.8",
+  "name": "Telegram OpenUbot",
+  "description": "[OpenUbot] A modular Telegram userbot running on Python 3.8+ with an sqlalchemy database.",
+  "logo": "#",
   "keywords": [
     "telegram",
     "userbot",
@@ -8,8 +9,9 @@
     "modular",
     "productivity"
   ],
-  "repository": "https://github.com/adekmaulana/ProjectBish",
+  "repository": "https://github.com/goodmeow/OpenUbot",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
+  "success_url": "https://t.me/userbotindo",
   "stack": "container",
   "env": {
     "API_KEY": {
@@ -39,7 +41,7 @@
       "required": false
     },
     "UPSTREAM_REPO_BRANCH": {
-      "description": "Default branch of your custom fork repo.",
+      "description": "In case you maintain a fork, add your repo BRANCH here.",
       "required": false
     },
     "COUNTRY": {
@@ -135,7 +137,7 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
-      "value": "Hoooman",
+      "value": "pecinta shitpost @userbotindo",
       "required": false
     },
     "G_DRIVE_CLIENT_SECRET": {
