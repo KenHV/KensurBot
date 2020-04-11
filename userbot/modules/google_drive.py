@@ -265,11 +265,18 @@ async def download(gdrive, service, uri=None):
             )
         gid = downloads.gid
         await check_progress_for_dl(gdrive, gid, previous=None)
-        file = aria2.get_download(gid)
+        try:
+            file = aria2.get_download(gid)
+        except Exception as e:
+            LOGS.info(str(e))
+        filename = file.name
         if file.followed_by_ids:
             new_gid = await check_metadata(gid)
             await check_progress_for_dl(gdrive, new_gid, previous=None)
-        required_file_name = filename
+        try:
+            required_file_name = filenames
+        except Exception:
+            required_file_name = filename
     else:
         try:
             current_time = time.time()
@@ -754,11 +761,14 @@ async def set_upload_folder(gdrive):
 
 async def check_progress_for_dl(gdrive, gid, previous):
     complete = None
-    global filename
+    global filenames
     while not complete:
         file = aria2.get_download(gid)
         complete = file.is_complete
-        filename = file.name
+        try:
+            filenames = file.name
+        except IndexError:
+            pass
         try:
             if not complete and not file.error_message:
                 msg = (
@@ -787,7 +797,7 @@ async def check_progress_for_dl(gdrive, gid, previous):
                 try:
                     await gdrive.edit(
                          "`[URI - DOWNLOAD]`\n\n"
-                         f" • `Name   :` `{filename}`\n"
+                         f" • `Name   :` `{file.name}`\n"
                          " • `Status :` **OK**\n"
                          " • `Reason :` Download cancelled."
                     )
@@ -800,7 +810,7 @@ async def check_progress_for_dl(gdrive, gid, previous):
                 try:
                     await gdrive.edit(
                         "`[URI - DOWNLOAD]`\n\n"
-                        f" • `Name   :` `{filename}`\n"
+                        f" • `Name   :` `{file.name}`\n"
                         " • `Status :` **BAD**\n"
                         " • `Reason :` Auto cancelled download, URI/Torrent dead."
                     )
