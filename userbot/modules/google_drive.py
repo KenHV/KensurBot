@@ -647,8 +647,6 @@ async def google_drive(gdrive):
         uri = re.findall(r'\bhttps?://.*\.\S+', value)
         if "magnet:?" in value:
             uri = [value]
-        if uri and not gdrive.reply_to_msg_id:
-            return await download(gdrive, service, uri)
         if not uri and not gdrive.reply_to_msg_id:
             return await gdrive.edit(
                 "`[VALUE - ERROR]`\n\n"
@@ -657,6 +655,8 @@ async def google_drive(gdrive):
             )
     if not file_path and gdrive.reply_to_msg_id:
         return await download(gdrive, service)
+    if uri and not gdrive.reply_to_msg_id:
+        return await download(gdrive, service, uri)
     mimeType = await get_mimeType(file_path)
     file_name = await get_raw_name(file_path)
     viewURL, downloadURL = await upload(
