@@ -688,7 +688,7 @@ async def set_upload_folder(gdrive):
                 "    as parentId for next."
             )
         else:
-            parent_Id = None
+            del parent_Id
             return await gdrive.edit(
                 "`[FOLDER - SET]`\n\n"
                 " • `Status :` **OK**\n"
