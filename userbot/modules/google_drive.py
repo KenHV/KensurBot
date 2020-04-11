@@ -294,7 +294,7 @@ async def download(gdrive, service, uri=None):
         )
     mimeType = await get_mimeType(required_file_name)
     try:
-        status = "[FILE - DOWNLOAD]"
+        status = "[FILE - UPLOAD]"
         if isfile(required_file_name):
             result = await upload(gdrive, service, required_file_name,
                                   file_name, mimeType)
