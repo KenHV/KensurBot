@@ -722,7 +722,14 @@ async def set_upload_folder(gdrive):
                 " • `Status :` **OK**\n"
                 " • `Reason :` Successfully changed."
             )
-        parent_Id = inp
+        else:
+            await gdrive.edit(
+                "`[PARENT - FOLDER]`\n\n"
+                " • `Status :` **WARNING**\n"
+                " • `Reason :` given value doesn't seems folderId/folderURL."
+                "\n\n`Forcing to use it as parent_Id...`"
+            )
+            parent_Id = inp
     else:
         if "uc?id=" in ext_id:
             return await gdrive.edit(
