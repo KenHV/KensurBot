@@ -91,8 +91,8 @@ async def progress(current, total, gdrive, start, type_of_ps, file_name=None):
         time_to_completion = round((total - current) / speed) * 1000
         estimated_total_time = elapsed_time + time_to_completion
         progress_str = "`Downloading...` | [{0}{1}] `{2}%`\n".format(
-            ''.join(["#" for i in range(math.floor(percentage / 10))]),
-            ''.join(["**-**" for i in range(10 - math.floor(percentage / 10))]),
+            ''.join(["#" for i in range(math.floor(percentage / 5))]),
+            ''.join(["**-**" for i in range(20 - math.floor(percentage / 5))]),
             round(percentage, 2))
         tmp = (progress_str + "\n" +
                f"{humanbytes(current)} of {humanbytes(total)}\n"
@@ -399,25 +399,34 @@ async def upload(gdrive, service, file_path, file_name, mimeType):
         resumable=True
     )
     """ - Start upload process - """
-    response = None
-    display_message = None
     file = service.files().create(body=body, media_body=media_body,
                                   fields="id, webContentLink, webViewLink")
+    current_time = time.time()
+    response = None
+    display_message = None
     while response is None:
         status, response = file.next_chunk()
         await asyncio.sleep(0.3)
         if status:
-            percentage = int(status.progress() * 100)
+            file_size = status.total_size
+            diff = time.time() - current_time
+            uploaded = status.resumable_progress
+            percentage = uploaded / file_size * 100
+            speed = round(uploaded / diff, 2)
+            eta = round((file_size - uploaded) / speed)
             prog_str = "`Uploading...` | [{0}{1}] `{2}%`".format(
-                "".join(["#" for i in range(math.floor(percentage / 10))]),
+                "".join(["#" for i in range(math.floor(percentage / 5))]),
                 "".join(["**-**"
-                         for i in range(10 - math.floor(percentage / 10))]),
+                         for i in range(20 - math.floor(percentage / 5))]),
                 round(percentage, 2))
             current_message = (
                 "`[FILE - UPLOAD]`\n\n"
-                f" • `Name   :` `{file_name}`\n"
-                " • `Status :`\n"
-                f"    {prog_str}"
+                f"`Name  :`\n`{file_name}`\n\n"
+                "`Status :`\n"
+                f"{prog_str}\n"
+                f"`{humanbytes(uploaded)} of {humanbytes(file_size)} "
+                f"@ {humanbytes(speed)}`\n"
+                f"`ETA` -> {time_formatter(eta)}"
             )
             if display_message != current_message:
                 try:
@@ -779,9 +788,9 @@ async def check_progress_for_dl(gdrive, gid, previous):
             if not complete and not file.error_message:
                 percentage = int(file.progress)
                 prog_str = "`Downloading...` | [{0}{1}] `{2}`".format(
-                    "".join(["#" for i in range(math.floor(percentage / 10))]),
+                    "".join(["#" for i in range(math.floor(percentage / 5))]),
                     "".join(["**-**"
-                             for i in range(10 - math.floor(percentage / 10))]),
+                             for i in range(20 - math.floor(percentage / 5))]),
                     file.progress_string())
                 msg = (
                     "`[URI - DOWNLOAD]`\n\n"
