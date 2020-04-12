@@ -101,7 +101,8 @@ async def variable(var):
                     f"     • `{value}`\n\n"
                     "`Successfully changed...`"
                 )
-            return await var.edit("`Information sets...`")
+            await var.edit("`Information sets...`")
+            heroku_var[variable] = value
         else:
             if BOTLOG:
                 await var.client.send_message(
@@ -114,7 +115,6 @@ async def variable(var):
                     "`Successfully added...`"
                 )
             return await var.edit("`Information added...`")
-        heroku_var[variable] = value
     elif exe == "del":
         await var.edit("`Getting and setting information...`")
         try:
@@ -132,7 +132,7 @@ async def variable(var):
                     f"     • `{value}`\n\n"
                     "`Successfully deleted...`"
                 )
-            return await var.edit("`Information deleted...`")
+            await var.edit("`Information deleted...`")
             del heroku_var[variable]
         else:
             await var.edit(f"`Can't get information...`")
