@@ -241,34 +241,17 @@ async def download(gdrive, service, uri=None):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
         required_file_name = None
     if uri:
-        try:
-            if uri.endswith(".torrent"):
-                pass
-        except AttributeError:
-            torrent = False
+        if ".torrent" in uri:
+            downloads = aria2.add_torrent(uri,
+                                          uris=None,
+                                          options=None,
+                                          position=None)
         else:
-            torrent = True
-        try:
-            if torrent is True:
-                downloads = aria2.add_torrent(uri,
-                                              uris=None,
-                                              options=None,
-                                              position=None)
-            else:
-                downloads = aria2.add_uris(uri, options=None, position=None)
-        except Exception as e:
-            return await gdrive.edit(
-                "`[FILE - ERROR]`\n\n"
-                " • `Status :` **FAILED**\n"
-                " • `Reason :` Download failed.\n"
-                f"    `{str(e)}`"
-            )
+            uri = [uri]
+            downloads = aria2.add_uris(uri, options=None, position=None)
         gid = downloads.gid
         await check_progress_for_dl(gdrive, gid, previous=None)
-        try:
-            file = aria2.get_download(gid)
-        except Exception as e:
-            LOGS.info(str(e))
+        file = aria2.get_download(gid)
         filename = file.name
         if file.followed_by_ids:
             new_gid = await check_metadata(gid)
@@ -303,9 +286,9 @@ async def download(gdrive, service, uri=None):
     try:
         status = "[FILE - UPLOAD]"
         if isfile(required_file_name):
-            result = await upload(gdrive, service, required_file_name,
-                                  file_name, mimeType)
-            return await gdrive.edit(
+            result = await upload(
+                     gdrive, service, required_file_name, file_name, mimeType)
+            return await gdrive.respond(
                 f"`{status}`\n\n"
                 f" • `Name     :` `{file_name}`\n"
                 " • `Status   :` **OK**\n"
@@ -659,9 +642,8 @@ async def google_drive(gdrive):
             f" • `URL      :` [{folder_name}]({webViewURL})\n"
         )
     else:
-        uri = re.findall(r'\bhttps?://.*\.\S+', value)
-        if "magnet:?" in value:
-            uri = [value]
+        if re.findall(r'\bhttps?://.*\.\S+', value) or "magnet:?" in value:
+            uri = value.split()
         if not uri and not gdrive.reply_to_msg_id:
             return await gdrive.edit(
                 "`[VALUE - ERROR]`\n\n"
@@ -671,7 +653,16 @@ async def google_drive(gdrive):
     if not file_path and gdrive.reply_to_msg_id:
         return await download(gdrive, service)
     if uri and not gdrive.reply_to_msg_id:
-        return await download(gdrive, service, uri)
+        for dl in uri:
+            try:
+                await download(gdrive, service, dl)
+            except Exception as e:
+                """ - If cancelled, cancel all download queue - """
+                if " not found" in str(e) or "'file'" in str(e):
+                    return await gdrive.edit("`Cancelled download...`")
+                """ - if something bad happened, continue to next uri - """
+                continue
+        return
     mimeType = await get_mimeType(file_path)
     file_name = await get_raw_name(file_path)
     viewURL, downloadURL = await upload(
@@ -799,7 +790,7 @@ async def check_progress_for_dl(gdrive, gid, previous):
                     f"{prog_str}\n"
                     f"`{file.total_length_string()} "
                     f"@ {file.download_speed_string()}`\n"
-                    f"`ETA  :` {file.eta_string()}\n"
+                    f"`ETA` -> {file.eta_string()}\n"
                 )
                 if msg != previous:
                     await gdrive.edit(msg)
@@ -812,7 +803,8 @@ async def check_progress_for_dl(gdrive, gid, previous):
             complete = file.is_complete
             if complete:
                 return await gdrive.edit(f"`{file.name}`\n\n"
-                                         "Successfully downloaded...")
+                                         "Successfully downloaded,\n"
+                                         "Initializing upload...")
         except Exception as e:
             if " not found" in str(e) or "'file'" in str(e):
                 try:
