@@ -662,7 +662,7 @@ async def google_drive(gdrive):
                     return await gdrive.edit("`Cancelled download...`")
                 """ - if something bad happened, continue to next uri - """
                 continue
-        return
+        return await gdrive.delete()
     mimeType = await get_mimeType(file_path)
     file_name = await get_raw_name(file_path)
     viewURL, downloadURL = await upload(
