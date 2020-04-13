@@ -241,7 +241,7 @@ async def download(gdrive, service, uri=None):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
         required_file_name = None
     if uri:
-        if ".torrent" in uri:
+        if isfile(uri) and uri.endswith(".torrent"):
             downloads = aria2.add_torrent(uri,
                                           uris=None,
                                           options=None,
