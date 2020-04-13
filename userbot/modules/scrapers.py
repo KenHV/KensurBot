@@ -94,7 +94,7 @@ async def carbon_api(e):
         }
     }
     driver.execute("send_command", params)
-    driver.find_element_by_xpath("//button[contains(text(),'Export')]").click()
+    driver.find_element_by_xpath("//button[@id='export-menu']").click()
     driver.find_element_by_xpath("//button[contains(text(),'4x')]").click()
     driver.find_element_by_xpath("//button[contains(text(),'PNG')]").click()
     await e.edit("`Processing..\n75%`")
