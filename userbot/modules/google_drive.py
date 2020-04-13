@@ -293,7 +293,8 @@ async def download(gdrive, service, uri=None):
                 f" • `Name     :` `{file_name}`\n"
                 " • `Status   :` **OK**\n"
                 f" • `URL      :` [{file_name}]({result[0]})\n"
-                f" • `Download :` [{file_name}]({result[1]})"
+                f" • `Download :` [{file_name}]({result[1]})",
+                link_preview=False
             )
         else:
             status = status.replace("[FILE", "[FOLDER")
