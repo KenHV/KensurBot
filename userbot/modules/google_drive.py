@@ -659,7 +659,8 @@ async def google_drive(gdrive):
             except Exception as e:
                 """ - If cancelled, cancel all download queue - """
                 if " not found" in str(e) or "'file'" in str(e):
-                    return await gdrive.edit("`Cancelled download...`")
+                    await asyncio.sleep(2.5)
+                    return await gdrive.delete()
                 """ - if something bad happened, continue to next uri - """
                 continue
         return await gdrive.delete()
@@ -806,19 +807,7 @@ async def check_progress_for_dl(gdrive, gid, previous):
                                          "Successfully downloaded,\n"
                                          "Initializing upload...")
         except Exception as e:
-            if " not found" in str(e) or "'file'" in str(e):
-                try:
-                    await gdrive.edit(
-                         "`[URI - DOWNLOAD]`\n\n"
-                         f" • `Name   :` `{file.name}`\n"
-                         " • `Status :` **OK**\n"
-                         " • `Reason :` Download cancelled."
-                    )
-                except Exception:
-                    pass
-                await asyncio.sleep(2.5)
-                return await gdrive.delete()
-            elif " depth exceeded" in str(e):
+            if " depth exceeded" in str(e):
                 file.remove(force=True)
                 try:
                     await gdrive.edit(
