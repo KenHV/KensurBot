@@ -109,10 +109,6 @@
       "description": "When a new person joins, the old welcome message is deleted.",
       "value": "True"
     },
-    "G_DRIVE_CLIENT_ID": {
-      "description": "Enter Your Client ID for Google Drive.",
-      "required": false
-    },
     "LASTFM_API": {
       "description": "API Key for Last.FM module. [Get one from - https://www.last.fm/api/account/create]",
       "required": false
@@ -138,8 +134,8 @@
       "value": "Hoooman",
       "required": false
     },
-    "G_DRIVE_CLIENT_SECRET": {
-      "description": "Enter Your Client Secret for Google Drive.",
+    "G_DRIVE_DATA": {
+      "description": "Your client_secret.json.",
       "required": false
     },
     "G_DRIVE_AUTH_TOKEN_DATA": {
