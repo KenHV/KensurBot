@@ -127,9 +127,7 @@ async def variable(var):
                     BOTLOG_CHATID, "#DELCONFIGVAR\n\n"
                     "**Delete ConfigVar**:\n"
                     " -> `Config Variable`:\n"
-                    f"     • `{variable}`\n"
-                    " -> `Value`:\n"
-                    f"     • `{value}`\n\n"
+                    f"     • `{variable}`\n\n"
                     "`Successfully deleted...`"
                 )
             await var.edit("`Information deleted...`")
