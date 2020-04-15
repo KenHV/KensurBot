@@ -68,18 +68,16 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
 
 
-def time_formatter(milliseconds: int) -> str:
+def time_formatter(seconds: int) -> str:
     """Inputs time in milliseconds, to get beautified time,
     as string"""
-    seconds, milliseconds = divmod(int(milliseconds), 1000)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = ((str(days) + " day(s), ") if days else "") + \
         ((str(hours) + " hour(s), ") if hours else "") + \
         ((str(minutes) + " minute(s), ") if minutes else "") + \
-        ((str(seconds) + " second(s), ") if seconds else "") + \
-        ((str(milliseconds) + " millisecond(s), ") if milliseconds else "")
+        ((str(seconds) + " second(s), ") if seconds else "")
     return tmp[:-2]
 
 
