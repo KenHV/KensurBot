@@ -117,6 +117,12 @@ async def generate_credentials(gdrive):
         await gdrive.edit("`You already authorized token...`")
         await asyncio.sleep(1.5)
         return await gdrive.delete()
+    """ - Abort if user don't have heroku credentials - """
+    if None in [HEROKU_API_KEY or HEROKU_APP_NAME]:
+        return await gdrive.edit(
+            "`Invalid heroku credentials...`\n\n"
+            "`Please set HEROKU_API_KEY and HEROKU_APP_NAME first.`"
+        )
     """ - Generate credentials - """
     if G_DRIVE_DATA is not None:
         configs = json.loads(G_DRIVE_DATA)
@@ -155,22 +161,19 @@ async def generate_credentials(gdrive):
         await gdrive.client.delete_messages(BOTLOG_CHATID, r.id)
         """ - Unpack credential objects into strings - """
         creds = base64.b64encode(pickle.dumps(creds)).decode()
-    if HEROKU_API_KEY is None or HEROKU_APP_NAME is None:
-        await gdrive.edit(
-            "**HEROKU_APP_NAME** `and` **HEROKU_API_KEY**\n"
-            "`is empty please setup first...`"
-        )
-        await asyncio.sleep(1.5)
-        gdrive.delete()
-    else:
         await gdrive.edit("`Credentials created...`")
-        heroku = heroku3.from_key(HEROKU_API_KEY)
-        heroku_configvars = heroku.app(HEROKU_APP_NAME).config()
-        await gdrive.respond("`Restarting in 3s to initialize token...`")
-        await asyncio.sleep(3)
-        await gdrive.delete()
-        heroku_configvars["G_DRIVE_AUTH_TOKEN_DATA"] = creds
-    return
+    heroku = heroku3.from_key(HEROKU_API_KEY)
+    configvars = heroku.app(HEROKU_APP_NAME).config()
+    msg = await gdrive.respond("`Restarting in 3s to initialize token...`")
+    await asyncio.sleep(1)
+    sleep = 1
+    while (sleep <= 3):
+        await msg.edit(f"`{sleep}`")
+        await asyncio.sleep(1)
+        sleep += 1
+    await gdrive.client.delete_messages(gdrive.chat_id, msg.id)
+    await gdrive.delete()
+    return await save_credentials(configvars, creds)
 
 
 async def create_app(gdrive):
@@ -190,6 +193,11 @@ async def create_app(gdrive):
                 "`Credentials is empty, please generate it...`")
     service = build('drive', 'v3', credentials=creds, cache_discovery=False)
     return service
+
+
+async def save_credentials(configvars, creds):
+    """ - Save into heroku ConfigVars - """
+    configvars["G_DRIVE_AUTH_TOKEN_DATA"] = creds
 
 
 async def get_raw_name(file_path):
@@ -375,7 +383,7 @@ async def upload(gdrive, service, file_path, file_name, mimeType):
                 round(percentage, 2))
             current_message = (
                 "`[FILE - UPLOAD]`\n\n"
-                f"`Name  :`\n`{file_name}`\n\n"
+                f"`Name   :`\n`{file_name}`\n\n"
                 "`Status :`\n"
                 f"{prog_str}\n"
                 f"`{humanbytes(uploaded)} of {humanbytes(file_size)} "
