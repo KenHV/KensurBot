@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ - ProjectBish Google Drive managers - """
+import io
 import os
 import pickle
 import base64
@@ -32,7 +33,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.transport.requests import Request
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 from userbot import (
     G_DRIVE_DATA, G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET,
@@ -308,6 +309,108 @@ async def download(gdrive, service, uri=None):
             f"    `{str(e)}`"
         )
     return
+
+
+async def download_gdrive(gdrive, service, uri):
+    """ - remove drivesdk and export=download from link - """
+    if not isdir(TEMP_DOWNLOAD_DIRECTORY):
+        os.mkdir(TEMP_DOWNLOAD_DIRECTORY)
+    if "&export=download" in uri:
+        uri = uri.split("&export=download")[0]
+    elif "file/d/" in uri and "/view" in uri:
+        uri = uri.split("?usp=drivesdk")[0]
+    try:
+        file_Id = uri.split("uc?id=")[1]
+    except IndexError:
+        try:
+            file_Id = uri.split("open?id=")[1]
+        except IndexError:
+            try:
+                if "/view" in uri:
+                    file_Id = uri.split("/")[-2]
+            except IndexError:
+                """ - if error parse in url, assume given value is Id - """
+                file_Id = uri
+    file = service.files().get(fileId=file_Id,
+                               fields='name, mimeType').execute()
+    file_name = file.get('name')
+    mimeType = file.get('mimeType')
+    if mimeType == 'application/vnd.google-apps.folder':
+        return await gdrive.edit("`Aborting, folder download not support`")
+    file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
+    request = service.files().get_media(fileId=file_Id)
+    with io.FileIO(file_path, 'wb') as df:
+        downloader = MediaIoBaseDownload(df, request)
+        complete = False
+        current_time = time.time()
+        display_message = None
+        while complete is False:
+            status, complete = downloader.next_chunk()
+            if status:
+                file_size = status.total_size
+                diff = time.time() - current_time
+                downloaded = status.resumable_progress
+                percentage = downloaded / file_size * 100
+                speed = round(downloaded / diff, 2)
+                eta = round((file_size - downloaded) / speed)
+                prog_str = "`Downloading...` | [{0}{1}] `{2}%`".format(
+                    "".join(["#" for i in range(math.floor(percentage / 5))]),
+                    "".join(["**-**"
+                             for i in range(20 - math.floor(percentage / 5))]),
+                    round(percentage, 2))
+                current_message = (
+                    "`[FILE - DOWNLOAD]`\n\n"
+                    f"`Name   :`\n`{file_name}`\n\n"
+                    "`Status :`\n"
+                    f"{prog_str}\n"
+                    f"`{humanbytes(downloaded)} of {humanbytes(file_size)} "
+                    f"@ {humanbytes(speed)}`\n"
+                    f"`ETA` -> {time_formatter(eta)}"
+                )
+                if display_message != current_message:
+                    try:
+                        await gdrive.edit(current_message)
+                        display_message = current_message
+                    except Exception:
+                        pass
+        await gdrive.edit(
+            "`[FILE - DOWNLOAD]`\n\n"
+            f"`Name   :`\n`{file_name}`\n\n"
+            f"`Path   :` `{file_path}`\n"
+            "`Status :` **OK**\n"
+            "`Reason :` Successfully downloaded..."
+        )
+        msg = await gdrive.respond("`Answer the question in your BOTLOG group`")
+    async with gdrive.client.conversation(BOTLOG_CHATID) as conv:
+        ask = await conv.send_message("`Proceed with mirroring? [y/N]`")
+        try:
+            r = conv.wait_event(
+              events.NewMessage(outgoing=True, chats=BOTLOG_CHATID))
+            r = await r
+        except Exception:
+            ans = 'N'
+        else:
+            ans = r.message.message.strip()
+            await gdrive.client.delete_messages(BOTLOG_CHATID, r.id)
+        await gdrive.client.delete_messages(gdrive.chat_id, msg.id)
+        await gdrive.client.delete_messages(BOTLOG_CHATID, ask.id)
+    if ans.capitalize() == 'N':
+        return
+    elif ans.capitalize() == "Y":
+        result = await upload(gdrive, service, file_path, file_name, mimeType)
+        await gdrive.respond(
+            "`[FILE - UPLOAD]`\n\n"
+            f" • `Name     :` `{file_name}`\n"
+            " • `Status   :` **OK**\n"
+            f" • `URL      :` [{file_name}]({result[0]})\n"
+            f" • `Download :` [{file_name}]({result[1]})"
+        )
+        return await gdrive.delete()
+    else:
+        return await gdrive.client.send_message(
+            BOTLOG_CHATID,
+            "`Invalid answer type [Y/N] only...`"
+        )
 
 
 async def create_dir(service, folder_name):
@@ -638,7 +741,24 @@ async def google_drive(gdrive):
         )
     else:
         if re.findall(r'\bhttps?://.*\.\S+', value) or "magnet:?" in value:
-            uri = value.split()
+            try:
+                uri = re.findall(r'\bhttps?://drive\.google\.com\S+', value)[0]
+            except IndexError:
+                uri = value.split()
+            else:
+                """ - Link is google drive fallback to download - """
+                return await download_gdrive(gdrive, service, uri)
+        else:
+            if any(map(str.isdigit, value)):
+                one = True
+            else:
+                one = False
+            if "-" in value or "_" in value:
+                two = True
+            else:
+                two = False
+            if True in [one or two]:
+                return await download_gdrive(gdrive, service, value)
         if not uri and not gdrive.reply_to_msg_id:
             return await gdrive.edit(
                 "`[VALUE - ERROR]`\n\n"
