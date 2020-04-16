@@ -10,7 +10,8 @@
 <p align="center"><a href="https://heroku.com/deploy?template=https://github.com/goodmeow/OpenUbot/tree/sql-extended"> <img src="#" alt="Deploy to Heroku" /></a></p>
 <p align="center">&nbsp;</p>
 <h2 align="center">Credits</h2>
-<p align="center">Huge thanks to <a href="https://github.com/goodmeow/OpenUbot/graphs/contributors">everyone</a> who have helped make this userbot awesome!!</p>
+<p align="center">Special thanks to <a href="https://lonami.dev/">lonami</a> for creating <a href="https://github.com/lonamiwebs/Telethon">Telethon</a>
+<p align="center">Huge thanks to <a href="https://github.com/adekmaulana/ProjectBish/graphs/contributors">everyone</a> who have helped make this userbot awesome!!</p>
 <p align="center">&nbsp;</p>
 <h2 align="center">Updates and Support</h2>
 <p align="center">join our <a href="https://t.me/userbotindo">Telegram Support Group</a> for help and support!</p>

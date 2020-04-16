@@ -13,8 +13,8 @@ from userbot import CMD_HELP
 from userbot.events import register
 
 GITHUB = 'https://github.com'
-DEVICES_DATA = 'https://raw.githubusercontent.com/androidtrackers/' \
-               'certified-android-devices/master/devices.json'
+DEVICES_DATA = ('https://raw.githubusercontent.com/androidtrackers/'
+                'certified-android-devices/master/by_device.json')
 
 
 @register(outgoing=True, pattern="^.magisk$")
@@ -50,22 +50,20 @@ async def device_info(request):
         device = textx.text
     else:
         return await request.edit("`Usage: .device <codename> / <model>`")
-    found = [
-        i for i in get(DEVICES_DATA).json()
-        if i["device"] == device or i["model"] == device
-    ]
-    if found:
+    try:
+        found = get(DEVICES_DATA).json()[device]
+    except KeyError:
+        reply = f"`Couldn't find info about {device}!`\n"
+    else:
         reply = f'Search results for {device}:\n\n'
         for item in found:
             brand = item['brand']
             name = item['name']
-            codename = item['device']
+            codename = device
             model = item['model']
             reply += f'{brand} {name}\n' \
                 f'**Codename**: `{codename}`\n' \
                 f'**Model**: {model}\n\n'
-    else:
-        reply = f"`Couldn't find info about {device}!`\n"
     await request.edit(reply)
 
 
