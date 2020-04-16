@@ -4,10 +4,12 @@
 # you may not use this file except in compliance with the License.
 
 import aria2p
+import math
 from asyncio import sleep
 from subprocess import PIPE, Popen
 from userbot import LOGS, CMD_HELP
 from userbot.events import register
+from userbot.modules.upload_download import humanbytes
 from requests import get
 
 
@@ -180,12 +182,21 @@ async def check_progress_for_dl(gid, event, previous):
         complete = file.is_complete
         try:
             if not complete and not file.error_message:
-                msg = f"\nDownloading File Name:\n`{file.name}`\n\n"
-                msg += f"`Status`\n**{file.status.capitalize()}**\n"
-                msg += f"`Speed      :` {file.download_speed_string()}\n"
-                msg += f"`Progress   :` {file.progress_string()}\n"
-                msg += f"`Total Size :` {file.total_length_string()}\n"
-                msg += f"`ETA        :` {file.eta_string()}\n"
+                percentage = int(file.progress)
+                downloaded = percentage * int(file.total_length) / 100
+                prog_str = "`Downloading` | [{0}{1}] `{2}`".format(
+                    "".join(["**#**" for i in range(math.floor(percentage / 5))]),
+                    "".join(["**--**"
+                             for i in range(20 - math.floor(percentage / 5))]),
+                    file.progress_string())
+                msg = (
+                    f"`Name :`\n`{file.name}`\n"
+                    f"`Status` -> **{file.status.capitalize()}**\n"
+                    f"{prog_str}\n"
+                    f"`{humanbytes(downloaded)} of {file.total_length_string()}"
+                    f" @ {file.download_speed_string()}`\n"
+                    f"`ETA` -> {file.eta_string()}\n"
+                )
                 if msg != previous:
                     await event.edit(msg)
                     msg = previous
