@@ -79,9 +79,29 @@ async def variable(var):
             except IndexError:
                 return await var.edit(">`.set var <ConfigVars-name> <value>`")
         if variable in heroku_var:
-            await var.edit(f"**{variable}** `successfully changed to` > **{value}**")
+            if BOTLOG:
+                await var.client.send_message(
+                    BOTLOG_CHATID, "#SETCONFIGVAR\n\n"
+                    "**Set ConfigVar**:\n"
+                    " -> `Config Variable`:\n"
+                    f"     • `{variable}`\n"
+                    " -> `Value`:\n"
+                    f"     • `{value}`\n\n"
+                    "`Successfully changed...`"
+                )
+            await var.edit("`Information sets...`")
         else:
-            await var.edit(f"**{variable}** `successfully added with value` > **{value}**")
+            if BOTLOG:
+                await var.client.send_message(
+                    BOTLOG_CHATID, "#ADDCONFIGVAR\n\n"
+                    "**Add ConfigVar**:\n"
+                    " -> `Config Variable`:\n"
+                    f"     • `{variable}`\n"
+                    " -> `Value`:\n"
+                    f"     • `{value}`\n\n"
+                    "`Successfully added...`"
+                )
+            await var.edit("`Information added...`")
         heroku_var[variable] = value
     elif exe == "del":
         await var.edit("`Getting information to deleting variable...`")
