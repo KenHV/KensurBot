@@ -13,8 +13,8 @@ import os
 import lyricsgenius
 
 from userbot.events import register
-from userbot import CMD_HELP, GENIUS
-
+from userbot import (CMD_HELP, GENIUS, lastfm, LASTFM_USERNAME)
+from pylast import User
 
 @register(outgoing=True, pattern="^.lyrics(?: |$)(.*)")
 async def lyrics(lyric):
@@ -56,7 +56,7 @@ async def lyrics(lyric):
             lyric.chat_id,
             "lyrics.txt",
             reply_to=lyric.id,
-            )
+        )
         os.remove("lyrics.txt")
     else:
         await lyric.edit(f"**Search query**: \n`{artist} - {song}`"
@@ -64,8 +64,38 @@ async def lyrics(lyric):
     return
 
 
+@register(outgoing=True, pattern="^.current_lyrics(?: |$)(.*)")
+async def current_lyrics(lyric):
+    genius = lyricsgenius.Genius(GENIUS)
+
+    playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
+    song = playing.get_title()
+    artist = playing.get_artist()
+    try:
+        songs = genius.search_song(song, artist)
+    except TypeError:
+        songs = None
+    if songs is None:
+        return await lyric.edit(f"Song **{artist} - {song}** not found!")
+    if len(songs.lyrics) > 4096:
+        await lyric.edit("`Lyrics is too big, view the file to see it.`")
+        with open("lyrics.txt", "w+") as f:
+            f.write(f"Search query: \n{artist} - {song}\n\n{songs.lyrics}")
+        await lyric.client.send_file(
+            lyric.chat_id,
+            "lyrics.txt",
+            reply_to=lyric.id,
+        )
+        os.remove("lyrics.txt")
+    else:
+        await lyric.edit(f"`{artist} - {song}`"
+                         f"\n\n```{songs.lyrics}```")
+
+
 CMD_HELP.update({
     "lyrics":
     ">`.lyrics <artist name> - <song name>`"
     "\nUsage: Get lyrics for song"
+    "\n>`.current_lyrics`"
+    "\nget current playing song lyrics (uses lastfm)"
 })
