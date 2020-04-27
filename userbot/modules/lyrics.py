@@ -16,67 +16,32 @@ from userbot.events import register
 from userbot import (CMD_HELP, GENIUS, lastfm, LASTFM_USERNAME)
 from pylast import User
 
-@register(outgoing=True, pattern="^.lyrics(?: |$)(.*)")
-async def lyrics(lyric):
-    if r"-" in lyric.text:
-        pass
-    else:
-        return await lyric.edit("`Aborted: Please use '-' as divider for **<artist> "
-                                "& <song name>**`\neg: `Nicki Minaj - Super Bass`")
-
-    if GENIUS is None:
-        return await lyric.edit(
-            "`Provide genius access token to Heroku Var first kthxbye!`")
-    else:
-        genius = lyricsgenius.Genius(GENIUS)
-        try:
-            args = lyric.text.split('.lyrics')[1].split('-')
-            artist = args[0].strip(' ')
-            song = args[1].strip(' ')
-        except Exception:
-            return await lyric.edit("`LMAO please provide artist and song names`")
-
-    if len(args) < 1:
-        return await lyric.edit("`Please provide artist and song names`")
-
-    await lyric.edit(f"`Searching lyrics for {artist} - {song}...`")
-
-    try:
-        songs = genius.search_song(song, artist)
-    except TypeError:
-        songs = None
-
-    if songs is None:
-        return await lyric.edit(f"Song **{artist} - {song}** not found!")
-    if len(songs.lyrics) > 4096:
-        await lyric.edit("`Lyrics is too big, view the file to see it.`")
-        with open("lyrics.txt", "w+") as f:
-            f.write(f"Search query: \n{artist} - {song}\n\n{songs.lyrics}")
-        await lyric.client.send_file(
-            lyric.chat_id,
-            "lyrics.txt",
-            reply_to=lyric.id,
-        )
-        os.remove("lyrics.txt")
-    else:
-        await lyric.edit(f"**Search query**: \n`{artist} - {song}`"
-                         f"\n\n```{songs.lyrics}```")
-    return
-
-
-@register(outgoing=True, pattern="^.current_lyrics(?: |$)(.*)")
-async def current_lyrics(lyric):
+if GENIUS is not None:
     genius = lyricsgenius.Genius(GENIUS)
 
-    playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
-    song = playing.get_title()
-    artist = playing.get_artist()
+
+@register(outgoing=True, pattern="^.lyrics (?:(now)|(.*) - (.*))")
+async def lyrics(lyric):
+    await lyric.edit("`Getting information...`")
+    if GENIUS is None:
+        return await lyric.edit(
+            "`Provide genius access token to Heroku ConfigVars...`")
+    if lyric.pattern_match.group(1) == "now":
+        playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
+        if playing is None:
+            return await lyric.edit(
+                "`No information current lastfm scrobbling...`"
+            )
+        artist = playing.get_artist()
+        song = playing.get_title()
+    else:
+        artist = lyric.pattern_match.group(2)
+        song = lyric.pattern_match.group(3)
+    await lyric.edit(f"`Searching lyrics for {artist} - {song}...`")
     try:
         songs = genius.search_song(song, artist)
     except TypeError:
-        songs = None
-    if songs is None:
-        return await lyric.edit(f"Song **{artist} - {song}** not found!")
+        return await lyric.edit(f"`Song` **{artist} - {song}** `not found...`")
     if len(songs.lyrics) > 4096:
         await lyric.edit("`Lyrics is too big, view the file to see it.`")
         with open("lyrics.txt", "w+") as f:
@@ -86,16 +51,18 @@ async def current_lyrics(lyric):
             "lyrics.txt",
             reply_to=lyric.id,
         )
-        os.remove("lyrics.txt")
+        return os.remove("lyrics.txt")
     else:
-        await lyric.edit(f"`{artist} - {song}`"
-                         f"\n\n```{songs.lyrics}```")
+        return await lyric.edit(
+            f"**Search query**:\n`{artist}` - `{song}`"
+            f"\n\n```{songs.lyrics}```"
+        )
 
 
 CMD_HELP.update({
     "lyrics":
-    ">`.lyrics <artist name> - <song name>`"
-    "\nUsage: Get lyrics for song"
-    "\n>`.current_lyrics`"
-    "\nget current playing song lyrics (uses lastfm)"
+    ">`.lyrics` **<artist name> - <song name>**"
+    "\nUsage: Get lyrics matched artist and song."
+    "\n\n>`.lyrics now`"
+    "\nUsage: Get lyrics artist and song from current last scrobbling."
 })
