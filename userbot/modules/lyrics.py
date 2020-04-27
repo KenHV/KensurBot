@@ -38,9 +38,8 @@ async def lyrics(lyric):
         artist = lyric.pattern_match.group(2)
         song = lyric.pattern_match.group(3)
     await lyric.edit(f"`Searching lyrics for {artist} - {song}...`")
-    try:
-        songs = genius.search_song(song, artist)
-    except TypeError:
+    songs = genius.search_song(song, artist)
+    if songs is None:
         return await lyric.edit(f"`Song` **{artist} - {song}** `not found...`")
     if len(songs.lyrics) > 4096:
         await lyric.edit("`Lyrics is too big, view the file to see it.`")
