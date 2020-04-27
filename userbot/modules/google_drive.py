@@ -23,7 +23,11 @@ import asyncio
 import math
 import time
 import re
-import heroku3
+import logging
+
+import userbot.modules.sql_helper.google_drive_sql as helper
+
+from userbot.modules.sql_helper import delete_table
 from os.path import isfile, isdir, join
 from mimetypes import guess_type
 
@@ -37,9 +41,7 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 from userbot import (
     G_DRIVE_DATA, G_DRIVE_CLIENT_ID, G_DRIVE_CLIENT_SECRET,
-    G_DRIVE_FOLDER_ID, G_DRIVE_AUTH_TOKEN_DATA,
-    HEROKU_API_KEY, HEROKU_APP_NAME, BOTLOG_CHATID,
-    TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS,
+    G_DRIVE_FOLDER_ID, BOTLOG_CHATID, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS,
 )
 from userbot.events import register
 from userbot.modules.upload_download import humanbytes, time_formatter
@@ -92,6 +94,11 @@ if __ is not None:
                            "G_DRIVE_FOLDER_ID not valid...")
                         G_DRIVE_FOLDER_ID = None
 # =========================================================== #
+#                           LOG                               #
+# =========================================================== #
+logger = logging.getLogger('googleapiclient.discovery')
+logger.setLevel(logging.ERROR)
+# =========================================================== #
 #                                                             #
 # =========================================================== #
 
@@ -126,16 +133,10 @@ async def progress(current, total, gdrive, start, type_of_ps, file_name=None):
 @register(pattern="^.gdauth(?: |$)", outgoing=True)
 async def generate_credentials(gdrive):
     """ - Only generate once for long run - """
-    if G_DRIVE_AUTH_TOKEN_DATA is not None:
+    if helper.get_credentials(str(gdrive.from_id)) is not None:
         await gdrive.edit("`You already authorized token...`")
         await asyncio.sleep(1.5)
         return await gdrive.delete()
-    """ - Abort if user don't have heroku credentials - """
-    if None in [HEROKU_API_KEY or HEROKU_APP_NAME]:
-        return await gdrive.edit(
-            "`Invalid heroku credentials...`\n\n"
-            "`Please set HEROKU_API_KEY and HEROKU_APP_NAME first.`"
-        )
     """ - Generate credentials - """
     if G_DRIVE_DATA is not None:
         configs = json.loads(G_DRIVE_DATA)
@@ -170,37 +171,40 @@ async def generate_credentials(gdrive):
         creds = flow.credentials
         await asyncio.sleep(3.5)
         await gdrive.client.delete_messages(gdrive.chat_id, msg.id)
-        await gdrive.client.delete_messages(BOTLOG_CHATID, url_msg.id)
-        await gdrive.client.delete_messages(BOTLOG_CHATID, r.id)
+        await gdrive.client.delete_messages(BOTLOG_CHATID, [url_msg.id, r.id])
         """ - Unpack credential objects into strings - """
         creds = base64.b64encode(pickle.dumps(creds)).decode()
         await gdrive.edit("`Credentials created...`")
-    heroku = heroku3.from_key(HEROKU_API_KEY)
-    configvars = heroku.app(HEROKU_APP_NAME).config()
-    msg = await gdrive.respond("`Restarting in 3s to initialize token...`")
-    await asyncio.sleep(1)
-    sleep = 1
-    while (sleep <= 3):
-        await msg.edit(f"`{sleep}`")
-        await asyncio.sleep(1)
-        sleep += 1
-    await gdrive.client.delete_messages(gdrive.chat_id, msg.id)
+    try:
+        helper.save_credentials(str(gdrive.from_id), creds)
+    except Exception:
+        for name in ['creds', 'gdrive']:
+            delete_table(name)
+        helper.save_credentials(str(gdrive.from_id), creds)
     await gdrive.delete()
-    return await save_credentials(configvars, creds)
+    return
 
 
 async def create_app(gdrive):
     """ - Create google drive service app - """
-    creds = None
-    if G_DRIVE_AUTH_TOKEN_DATA is not None:
+    creds = helper.get_credentials(str(gdrive.from_id))
+    if creds is not None:
         """ - Repack credential objects from strings - """
         creds = pickle.loads(
-              base64.b64decode(G_DRIVE_AUTH_TOKEN_DATA.encode()))
+              base64.b64decode(creds.encode()))
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             await gdrive.edit("`Refreshing credentials...`")
             """ - Refresh credentials - """
             creds.refresh(Request())
+            try:
+                helper.save_credentials(str(gdrive.from_id), base64.b64encode(
+                    pickle.dumps(creds)).decode())
+            except Exception:
+                for name in ['creds', 'gdrive']:
+                    delete_table(name)
+                helper.save_credentials(str(gdrive.from_id), base64.b64encode(
+                    pickle.dumps(creds)).decode())
         else:
             await gdrive.edit("`Credentials is empty, please generate it...`")
             return False
@@ -208,9 +212,14 @@ async def create_app(gdrive):
     return service
 
 
-async def save_credentials(configvars, creds):
-    """ - Save into heroku ConfigVars - """
-    configvars["G_DRIVE_AUTH_TOKEN_DATA"] = creds
+@register(pattern="^.gdreset(?: |$)", outgoing=True)
+async def reset_credentials(gdrive):
+    """ - Reset credentials or change account - """
+    await gdrive.edit("`Resetting information...`")
+    helper.clear_credentials(str(gdrive.from_id))
+    await gdrive.edit("`Done...`")
+    await asyncio.sleep(1)
+    return await gdrive.delete()
 
 
 async def get_raw_name(file_path):
@@ -290,16 +299,32 @@ async def download(gdrive, service, uri=None):
         else:
             status = status.replace("[FILE", "[FOLDER")
             global parent_Id
-            parent_Id = await create_dir(service, file_name)
-            await task_directory(gdrive, service, required_file_name)
-            webViewURL = "https://drive.google.com/drive/folders/" + parent_Id
-            await reset_parentId()
-            return await gdrive.edit(
-                f"`{status}`\n\n"
-                f" • `Name     :` `{file_name}`\n"
-                " • `Status   :` **OK**\n"
-                f" • `URL      :` [{file_name}]({webViewURL})\n"
-            )
+            folder = await create_dir(service, file_name)
+            parent_Id = folder.get('id')
+            try:
+                await task_directory(gdrive, service, required_file_name)
+            except Exception as e:
+                reply += (
+                    f"`{status}`\n\n"
+                    f"`Name   :`\n`{file_name}`\n"
+                    "`Status :` **BAD**\n"
+                    f"`Reason :` {str(e)}"
+                )
+                await reset_parentId()
+                return reply
+            else:
+                webViewURL = (
+                    "https://drive.google.com/drive/folders/"
+                    + parent_Id
+                )
+                reply += (
+                    f"`{status}`\n\n"
+                    f"`Name   :`\n`{file_name}`\n"
+                    "`Status :` **OK**\n"
+                    f"`URL    :` [{file_name}]({webViewURL})\n\n"
+                )
+                await reset_parentId()
+                return reply
     except Exception as e:
         status = status.replace("DOWNLOAD]", "ERROR]")
         return await gdrive.edit(
@@ -729,44 +754,83 @@ async def google_drive(gdrive):
         folder_path = value
         global parent_Id
         folder_name = await get_raw_name(folder_path)
-        parent_Id = await create_dir(service, folder_name)
-        await task_directory(gdrive, service, folder_path)
-        webViewURL = "https://drive.google.com/drive/folders/" + parent_Id
-        await reset_parentId()
-        return await gdrive.edit(
-            "`[FOLDER - UPLOAD]`\n\n"
-            f" • `Name     :` `{folder_name}`\n"
-            " • `Status   :` **OK**\n"
-            f" • `URL      :` [{folder_name}]({webViewURL})\n"
-        )
-    else:
-        if re.findall(r'\bhttps?://.*\.\S+', value) or "magnet:?" in value:
-            try:
-                uri = re.findall(r'\bhttps?://drive\.google\.com\S+', value)[0]
-            except IndexError:
-                uri = value.split()
-            else:
-                """ - Link is google drive fallback to download - """
-                return await download_gdrive(gdrive, service, uri)
+        folder = await create_dir(service, folder_name)
+        parent_Id = folder.get('id')
+        try:
+            await task_directory(gdrive, service, folder_path)
+        except Exception as e:
+            await gdrive.edit(
+                "`[FOLDER - UPLOAD]`\n\n"
+                f"`Name   :` `{folder_name}`\n"
+                "`Status :` **BAD**\n"
+                f"`Reason :` {str(e)}"
+            )
+            return await reset_parentId()
         else:
-            if any(map(str.isdigit, value)):
-                one = True
+            webViewURL = "https://drive.google.com/drive/folders/" + parent_Id
+            await gdrive.edit(
+                "`[FOLDER - UPLOAD]`\n\n"
+                f"`Name   :` `{folder_name}`\n"
+                "`Status :` **OK**\n"
+                f"`URL    :` [{folder_name}]({webViewURL})\n"
+            )
+            return await reset_parentId()
+    elif not value and gdrive.reply_to_msg_id:
+        """ - not looping this, because reply can only run one by one - """
+        reply += await download(gdrive, service)
+        return await gdrive.edit(reply)
+    else:
+        if re.findall(r'\bhttps?://drive\.google\.com\S+', value):
+            """ - Link is google drive fallback to download - """
+            value = re.findall(r'\bhttps?://drive\.google\.com\S+', value)
+            for uri in value:
+                try:
+                    reply += await download_gdrive(gdrive, service, uri)
+                except Exception as e:
+                    reply += (
+                        "`[FILE - ERROR]`\n\n"
+                        "`Status :` **BAD**\n"
+                        f"`Reason :` {str(e)}\n\n"
+                    )
+                    continue
+            if reply:
+                await gdrive.respond(reply, link_preview=False)
+                return await gdrive.delete()
             else:
-                one = False
-            if "-" in value or "_" in value:
-                two = True
+                return
+        elif re.findall(r'\bhttps?://.*\.\S+', value) or "magnet:?" in value:
+            uri = value.split()
+        else:
+            for fileId in value.split():
+                if any(map(str.isdigit, fileId)):
+                    one = True
+                else:
+                    one = False
+                if "-" in fileId or "_" in fileId:
+                    two = True
+                else:
+                    two = False
+                if True in [one or two]:
+                    try:
+                        reply += await download_gdrive(gdrive, service, fileId)
+                    except Exception as e:
+                        reply += (
+                            "`[FILE - ERROR]`\n\n"
+                            "`Status :` **BAD**\n"
+                            f"`Reason :` {str(e)}\n\n"
+                        )
+                        continue
+            if reply:
+                await gdrive.respond(reply, link_preview=False)
+                return await gdrive.delete()
             else:
-                two = False
-            if True in [one or two]:
-                return await download_gdrive(gdrive, service, value)
+                return
         if not uri and not gdrive.reply_to_msg_id:
             return await gdrive.edit(
                 "`[VALUE - ERROR]`\n\n"
                 " • `Status :` **BAD**\n"
                 " • `Reason :` given value is not URL nor file path."
             )
-    if not file_path and gdrive.reply_to_msg_id:
-        return await download(gdrive, service)
     if uri and not gdrive.reply_to_msg_id:
         for dl in uri:
             try:
@@ -940,7 +1004,9 @@ CMD_HELP.update({
     ">`.gdauth`"
     "\nUsage: generate token to enable all cmd google drive service."
     "\nThis only need to run once in life time."
-    "\n\n>.`gd`"
+    "\n\n>`.gdreset`"
+    "\nUsage: reset your token if something bad happened or change drive acc."
+    "\n\n>.`gd <path>` or >`.gd <url1> <url2>`"
     "\nUsage: Upload file from local or uri/url into google drive."
     "\n\n>`.gdf mkdir <folder name>`"
     "\nUsage: create google drive folder."

@@ -140,10 +140,6 @@
       "description": "Your client_secret.json.",
       "required": false
     },
-    "G_DRIVE_AUTH_TOKEN_DATA": {
-      "description": "Enter the Google Drive authentication data, as a JSON structure.",
-      "required": false
-    },
     "WEATHER_DEFCITY": {
       "description": "Set the default city for the userbot's weather module.",
       "required": false
