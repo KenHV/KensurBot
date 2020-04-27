@@ -140,6 +140,10 @@
       "description": "Your client_secret.json.",
       "required": false
     },
+    "GENIUS_ACCESS_TOKEN": {
+      "description": "Client Access Token from https://genius.com/api-clients.",
+      "required": false
+    },
     "WEATHER_DEFCITY": {
       "description": "Set the default city for the userbot's weather module.",
       "required": false
