@@ -195,6 +195,7 @@ async def upstream(event):
 
     if conf is None and force_update is False:
         await print_changelogs(event, ac_br, changelog)
+        await event.delete()
         return await event.respond('`do ".update now or .update deploy" to update.`')
 
     if force_update:
