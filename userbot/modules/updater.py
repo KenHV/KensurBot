@@ -189,7 +189,7 @@ async def upstream(event):
     """ - Special case for deploy - """
     if conf == "deploy":
         await event.edit('`Deploying userbot, please wait....`')
-        if changelog:
+        if changelog != '':
             await print_changelogs(event, ac_br, changelog)
         await deploy(event, repo, ups_rem, ac_br, txt)
         return
