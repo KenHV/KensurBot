@@ -49,8 +49,7 @@ cmd = f"aria2c \
 --daemon=true \
 --allow-overwrite=true"
 
-aria2_is_running = subprocess_run(cmd)
-
+subprocess_run(cmd)
 if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
     os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
 download_path = os.getcwd() + TEMP_DOWNLOAD_DIRECTORY.strip('.')
@@ -197,7 +196,7 @@ async def check_progress_for_dl(gid, event, previous):
                              for i in range(20 - math.floor(percentage / 5))]),
                     file.progress_string())
                 msg = (
-                    f"`Name :`\n`{file.name}`\n"
+                    f"`Name`: `{file.name}`\n"
                     f"`Status` -> **{file.status.capitalize()}**\n"
                     f"{prog_str}\n"
                     f"`{humanbytes(downloaded)} of {file.total_length_string()}"
@@ -214,8 +213,12 @@ async def check_progress_for_dl(gid, event, previous):
             file = aria2.get_download(gid)
             complete = file.is_complete
             if complete:
-                return await event.edit(f"`{file.name}`\n\n"
-                                        "Successfully downloaded...")
+                return await event.edit(
+                    f"`Name`: `{file.name}`\n"
+                    f"`Size`: `{file.total_length_string()}`\n"
+                    f"`Path`: `{download_path + file.name}`\n"
+                    "`Resp`: **OK** - Successfully downloaded..."
+                )
         except Exception as e:
             if " not found" in str(e) or "'file'" in str(e):
                 await event.edit("Download Canceled :\n`{}`".format(file.name))
