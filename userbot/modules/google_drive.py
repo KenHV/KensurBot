@@ -234,14 +234,14 @@ async def download(gdrive, service, uri=None):
         if isfile(uri) and uri.endswith(".torrent"):
             downloads = aria2.add_torrent(
                 uri,
-                dict(dir=full_path),
                 uris=None,
+                options={'dir': full_path},
                 position=None)
         else:
             uri = [uri]
             downloads = aria2.add_uris(
                 uri,
-                dict(dir=full_path),
+                options={'dir': full_path},
                 position=None)
         gid = downloads.gid
         await check_progress_for_dl(gdrive, gid, previous=None)
