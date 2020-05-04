@@ -23,10 +23,12 @@ import asyncio
 import math
 import time
 import re
+import requests
 import logging
 
 import userbot.modules.sql_helper.google_drive_sql as helper
 
+from bs4 import BeautifulSoup
 from os.path import isfile, isdir, join
 from mimetypes import guess_type
 
@@ -100,6 +102,15 @@ logger.setLevel(logging.ERROR)
 # =========================================================== #
 #                                                             #
 # =========================================================== #
+
+
+def human_to_bytes(size):
+    units = {"M": 2**20, "G": 2**30, "T": 2**40}
+    size = size.upper()
+    if not re.match(r' ', size):
+        size = re.sub(r'([KMGT])', r' \1', size)
+    number, unit = [string.strip() for string in size.split()]
+    return int(float(number)*units[unit])
 
 
 async def progress(current, total, gdrive, start, type_of_ps, file_name=None):
@@ -346,55 +357,125 @@ async def download_gdrive(gdrive, service, uri):
                 except IndexError:
                     """ - if error parse in url, assume given value is Id - """
                     file_Id = uri
-    file = await get_information(service, file_Id)
-    file_name = file.get('name')
-    mimeType = file.get('mimeType')
-    if mimeType == 'application/vnd.google-apps.folder':
-        return await gdrive.edit("`Aborting, folder download not support`")
-    file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
-    request = service.files().get_media(fileId=file_Id)
-    with io.FileIO(file_path, 'wb') as df:
-        downloader = MediaIoBaseDownload(df, request)
-        complete = False
-        current_time = time.time()
-        display_message = None
-        while complete is False:
-            status, complete = downloader.next_chunk()
-            if status:
-                file_size = status.total_size
-                diff = time.time() - current_time
-                downloaded = status.resumable_progress
-                percentage = downloaded / file_size * 100
-                speed = round(downloaded / diff, 2)
-                eta = round((file_size - downloaded) / speed)
-                prog_str = "`Downloading` | [{0}{1}] `{2}%`".format(
-                    "".join(["**#**" for i in range(math.floor(percentage / 5))]),
-                    "".join(["**--**"
-                             for i in range(20 - math.floor(percentage / 5))]),
-                    round(percentage, 2))
-                current_message = (
-                    "`[FILE - DOWNLOAD]`\n\n"
-                    f"`Name   :` `{file_name}`\n"
-                    "`Status :`\n"
-                    f"{prog_str}\n"
-                    f"`{humanbytes(downloaded)} of {humanbytes(file_size)} "
-                    f"@ {humanbytes(speed)}`\n"
-                    f"`ETA` -> {time_formatter(eta)}"
-                )
-                if display_message != current_message:
-                    try:
+    try:
+        file = await get_information(service, file_Id)
+    except HttpError as e:
+        if '404' in str(e):
+            drive = 'https://drive.google.com'
+            url = f'{drive}/uc?export=download&id={file_Id}'
+            session = requests.session()
+            download = session.get(url, stream=True)
+            try:
+                download.headers['Content-Disposition']
+            except KeyError:
+                page = BeautifulSoup(download.content, 'lxml')
+                try:
+                    export = drive + page.find('a', {'id': 'uc-download-link'}
+                                               ).get('href')
+                except AttributeError:
+                    text = (
+                        page.find('p', {'class': 'uc-error-caption'}).text
+                        + '\n' +
+                        page.find('p', {'class': 'uc-error-subcaption'}).text
+                    )
+                    reply += (
+                        "`[FILE - ERROR]`\n\n"
+                        "`Status :` **BAD** - failed to download...\n"
+                        f"`Reason :`\n{text}"
+                    )
+                    return reply
+                download = session.get(export, stream=True)
+            file_size = human_to_bytes(
+                page.find('span', {'class': 'uc-name-size'}
+                          ).text.split()[-1].strip('()'))
+            file_name = re.search(
+                'filename="(.*)"', download.headers["Content-Disposition"]
+            ).group(1)
+            file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
+            with io.FileIO(file_path, 'wb') as files:
+                current_time = time.time()
+                display_message = None
+                first = True
+                for chunk in download.iter_content():
+                    files.write(chunk)
+                    diff = time.time() - current_time
+                    if first is True:
+                        downloaded = len(chunk)
+                        first = False
+                    else:
+                        downloaded += len(chunk)
+                    percentage = downloaded / file_size * 100
+                    speed = round(downloaded / diff, 2)
+                    eta = round((file_size - downloaded) / speed)
+                    prog_str = "`Downloading` | [{0}{1}] `{2}%`".format(
+                        "".join(["**#**" for i in range(
+                                math.floor(percentage / 5))]),
+                        "".join(["**--**"for i in range(
+                                20 - math.floor(percentage / 5))]),
+                        round(percentage, 2))
+                    current_message = (
+                        "`[FILE - DOWNLOAD]`\n\n"
+                        f"`Name   :` `{file_name}`\n"
+                        "`Status :`\n"
+                        f"{prog_str}\n"
+                        f"`{humanbytes(downloaded)} of {humanbytes(file_size)}"
+                        f" @ {humanbytes(speed)}`\n"
+                        f"`ETA` -> {time_formatter(eta)}"
+                    )
+                    if round(
+                     diff % 10.00) and display_message != current_message:
                         await gdrive.edit(current_message)
                         display_message = current_message
-                    except Exception:
-                        pass
-        await gdrive.edit(
-            "`[FILE - DOWNLOAD]`\n\n"
-            f"`Name   :` `{file_name}`\n"
-            f"`Size   :` `{humanbytes(file_size)}`\n"
-            f"`Path   :` `{file_path}`\n"
-            "`Status :` **OK** - Successfully downloaded..."
-        )
-        msg = await gdrive.respond("`Answer the question in your BOTLOG group`")
+    else:
+        file_name = file.get('name')
+        mimeType = file.get('mimeType')
+        if mimeType == 'application/vnd.google-apps.folder':
+            return await gdrive.edit("`Aborting, folder download not support`")
+        file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
+        request = service.files().get_media(fileId=file_Id)
+        with io.FileIO(file_path, 'wb') as df:
+            downloader = MediaIoBaseDownload(df, request)
+            complete = False
+            current_time = time.time()
+            display_message = None
+            while complete is False:
+                status, complete = downloader.next_chunk()
+                if status:
+                    file_size = status.total_size
+                    diff = time.time() - current_time
+                    downloaded = status.resumable_progress
+                    percentage = downloaded / file_size * 100
+                    speed = round(downloaded / diff, 2)
+                    eta = round((file_size - downloaded) / speed)
+                    prog_str = "`Downloading` | [{0}{1}] `{2}%`".format(
+                        "".join(["**#**" for i in range(
+                                math.floor(percentage / 5))]),
+                        "".join(["**--**" for i in range(
+                                20 - math.floor(percentage / 5))]),
+                        round(percentage, 2))
+                    current_message = (
+                        "`[FILE - DOWNLOAD]`\n\n"
+                        f"`Name   :` `{file_name}`\n"
+                        "`Status :`\n"
+                        f"{prog_str}\n"
+                        f"`{humanbytes(downloaded)} of {humanbytes(file_size)}"
+                        f" @ {humanbytes(speed)}`\n"
+                        f"`ETA` -> {time_formatter(eta)}"
+                    )
+                    if display_message != current_message:
+                        try:
+                            await gdrive.edit(current_message)
+                            display_message = current_message
+                        except Exception:
+                            pass
+    await gdrive.edit(
+        "`[FILE - DOWNLOAD]`\n\n"
+        f"`Name   :` `{file_name}`\n"
+        f"`Size   :` `{humanbytes(file_size)}`\n"
+        f"`Path   :` `{file_path}`\n"
+        "`Status :` **OK** - Successfully downloaded..."
+    )
+    msg = await gdrive.respond("`Answer the question in your BOTLOG group`")
     async with gdrive.client.conversation(BOTLOG_CHATID) as conv:
         ask = await conv.send_message("`Proceed with mirroring? [y/N]`")
         try:
