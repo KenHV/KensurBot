@@ -216,7 +216,7 @@ async def check_progress_for_dl(gid, event, previous):
                 return await event.edit(
                     f"`Name`: `{file.name}`\n"
                     f"`Size`: `{file.total_length_string()}`\n"
-                    f"`Path`: `{download_path + file.name}`\n"
+                    f"`Path`: `{TEMP_DOWNLOAD_DIRECTORY + file.name}`\n"
                     "`Resp`: **OK** - Successfully downloaded..."
                 )
         except Exception as e:
