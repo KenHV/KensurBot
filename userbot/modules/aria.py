@@ -3,11 +3,12 @@
 # Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 
+import os
 import aria2p
 import math
 from asyncio import sleep
 from subprocess import PIPE, Popen
-from userbot import LOGS, CMD_HELP
+from userbot import LOGS, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 from userbot.modules.upload_download import humanbytes
 from requests import get
@@ -50,8 +51,14 @@ cmd = f"aria2c \
 
 aria2_is_running = subprocess_run(cmd)
 
+if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+    os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
+download_path = os.getcwd() + TEMP_DOWNLOAD_DIRECTORY.strip('.')
+
 aria2 = aria2p.API(aria2p.Client(host="http://localhost", port=6800,
                                  secret=""))
+
+aria2.set_global_options({'dir': download_path})
 
 
 @register(outgoing=True, pattern="^.amag(?: |$)(.*)")
