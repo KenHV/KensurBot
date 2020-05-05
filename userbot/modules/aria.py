@@ -191,9 +191,10 @@ async def check_progress_for_dl(gid, event, previous):
                 percentage = int(file.progress)
                 downloaded = percentage * int(file.total_length) / 100
                 prog_str = "`Downloading` | [{0}{1}] `{2}`".format(
-                    "".join(["**#**" for i in range(math.floor(percentage / 5))]),
-                    "".join(["**--**"
-                             for i in range(20 - math.floor(percentage / 5))]),
+                    "".join(["●" for i in range(
+                            math.floor(percentage / 10))]),
+                    "".join(["○" for i in range(
+                            10 - math.floor(percentage / 10))]),
                     file.progress_string())
                 msg = (
                     f"`Name`: `{file.name}`\n"
