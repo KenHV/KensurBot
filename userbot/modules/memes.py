@@ -1003,7 +1003,15 @@ async def Oof(e):
         await e.edit(t)
 
 
-@register(outgoing=True, pattern="^.oem$")
+@register(outgoing=True, pattern="^oof$")
+async def Oof(e):
+    t = "oof"
+    for j in range(15):
+        t = t[:-1] + "of"
+        await e.edit(t)
+
+
+@register(outgoing=True, pattern="^Oem$")
 async def oem(e):
     t = "Oem"
     for j in range(16):
@@ -1011,9 +1019,9 @@ async def oem(e):
         await e.edit(t)
 
 
-@register(outgoing=True, pattern="^.Oem$")
+@register(outgoing=True, pattern="^oem$")
 async def Oem(e):
-    t = "Oem"
+    t = "oem"
     for j in range(16):
         t = t[:-1] + "em"
         await e.edit(t)
@@ -1283,25 +1291,13 @@ async def gtfo(e):
                      "`\n███████████████████████████████ `")
 
 
-@register(outgoing=True, pattern="^.nih$")
-async def nih(e):
-    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
-        await e.edit("`\n(\_/)`"
-                     "`\n(●_●)`"
-                     "`\n />🌹 *ini buat kamu`"
-                     "`\n                    `"
-                     "`\n(\_/)`"
-                     "`\n(●_●)`"
-                     "`\n🌹<\  *tapi boong`")
-
-
 @register(outgoing=True, pattern="^.fag$")
 async def gtfo(e):
    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         await e.edit("`\n█████████`"
                      "`\n█▄█████▄█`"
                      "`\n█▼▼▼▼▼`"
-                     "`\n█       STFU FAGGOT'S`"
+                     "`\n█       STFU FAGGOTS`"
                      "`\n█▲▲▲▲▲`"
                      "`\n█████████`"
                     "`\n ██   ██`")
@@ -1329,21 +1325,12 @@ async def sayhi(e):
         "\n💰💰💰💰💰💰💰💰💰💰💰💰")
 
 
-@register(outgoing=True, pattern="^.gey$")
-async def gey(e):
-    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
-        await e.edit("`\n┈┈┈╭━━━━━╮┈┈┈┈┈\n┈┈┈┃┊┊┊┊┊┃┈┈┈┈┈`"
-                     "`\n┈┈┈┃┊┊╭━╮┻╮┈┈┈┈\n┈┈┈╱╲┊┃▋┃▋┃┈┈┈┈\n┈┈╭┻┊┊╰━┻━╮┈┈┈┈`"
-                     "`\n┈┈╰┳┊╭━━━┳╯┈┈┈┈\n┈┈┈┃┊┃╰━━┫┈NIGGA U GEY`"
-                    "\n┈┈┈┈┈┈┏━┓┈┈┈┈┈┈")
-
-
 @register(outgoing=True, pattern="^.gay$")
 async def gey(e):
     if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
         await e.edit("`\n┈┈┈╭━━━━━╮┈┈┈┈┈\n┈┈┈┃┊┊┊┊┊┃┈┈┈┈┈`"
                      "`\n┈┈┈┃┊┊╭━╮┻╮┈┈┈┈\n┈┈┈╱╲┊┃▋┃▋┃┈┈┈┈\n┈┈╭┻┊┊╰━┻━╮┈┈┈┈`"
-                     "`\n┈┈╰┳┊╭━━━┳╯┈┈┈┈\n┈┈┈┃┊┃╰━━┫┈BAPAQ U GAY`"
+                     "`\n┈┈╰┳┊╭━━━┳╯┈┈┈┈\n┈┈┈┃┊┃╰━━┫┈NIGGA U GAY`"
                     "\n┈┈┈┈┈┈┏━┓┈┈┈┈┈┈")
 
 
@@ -1389,8 +1376,10 @@ CMD_HELP.update({
 \nUsage: Stretch it.\
 \n\n.zal\
 \nUsage: Invoke the feeling of chaos.\
-\n\nOof\
+\n\nOof (or) oof\
 \nUsage: Ooooof\
+\n\nOem (or) oem\
+\nUsage: Oeeeem\
 \n\n.moon\
 \nUsage: kensar moon animation.\
 \n\n.clock\
@@ -1433,8 +1422,8 @@ CMD_HELP.update({
 \n[Available Actions: (typing, contact, game, location, voice, round, video, photo, document, cancel)]\
 \nUsage: Create fake chat actions, for fun. (Default action: typing)\
 \n\nAnd many more\
-\n.nou ; .bot ; .gey ; .gey ; .tf ; .paw ; .taco ; .nih ;\
-\n.fag ; .gtfo ; .stfu ; .lol ; .lool ; .fail ; .love\
+\n.nou ; .bot ; .gay ; .tf ; .paw ; .taco ; .love\
+\n.fag ; .gtfo ; .stfu ; .lol ; .lool ; .fail\
 \n.rain ; .earth ; .iwi ; .sayhi\
 \n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
 })
