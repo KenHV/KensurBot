@@ -650,6 +650,104 @@ async def reset_parentId():
     return
 
 
+@register(pattern=r"^.gdlist(?: |$)(-l \d+)?(?: |$)?(.*)?(?: |$)",
+          outgoing=True)
+async def lists(gdrive):
+    await gdrive.edit("`Getting information...`")
+    if gdrive.pattern_match.group(1) is not None:
+        page_size = int(gdrive.pattern_match.group(1).strip('-l '))
+        if page_size > 1000:
+            await gdrive.edit(
+                "`[GDRIVE - LIST]`\n\n"
+                "`Status` : **BAD**\n"
+                "`Reason` : can't get list if limit more than 1000."
+            )
+            return
+    else:
+        page_size = 50  # default page_size is 50
+    if gdrive.pattern_match.group(2) != '':
+        checker = gdrive.pattern_match.group(2)
+        if checker.startswith('-p'):
+            parents = checker.split(None, 2)[1]
+            try:
+                name = checker.split(None, 2)[2]
+            except IndexError:
+                query = f"'{parents}' in parents and (name contains '*')"
+            else:
+                query = f"'{parents}' in parents and (name contains '{name}')"
+        else:
+            if re.search('-p (.*)', checker):
+                parents = re.search('-p (.*)', checker).group(1)
+                name = checker.split('-p')[0].strip()
+                query = f"'{parents}' in parents and (name contains '{name}')"
+            else:
+                name = checker
+                query = f"name contains '{name}'"
+    else:
+        query = ''
+    service = await create_app(gdrive)
+    if service is False:
+        return False
+    page_token = None
+    while True:
+        try:
+            response = service.files().list(
+                q=query,
+                spaces='drive',
+                fields=(
+                    'nextPageToken, files(parents, name, id, '
+                    'mimeType, webViewLink, webContentLink)'
+                ),
+                pageToken=page_token,
+                pageSize=page_size,
+                orderBy='modifiedTime desc, folder'
+            ).execute()
+        except HttpError as e:
+            await gdrive.edit(
+                "`[GDRIVE - LIST]`\n\n"
+                "`Status` : **BAD**\n"
+                f"`Reason` : {str(e)}"
+            )
+            return
+        else:
+            page_token = response.get('nextPageToken', None)
+            if page_token is None:
+                break
+    message = ''
+    for file in response.get('files', []):
+        file_name = file.get('name')
+        file_id = file.get('id')
+        if file.get('mimeType') == 'application/vnd.google-apps.folder':
+            link = file.get('webViewLink')
+            message += (
+                f"`[FOLDER]` - `{file_id}`\n"
+                f"`{file_name}`\n{link}\n\n"
+            )
+        else:
+            link = file.get('webContentLink')
+            message += (
+                f"`[FILE]` - `{file_id}`\n"
+                f"`{file_name}`\n{link}\n\n"
+            )
+    if query == '':
+        query = 'Not specified'
+    if len(message) > 4096:
+        await gdrive.edit("`Result is too big, sending it as file...`")
+        with open('result.txt', 'w') as r:
+            r.write(
+                f"Google Drive Query:\n{query}\n\nResults\n\n{message}")
+        await gdrive.client.send_file(
+            gdrive.chat_id,
+            'result.txt',
+            caption='Google Drive Query List.'
+        )
+    else:
+        await gdrive.edit(
+            "**Google Drive Query**:\n"
+            f"`{query}`\n\n**Results**\n\n{message}")
+    return
+
+
 @register(pattern="^.gdf (mkdir|rm|chck) (.*)", outgoing=True)
 async def google_drive_managers(gdrive):
     """ - Google Drive folder/file management - """
@@ -1091,6 +1189,14 @@ CMD_HELP.update({
     "\nUsage: Upload file from local or uri/url into google drive."
     "\n\n>.`gd <drive-link>`"
     "\nUsage: Download google drive file, mirror if you want to."
+    "\n\n>`.gdlist`"
+    "\nUsage: Get list of folders and files with default size 50."
+    "\n\n>`.gdlist -l <1-1000>`"
+    "\nUsage: Get list of folders and files with given limit size."
+    "\n\n>`.gdlist <name>`"
+    "\nUsage: Get list of folders and files with given name."
+    "\n\n>`.gdlist -p <parents folder>`"
+    "\nUsage: Get list of folders and files from given parents."
     "\n\n>`.gdf mkdir <name>` or >`.gdf mkdir <name1>; <name2>`"
     "\nUsage: create gdrive folder, for multiple creation use ; as divider."
     "\n\n>`.gdf chck <name/id>` or >`.gdf chck <name1>; <id>`"
@@ -1103,8 +1209,11 @@ CMD_HELP.update({
     "\n\n>`.gdfset rm`"
     "\nUsage: remove set parentId from cmd\n>`.gdfset put` "
     "into **G_DRIVE_FOLDER_ID** and if empty upload will go to root."
-    "\n\nNOTE: for >`.gd` cmd don't abuse it by using multiple use\n"
+    "\n\nNOTE:\nfor >`.gd` cmd don't abuse it by using multiple use\n"
     "example: you give cmd by give value a url to download and a filepath "
     "to upload, this programs logic not that complicated.\n"
     "And .gd upload from file path or folder path don't support multiples."
+    "\n\nfor >`.gdlist` you can combine -l and -p flags with or without name "
+    "at the same time.\n"
+    "And by default it lists from latest 'modifiedTime' and then folders."
 })
