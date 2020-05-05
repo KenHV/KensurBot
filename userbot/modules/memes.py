@@ -1422,8 +1422,8 @@ CMD_HELP.update({
 \n[Available Actions: (typing, contact, game, location, voice, round, video, photo, document, cancel)]\
 \nUsage: Create fake chat actions, for fun. (Default action: typing)\
 \n\nAnd many more\
-\n.nou ; .bot ; .gay ; .tf ; .paw ; .taco ; .love\
-\n.fag ; .gtfo ; .stfu ; .lol ; .lool ; .fail\
-\n.rain ; .earth ; .iwi ; .sayhi\
+\n.nou | .bot | .gay | .tf | .paw | .taco | .love\
+\n.fag | .gtfo | .stfu | .lol | .lool | .fail\
+\n.rain | .earth | .iwi | .sayhi\
 \n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
 })
