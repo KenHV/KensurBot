@@ -360,8 +360,10 @@ async def download_gdrive(gdrive, service, uri):
         if '404' in str(e):
             drive = 'https://drive.google.com'
             url = f'{drive}/uc?export=download&id={file_Id}'
+
             session = requests.session()
             download = session.get(url, stream=True)
+
             try:
                 download.headers['Content-Disposition']
             except KeyError:
@@ -382,9 +384,12 @@ async def download_gdrive(gdrive, service, uri):
                     )
                     return reply
                 download = session.get(export, stream=True)
-            file_size = human_to_bytes(
-                page.find('span', {'class': 'uc-name-size'}
-                          ).text.split()[-1].strip('()'))
+                file_size = human_to_bytes(
+                    page.find('span', {'class': 'uc-name-size'}
+                              ).text.split()[-1].strip('()'))
+            else:
+                file_size = int(download.headers['Content-Length'])
+
             file_name = re.search(
                 'filename="(.*)"', download.headers["Content-Disposition"]
             ).group(1)
