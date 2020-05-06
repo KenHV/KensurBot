@@ -372,16 +372,25 @@ async def download_gdrive(gdrive, service, uri):
                     export = drive + page.find('a', {'id': 'uc-download-link'}
                                                ).get('href')
                 except AttributeError:
-                    text = (
-                        page.find('p', {'class': 'uc-error-caption'}).text
-                        + '\n' +
-                        page.find('p', {'class': 'uc-error-subcaption'}).text
-                    )
-                    reply += (
-                        "`[FILE - ERROR]`\n\n"
-                        "`Status :` **BAD** - failed to download...\n"
-                        f"`Reason :`\n{text}"
-                    )
+                    try:
+                        error = (
+                            page.find('p', {'class': 'uc-error-caption'}).text
+                            + '\n' +
+                            page.find('p', {'class': 'uc-error-subcaption'}
+                                      ).text
+                        )
+                    except Exception:
+                        reply += (
+                            "`[FILE - ERROR]`\n\n"
+                            "`Status :` **BAD** - failed to download.\n"
+                            "`Reason :` uncaught err."
+                        )
+                    else:
+                        reply += (
+                            "`[FILE - ERROR]`\n\n"
+                            "`Status :` **BAD** - failed to download.\n"
+                            f"`Reason :` {error}"
+                        )
                     return reply
                 download = session.get(export, stream=True)
                 file_size = human_to_bytes(
@@ -399,34 +408,36 @@ async def download_gdrive(gdrive, service, uri):
                 display_message = None
                 first = True
                 for chunk in download.iter_content():
-                    files.write(chunk)
-                    diff = time.time() - current_time
-                    if first is True:
-                        downloaded = len(chunk)
-                        first = False
-                    else:
-                        downloaded += len(chunk)
-                    percentage = downloaded / file_size * 100
-                    speed = round(downloaded / diff, 2)
-                    eta = round((file_size - downloaded) / speed)
-                    prog_str = "`Downloading...` | [{0}{1}] `{2}%`".format(
-                        "".join(["●" for i in range(
-                                math.floor(percentage / 10))]),
-                        "".join(["○"for i in range(
-                                10 - math.floor(percentage / 10))]),
-                        round(percentage, 2))
-                    current_message = (
-                        "`[FILE - DOWNLOAD]`\n\n"
-                        f"`Name` : `{file_name}`\n"
-                        f"`Status`\n{prog_str}\n"
-                        f"`{humanbytes(downloaded)} of {humanbytes(file_size)}"
-                        f" @ {humanbytes(speed)}`\n"
-                        f"`ETA` -> {time_formatter(eta)}"
-                    )
-                    if display_message != current_message or (
-                      downloaded == file_size):
-                        await gdrive.edit(current_message)
-                        display_message = current_message
+                    if chunk:
+                        files.write(chunk)
+                        diff = time.time() - current_time
+                        if first is True:
+                            downloaded = len(chunk)
+                            first = False
+                        else:
+                            downloaded += len(chunk)
+                        percentage = downloaded / file_size * 100
+                        speed = round(downloaded / diff, 2)
+                        eta = round((file_size - downloaded) / speed)
+                        prog_str = "`Downloading...` | [{0}{1}] `{2}%`".format(
+                            "".join(["●" for i in range(
+                                    math.floor(percentage / 10))]),
+                            "".join(["○"for i in range(
+                                    10 - math.floor(percentage / 10))]),
+                            round(percentage, 2))
+                        current_message = (
+                            "`[FILE - DOWNLOAD]`\n\n"
+                            f"`Name` : `{file_name}`\n"
+                            f"`Status`\n{prog_str}\n"
+                            f"`{humanbytes(downloaded)} of"
+                            f" {humanbytes(file_size)}"
+                            f" @ {humanbytes(speed)}`\n"
+                            f"`ETA` -> {time_formatter(eta)}"
+                         )
+                        if display_message != current_message or (
+                          downloaded == file_size):
+                            await gdrive.edit(current_message)
+                            display_message = current_message
     else:
         file_name = file.get('name')
         mimeType = file.get('mimeType')
