@@ -404,40 +404,45 @@ async def download_gdrive(gdrive, service, uri):
             ).group(1)
             file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
             with io.FileIO(file_path, 'wb') as files:
+                CHUNK_SIZE = None
                 current_time = time.time()
                 display_message = None
                 first = True
-                for chunk in download.iter_content():
-                    if chunk:
-                        files.write(chunk)
-                        diff = time.time() - current_time
-                        if first is True:
-                            downloaded = len(chunk)
-                            first = False
-                        else:
-                            downloaded += len(chunk)
-                        percentage = downloaded / file_size * 100
-                        speed = round(downloaded / diff, 2)
-                        eta = round((file_size - downloaded) / speed)
-                        prog_str = "`Downloading...` | [{0}{1}] `{2}%`".format(
-                            "".join(["●" for i in range(
-                                    math.floor(percentage / 10))]),
-                            "".join(["○"for i in range(
-                                    10 - math.floor(percentage / 10))]),
-                            round(percentage, 2))
-                        current_message = (
-                            "`[FILE - DOWNLOAD]`\n\n"
-                            f"`Name` : `{file_name}`\n"
-                            f"`Status`\n{prog_str}\n"
-                            f"`{humanbytes(downloaded)} of"
-                            f" {humanbytes(file_size)}"
-                            f" @ {humanbytes(speed)}`\n"
-                            f"`ETA` -> {time_formatter(eta)}"
-                         )
-                        if display_message != current_message or (
-                          downloaded == file_size):
-                            await gdrive.edit(current_message)
-                            display_message = current_message
+                for chunk in download.iter_content(CHUNK_SIZE):
+                    if not chunk:
+                        break
+
+                    diff = time.time() - current_time
+                    if first is True:
+                        downloaded = len(chunk)
+                        first = False
+                    else:
+                        downloaded += len(chunk)
+                    percentage = downloaded / file_size * 100
+                    speed = round(downloaded / diff, 2)
+                    eta = round((file_size - downloaded) / speed)
+                    prog_str = "`Downloading...` | [{0}{1}] `{2}%`".format(
+                        "".join(["●" for i in range(
+                                math.floor(percentage / 10))]),
+                        "".join(["○"for i in range(
+                                10 - math.floor(percentage / 10))]),
+                        round(percentage, 2))
+                    current_message = (
+                        "`[FILE - DOWNLOAD]`\n\n"
+                        f"`Name` : `{file_name}`\n"
+                        f"`Status`\n{prog_str}\n"
+                        f"`{humanbytes(downloaded)} of {humanbytes(file_size)}"
+                        f" @ {humanbytes(speed)}`\n"
+                        f"`ETA` -> {time_formatter(eta)}"
+                    )
+                    if round(
+                      diff % 10.00) == 0 and (display_message
+                                              != current_message) or (
+                      downloaded == file_size):
+                        await gdrive.edit(current_message)
+                        display_message = current_message
+                    files.write(chunk)
+                    files.flush()
     else:
         file_name = file.get('name')
         mimeType = file.get('mimeType')
