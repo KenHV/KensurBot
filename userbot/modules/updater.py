@@ -27,7 +27,10 @@ async def gen_chlog(repo, diff):
     ch_log = ''
     d_form = "%d/%m/%y"
     for c in repo.iter_commits(diff):
-        ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
+        ch_log += (
+            f'•[{c.committed_datetime.strftime(d_form)}]: '
+            f'{c.summary} <{c.author}>\n'
+        )
     return ch_log
 
 
@@ -87,7 +90,8 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
                 break
         if heroku_app is None:
             await event.edit(
-                f'{txt}\n`Invalid Heroku credentials for deploying userbot dyno.`'
+                f'{txt}\n'
+                '`Invalid Heroku credentials for deploying userbot dyno.`'
             )
             return repo.__del__()
         await event.edit('`[HEROKU]`'
@@ -104,7 +108,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
             remote = repo.create_remote("heroku", heroku_git_url)
         try:
             remote.push(refspec="HEAD:refs/heads/master", force=True)
-        except GitCommandError as error:
+        except Exception as error:
             await event.edit(f'{txt}\n`Here is the error log:\n{error}`')
             return repo.__del__()
         build = app.builds(order_by='created_at', sort='desc')[0]
@@ -157,8 +161,10 @@ async def upstream(event):
     except InvalidGitRepositoryError as error:
         if conf is None:
             return await event.edit(
-                f"`Unfortunately, the directory {error} does not seem to be a git repository."
-                "\nBut we can fix that by force updating the userbot using .update now.`"
+                f"`Unfortunately, the directory {error} "
+                "does not seem to be a git repository.\n"
+                "But we can fix that by force updating the userbot using "
+                ".update now.`"
             )
         repo = Repo.init()
         origin = repo.create_remote('upstream', off_repo)
@@ -189,8 +195,6 @@ async def upstream(event):
     """ - Special case for deploy - """
     if conf == "deploy":
         await event.edit('`Deploying userbot, please wait....`')
-        if changelog != '':
-            await print_changelogs(event, ac_br, changelog)
         await deploy(event, repo, ups_rem, ac_br, txt)
         return
 
@@ -203,7 +207,8 @@ async def upstream(event):
     if conf is None and force_update is False:
         await print_changelogs(event, ac_br, changelog)
         await event.delete()
-        return await event.respond('`do ".update now or .update deploy" to update.`')
+        return await event.respond(
+            '`do ".update now or .update deploy" to update.`')
 
     if force_update:
         await event.edit(
@@ -218,10 +223,12 @@ async def upstream(event):
 CMD_HELP.update({
     'update':
     ">`.update`"
-    "\nUsage: Checks if the main userbot repository has any updates and shows a changelog if so."
+    "\nUsage: Checks if the main userbot repository has any updates "
+    "and shows a changelog if so."
     "\n\n>`.update now`"
-    "\nUsage: Update your userbot, if there are any updates in your userbot repository."
+    "\nUsage: Update your userbot, "
+    "if there are any updates in your userbot repository."
     "\n\n>`.update deploy`"
     "\nUsage: Deploy your userbot"
-    "\nIf you run this even without changelogs, this will triggered deploy always."
+    "\nThis will triggered deploy always, even no updates."
 })
