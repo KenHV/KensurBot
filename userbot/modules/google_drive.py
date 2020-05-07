@@ -1029,19 +1029,7 @@ async def google_drive(gdrive):
             )
             return await reset_parentId()
     elif not value and gdrive.reply_to_msg_id:
-        global is_cancelled
-        is_cancelled = False
-        try:
-            while True:
-                if is_cancelled is True:
-                    raise CancelProcess
-
-                reply += await download(gdrive, service)
-        except CancelProcess:
-            reply += (
-                "`[FILE - CANCELLED]`\n\n"
-                "`Status` : **OK** - received signal cancelled."
-            )
+        reply += await download(gdrive, service)
         await gdrive.respond(reply)
         return await gdrive.delete()
     else:
