@@ -22,35 +22,8 @@ from hachoir.parser import createParser
 from telethon.tl.types import DocumentAttributeVideo
 
 from userbot import LOGS, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
-from userbot.utils import humanbytes, time_formatter
+from userbot.utils import progress, humanbytes
 from userbot.events import register
-
-
-async def progress(current, total, event, start, type_of_ps, file_name=None):
-    """Generic progress_callback for uploads and downloads."""
-    now = time.time()
-    diff = now - start
-    if round(diff % 10.00) == 0 or current == total:
-        percentage = current * 100 / total
-        speed = current / diff
-        elapsed_time = round(diff) * 1000
-        time_to_completion = round((total - current) / speed) * 1000
-        estimated_total_time = elapsed_time + time_to_completion
-        progress_str = "[{0}{1}] {2}%\n".format(
-            ''.join(["▰" for i in range(math.floor(percentage / 10))]),
-            ''.join(["▱" for i in range(10 - math.floor(percentage / 10))]),
-            round(percentage, 2))
-        tmp = progress_str + \
-            "{0} of {1}\nETA: {2}".format(
-                humanbytes(current),
-                humanbytes(total),
-                time_formatter(estimated_total_time)
-            )
-        if file_name:
-            await event.edit("{}\nFile Name: `{}`\n{}".format(
-                type_of_ps, file_name, tmp))
-        else:
-            await event.edit("{}\n{}".format(type_of_ps, tmp))
 
 
 @register(pattern=r".download(?: |$)(.*)", outgoing=True)
@@ -83,22 +56,21 @@ async def download(target_file):
             diff = now - c_time
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed()
-            progress_str = "[{0}{1}] {2}%".format(
-                ''.join(["▰" for i in range(math.floor(percentage / 10))]),
-                ''.join(["▱"
-                         for i in range(10 - math.floor(percentage / 10))]),
+            progress_str = "[{0}{1}] `{2}%`".format(
+                ''.join(["●" for i in range(
+                        math.floor(percentage / 10))]),
+                ''.join(["○" for i in range(
+                        10 - math.floor(percentage / 10))]),
                 round(percentage, 2))
             estimated_total_time = downloader.get_eta(human=True)
             try:
                 current_message = (
-                    f"URL: {url}\n"
-                    "File Name:"
-                    f"\n`{file_name}`\n\n"
-                    "Status:"
-                    f"\n**{status}** | {progress_str} `{percentage}%`"
+                    f"`Name` : `{file_name}`\n"
+                    "Status"
+                    f"\n**{status}**... | {progress_str}"
                     f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
                     f" @ {speed}"
-                    f"\nETA: {estimated_total_time}"
+                    f"\n`ETA` -> {estimated_total_time}"
                 )
 
                 if round(diff %
@@ -120,7 +92,7 @@ async def download(target_file):
                 TEMP_DOWNLOAD_DIRECTORY,
                 progress_callback=lambda d, t: asyncio.get_event_loop(
                 ).create_task(
-                    progress(d, t, target_file, c_time, "Downloading...")))
+                    progress(d, t, target_file, c_time, "[DOWNLOAD]")))
         except Exception as e:  # pylint:disable=C0103,W0703
             await target_file.edit(str(e))
         else:
@@ -163,7 +135,7 @@ async def uploadir(udir_event):
                         reply_to=udir_event.message.id,
                         progress_callback=lambda d, t: asyncio.get_event_loop(
                         ).create_task(
-                            progress(d, t, udir_event, c_time, "Uploading...",
+                            progress(d, t, udir_event, c_time, "[UPLOAD]",
                                      single_file)))
                 else:
                     thumb_image = os.path.join(input_str, "thumb.jpg")
@@ -197,7 +169,7 @@ async def uploadir(udir_event):
                         ],
                         progress_callback=lambda d, t: asyncio.get_event_loop(
                         ).create_task(
-                            progress(d, t, udir_event, c_time, "Uploading...",
+                            progress(d, t, udir_event, c_time, "[UPLOAD]",
                                      single_file)))
                 os.remove(single_file)
                 uploaded = uploaded + 1
@@ -224,7 +196,7 @@ async def upload(u_event):
             reply_to=u_event.message.id,
             progress_callback=lambda d, t: asyncio.get_event_loop(
             ).create_task(
-                progress(d, t, u_event, c_time, "Uploading...", input_str)))
+                progress(d, t, u_event, c_time, "[UPLOAD]", input_str)))
         await u_event.edit("Uploaded successfully !!")
     else:
         await u_event.edit("404: File Not Found")
@@ -341,7 +313,7 @@ async def uploadas(uas_event):
                     ],
                     progress_callback=lambda d, t: asyncio.get_event_loop(
                     ).create_task(
-                        progress(d, t, uas_event, c_time, "Uploading...",
+                        progress(d, t, uas_event, c_time, "[UPLOAD]",
                                  file_name)))
             elif round_message:
                 c_time = time.time()
@@ -363,7 +335,7 @@ async def uploadas(uas_event):
                     ],
                     progress_callback=lambda d, t: asyncio.get_event_loop(
                     ).create_task(
-                        progress(d, t, uas_event, c_time, "Uploading...",
+                        progress(d, t, uas_event, c_time, "[UPLOAD]",
                                  file_name)))
             elif spam_big_messages:
                 return await uas_event.edit("TBD: Not (yet) Implemented")

@@ -45,7 +45,7 @@ from userbot import (
     G_DRIVE_FOLDER_ID, BOTLOG_CHATID, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS,
 )
 from userbot.events import register
-from userbot.utils import humanbytes, time_formatter, human_to_bytes
+from userbot.utils import progress, humanbytes, time_formatter, human_to_bytes
 from userbot.utils.exceptions import CancelProcess
 from userbot.modules.aria import aria2, check_metadata
 # =========================================================== #
@@ -103,30 +103,6 @@ logger.setLevel(logging.ERROR)
 # =========================================================== #
 #                                                             #
 # =========================================================== #
-
-
-async def progress(current, total, gdrive, start, prog_type, file_name=None):
-    now = time.time()
-    diff = now - start
-    if round(diff % 10.00) == 0 or current == total:
-        percentage = current * 100 / total
-        speed = current / diff
-        elapsed_time = round(diff) * 1000
-        time_to_completion = round((total - current) / speed) * 1000
-        estimated_total_time = elapsed_time + time_to_completion
-        progress_str = "`Downloading...` | [{0}{1}] `{2}%`\n".format(
-            ''.join(["●" for i in range(
-                    math.floor(percentage / 10))]),
-            ''.join(["○" for i in range(
-                    10 - math.floor(percentage / 10))]),
-            round(percentage, 2))
-        tmp = (
-            f"{progress_str}\n"
-            f"{humanbytes(current)} of {humanbytes(total)}\n"
-            f"`ETA` -> {time_formatter(estimated_total_time)}"
-        )
-        await gdrive.edit(f"{prog_type}\n\n"
-                          f"`Status`\n{tmp}")
 
 
 @register(pattern="^.gdauth(?: |$)", outgoing=True)
