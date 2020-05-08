@@ -36,8 +36,7 @@ from userbot import (CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY,
                      TEMP_DOWNLOAD_DIRECTORY)
 from userbot.events import register
 from telethon.tl.types import DocumentAttributeAudio
-from userbot.utils import progress, chrome
-from userbot.google_images_download import googleimagesdownload
+from userbot.utils import progress, chrome, googleimagesdownload
 
 CARBONLANG = "auto"
 TTS_LANG = "en"
