@@ -17,7 +17,9 @@ from bs4 import BeautifulSoup
 
 from userbot import CMD_HELP
 from userbot.events import register
-from userbot.utils import humanbytes, time_formatter, md5, human_to_bytes
+from userbot.utils import (
+    chrome, humanbytes, time_formatter, md5, human_to_bytes
+)
 
 GITHUB = 'https://github.com'
 DEVICES_DATA = ('https://raw.githubusercontent.com/androidtrackers/'

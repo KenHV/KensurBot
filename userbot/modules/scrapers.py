@@ -13,10 +13,8 @@ from bs4 import BeautifulSoup
 import re
 from html import unescape
 from re import findall
-from selenium import webdriver
 from urllib.parse import quote_plus
 from urllib.error import HTTPError
-from selenium.webdriver.chrome.options import Options
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
 from urbandict import define
@@ -35,10 +33,10 @@ from youtube_dl.utils import (DownloadError, ContentTooShortError,
                               UnavailableVideoError, XAttrMetadataError)
 from asyncio import sleep
 from userbot import (CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY,
-                     CHROME_DRIVER, GOOGLE_CHROME_BIN)
+                     TEMP_DOWNLOAD_DIRECTORY)
 from userbot.events import register
 from telethon.tl.types import DocumentAttributeAudio
-from userbot.modules.upload_download import progress
+from userbot.utils import progress, chrome
 from userbot.google_images_download import googleimagesdownload
 
 CARBONLANG = "auto"
@@ -57,7 +55,7 @@ async def setlang(prog):
 @register(outgoing=True, pattern="^.carbon")
 async def carbon_api(e):
     """ A Wrapper for carbon.now.sh """
-    await e.edit("`Processing..`")
+    await e.edit("`Processing...`")
     CARBON = 'https://carbon.now.sh/?l={lang}&code={code}'
     global CARBONLANG
     textx = await e.get_reply_message()
@@ -67,54 +65,33 @@ async def carbon_api(e):
     elif textx:
         pcode = str(textx.message)  # Importing message to module
     code = quote_plus(pcode)  # Converting to urlencoded
-    await e.edit("`Processing..\n25%`")
-    if os.path.isfile("/root/userbot/.bin/carbon.png"):
-        os.remove("/root/userbot/.bin/carbon.png")
+    await e.edit("`Processing...\n25%`")
+    file_path = TEMP_DOWNLOAD_DIRECTORY + "carbon.png"
+    if os.path.isfile(file_path):
+        os.remove(file_path)
     url = CARBON.format(code=code, lang=CARBONLANG)
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.binary_location = GOOGLE_CHROME_BIN
-    chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-gpu")
-    prefs = {'download.default_directory': '/root/userbot/.bin'}
-    chrome_options.add_experimental_option('prefs', prefs)
-    driver = webdriver.Chrome(executable_path=CHROME_DRIVER,
-                              options=chrome_options)
+    driver = await chrome()
     driver.get(url)
-    await e.edit("`Processing..\n50%`")
-    download_path = '/root/userbot/.bin'
-    driver.command_executor._commands["send_command"] = (
-        "POST", '/session/$sessionId/chromium/send_command')
-    params = {
-        'cmd': 'Page.setDownloadBehavior',
-        'params': {
-            'behavior': 'allow',
-            'downloadPath': download_path
-        }
-    }
-    driver.execute("send_command", params)
+    await e.edit("`Processing...\n50%`")
     driver.find_element_by_xpath("//button[@id='export-menu']").click()
     driver.find_element_by_xpath("//button[contains(text(),'4x')]").click()
     driver.find_element_by_xpath("//button[contains(text(),'PNG')]").click()
-    await e.edit("`Processing..\n75%`")
+    await e.edit("`Processing...\n75%`")
     # Waiting for downloading
-    while not os.path.isfile("/root/userbot/.bin/carbon.png"):
+    while not os.path.isfile(file_path):
         await sleep(0.5)
-    await e.edit("`Processing..\n100%`")
-    file = '/root/userbot/.bin/carbon.png'
-    await e.edit("`Uploading..`")
+    await e.edit("`Processing...\n100%`")
+    await e.edit("`Uploading...`")
     await e.client.send_file(
         e.chat_id,
-        file,
+        file_path,
         caption=("Made using [Carbon](https://carbon.now.sh/about/),"
                  "\na project by [Dawn Labs](https://dawnlabs.io/)"),
         force_document=True,
         reply_to=e.message.reply_to_msg_id,
     )
 
-    os.remove('/root/userbot/.bin/carbon.png')
+    os.remove(file_path)
     driver.quit()
     # Removing carbon.png after uploading
     await e.delete()  # Deleting msg
