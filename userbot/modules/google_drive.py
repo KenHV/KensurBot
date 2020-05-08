@@ -45,7 +45,7 @@ from userbot import (
     G_DRIVE_FOLDER_ID, BOTLOG_CHATID, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, LOGS,
 )
 from userbot.events import register
-from userbot.modules.upload_download import humanbytes, time_formatter
+from userbot.utils import humanbytes, time_formatter, human_to_bytes
 from userbot.utils.exceptions import CancelProcess
 from userbot.modules.aria import aria2, check_metadata
 # =========================================================== #
@@ -103,15 +103,6 @@ logger.setLevel(logging.ERROR)
 # =========================================================== #
 #                                                             #
 # =========================================================== #
-
-
-def human_to_bytes(size):
-    units = {"M": 2**20, "G": 2**30, "T": 2**40}
-    size = size.upper()
-    if not re.match(r' ', size):
-        size = re.sub(r'([KMGT])', r' \1', size)
-    number, unit = [string.strip() for string in size.split()]
-    return int(float(number)*units[unit])
 
 
 async def progress(current, total, gdrive, start, prog_type, file_name=None):

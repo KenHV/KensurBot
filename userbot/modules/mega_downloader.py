@@ -33,7 +33,7 @@ from urllib.error import HTTPError
 
 from userbot import CMD_HELP, LOGS
 from userbot.events import register
-from userbot.modules.upload_download import humanbytes
+from userbot.utils import humanbytes
 
 
 async def subprocess_run(megadl, cmd):
