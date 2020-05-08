@@ -15,7 +15,7 @@ from traceback import format_exc
 
 from telethon import events
 
-from userbot import BOTLOG_CHATID, LOGSPAMMER, bot
+from userbot import BOTLOG_CHATID, LOGSPAMMER, bot, LOGS
 
 
 def register(**args):
@@ -87,29 +87,27 @@ def register(**args):
             # This is a gay exception and must be passed out. So that it doesnt spam chats
             except KeyboardInterrupt:
                 pass
-            except BaseException:
+            except BaseException as e:
 
-                # Check if we have to disable it.
-                # If not silence the log spam on the console,
-                # with a dumb except.
-
+                # Check if we have to disable error logging.
                 if not disable_errors:
+                    LOGS.exception(e) # Log the error in console
+
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
                     text = "**USERBOT ERROR REPORT**\n"
                     link = "[Support Chat](https://t.me/KenVerseChat)"
                     text += "If you want to, you can report it"
                     text += f"- just forward this message to {link}.\n"
-                    text += "Nothing is logged except the fact of error and date\n"
+                    text += "I won't log anything except the fact of error and date\n"
 
-                    ftext = "========== DISCLAIMER =========="
-                    ftext += "\nThis file uploaded ONLY here,"
-                    ftext += "\nwe logged only fact of error and date,"
-                    ftext += "\nwe respect your privacy,"
-                    ftext += "\nyou may not report this error if you've"
-                    ftext += "\nany confidential data here, no one will see your data\n"
-                    ftext += "================================\n\n"
-                    ftext += "--------BEGIN USERBOT TRACEBACK LOG--------\n"
+                    ftext = "\nDisclaimer:\nThis file uploaded ONLY here, "
+                    ftext += "we logged only fact of error and date, "
+                    ftext += "we respect your privacy, "
+                    ftext += "you may not report this error if you've "
+                    ftext += "any confidential data here, no one will see your data "
+                    ftext += "if you choose not to do so.\n\n"
+                    ftext += "--------BEGIN USERBOT TRACEBACK LOG--------"
                     ftext += "\nDate: " + date
                     ftext += "\nChat ID: " + str(check.chat_id)
                     ftext += "\nSender ID: " + str(check.sender_id)
