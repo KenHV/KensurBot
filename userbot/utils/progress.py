@@ -45,7 +45,7 @@ async def progress(current, total, gdrive, start, prog_type, file_name=None):
         tmp = (
             f"{progress_str}\n"
             f"`{humanbytes(current)} of {humanbytes(total)}"
-            f" @ {humanbytes(speed)}`"
+            f" @ {humanbytes(speed)}`\n"
             f"`ETA` -> {time_formatter(eta)}\n"
             f"`Duration` -> {time_formatter(elapsed_time)}"
         )
