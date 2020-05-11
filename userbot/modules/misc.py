@@ -7,12 +7,13 @@
 """ Userbot module for other small commands. """
 
 from random import randint
-from asyncio import sleep
+from time import sleep
 from os import execl
 import sys
 import io
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
 from userbot.events import register
+from userbot.utils import time_formatter
 
 
 @register(outgoing=True, pattern="^.random")
@@ -28,22 +29,19 @@ async def randomise(items):
                      itemo[index] + "`")
 
 
-@register(outgoing=True, pattern="^.sleep( [0-9]+)?$")
+@register(outgoing=True, pattern="^.sleep ([0-9]+)$")
 async def sleepybot(time):
     """ For .sleep command, let the userbot snooze for a few second. """
-    if " " not in time.pattern_match.group(1):
-        await time.reply("Syntax: `.sleep [seconds]`")
-    else:
-        counter = int(time.pattern_match.group(1))
-        await time.edit("`I am sulking and snoozing....`")
-        await sleep(2)
-        if BOTLOG:
-            await time.client.send_message(
-                BOTLOG_CHATID,
-                "You put the bot to sleep for " + str(counter) + " seconds",
-            )
-        await sleep(counter)
-        await time.edit("`OK, I'm awake now.`")
+    counter = int(time.pattern_match.group(1))
+    await time.edit("`I am sulking and snoozing...`")
+    if BOTLOG:
+        str_counter = time_formatter(counter)
+        await time.client.send_message(
+            BOTLOG_CHATID,
+            f"You put the bot to sleep for {str_counter}.",
+        )
+    sleep(counter)
+    await time.edit("`OK, I'm awake now.`")
 
 
 @register(outgoing=True, pattern="^.shutdown$")
