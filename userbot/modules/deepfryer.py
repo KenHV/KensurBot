@@ -1,7 +1,6 @@
 # Original source for the deepfrying code (used under the following license): https://github.com/Ovyerus/deeppyer
 
 import os
-import asyncio
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
 import io
@@ -12,7 +11,7 @@ from userbot.events import register
 from PIL import Image, ImageEnhance, ImageOps
 from telethon.tl.types import DocumentAttributeFilename
 
-@register(outgoing=True, pattern=r'^.df(:? |$)(\d)?')
+@register(outgoing=True, pattern=r'^.df(:? |$)([1-8])?')
 async def _(fry):
     await fry.edit("`Sending information...`")
     level = fry.pattern_match.group(2)
