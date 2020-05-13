@@ -221,7 +221,6 @@ async def download(gdrive, service, uri=None):
     """ - Download files to local then upload - """
     if not isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-        required_file_name = None
     if uri:
         full_path = os.getcwd() + TEMP_DOWNLOAD_DIRECTORY.strip('.')
         if isfile(uri) and uri.endswith(".torrent"):
@@ -244,9 +243,9 @@ async def download(gdrive, service, uri=None):
             new_gid = await check_metadata(gid)
             await check_progress_for_dl(gdrive, new_gid, previous=None)
         try:
-            required_file_name = TEMP_DOWNLOAD_DIRECTORY + filenames
+            file_path = TEMP_DOWNLOAD_DIRECTORY + filenames
         except Exception:
-            required_file_name = TEMP_DOWNLOAD_DIRECTORY + filename
+            file_path = TEMP_DOWNLOAD_DIRECTORY + filename
     else:
         try:
             current_time = time.time()
@@ -256,7 +255,7 @@ async def download(gdrive, service, uri=None):
             file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
             if isfile(file_path):
                 os.remove(file_path)
-            downloaded_file_name = await gdrive.client.download_media(
+            await gdrive.client.download_media(
                 file,
                 file_path,
                 progress_callback=lambda d, t: asyncio.get_event_loop(
@@ -271,23 +270,21 @@ async def download(gdrive, service, uri=None):
                 "`Status` : **OK** - received signal cancelled."
             )
             return reply
-        else:
-            required_file_name = downloaded_file_name
     try:
-        file_name = await get_raw_name(required_file_name)
+        file_name = await get_raw_name(file_path)
     except AttributeError:
         reply += (
             "`[ENTRY - ERROR]`\n\n"
             "`Status` : **BAD**\n"
         )
         return reply
-    mimeType = await get_mimeType(required_file_name)
+    mimeType = await get_mimeType(file_path)
     try:
         status = "[FILE - UPLOAD]"
-        if isfile(required_file_name):
+        if isfile(file_path):
             try:
                 result = await upload(
-                    gdrive, service, required_file_name, file_name, mimeType)
+                    gdrive, service, file_path, file_name, mimeType)
             except CancelProcess:
                 reply += (
                     "`[FILE - CANCELLED]`\n\n"
@@ -313,7 +310,7 @@ async def download(gdrive, service, uri=None):
                 + parent_Id
             )
             try:
-                await task_directory(gdrive, service, required_file_name)
+                await task_directory(gdrive, service, file_path)
             except CancelProcess:
                 reply += (
                     "`[FOLDER - CANCELLED]`\n\n"
