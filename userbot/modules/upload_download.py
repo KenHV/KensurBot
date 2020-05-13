@@ -87,12 +87,18 @@ async def download(target_file):
     elif target_file.reply_to_msg_id:
         try:
             c_time = time.time()
+            file = await target_file.get_reply_message()
+            file_name = file.file.name
+            file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
+            if os.path.isfile(file_path):
+                os.remove(file_path)
             downloaded_file_name = await target_file.client.download_media(
-                await target_file.get_reply_message(),
-                TEMP_DOWNLOAD_DIRECTORY,
+                file,
+                file_path,
                 progress_callback=lambda d, t: asyncio.get_event_loop(
                 ).create_task(
-                    progress(d, t, target_file, c_time, "[DOWNLOAD]")))
+                    progress(d, t, target_file, c_time, "[DOWNLOAD]",
+                             file_name=file_name)))
         except Exception as e:  # pylint:disable=C0103,W0703
             await target_file.edit(str(e))
         else:
@@ -136,7 +142,7 @@ async def uploadir(udir_event):
                         progress_callback=lambda d, t: asyncio.get_event_loop(
                         ).create_task(
                             progress(d, t, udir_event, c_time, "[UPLOAD]",
-                                     single_file)))
+                                     file_name=single_file)))
                 else:
                     thumb_image = os.path.join(input_str, "thumb.jpg")
                     c_time = time.time()
@@ -170,7 +176,7 @@ async def uploadir(udir_event):
                         progress_callback=lambda d, t: asyncio.get_event_loop(
                         ).create_task(
                             progress(d, t, udir_event, c_time, "[UPLOAD]",
-                                     single_file)))
+                                     file_name=single_file)))
                 os.remove(single_file)
                 uploaded = uploaded + 1
         await udir_event.edit(
@@ -196,7 +202,8 @@ async def upload(u_event):
             reply_to=u_event.message.id,
             progress_callback=lambda d, t: asyncio.get_event_loop(
             ).create_task(
-                progress(d, t, u_event, c_time, "[UPLOAD]", input_str)))
+                progress(d, t, u_event, c_time, "[UPLOAD]",
+                         file_name=input_str)))
         await u_event.edit("Uploaded successfully !!")
     else:
         await u_event.edit("404: File Not Found")
@@ -314,7 +321,7 @@ async def uploadas(uas_event):
                     progress_callback=lambda d, t: asyncio.get_event_loop(
                     ).create_task(
                         progress(d, t, uas_event, c_time, "[UPLOAD]",
-                                 file_name)))
+                                 file_name=file_name)))
             elif round_message:
                 c_time = time.time()
                 await uas_event.client.send_file(
@@ -336,7 +343,7 @@ async def uploadas(uas_event):
                     progress_callback=lambda d, t: asyncio.get_event_loop(
                     ).create_task(
                         progress(d, t, uas_event, c_time, "[UPLOAD]",
-                                 file_name)))
+                                 file_name=file_name)))
             elif spam_big_messages:
                 return await uas_event.edit("TBD: Not (yet) Implemented")
             os.remove(thumb)
