@@ -216,6 +216,7 @@ async def get_mimeType(name):
 
 
 async def download(gdrive, service, uri=None):
+    global is_cancelled
     reply = ''
     """ - Download files to local then upload - """
     if not isdir(TEMP_DOWNLOAD_DIRECTORY):
@@ -249,14 +250,20 @@ async def download(gdrive, service, uri=None):
     else:
         try:
             current_time = time.time()
+            is_cancelled = False
             downloaded_file_name = await gdrive.client.download_media(
                 await gdrive.get_reply_message(),
                 TEMP_DOWNLOAD_DIRECTORY,
                 progress_callback=lambda d, t: asyncio.get_event_loop(
                 ).create_task(progress(d, t, gdrive, current_time,
-                                       "[FILE - DOWNLOAD]")))
-        except Exception as e:
-            await gdrive.edit(str(e))
+                                       "[FILE - DOWNLOAD]",
+                                       is_cancelled=is_cancelled)))
+        except CancelProcess:
+            reply += (
+                "`[FILE - CANCELLED]`\n\n"
+                "`Status` : **OK** - received signal cancelled."
+            )
+            return reply
         else:
             required_file_name = downloaded_file_name
     try:
