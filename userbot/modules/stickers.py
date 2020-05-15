@@ -315,6 +315,12 @@ async def sticker_to_png(sticker):
         await sticker.edit("`Reply to a sticker...`")
         return False
 
+    try:
+        img.document.attributes[1]
+    except Exception:
+        await sticker.edit("`This is not a sticker...`")
+        return
+
     await sticker.edit("`Converting...`")
     image = io.BytesIO()
     await sticker.client.download_media(img, image)
