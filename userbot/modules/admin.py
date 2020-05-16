@@ -232,14 +232,14 @@ async def ban(bon):
             await reply.delete()
     except BadRequestError:
         return await bon.edit(
-            "`I dont have message nuking rights! But still he was banned!`")
+            "`I dont have message nuking rights, but the nibba was banned!`")
     # Delete message and then tell that the command
     # is done gracefully
     # Shout out the ID, so that fedadmins can fban later
     if reason:
-        await bon.edit(f"`{str(user.id)}` was banned !!\nReason: {reason}")
+        await bon.edit(f"`{str(user.id)}` was banned!\nReason: {reason}")
     else:
-        await bon.edit(f"`{str(user.id)}` was banned !!")
+        await bon.edit(f"`{str(user.id)}` was banned!")
     # Announce to the logging group if we have banned the person
     # successfully!
     if BOTLOG:
@@ -328,9 +328,9 @@ async def spider(spdr):
 
             # Announce that the function is done
             if reason:
-                await spdr.edit(f"`Safely taped !!`\nReason: {reason}")
+                await spdr.edit(f"`Safely taped!`\nReason: {reason}")
             else:
-                await spdr.edit("`Safely taped !!`")
+                await spdr.edit("`Safely taped!`")
 
             # Announce to logging group
             if BOTLOG:
@@ -422,7 +422,7 @@ async def rm_deletedacc(show):
     del_status = "`No deleted accounts found, Group is clean`"
 
     if con != "clean":
-        await show.edit("`Searching for ghost/deleted/zombie accounts...`")
+        await show.edit("`Searching for ded nibbas...`")
         async for user in show.client.iter_participants(show.chat_id):
 
             if user.deleted:
@@ -430,7 +430,7 @@ async def rm_deletedacc(show):
                 await sleep(1)
         if del_u > 0:
             del_status = (
-                f"`Found` **{del_u}** `ghost/deleted/zombie account(s) in this group,"
+                f"`Found` **{del_u}** `ded nibba(s) in this group,"
                 "\nclean them by using .zombies clean`"
             )
         return await show.edit(del_status)
@@ -444,7 +444,7 @@ async def rm_deletedacc(show):
     if not admin and not creator:
         return await show.edit("`I am not an admin here!`")
 
-    await show.edit("`Deleting deleted accounts...\nOh I can do that?!?!`")
+    await show.edit("`Yeeting ded nibbas...`")
     del_u = 0
     del_a = 0
 
@@ -463,10 +463,10 @@ async def rm_deletedacc(show):
             del_u += 1
 
     if del_u > 0:
-        del_status = f"Cleaned **{del_u}** deleted account(s)"
+        del_status = f"Yeeted **{del_u}** ded nibba(s)"
 
     if del_a > 0:
-        del_status = (f"Cleaned **{del_u}** deleted account(s) "
+        del_status = (f"Yeeted **{del_u}** ded nibba(s)"
                       f"\n**{del_a}** deleted admin accounts are not removed"
         )
     await show.edit(del_status)
@@ -476,7 +476,7 @@ async def rm_deletedacc(show):
     if BOTLOG:
         await show.client.send_message(
             BOTLOG_CHATID, "#CLEANUP\n"
-            f"Cleaned **{del_u}** deleted account(s) !!"
+            f"Cleaned **{del_u}** deleted account(s)!"
             f"\nCHAT: {show.chat.title}(`{show.chat_id}`)")
 
 
@@ -666,7 +666,7 @@ async def get_user_from_id(user, event):
 
     return user_obj
 
-  
+
 @register(outgoing=True, pattern="^.usersdel ?(.*)")
 async def get_usersdel(show):
     """ For .usersdel command, list all of the deleted users in a chat. """

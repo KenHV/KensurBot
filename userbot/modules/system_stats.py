@@ -38,7 +38,7 @@ async def sysdetails(sysd):
 
             await sysd.edit("`" + result + "`")
         except FileNotFoundError:
-            await sysd.edit("`Install neofetch first !!`")
+            await sysd.edit("`Install neofetch first!`")
 
 
 @register(outgoing=True, pattern="^.botver$")
@@ -133,9 +133,9 @@ async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
                      "Service Running! \n\n"
-                     f"Telethon V: {version.__version__} \n"
-                     f"Python V: {python_version()} \n"
-                     f"hmu: {DEFAULTUSER}"
+                     f"Bot      : v0.3.516 \n"
+                     f"Python   : {python_version()} \n"
+                     f"User     : {DEFAULTUSER}"
                      "`")
 
 

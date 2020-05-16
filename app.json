@@ -1,6 +1,6 @@
 {
-  "name": "Telegram OpenUbot",
-  "description": "[OpenUbot] A modular Telegram userbot running on Python 3.8+ with an sqlalchemy database.",
+  "name": "KensurBot",
+  "description": "[KensurBot] A modular Telegram userbot running on Python 3.8+ with an sqlalchemy database.",
   "logo": "#",
   "keywords": [
     "telegram",
@@ -9,9 +9,9 @@
     "modular",
     "productivity"
   ],
-  "repository": "https://github.com/goodmeow/OpenUbot",
+  "repository": "https://github.com/KenHV/KensurBot",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
-  "success_url": "https://t.me/userbotindo",
+  "success_url": "https://t.me/KenVerseChat",
   "stack": "container",
   "env": {
     "API_KEY": {
