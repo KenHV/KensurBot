@@ -17,8 +17,8 @@ from userbot.events import register
 
 # ========================= CONSTANTS ============================
 UNAPPROVED_MSG = (
-    "`Yo, yo, yo! 1-4-8-3 to the 3 to the 6 to the 9. representin' the ABQ. What up, Biatch?\n\n`"
-    "`State the reason for your PM and wait till my Führer approves you.`"
+    "`Yo, yo, yo! 1-4-8-3 to the 3 to the 6 to the 9, representin' the ABQ. What up, Biatch?\n\n`"
+    "`State the reason for your PM and wait till my Führer approves you.\n`"
     "`Spamming will lead to you getting blocked and reported.`")
 # =================================================================
 
