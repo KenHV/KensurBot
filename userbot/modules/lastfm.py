@@ -71,7 +71,7 @@ async def last_fm(lastFM):
             output = (f"[{LASTFM_USERNAME}]({username}) __is now listening to:"
                       f"__\n\n• [{playing}]({rectrack})\n`{tags}`")
     else:
-        recent = User(LASTFM_USERNAME, lastfm).get_recent_tracks(limit=10)
+        recent = User(LASTFM_USERNAME, lastfm).get_recent_tracks(limit=5)
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
         output = f"[{LASTFM_USERNAME}]({username}) __was last listening to:__\n\n"
         for i, track in enumerate(recent):
