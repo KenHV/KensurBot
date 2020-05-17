@@ -141,11 +141,11 @@ async def update(event, repo, ups_rem, ac_br):
     return
 
 
-@register(outgoing=True, pattern=r"^.update(?: |$)(now|deploy)?")
+@register(outgoing=True, pattern="^.update( now| deploy|$)")
 async def upstream(event):
     "For .update command, check if the bot is up to date, update if specified"
-    await event.edit("`Getting information....`")
-    conf = event.pattern_match.group(1)
+    await event.edit("`Checking for updates, please wait....`")
+    conf = event.pattern_match.group(1).strip()
     off_repo = UPSTREAM_REPO_URL
     force_update = False
     try:
@@ -204,7 +204,7 @@ async def upstream(event):
             f'**{UPSTREAM_REPO_BRANCH}**\n')
         return repo.__del__()
 
-    if conf is None and force_update is False:
+    if conf == '' and force_update is False:
         await print_changelogs(event, ac_br, changelog)
         await event.delete()
         return await event.respond(
@@ -213,9 +213,8 @@ async def upstream(event):
     if force_update:
         await event.edit(
             '`Force-Syncing to latest stable userbot code, please wait...`')
-    else:
-        await event.edit('`Updating userbot, please wait....`')
     if conf == "now":
+        await event.edit('`Updating userbot, please wait....`')
         await update(event, repo, ups_rem, ac_br)
     return
 
