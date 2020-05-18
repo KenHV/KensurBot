@@ -60,7 +60,7 @@ async def kang(args):
                 except Exception:
                     pass
                 else:
-                    if emoji is not None:
+                    if emoji != '':
                         emojibypass = True
         elif "tgsticker" in message.media.document.mime_type:
             await args.edit(f"`{random.choice(KANGING_STR)}`")
