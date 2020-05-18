@@ -167,7 +167,7 @@ async def kang(args):
                         return await args.edit(
                             "`Sticker added in a Different Pack !"
                             "\nThis Pack is Newly created!"
-                            f"\nYour pack can be found [here](t.me/addstickers/{packname})",
+                            f"\nYour pack can be found [here](t.me/addstickers/{packname})`",
                             parse_mode='md')
                 if is_anim:
                     await conv.send_file('AnimatedSticker.tgs')
