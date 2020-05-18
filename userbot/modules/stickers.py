@@ -307,7 +307,7 @@ async def get_pack_info(event):
 @register(outgoing=True, pattern="^.getsticker$")
 async def sticker_to_png(sticker):
     if not sticker.is_reply:
-        await sticker.edit("`NULL information to feftch...`")
+        await sticker.edit("`NULL information to fetch...`")
         return False
 
     img = await sticker.get_reply_message()
@@ -321,14 +321,16 @@ async def sticker_to_png(sticker):
         await sticker.edit("`This is not a sticker...`")
         return
 
-    await sticker.edit("`Converting...`")
-    image = io.BytesIO()
-    await sticker.client.download_media(img, image)
-    image.name = 'sticker.png'
-    image.seek(0)
-    await sticker.client.send_file(
-        sticker.chat_id, image, reply_to=img.id, force_document=True)
-    await sticker.delete()
+    with io.BytesIO() as image:
+        await sticker.client.download_media(img, image)
+        image.name = 'sticker.png'
+        image.seek(0)
+        try:
+            await img.reply(file=image, force_document=True)
+        except Exception:
+            await sticker.edit("`Err, can't send file...`")
+        else:
+            await sticker.delete()
     return
 
 
