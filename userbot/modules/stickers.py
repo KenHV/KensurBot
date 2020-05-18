@@ -55,13 +55,9 @@ async def kang(args):
             await bot.download_file(message.media.document, photo)
             if (DocumentAttributeFilename(file_name='sticker.webp') in
                     message.media.document.attributes):
-                try:
-                    emoji = message.media.document.attributes[1].alt
-                except Exception:
-                    pass
-                else:
-                    if emoji != '':
-                        emojibypass = True
+                emoji = message.media.document.attributes[1].alt
+                if emoji != '':
+                    emojibypass = True
         elif "tgsticker" in message.media.document.mime_type:
             await args.edit(f"`{random.choice(KANGING_STR)}`")
             await bot.download_file(message.media.document,
