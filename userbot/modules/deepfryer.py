@@ -1,15 +1,9 @@
-# Original source for the deepfrying code (used under the following license): https://github.com/Ovyerus/deeppyer
-
 import os
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
-import io
-from random import randint, uniform
-from userbot import bot, CMD_HELP
 from userbot.events import register
+from userbot import bot, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP
 
-from PIL import Image, ImageEnhance, ImageOps
-from telethon.tl.types import DocumentAttributeFilename
 
 @register(outgoing=True, pattern=r'^.df(:? |$)([1-8])?')
 async def _(fry):
@@ -72,10 +66,6 @@ async def _(fry):
     await fry.delete()
     return os.remove(downloaded_file_name)
 
-    if not data or data is None:
-        return False
-    else:
-        return data
 
 CMD_HELP.update({
     "deepfry":
