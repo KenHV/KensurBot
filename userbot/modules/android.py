@@ -30,13 +30,13 @@ DEVICES_DATA = ('https://raw.githubusercontent.com/androidtrackers/'
 async def magisk(request):
     """ magisk latest releases """
     magisk_dict = {
-        "Stable":
+        "Stable"                  :
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json",
-        "Beta":
+        "Beta"                     :
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json",
-        "Canary (Release)":
+        "Canary-Release"  :
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/release.json",
-        "Canary (Debug)":
+        "Canary-Debug"   :
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/debug.json"
     }
     releases = 'Latest Magisk Releases:\n'
