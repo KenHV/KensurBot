@@ -49,6 +49,10 @@ async def quotecmd(message):  # noqa: C901
     """Quote a message.
     Usage: .pch [template]
     If template is missing, possible templates are fetched."""
+    if not QUOTES_API_TOKEN:
+        return await message.edit(
+            "`Error: Quotes API key is missing! Add it to environment variables or config.env.`"
+        )
     await message.delete()
     args = message.raw_text.split(" ")[1:]
     if args == []:
