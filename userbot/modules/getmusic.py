@@ -55,17 +55,16 @@ async def _(event):
               r = await conv.get_response()
               msg = await conv.send_message(d_link)
               details = await conv.get_response()
-              msg_details = await bot.send_message(event.chat_id, details)
               song = await conv.get_response()
               """ - don't spam notif - """
               await bot.send_read_acknowledge(conv.chat_id)
-              await bot.send_file(event.chat_id, song)
-              await event.client.delete_messages(conv.chat_id,
-                                                 [msg.id, msg_details.id, msg_start.id, response.id, r.id, details.id, song.id])
-              await event.delete()
           except YouBlockedUserError:
               await event.edit("**Error:** `unblock` @DeezLoadBot `and retry!`")
               return
+          await bot.send_file(event.chat_id, song, caption=details.text)
+          await event.client.delete_messages(conv.chat_id,
+                                             [msg_start.id, response.id, r.id, msg.id, details.id, song.id])
+          await event.delete()
 
 @register(outgoing=True, pattern="^.smd(?: |$)(.*)")
 async def _(event):
