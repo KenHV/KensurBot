@@ -21,21 +21,19 @@ async def _(event):
           await asyncio.sleep(2)
           await event.edit("`Downloading...Please wait`")
           try:
-              r = conv.wait_event(events.NewMessage(incoming=True,from_users=573173175))
-              msg = await bot.send_message(chat, link)
-              await r
-              response = conv.wait_event(events.NewMessage(incoming=True,from_users=573173175))
-              respond = await response
+              msg = await conv.send_message(link)
+              response = await conv.get_response()
+              respond = await conv.get_response()
               """ - don't spam notif - """
               await bot.send_read_acknowledge(conv.chat_id)
           except YouBlockedUserError:
               await event.reply("```Please unblock @WooMaiBot and try again```")
               return
           await event.edit("`Sending Your Music...`")
-          await asyncio.sleep(5)
-          await bot.forward_messages(event.chat_id, respond.message)
+          await asyncio.sleep(3)
+          await bot.send_file(event.chat_id, respond)
     await event.client.delete_messages(conv.chat_id,
-                                       [msg.id, respond.id])
+                                       [msg.id, response.id, respond.id])
     await event.delete()
 
 @register(outgoing=True, pattern="^.sdd(?: |$)(.*)")
