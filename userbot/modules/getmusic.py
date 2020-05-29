@@ -51,13 +51,14 @@ async def _(event):
     async with bot.conversation(chat) as conv:
           try:
               msg = await conv.send_message(d_link)
-              response = await conv.get_response()
+              details = await conv.get_response()
+              msg_details = await bot.send_message(event.chat_id, details)
               song = await conv.get_response()
               """ - don't spam notif - """
               await bot.send_read_acknowledge(conv.chat_id)
               await bot.send_file(event.chat_id, song)
               await event.client.delete_messages(conv.chat_id,
-                                                 [msg.id, song.id,  response.id])
+                                                 [msg.id, msg_details.id, details.id, song.id])
               await event.delete()
           except YouBlockedUserError:
               await event.edit("**Error:** `unblock` @DeezLoadBot `and retry!`")
