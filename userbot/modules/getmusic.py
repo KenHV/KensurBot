@@ -16,10 +16,10 @@ async def _(event):
     song = event.pattern_match.group(1)
     chat = "@WooMaiBot"
     link = f"/netease {song}"
-    await event.edit("```Getting Your Music```")
+    await event.edit("`Searching...`")
     async with bot.conversation(chat) as conv:
           await asyncio.sleep(2)
-          await event.edit("`Downloading...Please wait`")
+          await event.edit("`Downloading...`")
           try:
               msg = await conv.send_message(link)
               response = await conv.get_response()
@@ -27,9 +27,9 @@ async def _(event):
               """ - don't spam notif - """
               await bot.send_read_acknowledge(conv.chat_id)
           except YouBlockedUserError:
-              await event.reply("```Please unblock @WooMaiBot and try again```")
+              await event.reply("`Unblock `@WooMaiBot` and retry`")
               return
-          await event.edit("`Sending Your Music...`")
+          await event.edit("`Uploading...`")
           await asyncio.sleep(3)
           await bot.send_file(event.chat_id, respond)
     await event.client.delete_messages(conv.chat_id,
@@ -42,9 +42,9 @@ async def _(event):
         return
     d_link = event.pattern_match.group(1)
     if ".com" not in d_link:
-        await event.edit("` I need a link to download something pro.`**(._.)**")
+        await event.edit("`Enter a valid link to download from`")
     else:
-        await event.edit("**Initiating Download!**")
+        await event.edit("`Downloading...`")
     chat = "@MusicHuntersBot"
     async with bot.conversation(chat) as conv:
           try:
@@ -56,7 +56,7 @@ async def _(event):
               """ - don't spam notif - """
               await bot.send_read_acknowledge(conv.chat_id)
           except YouBlockedUserError:
-              await event.edit("**Error:** `unblock` @MusicHuntersBot `and retry!`")
+              await event.edit("`Unblock `@MusicHuntersBot` and retry`")
               return
           await bot.send_file(event.chat_id, song, caption=details.text)
           await event.client.delete_messages(conv.chat_id,
@@ -69,10 +69,10 @@ async def _(event):
         return
     link = event.pattern_match.group(1)
     chat = "@SpotifyMusicDownloaderBot"
-    await event.edit("```Getting Your Music```")
+    await event.edit("`Searching...`")
     async with bot.conversation(chat) as conv:
           await asyncio.sleep(2)
-          await event.edit("`Downloading music taking some times,  Stay Tuned.....`")
+          await event.edit("`Downloading...`")
           try:
               response = conv.wait_event(events.NewMessage(incoming=True,from_users=752979930))
               msg = await bot.send_message(chat, link)
@@ -82,7 +82,7 @@ async def _(event):
               """ - don't spam notif - """
               await bot.send_read_acknowledge(conv.chat_id)
           except YouBlockedUserError:
-              await event.reply("```Please unblock @SpotifyMusicDownloaderBot and try again```")
+              await event.reply("`Unblock `@SpotifyMusicDownloaderBot` and retry`")
               return
           await bot.forward_messages(event.chat_id, respond.message)
     await event.client.delete_messages(conv.chat_id,
@@ -91,10 +91,10 @@ async def _(event):
 
 CMD_HELP.update({
     "getmusic":
-    ">`.netease <Artist - Song Title>`"
-    "\nUsage: Download music with @WooMaiBot"
-    "\n\n>`.sdd <Spotify/Deezer Link>`"
-    "\nUsage: Download music from Spotify or Deezer"
-    "\n\n>`.smd <Artist - Song Title>`"
+    ">`.smd <Artist - Song Title>`"
     "\nUsage: Download music from Spotify"
+    "\n\n>`.sdd <Spotify/Deezer Link>`"
+    "\nUsage: Download music from Spotify/Deezer"
+    "\n\n>`.netease <Artist - Song Title>`"
+    "\nUsage: Download music from WooMaiBot"
 })
