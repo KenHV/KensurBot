@@ -53,8 +53,6 @@ async def direct_link_generator(request):
     for link in links:
         if 'drive.google.com' in link:
             reply += gdrive(link)
-        elif 'zippyshare.com' in link:
-            reply += zippy_share(link)
         elif 'yadi.sk' in link:
             reply += yandex_disk(link)
         elif 'cloud.mail.ru' in link:
@@ -114,35 +112,6 @@ def gdrive(url: str) -> str:
         if 'accounts.google.com' in dl_url:
             reply += 'Link is not public!'
             return reply
-    reply += f'[{name}]({dl_url})\n'
-    return reply
-
-
-def zippy_share(url: str) -> str:
-    """ ZippyShare direct links generator
-    Based on https://github.com/LameLemon/ziggy"""
-    reply = ''
-    dl_url = ''
-    try:
-        link = re.findall(r'\bhttps?://.*zippyshare\.com\S+', url)[0]
-    except IndexError:
-        reply = "`No ZippyShare links found`\n"
-        return reply
-    session = requests.Session()
-    base_url = re.search('http.+.com', link).group()
-    response = session.get(link)
-    page_soup = BeautifulSoup(response.content, "lxml")
-    scripts = page_soup.find_all("script", {"type": "text/javascript"})
-    for script in scripts:
-        if "getElementById('dlbutton')" in script.text:
-            url_raw = re.search(r'= (?P<url>\".+\" \+ (?P<math>\(.+\)) .+);',
-                                script.text).group('url')
-            math = re.search(r'= (?P<url>\".+\" \+ (?P<math>\(.+\)) .+);',
-                             script.text).group('math')
-            dl_url = url_raw.replace(math, '"' + str(eval(math)) + '"')
-            break
-    dl_url = base_url + eval(dl_url)
-    name = urllib.parse.unquote(dl_url.split('/')[-1])
     reply += f'[{name}]({dl_url})\n'
     return reply
 
@@ -342,6 +311,6 @@ CMD_HELP.update({
     "\nUsage: Reply to a link or paste a URL to\n"
     "generate a direct download link\n\n"
     "List of supported URLs:\n"
-    "`Google Drive - Cloud Mail - Yandex.Disk - AFH - "
-    "ZippyShare - MediaFire - SourceForge - OSDN - GitHub`"
+    "`Google Drive - Cloud Mail - Yandex.Disk - "
+    "`AFH - MediaFire - SourceForge - OSDN - GitHub`"
 })
