@@ -25,9 +25,7 @@ async def magisk(request):
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json",
         "Beta"                     :
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json",
-        "Canary-Release"  :
-        "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/release.json",
-        "Canary-Debug"   :
+        "Canary"   :
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/debug.json"
     }
     releases = 'Latest Magisk Releases:\n'
