@@ -521,7 +521,7 @@ class googleimagesdownload:
 
 
     # Download Image thumbnails
-    def download_image_thumbnail(self,image_url,main_directory,dir_name,return_image_name,print_urls,socket_timeout,print_size,no_download,save_source,img_src,ignore_urls):
+    def download_image_thumbnail(self,image_url,main_directory,dir_name,return_image_name,print_urls,socket_timeout,print_size,no_download,save_source,img_src,_ignore_urls):
         if print_urls or no_download:
             print("Image URL: " + image_url)
         if no_download:
