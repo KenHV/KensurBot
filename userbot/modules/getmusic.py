@@ -1,11 +1,9 @@
 # Copyright (C) 2020 Aidil Aryanto.
 # All rights reserved.
 
-import datetime
 import asyncio
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from userbot import bot, CMD_HELP
 from userbot.events import register
 
