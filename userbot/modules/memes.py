@@ -707,7 +707,7 @@ async def who(event):
         )
 
 
-async def slap(replied_user, event):
+async def slap(replied_user, _event):
     """ Construct a funny slap sentence !! """
     user_id = replied_user.id
     first_name = replied_user.first_name
