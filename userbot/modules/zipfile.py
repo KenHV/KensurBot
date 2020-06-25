@@ -7,13 +7,12 @@
 
 import asyncio
 import zipfile
-from pySmartDL import SmartDL
 from userbot.events import register
 from datetime import date
 import time
 import os
 from userbot import TEMP_DOWNLOAD_DIRECTORY, ZIP_DOWNLOAD_DIRECTORY, bot, CMD_HELP
-from userbot.utils import progress, humanbytes, time_formatter, human_to_bytes
+from userbot.utils import progress
 
 # ====================
 today = date.today()
