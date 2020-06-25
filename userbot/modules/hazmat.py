@@ -1,7 +1,5 @@
-import datetime
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from userbot import bot, CMD_HELP
 from userbot.events import register
 
@@ -27,7 +25,6 @@ async def hazmat(event):
               await event.reply("```Unblock @hazmat_suit_bot plox```")
               return
           else:
-             file = response
              await event.delete()
              await event.client.send_message(event.chat_id, response.message, reply_to=event.message.reply_to_msg_id)
                             

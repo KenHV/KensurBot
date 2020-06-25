@@ -6,20 +6,11 @@
 """ Userbot module containing commands related to android"""
 
 import re
-import os
-import time
-import math
-
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from requests import get
 from bs4 import BeautifulSoup
 
 from userbot import CMD_HELP
 from userbot.events import register
-from userbot.utils import (
-    chrome, humanbytes, time_formatter, md5, human_to_bytes
-)
 
 GITHUB = 'https://github.com'
 DEVICES_DATA = ('https://raw.githubusercontent.com/androidtrackers/'

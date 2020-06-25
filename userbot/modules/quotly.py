@@ -1,9 +1,7 @@
 #port to userbot by @MoveAngel
 
-import datetime
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from userbot import bot, CMD_HELP
 from userbot.events import register
 
@@ -19,7 +17,6 @@ async def _(event):
        await event.edit("```Reply to text message```")
        return
     chat = "@QuotLyBot"
-    sender = reply_message.sender
     if reply_message.sender.bot:
        await event.edit("```Reply to actual users message.```")
        return
