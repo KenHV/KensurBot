@@ -196,7 +196,7 @@ class googleimagesdownload:
 
         try:
             browser.find_element_by_id("smb").click()
-            for i in range(50):
+            for _ in range(50):
                 element.send_keys(Keys.PAGE_DOWN)
                 time.sleep(0.3)  # bot id protection
         except:
@@ -371,7 +371,7 @@ class googleimagesdownload:
 
                 newurl = "https://www.google.com/search?tbs=sbi:" + urll + "&site=search&sa=X"
                 req2 = urllib2.Request(newurl, headers=headers)
-                resp2 = urllib2.urlopen(req2)
+                urllib2.urlopen(req2)
                 l3 = content.find('/search?sa=X&amp;q=')
                 l4 = content.find(';', l3 + 19)
                 urll2 = content[l3 + 19:l4]
