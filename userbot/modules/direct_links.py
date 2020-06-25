@@ -19,7 +19,6 @@ from userbot.events import register
 
 
 def subprocess_run(cmd):
-    reply = ""
     subproc = Popen(cmd, stdout=PIPE, stderr=PIPE,
                     shell=True, universal_newlines=True)
     talk = subproc.communicate()

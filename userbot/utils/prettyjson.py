@@ -35,8 +35,6 @@ def getsubitems(obj, itemkey, islast, maxlinelength, indent):
 
         if itemkey != "": opening = itemkey + ": " + opening
         if not islast: closing += ","
-
-        count = 0
         itemkey = ""
         subitems = []
 
@@ -66,7 +64,6 @@ def getsubitems(obj, itemkey, islast, maxlinelength, indent):
             if (multiline):
                 lines = []
                 current_line = ""
-                current_index = 0
 
                 for (i, item) in enumerate(subitems):
                     item_text = item

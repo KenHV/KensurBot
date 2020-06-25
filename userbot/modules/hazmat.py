@@ -27,7 +27,6 @@ async def hazmat(event):
               await event.reply("```Unblock @hazmat_suit_bot plox```")
               return
           else:
-             file = response
              await event.delete()
              await event.client.send_message(event.chat_id, response.message, reply_to=event.message.reply_to_msg_id)
                             
