@@ -7,13 +7,13 @@ from telethon.errors.rpcerrorlist import YouBlockedUserError
 from userbot import bot, CMD_HELP
 from userbot.events import register
 
-@register(outgoing=True, pattern="^.netease(?: |$)(.*)")
+@register(outgoing=True, pattern="^.songn(?: |$)(.*)")
 async def _(event):
     if event.fwd_from:
         return
     song = event.pattern_match.group(1)
     chat = "@WooMaiBot"
-    link = f"/netease {song}"
+    link = f"/songn {song}"
     await event.edit("`Searching...`")
     async with bot.conversation(chat) as conv:
           await asyncio.sleep(2)
@@ -34,7 +34,7 @@ async def _(event):
                                        [msg.id, response.id, respond.id])
     await event.delete()
 
-@register(outgoing=True, pattern="^.sdd(?: |$)(.*)")
+@register(outgoing=True, pattern="^.songl(?: |$)(.*)")
 async def _(event):
     if event.fwd_from:
         return
@@ -61,7 +61,7 @@ async def _(event):
                                              [msg_start.id, response.id, msg.id, details.id, song.id])
           await event.delete()
 
-@register(outgoing=True, pattern="^.smd(?: |$)(.*)")
+@register(outgoing=True, pattern="^.songf(?: |$)(.*)")
 async def _(event):
     if event.fwd_from:
         return
@@ -89,10 +89,10 @@ async def _(event):
 
 CMD_HELP.update({
     "getmusic":
-    ">`.smd <Artist - Song Title>`"
-    "\nUsage: Download music from Spotify"
-    "\n\n>`.sdd <Spotify/Deezer Link>`"
-    "\nUsage: Download music from Spotify/Deezer"
-    "\n\n>`.netease <Artist - Song Title>`"
-    "\nUsage: Download music from WooMaiBot"
+    ">`.songn <Artist - Song Title>`"
+    "\nUsage: Download music by name"
+    "\n\n>`.songl <Spotify/Deezer Link>`"
+    "\nUsage: Download music by link"
+    ">`.songf <Artist - Song Title>`"
+    "\nUsage: Download music by name (fallback)"
 })
