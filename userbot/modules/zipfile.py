@@ -73,7 +73,6 @@ async def addzip(add):
     if not add.is_reply:
         await add.edit("`Reply to a file to compress it.`")
         return
-    directroy_zip = zip
     mone = await add.edit("`Processing ...`")
     if not os.path.isdir(ZIP_DOWNLOAD_DIRECTORY):
         os.makedirs(ZIP_DOWNLOAD_DIRECTORY)
@@ -88,7 +87,6 @@ async def addzip(add):
                     progress(d, t, mone, c_time, "`Trying to download`")
                 )
             )
-            directory_name = downloaded_file_name
             success = str(downloaded_file_name).replace("./zips/", "")
             await add.edit(f"`{success} Successfully added to list`")
         except Exception as e:  # pylint:disable=C0103,W0703
@@ -129,7 +127,7 @@ async def remove_dir(rm):
 
 def zipdir(path, ziph):
     # ziph is zipfile handle
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         for file in files:
             ziph.write(os.path.join(root, file))
             os.remove(os.path.join(root, file))
