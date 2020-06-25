@@ -13,7 +13,7 @@ async def _(event):
         return
     song = event.pattern_match.group(1)
     chat = "@WooMaiBot"
-    link = f"/songn {song}"
+    link = f"/netease {song}"
     await event.edit("`Searching...`")
     async with bot.conversation(chat) as conv:
           await asyncio.sleep(2)
@@ -93,6 +93,6 @@ CMD_HELP.update({
     "\nUsage: Download music by name"
     "\n\n>`.songl <Spotify/Deezer Link>`"
     "\nUsage: Download music by link"
-    ">`.songf <Artist - Song Title>`"
+    "\n\n>`.songf <Artist - Song Title>`"
     "\nUsage: Download music by name (fallback)"
 })
