@@ -17,6 +17,9 @@ from userbot.events import register
 from telethon.tl.functions.messages import GetStickerSetRequest
 from telethon.tl.types import InputStickerSetID
 from telethon.tl.types import DocumentAttributeSticker
+from telethon import events
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+
 
 KANGING_STR = [
     "Using Witchery to kang this sticker...",
@@ -306,33 +309,38 @@ async def get_pack_info(event):
 
 
 @register(outgoing=True, pattern="^.getsticker$")
-async def sticker_to_png(sticker):
-    if not sticker.is_reply:
-        await sticker.edit("`NULL information to fetch...`")
+async def getsticker(event):
+    """Copyright (C) 2020 KenHV"""
+    if not event.is_reply:
+        await event.edit("`Reply to a sticker!`")
         return False
 
-    img = await sticker.get_reply_message()
-    if not img.document:
-        await sticker.edit("`Reply to a sticker...`")
+    sticker = await event.get_reply_message()
+    if not sticker.document:
+        await event.edit("`Reply to a sticker!`")
         return False
 
     try:
-        img.document.attributes[1]
+        sticker.document.attributes[1]
     except Exception:
-        await sticker.edit("`This is not a sticker...`")
+        await event.edit("`Reply to a sticker!`")
         return
 
-    with io.BytesIO() as image:
-        await sticker.client.download_media(img, image)
-        image.name = 'sticker.png'
-        image.seek(0)
+    chat = "@stickers_to_image_bot"
+    await event.edit("`Processing...`")
+    async with bot.conversation("@stickers_to_image_bot") as conv:
         try:
-            await img.reply(file=image, force_document=True)
-        except Exception:
-            await sticker.edit("`Err, can't send file...`")
-        else:
-            await sticker.delete()
-    return
+            await conv.send_message("/start")
+            await conv.get_response()  # ignore the reply to /start
+            await conv.send_message(sticker)
+            await conv.get_response()  # ignore processing message
+            await conv.get_response()  # ignore processing message
+            image = await conv.get_response()
+            await bot.send_read_acknowledge(conv.chat_id)
+        except YouBlockedUserError:
+            return await event.reply("`Unblock `@stickers_to_image_bot` and retry`")
+        await event.delete()
+        await event.client.send_message(sticker.chat_id, image, reply_to=sticker.id)
 
 
 CMD_HELP.update({
@@ -346,5 +354,5 @@ CMD_HELP.update({
     "\n\n>`.stkrinfo`"
     "\nUsage: Gets info about the sticker pack."
     "\n\n>`.getsticker`"
-    "\nUsage: reply to a sticker to get 'PNG' file of sticker."
+    "\nUsage: Converts sticker to image"
 })
