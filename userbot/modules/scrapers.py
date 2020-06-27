@@ -111,14 +111,19 @@ async def carbon_api(e):
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
     await event.edit("`Processing...`")
-    query = event.pattern_match.group(1)
+    counter = int(event.pattern_match.group(1).split(' ', 1)[0])
+    query = str(event.pattern_match.group(1).split(' ', 1)[1])
+    if counter > 10:
+        counter = 10
+    if counter < 1:
+        counter = 1
     lim = findall(r"lim=\d+", query)
     try:
         lim = lim[0]
         lim = lim.replace("lim=", "")
         query = query.replace("lim=" + lim[0], "")
     except IndexError:
-        lim = 3
+        lim = counter
     response = googleimagesdownload()
 
     # creating list of arguments
@@ -654,8 +659,8 @@ def deEmojify(inputString):
 
 CMD_HELP.update({
     "img":
-    ">`.img <search_query>`"
-    "\nUsage: Does an image search on Google and shows 5 images.",
+    ">`.img <counter> <search_query>`"
+    "\nUsage: Does an image search on Google and shows images.",
     "currency":
     ">`.currency <amount> <from> <to>`"
     "\nUsage: Converts various currencies for you.",
