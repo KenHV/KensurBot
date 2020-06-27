@@ -106,6 +106,7 @@ async def carbon_api(e):
     # Removing carbon.png after uploading
     await e.delete()  # Deleting msg
 
+
 @register(outgoing=True, pattern="^.img (.*)")
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
@@ -135,6 +136,7 @@ async def img_sampler(event):
         await event.client.get_input_entity(event.chat_id), lst)
     shutil.rmtree(os.path.dirname(os.path.abspath(lst[0])))
     await event.delete()
+
 
 @register(outgoing=True, pattern="^.currency (.*)")
 async def moni(event):
@@ -166,7 +168,12 @@ async def moni(event):
 @register(outgoing=True, pattern=r"^.google (.*)")
 async def gsearch(q_event):
     """ For .google command, do a Google search. """
-    match = q_event.pattern_match.group(1)
+    counter = int(q_event.pattern_match.group(1).split(' ', 1)[0])
+    match = str(q_event.pattern_match.group(1).split(' ', 1)[1])
+    if counter > 10:
+        counter = 10
+    if counter < 0:
+        counter = 1
     page = findall(r"page=\d+", match)
     try:
         page = page[0]
@@ -178,7 +185,7 @@ async def gsearch(q_event):
     gsearch = GoogleSearch()
     gresults = await gsearch.async_search(*search_args)
     msg = ""
-    for i in range(10):
+    for i in range(counter):
         try:
             title = gresults["titles"][i]
             link = gresults["links"][i]
@@ -657,7 +664,7 @@ CMD_HELP.update({
     "\nUsage: Beautify your code using carbon.now.sh\n"
     "Use .crblang <text> to set language for your code.",
     "google":
-    ">`.google <query>`"
+    ">`.google <counter> <query>`"
     "\nUsage: Does a search on Google.",
     "wiki":
     ">`.wiki <query>`"
