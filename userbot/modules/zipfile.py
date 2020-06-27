@@ -18,9 +18,10 @@ from userbot.utils import progress
 today = date.today()
 # ====================
 
+
 @register(outgoing=True, pattern=r"^\.compress(?: |$)(.*)")
 async def _(event):
-    #Prevent Channel Bug to use update
+    # Prevent Channel Bug to use update
     if event.is_channel and not event.is_group:
         await event.edit("`Compress Command isn't permitted on channels`")
         return
@@ -47,7 +48,8 @@ async def _(event):
             await event.edit(downloaded_file_name)
         except Exception as e:  # pylint:disable=C0103,W0703
             await mone.edit(str(e))
-    zipfile.ZipFile(directory_name + '.zip', 'w', zipfile.ZIP_DEFLATED).write(directory_name)
+    zipfile.ZipFile(directory_name + '.zip', 'w',
+                    zipfile.ZIP_DEFLATED).write(directory_name)
     await bot.send_file(
         event.chat_id,
         directory_name + ".zip",
@@ -63,7 +65,7 @@ async def _(event):
 @register(outgoing=True, pattern=r"^\.addzip(?: |$)(.*)")
 async def addzip(add):
     """ Copyright (c) 2020 azrim @github"""
-    #Prevent Channel Bug to use update
+    # Prevent Channel Bug to use update
     if add.is_channel and not add.is_group:
         await add.edit("`Command isn't permitted on channels`")
         return
@@ -115,6 +117,7 @@ async def upload_zip(up):
     os.rmdir(ZIP_DOWNLOAD_DIRECTORY)
     await up.delete()
 
+
 @register(outgoing=True, pattern=r"^\.rmzip(?: |$)(.*)")
 async def remove_dir(rm):
     if not os.path.isdir(ZIP_DOWNLOAD_DIRECTORY):
@@ -133,7 +136,7 @@ def zipdir(path, ziph):
 
 
 CMD_HELP.update({
-        "zipfile":
+    "zipfile":
         ".compress **[optional: <reply to file>]**\
             \nUsage: make files to zip.\
             \n.addzip **<reply to file>**\

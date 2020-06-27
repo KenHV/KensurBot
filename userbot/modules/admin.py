@@ -468,7 +468,7 @@ async def rm_deletedacc(show):
     if del_a > 0:
         del_status = (f"Yeeted **{del_u}** ded nibba(s)"
                       f"\n**{del_a}** deleted admin accounts are not removed"
-        )
+                      )
     await show.edit(del_status)
     await sleep(2)
     await show.delete()
@@ -683,7 +683,7 @@ async def get_usersdel(show):
         else:
             searchq = show.pattern_match.group(1)
             async for user in show.client.iter_participants(
-                   show.chat_id, search=f'{searchq}'):
+                    show.chat_id, search=f'{searchq}'):
                 if not user.deleted:
                     mentions += f"\n[{user.first_name}](tg://user?id={user.id}) `{user.id}`"
          #       else:

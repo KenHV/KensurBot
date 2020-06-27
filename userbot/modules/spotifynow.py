@@ -1,4 +1,4 @@
-#Ported by Aidil Aryanto
+# Ported by Aidil Aryanto
 
 import os
 from telethon.errors.rpcerrorlist import YouBlockedUserError
@@ -28,8 +28,8 @@ async def _(event):
             return
         else:
             downloaded_file_name = await event.client.download_media(
-                                 response.media,
-                                 TEMP_DOWNLOAD_DIRECTORY
+                response.media,
+                TEMP_DOWNLOAD_DIRECTORY
             )
             await event.client.send_file(
                 event.chat_id,
@@ -49,4 +49,3 @@ CMD_HELP.update({
     "\nUsage: Show what you're listening on spotify."
     "\n@SpotifyNowBot"
 })
-
