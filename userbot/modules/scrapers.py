@@ -11,13 +11,14 @@ import asyncio
 import shutil
 from bs4 import BeautifulSoup
 import re
+import asyncurban
 from html import unescape
 from re import findall
 from urllib.parse import quote_plus
 from urllib.error import HTTPError
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
-from urbandict import define
+from asyncurban import UrbanDictionary
 from requests import get
 from search_engine_parser import GoogleSearch
 from googleapiclient.discovery import build
@@ -239,41 +240,40 @@ async def wiki(wiki_q):
 
 
 @register(outgoing=True, pattern="^.ud (.*)")
-async def urban_dict(ud_e):
-    """ For .ud command, fetch content from Urban Dictionary. """
-    await ud_e.edit("Processing...")
-    query = ud_e.pattern_match.group(1)
-    try:
-        define(query)
-    except HTTPError:
-        return await ud_e.edit(f"Sorry, couldn't find any results for: {query}")
-    mean = define(query)
-    deflen = sum(len(i) for i in mean[0]["def"])
-    exalen = sum(len(i) for i in mean[0]["example"])
-    meanlen = deflen + exalen
-    if int(meanlen) >= 0:
-        if int(meanlen) >= 4096:
-            await ud_e.edit("`Output too large, sending as file.`")
-            file = open("output.txt", "w+")
-            file.write("Text: " + query + "\n\nMeaning: " + mean[0]["def"] +
-                       "\n\n" + "Example: \n" + mean[0]["example"])
-            file.close()
-            await ud_e.client.send_file(
-                ud_e.chat_id,
-                "output.txt",
-                caption="`Output was too large, sent it as a file.`")
-            if os.path.exists("output.txt"):
-                os.remove("output.txt")
-            return await ud_e.delete()
-        await ud_e.edit("Text: **" + query + "**\n\nMeaning: **" +
-                        mean[0]["def"] + "**\n\n" + "Example: \n__" +
-                        mean[0]["example"] + "__")
-        if BOTLOG:
-            await ud_e.client.send_message(
-                BOTLOG_CHATID,
-                "ud query `" + query + "` executed successfully.")
+async def urban_dict(event):
+    """Output the definition of a word from Urban Dictionary"""
+    ud = asyncurban.UrbanDictionary()
+    await event.edit("Processing...")
+    query = event.pattern_match.group(1)
+
+    if query:
+        pass
     else:
-        await ud_e.edit("No result found for **" + query + "**")
+        return await event.edit("`Error: Provide a word!`")
+    template = "`Query: `{}\n\n`Definition: `{}\n\n`Example:\n`{}"
+
+    try:
+        definition = await ud.get_word(query)
+    except asyncurban.WordNotFoundError:
+        return await event.edit("`Error: No definition available.`")
+
+    result = template.format(
+        definition.word, definition.definition, definition.example)
+
+    if len(result) >= 4096:
+        await event.edit("`Output too large, sending as file...`")
+        with open("output.txt", "w+") as file:
+            file.write("Query: " + definition.word + "\n\nMeaning: " +
+                       definition.definition + "Example: \n" + definition.example)
+        await event.client.send_file(
+            event.chat_id,
+            "output.txt",
+            caption=f"Urban Dictionary's definition of {query}")
+        if os.path.exists("output.txt"):
+            os.remove("output.txt")
+        return await event.delete()
+    else:
+        return await event.edit(result)
 
 
 @register(outgoing=True, pattern=r"^.tts(?: |$)([\s\S]*)")
