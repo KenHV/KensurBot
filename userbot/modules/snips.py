@@ -30,10 +30,12 @@ async def on_snip(event):
                                         msg_o.message,
                                         reply_to=message_id_to_reply,
                                         file=msg_o.media)
+        await event.delete()
     elif snip and snip.reply:
         await event.client.send_message(event.chat_id,
                                         snip.reply,
                                         reply_to=message_id_to_reply)
+        await event.delete()
 
 
 @register(outgoing=True, pattern=r"^\.snip (\w*)")
