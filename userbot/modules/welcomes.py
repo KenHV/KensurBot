@@ -76,7 +76,7 @@ async def welcome_to_chat(event):
             update_previous_welcome(event.chat_id, current_message.id)
 
 
-@register(outgoing=True, pattern=r"^.setwelcome(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.setwelcome(?: |$)(.*)")
 async def save_welcome(event):
     try:
         from userbot.modules.sql_helper.welcome_sql import add_welcome_setting
@@ -112,7 +112,7 @@ async def save_welcome(event):
         await event.edit(success.format('updated'))
 
 
-@register(outgoing=True, pattern="^.checkwelcome$")
+@register(outgoing=True, pattern=r"^\.checkwelcome$")
 async def show_welcome(event):
     try:
         from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
@@ -133,7 +133,7 @@ async def show_welcome(event):
         await event.reply(cws.reply)
 
 
-@register(outgoing=True, pattern="^.rmwelcome$")
+@register(outgoing=True, pattern=r"^\.rmwelcome$")
 async def del_welcome(event):
     try:
         from userbot.modules.sql_helper.welcome_sql import rm_welcome_setting

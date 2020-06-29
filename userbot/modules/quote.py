@@ -45,7 +45,7 @@ config = dict({"api_url": "http://api.antiddos.systems",
                "default_username_color": "#b48bf2"})
 
 
-@register(outgoing=True, pattern="^.quote(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.quote(?: |$)(.*)")
 async def quotecmd(message):  # noqa: C901
     """Quote a message.
     Usage: .pch [template]

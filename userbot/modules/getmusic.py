@@ -8,7 +8,7 @@ from userbot import bot, CMD_HELP
 from userbot.events import register
 
 
-@register(outgoing=True, pattern="^.songn(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.songn(?: |$)(.*)")
 async def _(event):
     if event.fwd_from:
         return
@@ -36,7 +36,7 @@ async def _(event):
     await event.delete()
 
 
-@register(outgoing=True, pattern="^.songl(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.songl(?: |$)(.*)")
 async def _(event):
     if event.fwd_from:
         return
@@ -64,7 +64,7 @@ async def _(event):
         await event.delete()
 
 
-@register(outgoing=True, pattern="^.songf(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.songf(?: |$)(.*)")
 async def _(event):
     if event.fwd_from:
         return

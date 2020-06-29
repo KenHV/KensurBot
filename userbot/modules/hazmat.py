@@ -4,7 +4,7 @@ from userbot import bot, CMD_HELP
 from userbot.events import register
 
 
-@register(outgoing=True, pattern="^\.hz(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.hz(?: |$)(.*)")
 async def hazmat(event):
     if event.fwd_from:
         return

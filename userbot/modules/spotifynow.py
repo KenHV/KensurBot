@@ -7,7 +7,7 @@ from userbot.events import register
 from userbot import bot, TEMP_DOWNLOAD_DIRECTORY, CMD_HELP
 
 
-@register(outgoing=True, pattern=r'^.spotnow(:? |$)(.*)?')
+@register(outgoing=True, pattern=r"^\.spotnow(:? |$)(.*)?")
 async def _(event):
     if event.fwd_from:
         return

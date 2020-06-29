@@ -12,7 +12,7 @@ from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID, TERM_ALIAS
 from userbot.events import register
 
 
-@register(outgoing=True, pattern="^.eval(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.eval(?: |$)(.*)")
 async def evaluate(query):
     """ For .eval command, evaluates the given Python expression. """
     if query.is_channel and not query.is_group:
@@ -63,7 +63,7 @@ async def evaluate(query):
             f"Eval query {expression} was executed successfully")
 
 
-@register(outgoing=True, pattern=r"^.exec(?: |$)([\s\S]*)")
+@register(outgoing=True, pattern=r"^\.exec(?: |$)([\s\S]*)")
 async def run(run_q):
     """ For .exec command, which executes the dynamically created program """
     code = run_q.pattern_match.group(1)
@@ -125,7 +125,7 @@ async def run(run_q):
             "Exec query " + codepre + " was executed successfully")
 
 
-@register(outgoing=True, pattern="^.term(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.term(?: |$)(.*)")
 async def terminal_runner(term):
     """ For .term command, runs bash commands and scripts on your server. """
     curruser = TERM_ALIAS

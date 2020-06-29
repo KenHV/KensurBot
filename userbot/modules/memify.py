@@ -33,7 +33,7 @@ from telethon.tl.types import (DocumentAttributeFilename, DocumentAttributeStick
 THUMB_IMAGE_PATH = "./thumb_image.jpg"
 
 
-@register(outgoing=True, pattern="^.mmf(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.mmf(?: |$)(.*)")
 async def mim(event):
     if event.fwd_from:
         return

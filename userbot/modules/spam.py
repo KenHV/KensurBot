@@ -10,7 +10,7 @@ from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
 
 
-@register(outgoing=True, pattern="^.cspam (.*)")
+@register(outgoing=True, pattern=r"^\.cspam (.*)")
 async def tmeme(e):
     cspam = str(e.pattern_match.group(1))
     message = cspam.replace(" ", "")
@@ -23,7 +23,7 @@ async def tmeme(e):
             "TSpam was executed successfully")
 
 
-@register(outgoing=True, pattern="^.wspam (.*)")
+@register(outgoing=True, pattern=r"^\.wspam (.*)")
 async def t_meme(e):
     wspam = str(e.pattern_match.group(1))
     message = wspam.split()
@@ -36,7 +36,7 @@ async def t_meme(e):
             "WSpam was executed successfully")
 
 
-@register(outgoing=True, pattern="^.spam (.*)")
+@register(outgoing=True, pattern=r"^\.spam (.*)")
 async def spammers(e):
     counter = int(e.pattern_match.group(1).split(' ', 1)[0])
     spam_message = str(e.pattern_match.group(1).split(' ', 1)[1])
@@ -47,7 +47,7 @@ async def spammers(e):
                                     "Spam was executed successfully")
 
 
-@register(outgoing=True, pattern="^.picspam")
+@register(outgoing=True, pattern=r"^\.picspam")
 async def tiny_pic_spam(e):
     message = e.text
     text = message.split()
@@ -62,7 +62,7 @@ async def tiny_pic_spam(e):
             "PicSpam was executed successfully")
 
 
-@register(outgoing=True, pattern="^.delayspam (.*)")
+@register(outgoing=True, pattern=r"^\.delayspam (.*)")
 async def spammer(e):
     spamDelay = float(e.pattern_match.group(1).split(' ', 2)[0])
     counter = int(e.pattern_match.group(1).split(' ', 2)[1])

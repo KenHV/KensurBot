@@ -40,7 +40,7 @@ async def ocr_space_file(filename,
     return r.json()
 
 
-@register(pattern=r".ocr (.*)", outgoing=True)
+@register(pattern=r"\.ocr (.*)", outgoing=True)
 async def ocr(event):
     if not OCR_SPACE_API_KEY:
         return await event.edit(

@@ -17,7 +17,7 @@ from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
 
-@register(pattern=".whois(?: |$)(.*)", outgoing=True)
+@register(pattern=r"\.whois(?: |$)(.*)", outgoing=True)
 async def who(event):
 
     await event.edit(
@@ -45,14 +45,14 @@ async def who(event):
                                      link_preview=False,
                                      force_document=False,
                                      reply_to=message_id_to_reply,
-                                     parse_mode="html")
+                                     parse_mode=r"html")
 
         if not photo.startswith("http"):
             os.remove(photo)
         await event.delete()
 
     except TypeError:
-        await event.edit(caption, parse_mode="html")
+        await event.edit(caption, parse_mode=r"html")
 
 
 async def get_user(event):

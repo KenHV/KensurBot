@@ -20,7 +20,7 @@ DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
 # ============================================
 
 
-@register(outgoing=True, pattern="^.sysd$")
+@register(outgoing=True, pattern=r"^\.sysd$")
 async def sysdetails(sysd):
     """ For .sysd command, get system info using neofetch. """
     if not sysd.text[0].isalpha() and sysd.text[0] not in ("/", "#", "@", "!"):
@@ -41,7 +41,7 @@ async def sysdetails(sysd):
             await sysd.edit("`Install neofetch first!`")
 
 
-@register(outgoing=True, pattern="^.botver$")
+@register(outgoing=True, pattern=r"^\.botver$")
 async def bot_ver(event):
     """ For .botver command, get the bot version. """
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@",
@@ -83,7 +83,7 @@ async def bot_ver(event):
             )
 
 
-@register(outgoing=True, pattern="^.pip(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.pip(?: |$)(.*)")
 async def pipcheck(pip):
     """ For .pip command, do a pip search. """
     if not pip.text[0].isalpha() and pip.text[0] not in ("/", "#", "@", "!"):
@@ -128,7 +128,7 @@ async def pipcheck(pip):
             await pip.edit("`Use .help pip to see an example`")
 
 
-@register(outgoing=True, pattern="^.alive$")
+@register(outgoing=True, pattern=r"^\.alive$")
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
@@ -139,7 +139,7 @@ async def amireallyalive(alive):
                      "`")
 
 
-@register(outgoing=True, pattern="^.aliveu")
+@register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
     """ For .aliveu command, change the username in the .alive command. """
     message = username.text
@@ -152,7 +152,7 @@ async def amireallyaliveuser(username):
     await username.edit("`" f"{output}" "`")
 
 
-@register(outgoing=True, pattern="^.resetalive$")
+@register(outgoing=True, pattern=r"^\.resetalive$")
 async def amireallyalivereset(ureset):
     """ For .resetalive command, reset the username in the .alive command. """
     global DEFAULTUSER
