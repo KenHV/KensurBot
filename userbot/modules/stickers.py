@@ -166,10 +166,9 @@ async def kang(args):
                         # Ensure user doesn't get spamming notifications
                         await bot.send_read_acknowledge(conv.chat_id)
                         return await args.edit(
-                            "`Sticker added in a Different Pack !"
-                            "\nThis Pack is Newly created!"
-                            f"\nYour pack can be found [here](t.me/addstickers/{packname})`",
-                            parse_mode='md')
+                            "`Sticker added in a different pack!"
+                            "\nThis pack is newly created."
+                            f"\nYour pack can be found `[here](t.me/addstickers/{packname})")
                 if is_anim:
                     await conv.send_file('AnimatedSticker.tgs')
                     remove('AnimatedSticker.tgs')
