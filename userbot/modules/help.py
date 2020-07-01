@@ -19,10 +19,14 @@ async def help(event):
         else:
             await event.edit("Please specify a valid module name.")
     else:
-        await event.edit("Please specify which module do you want help for !!"
-                         "\nUsage: .help <module name>")
-        string = "-  "
+        unsorted = ""
+        sorted = "**"
         for i in CMD_HELP:
-            string += "`" + str(i)
-            string += "`  -  "
-        await event.reply(string)
+            unsorted += str(i) + " "
+        unsorted = unsorted.split()
+        unsorted.sort()
+        for i in unsorted:
+            sorted += str(i) + " | "
+        help_message = ("To view help for specific module, do `.help` <module_name>"
+                f"\nList of available modules:\n\n**{sorted[:-3]}")
+        await event.edit(help_message)
