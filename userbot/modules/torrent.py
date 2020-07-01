@@ -10,12 +10,12 @@ from userbot.events import register
 
 @register(outgoing=True, pattern="^\.ts (.*)")
 async def gengkapak(e):
-    await e.edit("`Please wait, fetching results...`")
+    await e.edit("`Processing...`")
     query = e.pattern_match.group(1)
     response = requests.get(f"https://sjprojectsapi.herokuapp.com/torrent/?query={query}")
     ts = json.loads(response.text)
     if not ts == response.json():
-        await e.edit("**Some error occured**\n`Try Again Later`")
+        await e.edit("`Error: Try again later.`")
         return
     listdata = ""
     run = 0
@@ -35,7 +35,7 @@ async def gengkapak(e):
     data = fd.read()
     key = requests.post('https://nekobin.com/api/documents', json={"content": data}).json().get('result').get('key')
     url = f'https://nekobin.com/raw/{key}'
-    caption = f"Here are the results for the query: {query}\nNekofied to : {url}"
+    caption = f"Torrent search query:` {query}`\nResults: {url}"
     await e.client.send_file(
         e.chat_id,
         tsfileloc,
@@ -47,6 +47,6 @@ async def gengkapak(e):
 
 CMD_HELP.update({
     "torrent":
-    ">`.ts` **Query**"
+    ">`.ts` query"
     "\nUsage: Search for torrent query and display results."
 })
