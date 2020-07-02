@@ -82,13 +82,11 @@ async def ANTI_SPAMBOTS(welcm):
                     ##############################################
 
                     try:
-                        cas_url = f"https://combot.org/api/cas/check?user_id={check_user.id}"
+                        cas_url = f"https://api.cas.chat/check?user_id={check_user.id}" # https://t.me/combotnews/283
                         r = get(cas_url, timeout=3)
                         data = r.json()
                     except BaseException:
-                        print(
-                            "CAS check failed, falling back to legacy anti_spambot behaviour."
-                        )
+                        print("CAS check failed, falling back to legacy anti_spambot behaviour.")
                         data = None
                         pass
 
