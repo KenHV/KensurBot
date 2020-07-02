@@ -4,17 +4,28 @@
 import asyncio
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
-from userbot import bot, CMD_HELP
+from userbot import bot, CMD_HELP, lastfm, LASTFM_USERNAME
 from userbot.events import register
+from pylast import User
 
 
-@register(outgoing=True, pattern=r"^\.songn(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.songn (?:(now)|(.*) - (.*))")
 async def _(event):
     if event.fwd_from:
         return
-    song = event.pattern_match.group(1)
+    if event.pattern_match.group(1) == "now":
+        playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
+        if playing is None:
+            return await event.edit(
+                "`Error: No current scrobble found.`"
+            )
+        artist = playing.get_artist()
+        song = playing.get_title()
+        track = str(artist) + " - " + str(song)
+    else:
+        track = event.pattern_match.group(1)
     chat = "@WooMaiBot"
-    link = f"/netease {song}"
+    link = f"/netease {track}"
     await event.edit("`Searching...`")
     async with bot.conversation(chat) as conv:
         await asyncio.sleep(2)
@@ -64,11 +75,21 @@ async def _(event):
         await event.delete()
 
 
-@register(outgoing=True, pattern=r"^\.songf(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.songf (?:(now)|(.*) - (.*))")
 async def _(event):
     if event.fwd_from:
         return
-    link = event.pattern_match.group(1)
+    if event.pattern_match.group(1) == "now":
+        playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
+        if playing is None:
+            return await event.edit(
+                "`Error: No scrobbling data found.`"
+            )
+        artist = playing.get_artist()
+        song = playing.get_title()
+        track = str(artist) + " - " + str(song)
+    else:
+        track = event.pattern_match.group(1)
     chat = "@SpotifyMusicDownloaderBot"
     await event.edit("`Searching...`")
     async with bot.conversation(chat) as conv:
@@ -77,7 +98,7 @@ async def _(event):
         try:
             response = conv.wait_event(events.NewMessage(
                 incoming=True, from_users=752979930))
-            msg = await bot.send_message(chat, link)
+            msg = await bot.send_message(chat, track)
             respond = await response
             res = conv.wait_event(events.NewMessage(
                 incoming=True, from_users=752979930))
@@ -100,4 +121,8 @@ CMD_HELP.update({
     "\nUsage: Download music by link"
     "\n\n>`.songf <Artist - Song Title>`"
     "\nUsage: Download music by name (fallback)"
+    "\n\n>`.songn now`"
+    "\nUsage: Download current LastFM scrobble"
+    "\n\n>`.songf now`"
+    "\nUsage: Download current LastFM scrobble (fallback)"
 })
