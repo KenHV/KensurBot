@@ -3,16 +3,17 @@
 
 import requests
 import json
-import codecs
 import os
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
-@register(outgoing=True, pattern="^\.ts (.*)")
+
+@register(outgoing=True, pattern=r"^\.ts (.*)")
 async def torrent(event):
-    await event.edit("`Processing...`")
+    await event.edit("`Searching...`")
     query = event.pattern_match.group(1)
-    response = requests.get(f"https://sjprojectsapi.herokuapp.com/torrent/?query={query}")
+    response = requests.get(
+        f"https://sjprojectsapi.herokuapp.com/torrent/?query={query}")
     ts = json.loads(response.text)
     if not ts == response.json():
         await event.edit("`Error: Try again later.`")
@@ -23,11 +24,16 @@ async def torrent(event):
         try:
             run += 1
             r1 = ts[run]
-            list1 = "<-----{}----->\nName: {}\nSeeders: {}\nSize: {}\nAge: {}\n<--Magnet Below-->\n{}\n\n\n".format(run, r1['name'], r1['seeder'], r1['size'], r1['age'], r1['magnet'])
+            list1 = "<-----{}----->\nName: {}\nSeeders: {}\nSize: {}\nAge: {}\n<--Magnet Below-->\n{}\n\n\n".format(
+                run, r1['name'], r1['seeder'], r1['size'], r1['age'], r1['magnet'])
             listdata = listdata + list1
         except:
             break
 
+    if not listdata:
+        return await event.edit("`Error: No results found`")
+
+    await event.edit("`Uploading results...`")
     tsfileloc = f"{TEMP_DOWNLOAD_DIRECTORY}/{query}.txt"
     with open(tsfileloc, "w+", encoding="utf8") as out_file:
         out_file.write(str(listdata))
@@ -44,5 +50,5 @@ async def torrent(event):
 CMD_HELP.update({
     "torrent":
     ">`.ts` <query>"
-    "\nUsage: Find torrents for given query and display results."
+    "\nUsage: Search for torrents of given query"
 })
