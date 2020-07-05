@@ -144,7 +144,6 @@ async def resume_all(event):
 
 @register(outgoing=True, pattern=r"^\.ashow(?: |$)(.*)")
 async def show_all(event):
-    output = "output.txt"
     downloads = aria2.get_downloads()
     msg = ""
     for download in downloads:
@@ -160,6 +159,7 @@ async def show_all(event):
         await event.delete()
     else:
         await event.edit("`Output is too big, sending it as a file...`")
+        output = "output.txt"
         with open(output, 'w') as f:
             f.write(msg)
         await sleep(2)
@@ -187,7 +187,7 @@ async def check_progress_for_dl(gid, event, previous):
         file = aria2.get_download(gid)
         complete = file.is_complete
         try:
-            if not complete and not file.error_message:
+            if not (complete or file.error_message):
                 percentage = int(file.progress)
                 downloaded = percentage * int(file.total_length) / 100
                 prog_str = "`Downloading` | [{0}{1}] `{2}`".format(
