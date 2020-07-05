@@ -114,9 +114,8 @@ async def git_commit(file_name, mone):
         create_file = True
         if i == 'ContentFile(path="'+file_name+'")':
             return await mone.edit("`File Already Exists`")
-            create_file = False
     file_name = "userbot/modules/" + file_name
-    if create_file is True:
+    if create_file:
         file_name = file_name.replace("./userbot/temp/", "")
         print(file_name)
         try:
