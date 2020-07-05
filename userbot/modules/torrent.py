@@ -15,7 +15,7 @@ async def torrent(event):
     response = requests.get(
         f"https://sjprojectsapi.herokuapp.com/torrent/?query={query}")
     ts = json.loads(response.text)
-    if not ts == response.json():
+    if ts != response.json():
         await event.edit("`Error: Try again later.`")
         return
     listdata = ""
@@ -26,7 +26,7 @@ async def torrent(event):
             r1 = ts[run]
             list1 = "<-----{}----->\nName: {}\nSeeders: {}\nSize: {}\nAge: {}\n<--Magnet Below-->\n{}\n\n\n".format(
                 run, r1['name'], r1['seeder'], r1['size'], r1['age'], r1['magnet'])
-            listdata = listdata + list1
+            listdata += list1
         except:
             break
 

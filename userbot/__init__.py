@@ -204,7 +204,7 @@ async def check_botlog_chatid():
         )
         quit(1)
 
-    elif not BOTLOG or not LOGSPAMMER:
+    elif not (BOTLOG and LOGSPAMMER):
         return
 
     entity = await bot.get_entity(BOTLOG_CHATID)

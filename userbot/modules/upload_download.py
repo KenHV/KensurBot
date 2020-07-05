@@ -39,10 +39,11 @@ async def download(target_file):
         # https://stackoverflow.com/a/761825/4723940
         file_name = file_name.strip()
         head, tail = os.path.split(file_name)
-        if head:
-            if not os.path.isdir(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)):
-                os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
-                file_name = os.path.join(head, tail)
+        if head and not os.path.isdir(
+            os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)
+        ):
+            os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
+            file_name = os.path.join(head, tail)
         downloaded_file_name = TEMP_DOWNLOAD_DIRECTORY + "" + file_name
         downloader = SmartDL(url, downloaded_file_name, progress_bar=False)
         downloader.start(blocking=False)
@@ -172,7 +173,7 @@ async def uploadir(udir_event):
                             progress(d, t, udir_event, c_time, "[UPLOAD]",
                                      single_file)))
                 os.remove(single_file)
-                uploaded = uploaded + 1
+                uploaded += 1
         await udir_event.edit(
             "Uploaded {} files successfully !!".format(uploaded))
     else:
@@ -263,12 +264,12 @@ async def uploadas(uas_event):
     supports_streaming = False
     round_message = False
     spam_big_messages = False
-    if type_of_upload == "stream":
-        supports_streaming = True
-    if type_of_upload == "vn":
-        round_message = True
     if type_of_upload == "all":
         spam_big_messages = True
+    elif type_of_upload == "stream":
+        supports_streaming = True
+    elif type_of_upload == "vn":
+        round_message = True
     input_str = uas_event.pattern_match.group(2)
     thumb = None
     file_name = None
