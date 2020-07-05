@@ -36,28 +36,23 @@ async def welcome_to_chat(event):
             my_mention = "[{}](tg://user?id={})".format(me.first_name, me.id)
             first = a_user.first_name
             last = a_user.last_name
-            if last:
-                fullname = f"{first} {last}"
-            else:
-                fullname = first
+            fullname = f"{first} {last}" if last else first
             username = f"@{a_user.username}" if a_user.username else mention
             userid = a_user.id
             my_first = me.first_name
             my_last = me.last_name
-            if my_last:
-                my_fullname = f"{my_first} {my_last}"
-            else:
-                my_fullname = my_first
+            my_fullname = f"{my_first} {my_last}" if my_last else my_first
             my_username = f"@{me.username}" if me.username else my_mention
             file_media = None
             current_saved_welcome_message = None
-            if cws and cws.f_mesg_id:
-                msg_o = await event.client.get_messages(entity=BOTLOG_CHATID,
-                                                        ids=int(cws.f_mesg_id))
-                file_media = msg_o.media
-                current_saved_welcome_message = msg_o.message
-            elif cws and cws.reply:
-                current_saved_welcome_message = cws.reply
+            if cws:
+                if cws.f_mesg_id:
+                    msg_o = await event.client.get_messages(entity=BOTLOG_CHATID,
+                                                            ids=int(cws.f_mesg_id))
+                    file_media = msg_o.media
+                    current_saved_welcome_message = msg_o.message
+                elif cws.reply:
+                    current_saved_welcome_message = cws.reply
             current_message = await event.reply(
                 current_saved_welcome_message.format(mention=mention,
                                                      title=title,
@@ -121,13 +116,13 @@ async def show_welcome(event):
     cws = get_current_welcome_settings(event.chat_id)
     if not cws:
         return await event.edit("`No welcome message saved here.`")
-    elif cws and cws.f_mesg_id:
+    elif cws.f_mesg_id:
         msg_o = await event.client.get_messages(entity=BOTLOG_CHATID,
                                                 ids=int(cws.f_mesg_id))
         await event.edit(
             "`I am currently welcoming new users with this welcome note.`")
         await event.reply(msg_o.message, file=msg_o.media)
-    elif cws and cws.reply:
+    elif cws.reply:
         await event.edit(
             "`I am currently welcoming new users with this welcome note.`")
         await event.reply(cws.reply)

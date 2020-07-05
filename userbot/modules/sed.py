@@ -21,8 +21,7 @@ async def separate_sed(sed_string):
     if len(sed_string) < 2:
         return
 
-    if (len(sed_string) >= 2 and sed_string[2] in DELIMITERS
-            and sed_string.count(sed_string[2]) >= 2):
+    if sed_string[2] in DELIMITERS and sed_string.count(sed_string[2]) >= 2:
         delim = sed_string[2]
         start = counter = 3
         while counter < len(sed_string):

@@ -198,13 +198,13 @@ async def upstream(event):
         await deploy(event, repo, ups_rem, ac_br, txt)
         return
 
-    if changelog == '' and force_update is False:
+    if changelog == '' and not force_update:
         await event.edit(
             '\n`Your USERBOT is`  **up-to-date**  `with`  '
             f'**{UPSTREAM_REPO_BRANCH}**\n')
         return repo.__del__()
 
-    if conf == '' and force_update is False:
+    if conf == '' and not force_update:
         await print_changelogs(event, ac_br, changelog)
         await event.delete()
         return await event.respond(
