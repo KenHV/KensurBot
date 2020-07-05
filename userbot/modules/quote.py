@@ -211,7 +211,7 @@ async def get_markdown(reply):
 
 
 CMD_HELP.update({
-    "stickerchat":
+    "quote":
     ">`.quote`"
-    "\nUsage: Same as quotly, enhance ur text to sticker."
+    "\nUsage: Reply to a text message to convert to sticker."
 })
