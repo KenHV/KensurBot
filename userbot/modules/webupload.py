@@ -12,7 +12,6 @@ from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 @register(outgoing=True, pattern="^\.web ?(.+?|) (anonfiles|transfer|filebin|anonymousfiles|megaupload|bayfiles|letsupload|0x0)")
 async def _(event):
     await event.edit("`Processing ...`")
-    PROCESS_RUN_TIME = 100
     input_str = event.pattern_match.group(1)
     selected_transfer = event.pattern_match.group(2)
     if input_str:
@@ -49,7 +48,7 @@ async def _(event):
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
     stdout, stderr = await process.communicate()
-    e_response = stderr.decode().strip()
+    stderr.decode().strip()
     # logger.info(e_response)
     t_response = stdout.decode().strip()
     # logger.info(t_response)
@@ -60,7 +59,7 @@ async def _(event):
         try:
             t_response = json.dumps(json.loads(
                 t_response), sort_keys=True, indent=4)
-        except Exception as e:
+        except Exception:
             # some sites don't return valid JSONs
             pass
         # assuming, the return values won't be longer than

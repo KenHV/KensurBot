@@ -244,9 +244,7 @@ async def urban_dict(event):
     await event.edit("Processing...")
     query = event.pattern_match.group(1)
 
-    if query:
-        pass
-    else:
+    if not query:
         return await event.edit("`Error: Provide a word!`")
     template = "`Query: `{}\n\n`Definition: `{}\n\n`Example:\n`{}"
 
@@ -341,12 +339,11 @@ async def imdb(e):
         else:
             mov_details = ''
         credits = soup.findAll('div', 'credit_summary_item')
+        director = credits[0].a.text
         if len(credits) == 1:
-            director = credits[0].a.text
             writer = 'Not available'
             stars = 'Not available'
         elif len(credits) > 2:
-            director = credits[0].a.text
             writer = credits[1].a.text
             actors = []
             for x in credits[2].findAll('a'):
@@ -354,7 +351,6 @@ async def imdb(e):
             actors.pop()
             stars = actors[0] + ',' + actors[1] + ',' + actors[2]
         else:
-            director = credits[0].a.text
             writer = 'Not available'
             actors = []
             for x in credits[1].findAll('a'):
