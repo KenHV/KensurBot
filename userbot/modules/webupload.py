@@ -69,7 +69,7 @@ async def _(event):
 
 CMD_HELP.update({
     "webupload":
-    ">`.web` **File** **Server**"
+    ">`.web` <server>"
     "\nServer List: anonfiles|transfer|filebin|anonymousfiles|megaupload|bayfiles|lestupload|0x0"
-    "\nUsage: Upload file to web."
+    "\nUsage: Reply to a file to upload it to one of the above servers."
 })
