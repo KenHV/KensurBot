@@ -30,7 +30,7 @@ else:  # If the Current Version of Python is 2.x
     from urllib2 import URLError, HTTPError
     from urllib import quote
     import httplib
-    from httplib import IncompleteRead, BadStatusLine
+    from httplib import BadStatusLine
     httplib._MAXHEADERS = 1000
 
 args_list = ["keywords", "keywords_from_file", "prefix_keywords", "suffix_keywords",
