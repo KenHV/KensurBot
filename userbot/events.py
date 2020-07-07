@@ -144,10 +144,10 @@ def register(**args):
                             "\nThe error logs are stored in the userbot's log chat.`"
                         )
 
-                        await check.client.send_file(send_to,
-                                                     "error.log",
-                                                     caption=text)
-                        remove("error.log")
+                    await check.client.send_file(send_to,
+                                                 "error.log",
+                                                 caption=text)
+                    remove("error.log")
             else:
                 pass
 
