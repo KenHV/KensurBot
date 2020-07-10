@@ -134,7 +134,7 @@ async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
                      "KensurBot is up and running!\n\n"
-                     f"Bot    : v0.5.705\n"
+                     f"Bot    : v0.5.710\n"
                      f"Python : {python_version()}\n"
                      f"User   : {DEFAULTUSER}"
                      "`")
