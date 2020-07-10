@@ -30,7 +30,7 @@ async def permitpm(event):
         return
     self_user = await event.client.get_me()
     if event.is_private and event.chat_id != 777000 and event.chat_id != self_user.id and not (
-                await event.get_sender()).bot:
+            await event.get_sender()).bot:
         try:
             from userbot.modules.sql_helper.pm_permit_sql import is_approved
             from userbot.modules.sql_helper.globals import gvarstatus
@@ -39,9 +39,9 @@ async def permitpm(event):
         apprv = is_approved(event.chat_id)
         notifsoff = gvarstatus("NOTIF_OFF")
 
-            # This part basically is a sanity check
-            # If the message that sent before is Unapproved Message
-            # then stop sending it again to prevent FloodHit
+        # This part basically is a sanity check
+        # If the message that sent before is Unapproved Message
+        # then stop sending it again to prevent FloodHit
         if not apprv and event.text != UNAPPROVED_MSG:
             if event.chat_id in LASTMSG:
                 prevmsg = LASTMSG[event.chat_id]

@@ -80,7 +80,7 @@ if __ is not None:
             else:
                 try:
                     G_DRIVE_FOLDER_ID = __.split(
-                                      "folderview?id=")[1]
+                        "folderview?id=")[1]
                 except IndexError:
                     if any(map(str.isdigit, __)):
                         _1 = True
@@ -146,19 +146,19 @@ async def generate_credentials(gdrive):
         }
     await gdrive.edit("`Creating credentials...`")
     flow = InstalledAppFlow.from_client_config(
-         configs, SCOPES, redirect_uri=REDIRECT_URI)
+        configs, SCOPES, redirect_uri=REDIRECT_URI)
     auth_url, _ = flow.authorization_url(
-                access_type='offline', prompt='consent')
+        access_type='offline', prompt='consent')
     msg = await gdrive.respond(
         "`Go to your BOTLOG group to authenticate token...`"
-        )
+    )
     async with gdrive.client.conversation(BOTLOG_CHATID) as conv:
         url_msg = await conv.send_message(
-                      "Please go to this URL:\n"
-                      f"{auth_url}\nauthorize then reply the code"
-                  )
+            "Please go to this URL:\n"
+            f"{auth_url}\nauthorize then reply the code"
+        )
         r = conv.wait_event(
-          events.NewMessage(outgoing=True, chats=BOTLOG_CHATID))
+            events.NewMessage(outgoing=True, chats=BOTLOG_CHATID))
         r = await r
         code = r.message.message.strip()
         flow.fetch_token(code=code)
@@ -180,14 +180,14 @@ async def create_app(gdrive):
     if creds is not None:
         """ - Repack credential objects from strings - """
         creds = pickle.loads(
-              base64.b64decode(creds.encode()))
+            base64.b64decode(creds.encode()))
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             await gdrive.edit("`Refreshing credentials...`")
             """ - Refresh credentials - """
             creds.refresh(Request())
             helper.save_credentials(str(
-               gdrive.from_id), base64.b64encode(pickle.dumps(creds)).decode())
+                gdrive.from_id), base64.b64encode(pickle.dumps(creds)).decode())
         else:
             await gdrive.edit("`Credentials is empty, please generate it...`")
             return False
@@ -321,7 +321,7 @@ async def download(gdrive, service, uri=None):
                 reply += (
                     "`[FOLDER - CANCELLED]`\n\n"
                     "`Status` : **OK** - received signal cancelled."
-                 )
+                )
                 await reset_parentId()
                 return reply
             except Exception:
@@ -456,9 +456,9 @@ async def download_gdrive(gdrive, service, uri):
                         f"`ETA` -> {time_formatter(eta)}"
                     )
                     if round(
-                      diff % 15.00) == 0 and (display_message
-                                              != current_message) or (
-                      downloaded == file_size):
+                            diff % 15.00) == 0 and (display_message
+                                                    != current_message) or (
+                            downloaded == file_size):
                         await gdrive.edit(current_message)
                         display_message = current_message
                     files.write(chunk)
@@ -504,9 +504,9 @@ async def download_gdrive(gdrive, service, uri):
                         f"`ETA` -> {time_formatter(eta)}"
                     )
                     if round(
-                      diff % 15.00) == 0 and (display_message
-                                              != current_message) or (
-                      downloaded == file_size):
+                            diff % 15.00) == 0 and (display_message
+                                                    != current_message) or (
+                            downloaded == file_size):
                         await gdrive.edit(current_message)
                         display_message = current_message
     await gdrive.edit(
@@ -521,7 +521,7 @@ async def download_gdrive(gdrive, service, uri):
         ask = await conv.send_message("`Proceed with mirroring? [y/N]`")
         try:
             r = conv.wait_event(
-              events.NewMessage(outgoing=True, chats=BOTLOG_CHATID))
+                events.NewMessage(outgoing=True, chats=BOTLOG_CHATID))
             r = await r
         except Exception:
             ans = 'N'
@@ -568,8 +568,8 @@ async def change_permission(service, Id):
     except HttpError as e:
         """ it's not possible to change permission per file for teamdrive """
         if f'"File not found: {Id}."' in str(e) or (
-          '"Sharing folders that are inside a shared drive is not supported."'
-          in str(e)):
+            '"Sharing folders that are inside a shared drive is not supported."'
+                in str(e)):
             return
         else:
             raise e
@@ -599,8 +599,8 @@ async def create_dir(service, folder_name):
         """ - Override G_DRIVE_FOLDER_ID because parent_Id not empty - """
         metadata['parents'] = [parent_Id]
     folder = service.files().create(
-           body=metadata, fields="id, webViewLink", supportsAllDrives=True
-           ).execute()
+        body=metadata, fields="id, webViewLink", supportsAllDrives=True
+    ).execute()
     await change_permission(service, folder.get('id'))
     return folder
 
@@ -666,8 +666,8 @@ async def upload(gdrive, service, file_path, file_name, mimeType):
                 f"`ETA` -> {time_formatter(eta)}"
             )
             if round(diff % 15.00) == 0 and (
-              display_message != current_message) or (
-              uploaded == file_size):
+                    display_message != current_message) or (
+                    uploaded == file_size):
                 await gdrive.edit(current_message)
                 display_message = current_message
     file_id = response.get("id")
@@ -1163,7 +1163,7 @@ async def google_drive(gdrive):
             f"`Link   :` [{file_name}]({result[1]})\n"
             "`Status :` **OK** - Successfully uploaded.\n",
             link_preview=False
-            )
+        )
     await gdrive.delete()
     return
 
@@ -1254,8 +1254,8 @@ async def set_upload_folder(gdrive):
                         )
                         return None
         await gdrive.edit(
-                "`[PARENT - FOLDER]`\n\n"
-                "`Status` : **OK** - Successfully changed."
+            "`[PARENT - FOLDER]`\n\n"
+            "`Status` : **OK** - Successfully changed."
         )
     return
 

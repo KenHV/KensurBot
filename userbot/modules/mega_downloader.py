@@ -134,8 +134,8 @@ async def mega_downloader(megadl):
                 f"`Duration` -> {time_formatter(round(diff))}"
             )
             if round(diff % 15.00) == 0 and (
-              display_message != current_message or total_length == downloaded
-              ):
+                display_message != current_message or total_length == downloaded
+            ):
                 await megadl.edit(current_message)
                 await asyncio.sleep(0.2)
                 display_message = current_message
@@ -149,8 +149,8 @@ async def mega_downloader(megadl):
         download_time = round(downloader.get_dl_time() + wait)
         try:
             P = multiprocessing.Process(target=await decrypt_file(megadl,
-                                        file_path, temp_file_path,
-                                        hex_key, hex_raw_key),
+                                                                  file_path, temp_file_path,
+                                                                  hex_key, hex_raw_key),
                                         name="Decrypt_File")
             P.start()
             P.join()
