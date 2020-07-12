@@ -71,7 +71,7 @@ async def magnet_download(event):
         return await event.edit("Error:\n`" + str(e) + "`")
     gid = download.gid
     await check_progress_for_dl(gid=gid, event=event, previous=None)
-    await sleep(5)
+    await sleep(15)
     new_gid = await check_metadata(gid)
     await check_progress_for_dl(gid=new_gid, event=event, previous=None)
 
