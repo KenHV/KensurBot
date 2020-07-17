@@ -106,12 +106,12 @@ async def carbon_api(e):
     await e.delete()  # Deleting msg
 
 
-@register(outgoing=True, pattern=r"^\.img (.*)")
+@register(outgoing=True, pattern=r"^\.img (\d+) (.*)")
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
     await event.edit("`Processing...`")
-    counter = int(event.pattern_match.group(1).split(' ', 1)[0])
-    query = str(event.pattern_match.group(1).split(' ', 1)[1])
+    counter = int(event.pattern_match.group(1))
+    query = str(event.pattern_match.group(2))
     if counter > 10:
         counter = 10
     if counter < 1:
@@ -169,11 +169,11 @@ async def moni(event):
         return await event.edit("`Invalid syntax.`")
 
 
-@register(outgoing=True, pattern=r"^\.google (.*)")
+@register(outgoing=True, pattern=r"^\.google (\d+) (.*)")
 async def gsearch(q_event):
     """ For .google command, do a Google search. """
-    counter = int(q_event.pattern_match.group(1).split(' ', 1)[0])
-    match = str(q_event.pattern_match.group(1).split(' ', 1)[1])
+    counter = int(q_event.pattern_match.group(1))
+    match = str(q_event.pattern_match.group(2))
     if counter > 10:
         counter = 10
     if counter < 0:
@@ -653,8 +653,8 @@ def deEmojify(inputString):
 
 CMD_HELP.update({
     "img":
-    ">`.img <counter> <search_query>`"
-    "\nUsage: Does an image search on Google and shows images.",
+    ">`.img <count> <search_query>`"
+    "\nUsage: Does an image search on Google and shows <count> number of results.",
     "currency":
     ">`.currency <amount> <from> <to>`"
     "\nUsage: Converts various currencies for you.",
@@ -663,8 +663,8 @@ CMD_HELP.update({
     "\nUsage: Beautify your code using carbon.now.sh\n"
     "Use .crblang <text> to set language for your code.",
     "google":
-    ">`.google <counter> <query>`"
-    "\nUsage: Does a search on Google.",
+    ">`.google <count> <query>`"
+    "\nUsage: Does a search on Google and displays <count> number of results.",
     "wiki":
     ">`.wiki <query>`"
     "\nUsage: Does a search on Wikipedia.",
