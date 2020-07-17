@@ -296,6 +296,7 @@ async def text_to_speech(query):
         return await query.edit('Language is not supported.')
     except RuntimeError:
         return await query.edit('Error loading the languages dictionary.')
+    await query.delete()
     tts = gTTS(message, lang=TTS_LANG)
     tts.save("k.mp3")
     with open("k.mp3", "rb") as audio:
@@ -310,7 +311,6 @@ async def text_to_speech(query):
         if BOTLOG:
             await query.client.send_message(
                 BOTLOG_CHATID, "Text to Speech executed successfully !")
-        await query.delete()
 
 
 # kanged from Blank-x ;---;
