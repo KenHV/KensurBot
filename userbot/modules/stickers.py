@@ -321,6 +321,7 @@ async def sticker_to_png(sticker):
         await sticker.edit("`Reply to a sticker!`")
         return
 
+    await sticker.delete()
     with io.BytesIO() as image:
         await sticker.client.download_media(img, image)
         image.name = 'sticker.png'
@@ -329,8 +330,6 @@ async def sticker_to_png(sticker):
             await img.reply(file=image, force_document=True)
         except Exception:
             await sticker.edit("`Error: Can't send file.`")
-        else:
-            await sticker.delete()
     return
 
 
