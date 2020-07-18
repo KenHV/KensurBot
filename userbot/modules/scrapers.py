@@ -106,35 +106,38 @@ async def carbon_api(e):
     await e.delete()  # Deleting msg
 
 
-@register(outgoing=True, pattern=r"^\.img (\d+) (.*)")
+@register(outgoing=True, pattern=r"^\.img (\d*) *(.*)")
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
     await event.edit("`Processing...`")
-    counter = int(event.pattern_match.group(1))
+
+    if event.pattern_match.group(1) != "":
+        counter = int(event.pattern_match.group(1))
+        if counter > 10:
+            counter = int(10)
+        if counter <= 0:
+            counter = int(1)
+    else:
+        counter = int(3)
+
     query = str(event.pattern_match.group(2))
-    if counter > 10:
-        counter = 10
-    if counter < 1:
-        counter = 1
-    lim = findall(r"lim=\d+", query)
-    try:
-        lim = lim[0]
-        lim = lim.replace("lim=r", "")
-        query = query.replace("lim=r" + lim[0], "")
-    except IndexError:
-        lim = counter
     response = googleimagesdownload()
 
     # creating list of arguments
     arguments = {
         "keywords": query,
-        "limit": lim,
-        "format": "jpg",
+        "limit": counter,
+        "format": "png",
         "no_directory": "no_directory"
     }
 
-    # passing the arguments to the function
-    paths = response.download(arguments)
+    # if the query contains some special characters, googleimagesdownload errors out
+    # this is a temporary workaround for it (maybe permanent)
+    try:
+        paths = response.download(arguments)
+    except Exception:
+        return await event.edit("`tf is you searchin, stoopid?`")
+
     lst = paths[0][query]
     await event.client.send_file(
         await event.client.get_input_entity(event.chat_id), lst)
@@ -203,8 +206,8 @@ async def gsearch(event):
             break
 
     await event.edit("**Search Query:**\n`" + match + "`\n\n**Results:**\n" +
-                       msg,
-                       link_preview=False)
+                     msg,
+                     link_preview=False)
 
     if BOTLOG:
         await event.client.send_message(
@@ -659,7 +662,8 @@ def deEmojify(inputString):
 CMD_HELP.update({
     "img":
     ">`.img <count> <search_query>`"
-    "\nUsage: Does an image search on Google and shows <count> number of results.",
+    "\nUsage: Does an image search on Google."
+    "\nCan specify the number of results needed (default is 3).",
     "currency":
     ">`.currency <amount> <from> <to>`"
     "\nUsage: Converts various currencies for you.",
