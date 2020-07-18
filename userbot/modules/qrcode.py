@@ -7,15 +7,14 @@
 # License: MPL and OSSRPL
 """ Userbot module containing commands related to QR Codes. """
 
-import os
 import asyncio
-
-import qrcode
-import barcode
-from barcode.writer import ImageWriter
+import os
 
 from bs4 import BeautifulSoup
 
+import barcode
+import qrcode
+from barcode.writer import ImageWriter
 from userbot import CMD_HELP, LOGS
 from userbot.events import register
 

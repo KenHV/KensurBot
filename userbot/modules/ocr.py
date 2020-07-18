@@ -4,8 +4,10 @@
 # you may not use this file except in compliance with the License.
 
 import os
+
 import requests
-from userbot import bot, OCR_SPACE_API_KEY, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
+
+from userbot import CMD_HELP, OCR_SPACE_API_KEY, TEMP_DOWNLOAD_DIRECTORY, bot
 from userbot.events import register
 
 

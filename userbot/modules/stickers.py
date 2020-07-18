@@ -7,16 +7,18 @@
 
 import io
 import math
+import random
 import urllib.request
 from os import remove
+
 from PIL import Image
-import random
-from telethon.tl.types import DocumentAttributeFilename, MessageMediaPhoto
-from userbot import bot, CMD_HELP
-from userbot.events import register
 from telethon.tl.functions.messages import GetStickerSetRequest
-from telethon.tl.types import InputStickerSetID
-from telethon.tl.types import DocumentAttributeSticker
+from telethon.tl.types import (DocumentAttributeFilename,
+                               DocumentAttributeSticker, InputStickerSetID,
+                               MessageMediaPhoto)
+
+from userbot import CMD_HELP, bot
+from userbot.events import register
 
 KANGING_STR = [
     "Using Witchery to kang this sticker...",

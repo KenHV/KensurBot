@@ -5,15 +5,9 @@
 #
 
 import aiohttp
-import asyncio
-import os
-import time
-from datetime import datetime
-from telethon import events
-from telethon.tl.types import DocumentAttributeVideo
-from userbot.events import register
-from userbot import CMD_HELP, GITHUB_ACCESS_TOKEN, GIT_REPO_NAME
 
+from userbot import CMD_HELP
+from userbot.events import register
 
 GIT_TEMP_DIR = "./userbot/temp/"
 
@@ -21,7 +15,7 @@ GIT_TEMP_DIR = "./userbot/temp/"
 @register(outgoing=True, pattern=r"\.git (.*)")
 async def github(event):
     URL = f"https://api.github.com/users/{event.pattern_match.group(1)}"
-    chat = await event.get_chat()
+    await event.get_chat()
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as request:
             if request.status == 404:

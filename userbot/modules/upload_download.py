@@ -9,21 +9,21 @@
 """ Userbot module which contains everything related to
      downloading/uploading from/to the server. """
 
+import asyncio
 import json
+import math
 import os
 import subprocess
 import time
-import math
 
-from pySmartDL import SmartDL
-import asyncio
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
 from telethon.tl.types import DocumentAttributeVideo
 
-from userbot import LOGS, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
-from userbot.utils import progress, humanbytes
+from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
+from pySmartDL import SmartDL
+from userbot import CMD_HELP, LOGS, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
+from userbot.utils import humanbytes, progress
 
 
 @register(pattern=r"\.download(?: |$)(.*)", outgoing=True)

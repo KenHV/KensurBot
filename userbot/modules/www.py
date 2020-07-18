@@ -8,8 +8,9 @@
 
 from datetime import datetime
 
-from speedtest import Speedtest
 from telethon import functions
+
+from speedtest import Speedtest
 from userbot import CMD_HELP
 from userbot.events import register
 

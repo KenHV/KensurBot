@@ -6,17 +6,17 @@
 """ Userbot initialization. """
 
 import os
-
-from sys import version_info
-from logging import basicConfig, getLogger, INFO, DEBUG
 from distutils.util import strtobool as sb
+from logging import DEBUG, INFO, basicConfig, getLogger
+from sys import version_info
 
-from pylast import LastFMNetwork, md5
-from pySmartDL import SmartDL
-from dotenv import load_dotenv
 from requests import get
 from telethon import TelegramClient
 from telethon.sessions import StringSession
+
+from dotenv import load_dotenv
+from pylast import LastFMNetwork, md5
+from pySmartDL import SmartDL
 
 load_dotenv("config.env")
 

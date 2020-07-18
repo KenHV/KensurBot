@@ -10,11 +10,11 @@ Lyrics Plugin Syntax:
 
 """
 import os
-import lyricsgenius
 
-from userbot.events import register
-from userbot import (CMD_HELP, GENIUS, lastfm, LASTFM_USERNAME)
+import lyricsgenius
 from pylast import User
+from userbot import CMD_HELP, GENIUS, LASTFM_USERNAME, lastfm
+from userbot.events import register
 
 if GENIUS is not None:
     genius = lyricsgenius.Genius(GENIUS)

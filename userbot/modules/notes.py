@@ -5,9 +5,10 @@
 #
 """ Userbot module containing commands for keeping notes. """
 
+from asyncio import sleep
+
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
-from asyncio import sleep
 
 
 @register(outgoing=True, pattern=r"^\.notes$")

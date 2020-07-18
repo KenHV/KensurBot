@@ -1,9 +1,11 @@
 # Copyright (C) 2020 GengKapak and AnggaR96s.
 # All rights reserved.
 
-import requests
 import json
 import os
+
+import requests
+
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 

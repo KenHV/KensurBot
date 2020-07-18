@@ -4,18 +4,13 @@
    Heroku manager for your userbot
 """
 
-import heroku3
-import aiohttp
 import math
 
-from userbot import (
-    CMD_HELP,
-    HEROKU_APP_NAME,
-    HEROKU_API_KEY,
-    BOTLOG,
-    BOTLOG_CHATID
-)
+import aiohttp
 
+import heroku3
+from userbot import (BOTLOG, BOTLOG_CHATID, CMD_HELP, HEROKU_API_KEY,
+                     HEROKU_APP_NAME)
 from userbot.events import register
 
 heroku_api = "https://api.heroku.com"

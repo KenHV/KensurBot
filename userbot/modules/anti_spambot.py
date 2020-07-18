@@ -6,12 +6,13 @@
 """A module for helping ban group join spammers."""
 
 from asyncio import sleep
-from requests import get
 
+from requests import get
 from telethon.events import ChatAction
 from telethon.tl.types import ChannelParticipantsAdmins, Message
 
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, ANTI_SPAMBOT, ANTI_SPAMBOT_SHOUT, bot
+from userbot import (ANTI_SPAMBOT, ANTI_SPAMBOT_SHOUT, BOTLOG, BOTLOG_CHATID,
+                     CMD_HELP, bot)
 
 
 @bot.on(ChatAction)
@@ -90,7 +91,6 @@ async def ANTI_SPAMBOTS(welcm):
                         print(
                             "CAS check failed, falling back to legacy anti_spambot behaviour.")
                         data = None
-                        pass
 
                     if data and data['ok']:
                         reason = f"[Banned by Combot Anti Spam](https://combot.org/cas/query?u={check_user.id})"

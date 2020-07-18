@@ -5,17 +5,17 @@
 #
 # Port to UserBot by @MoveAngel
 
-import requests
 import base64
 import json
-import telethon
-
-from logging import Logger as logger
-from PIL import Image
 from io import BytesIO
-from userbot import bot, CMD_HELP, QUOTES_API_TOKEN
-from userbot.events import register
+from logging import Logger as logger
 
+import requests
+import telethon
+from PIL import Image
+
+from userbot import CMD_HELP, QUOTES_API_TOKEN, bot
+from userbot.events import register
 
 if 1 == 1:
     strings = {

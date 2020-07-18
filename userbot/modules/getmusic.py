@@ -2,11 +2,13 @@
 # All rights reserved.
 
 import asyncio
+
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
-from userbot import bot, CMD_HELP, lastfm, LASTFM_USERNAME
-from userbot.events import register
+
 from pylast import User
+from userbot import CMD_HELP, LASTFM_USERNAME, bot, lastfm
+from userbot.events import register
 
 
 @register(outgoing=True, pattern=r"^\.songn (?:(now)|(.*) - (.*))")

@@ -5,8 +5,8 @@ import asyncio
 import json
 import os
 
-from userbot.events import register
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
+from userbot.events import register
 
 
 @register(outgoing=True, pattern="^\.web ?(.+?|) (anonfiles|transfer|filebin|anonymousfiles|megaupload|bayfiles|letsupload|0x0)")

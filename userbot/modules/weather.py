@@ -7,14 +7,16 @@
 
 
 import json
-from requests import get
 from datetime import datetime
+
+from pytz import country_names as c_n
 from pytz import country_timezones as c_tz
 from pytz import timezone as tz
-from pytz import country_names as c_n
+from requests import get
 
-from userbot import CMD_HELP, WEATHER_DEFCITY
+from userbot import CMD_HELP
 from userbot import OPEN_WEATHER_MAP_APPID as OWM_API
+from userbot import WEATHER_DEFCITY
 from userbot.events import register
 
 # ===== CONSTANT =====

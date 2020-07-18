@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import time
 import math
+import time
 
-from .tools import humanbytes, time_formatter
 from .exceptions import CancelProcess
+from .tools import humanbytes, time_formatter
 
 
 async def progress(

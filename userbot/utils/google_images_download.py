@@ -4,16 +4,17 @@
 
 ###### Searching and Downloading Google Images to the local disk ######
 
+import argparse
 # Import Libraries
 import codecs
-import re
-import json
 import datetime
-import ssl
-import argparse
+import json
 import os
-import time  # Importing the time library to check the time of code execution
+import re
+import ssl
 import sys
+import time  # Importing the time library to check the time of code execution
+
 version = (3, 0)
 cur_version = sys.version_info
 if cur_version >= version:  # If the Current Version of Python is 3.0 or above

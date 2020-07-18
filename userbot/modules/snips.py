@@ -4,8 +4,8 @@
 # you may not use this file except in compliance with the License.
 """ Userbot module containing commands for keeping global notes. """
 
+from userbot import BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
-from userbot import CMD_HELP, BOTLOG_CHATID
 
 
 @register(outgoing=True,

@@ -1,5 +1,5 @@
-from userbot.modules.sql_helper import SESSION, BASE
 from sqlalchemy import Column, String, Text
+from userbot.modules.sql_helper import BASE, SESSION
 
 
 class GoogleDriveCreds(BASE):

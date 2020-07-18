@@ -5,15 +5,16 @@
 #
 """ Userbot module containing various sites direct links generators"""
 
-from subprocess import PIPE, Popen
+import json
 import re
 import urllib.parse
-import json
 from random import choice
+from subprocess import PIPE, Popen
+
 import requests
 from bs4 import BeautifulSoup
-from humanize import naturalsize
 
+from humanize import naturalsize
 from userbot import CMD_HELP
 from userbot.events import register
 

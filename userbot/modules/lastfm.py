@@ -5,19 +5,19 @@
 #
 
 from asyncio import sleep
-from pylast import User, WSError
-from re import sub
-from urllib import parse
 from os import environ
+from re import sub
 from sys import setrecursionlimit
+from urllib import parse
 
 from telethon.errors import AboutTooLongError
+from telethon.errors.rpcerrorlist import FloodWaitError
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
-from telethon.errors.rpcerrorlist import FloodWaitError
 
-from userbot import (CMD_HELP, BOTLOG, BOTLOG_CHATID, DEFAULT_BIO,
-                     BIO_PREFIX, lastfm, LASTFM_USERNAME, bot)
+from pylast import User, WSError
+from userbot import (BIO_PREFIX, BOTLOG, BOTLOG_CHATID, CMD_HELP, DEFAULT_BIO,
+                     LASTFM_USERNAME, bot, lastfm)
 from userbot.events import register
 
 # =================== CONSTANT ===================

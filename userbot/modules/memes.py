@@ -5,17 +5,15 @@
 #
 """ Userbot module for having some fun with people. """
 
+import time
 from asyncio import sleep
+from collections import deque
 from random import choice, getrandbits, randint
 from re import sub
-import time
-
-from collections import deque
 
 import requests
 
 from cowpy import cow
-
 from userbot import CMD_HELP, LOGS
 from userbot.events import register
 from userbot.modules.admin import get_user_from_event

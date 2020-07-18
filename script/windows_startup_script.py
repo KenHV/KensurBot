@@ -1,4 +1,5 @@
-from telethon import TelegramClient, events
+from telethon import TelegramClient
+
 API_KEY = "Type that here"
 API_HASH = "Type that here"
 # get it from my.telegram.org

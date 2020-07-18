@@ -7,12 +7,12 @@
 # License: MPL and OSSRPL
 
 import io
-
-from re import match
 from asyncio import sleep
+from re import match
+
+from userbot import CMD_HELP
 from userbot.events import register
 from userbot.utils import chrome, options
-from userbot import CMD_HELP
 
 
 @register(pattern=r"^\.ss (.*)", outgoing=True)

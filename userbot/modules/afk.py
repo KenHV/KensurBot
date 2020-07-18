@@ -5,13 +5,13 @@
 #
 """ Userbot module which contains afk-related commands """
 
-from random import choice, randint
 from asyncio import sleep
+from random import choice, randint
 
 from telethon.events import StopPropagation
 
-from userbot import (AFKREASON, COUNT_MSG, CMD_HELP, ISAFK, BOTLOG,
-                     BOTLOG_CHATID, USERS, PM_AUTO_BAN)
+from userbot import (AFKREASON, BOTLOG, BOTLOG_CHATID, CMD_HELP, COUNT_MSG,
+                     ISAFK, PM_AUTO_BAN, USERS)
 from userbot.events import register
 
 # ========================= CONSTANTS ============================
@@ -110,7 +110,7 @@ async def afk_on_pm(sender):
 @register(outgoing=True, pattern=r"^\.afk(?: |$)(.*)", disable_errors=True)
 async def set_afk(afk_e):
     """ For .afk command, allows you to inform people that you are afk when they message you """
-    message = afk_e.text
+    afk_e.text
     string = afk_e.pattern_match.group(1)
     global ISAFK
     global AFKREASON

@@ -19,8 +19,7 @@ import os
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
-from userbot import TEMP_DOWNLOAD_DIRECTORY, GOOGLE_CHROME_BIN, CHROME_DRIVER
+from userbot import CHROME_DRIVER, GOOGLE_CHROME_BIN, TEMP_DOWNLOAD_DIRECTORY
 
 
 async def chrome(chrome_options=None):
@@ -31,7 +30,7 @@ async def chrome(chrome_options=None):
     prefs = {'download.default_directory': TEMP_DOWNLOAD_DIRECTORY}
     chrome_options.add_experimental_option('prefs', prefs)
     return webdriver.Chrome(executable_path=CHROME_DRIVER,
-                              options=chrome_options)
+                            options=chrome_options)
 
 
 async def options():

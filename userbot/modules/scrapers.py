@@ -5,37 +5,38 @@
 #
 """ Userbot module containing various scrapers. """
 
-import os
-import time
 import asyncio
-import shutil
-from bs4 import BeautifulSoup
+import os
 import re
-import asyncurban
+import shutil
+import time
+from asyncio import sleep
 from html import unescape
-from re import findall
 from urllib.parse import quote_plus
-from wikipedia import summary
-from wikipedia.exceptions import DisambiguationError, PageError
+
+import asyncurban
+from bs4 import BeautifulSoup
 from requests import get
-from search_engine_parser import GoogleSearch
+from telethon.tl.types import DocumentAttributeAudio
+
+from emoji import get_emoji_regexp
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
-from emoji import get_emoji_regexp
+from search_engine_parser import GoogleSearch
+from userbot import (BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY,
+                     YOUTUBE_API_KEY)
+from userbot.events import register
+from userbot.utils import chrome, googleimagesdownload, progress
+from wikipedia import summary
+from wikipedia.exceptions import DisambiguationError, PageError
 from youtube_dl import YoutubeDL
-from youtube_dl.utils import (DownloadError, ContentTooShortError,
+from youtube_dl.utils import (ContentTooShortError, DownloadError,
                               ExtractorError, GeoRestrictedError,
                               MaxDownloadsReached, PostProcessingError,
                               UnavailableVideoError, XAttrMetadataError)
-from asyncio import sleep
-from userbot import (CMD_HELP, BOTLOG, BOTLOG_CHATID, YOUTUBE_API_KEY,
-                     TEMP_DOWNLOAD_DIRECTORY)
-from userbot.events import register
-from telethon.tl.types import DocumentAttributeAudio
-from userbot.utils import progress, chrome, googleimagesdownload
 
 CARBONLANG = "auto"
 TTS_LANG = "en"

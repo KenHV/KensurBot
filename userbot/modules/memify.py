@@ -1,33 +1,13 @@
 # Ported by MVaL
 
-from telethon.errors.rpcerrorlist import YouBlockedUserError
-from telethon import events
-from io import BytesIO
-from PIL import Image
 import asyncio
-import time
-from datetime import datetime
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
-from pySmartDL import SmartDL
-from telethon.tl.types import DocumentAttributeVideo
-from userbot.utils.progress import progress, humanbytes, time_formatter
-from userbot import (TEMP_DOWNLOAD_DIRECTORY, CMD_HELP, bot)
-from userbot.events import register
-import datetime
-from collections import defaultdict
-import math
 import os
-import requests
-import zipfile
-from telethon.errors.rpcerrorlist import StickersetInvalidError
-from telethon.errors import MessageNotModifiedError
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
-from telethon.tl.functions.messages import GetStickerSetRequest
-from telethon.tl.types import (DocumentAttributeFilename, DocumentAttributeSticker,
-                               InputMediaUploadedDocument, InputPeerNotifySettings,
-                               InputStickerSetID, InputStickerSetShortName,
-                               MessageMediaPhoto)
+
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.tl.types import MessageMediaPhoto
+
+from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY, bot
+from userbot.events import register
 
 THUMB_IMAGE_PATH = "./thumb_image.jpg"
 
@@ -43,10 +23,8 @@ async def mim(event):
     if not reply_message.media:
         await event.edit("`Reply to a image/sticker/gif.`")
         return
-    sender = reply_message.sender
-    file_ext_ns_ion = "@memetime.png"
-    file = await bot.download_file(reply_message.media)
-    uploaded_gif = None
+    reply_message.sender
+    await bot.download_file(reply_message.media)
     if reply_message.sender.bot:
         await event.edit("`Reply to actual users message.`")
         return
