@@ -29,7 +29,6 @@ from telethon.tl.types import (DocumentAttributeFilename, DocumentAttributeStick
                                InputStickerSetID, InputStickerSetShortName,
                                MessageMediaPhoto)
 
-
 THUMB_IMAGE_PATH = "./thumb_image.jpg"
 
 
@@ -42,17 +41,17 @@ async def mim(event):
         return
     reply_message = await event.get_reply_message()
     if not reply_message.media:
-        await event.edit("```reply to a image/sticker/gif```")
+        await event.edit("`Reply to a image/sticker/gif.`")
         return
     sender = reply_message.sender
     file_ext_ns_ion = "@memetime.png"
     file = await bot.download_file(reply_message.media)
     uploaded_gif = None
     if reply_message.sender.bot:
-        await event.edit("```Reply to actual users message.```")
+        await event.edit("`Reply to actual users message.`")
         return
     else:
-        await event.edit("```Transfiguration Time! Mwahaha Memifying this image! (」ﾟﾛﾟ)｣ ```")
+        await event.edit("`Processing...`")
         await asyncio.sleep(5)
 
     async with bot.conversation("@MemeAutobot") as bot_conv:
@@ -65,12 +64,12 @@ async def mim(event):
             await bot.send_file(chat, reply_message.media)
             response = await bot_conv.get_response()
         except YouBlockedUserError:
-            await event.reply("```Please unblock @MemeAutobot and try again```")
+            await event.reply("`Please unblock @MemeAutobot and try again.`")
             return
         if response.text.startswith("Forward"):
-            await event.edit("```can you kindly disable your forward privacy settings for good, Nibba?```")
+            await event.edit("`Add `@MemeAutobot` to your forward privacy settings.`")
         if "Okay..." in response.text:
-            await event.edit("```🛑 🤨 NANI?! This is not an image! This will take sum tym to convert to image... UwU 🧐 🛑```")
+            await event.edit("`Converting...`")
             thumb = None
             if os.path.exists(THUMB_IMAGE_PATH):
                 thumb = THUMB_IMAGE_PATH
@@ -116,9 +115,8 @@ async def mim(event):
                 caption="Memifyed",
             )
             await event.delete()
-            # await bot.send_message(event.chat_id, "`☠️☠️Ah Shit... Here we go Again!🔥🔥`")
         elif not is_message_image(reply_message):
-            await event.edit("Invalid message type. Plz choose right message type u NIBBA.")
+            await event.edit("`Invalid message type.`")
             return
         else:
             await bot.send_file(event.chat_id, response.media)
@@ -145,5 +143,5 @@ async def silently_send_message(conv, text):
 CMD_HELP.update({
     "memify":
         ".mmf texttop ; textbottom\
-        \nUsage: Reply a sticker/image/gif and send with cmd."
+        \nUsage: Reply a sticker/image/gif with the text you want to add to the top and/or bottom."
 })
