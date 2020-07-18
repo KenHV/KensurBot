@@ -169,26 +169,30 @@ async def moni(event):
         return await event.edit("`Invalid syntax.`")
 
 
-@register(outgoing=True, pattern=r"^\.google (\d+) (.*)")
-async def gsearch(q_event):
+@register(outgoing=True, pattern=r"^\.google (\d*) *(.*)")
+async def gsearch(event):
     """ For .google command, do a Google search. """
-    counter = int(q_event.pattern_match.group(1))
-    match = str(q_event.pattern_match.group(2))
-    if counter > 10:
-        counter = 10
-    if counter < 0:
-        counter = 1
-    page = findall(r"page=\d+", match)
-    try:
-        page = page[0]
-        page = page.replace("page=r", "")
-        match = match.replace("page=r" + page[0], "")
-    except IndexError:
-        page = 1
-    search_args = (str(match), int(page))
+    await event.edit("`Processing...`")
+
+    if event.pattern_match.group(1) != "":
+        counter = int(event.pattern_match.group(1))
+        if counter > 10:
+            counter = int(10)
+        if counter <= 0:
+            counter = int(1)
+    else:
+        counter = int(3)
+
+    match = str(event.pattern_match.group(2))
+    search_args = (str(match), int(1))
     gsearch = GoogleSearch()
-    gresults = await gsearch.async_search(*search_args)
+
+    try:
+        gresults = await gsearch.async_search(*search_args)
+    except Exception:
+        return await event.edit("`Error: Your query could not be found or it was flagged as unusual traffic.`")
     msg = ""
+
     for i in range(counter):
         try:
             title = gresults["titles"][i]
@@ -197,14 +201,15 @@ async def gsearch(q_event):
             msg += f"[{title}]({link})\n`{desc}`\n\n"
         except IndexError:
             break
-    await q_event.edit("**Search Query:**\n`" + match + "`\n\n**Results:**\n" +
+
+    await event.edit("**Search Query:**\n`" + match + "`\n\n**Results:**\n" +
                        msg,
                        link_preview=False)
 
     if BOTLOG:
-        await q_event.client.send_message(
+        await event.client.send_message(
             BOTLOG_CHATID,
-            "Google Search query `" + match + "` was executed successfully",
+            "Google Search query` " + match + " `was executed successfully",
         )
 
 
@@ -663,8 +668,9 @@ CMD_HELP.update({
     "\nUsage: Beautify your code using carbon.now.sh\n"
     "Use .crblang <text> to set language for your code.",
     "google":
-    ">`.google <count> <query>`"
-    "\nUsage: Does a search on Google and displays <count> number of results.",
+    ">`.google [count] <query>`"
+    "\nUsage: Does a search on Google."
+    "\nCan specify the number of results needed (default is 3).",
     "wiki":
     ">`.wiki <query>`"
     "\nUsage: Does a search on Wikipedia.",
