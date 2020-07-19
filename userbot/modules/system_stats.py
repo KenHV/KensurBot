@@ -10,6 +10,7 @@ from asyncio.subprocess import PIPE as asyncPIPE
 from os import remove
 from platform import python_version, uname
 from shutil import which
+from telethon import version
 
 from userbot import ALIVE_NAME, CMD_HELP
 from userbot.events import register
@@ -133,9 +134,10 @@ async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
                      "KensurBot is up and running!\n\n"
-                     f"Bot    : v0.6.719\n"
-                     f"Python : {python_version()}\n"
-                     f"User   : {DEFAULTUSER}"
+                     f"Bot      : v0.6.719\n"
+                     f"Python   : {python_version()}\n"
+                     f"Telethon : v{version.__version__}\n"
+                     f"User     : {DEFAULTUSER}"
                      "`")
 
 
