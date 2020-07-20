@@ -71,11 +71,10 @@ async def bot_ver(event):
         revout = str(stdout.decode().strip()) \
             + str(stderr.decode().strip())
 
-        await event.edit("`Userbot Version: "
-                         f"{verout}"
-                         "` \n"
-                         "`Revision: "
-                         f"{revout}"
+        await event.edit("`"
+                         f"Userbot : {verout}\n"
+                         f"Revision: {revout}\n"
+                         f"Telethon: {version.__version__}\n"
                          "`")
     else:
         await event.edit(
@@ -136,7 +135,6 @@ async def amireallyalive(alive):
                      "KensurBot is up and running!\n\n"
                      f"Bot      : v0.6.719\n"
                      f"Python   : {python_version()}\n"
-                     f"Telethon : v{version.__version__}\n"
                      f"User     : {DEFAULTUSER}"
                      "`")
 
