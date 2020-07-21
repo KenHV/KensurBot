@@ -5,6 +5,7 @@
 """
 
 import math
+import os
 
 import aiohttp
 import heroku3
@@ -182,6 +183,22 @@ async def dyno_usage(dyno):
             return True
 
 
+@register(outgoing=True, pattern=r"^\.logs")
+async def _(dyno):
+    if app is None:
+        return await dyno.edit(
+            "**Please setup your** `HEROKU_APP_NAME` **and** `HEROKU_API_KEY`**.**"
+        )
+    await dyno.edit("**Processing...**")
+    with open("logs.txt", "w") as log:
+        log.write(app.get_log())
+    await dyno.client.send_file(entity=dyno.chat_id,
+                                file="logs.txt",
+                                caption="**Heroku dyno logs**")
+    await dyno.delete()
+    return os.remove("logs.txt")
+
+
 CMD_HELP.update({
     "heroku":
     ">.`usage`"
@@ -195,4 +212,6 @@ CMD_HELP.update({
     "\n\n>`.del var <configvar>`"
     "\nUsage: Removes specified ConfigVar."
     "\nBot will restart after using this command."
+    "\n\n>`.logs`"
+    "\nUsage: Retrieves Heroku dyno logs."
 })
