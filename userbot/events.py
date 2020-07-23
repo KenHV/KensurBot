@@ -91,7 +91,7 @@ def register(**args):
 
                 # Check if we have to disable error logging.
                 if not disable_errors:
-                    LOGS.exception(e) # Log the error in console
+                    LOGS.exception(e)  # Log the error in console
 
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 

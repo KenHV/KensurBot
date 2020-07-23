@@ -29,9 +29,7 @@ async def _(fry):
             msg = await conv.send_message(reply_message)
             if level:
                 m = f"/deepfry {level}"
-                msg_level = await conv.send_message(
-                    m,
-                    reply_to=msg.id)
+                msg_level = await conv.send_message(m, reply_to=msg.id)
                 r = await conv.get_response()
             response = await conv.get_response()
             """ - don't spam notif - """
@@ -43,15 +41,11 @@ async def _(fry):
             await fry.edit("`Please disable your forward privacy setting...`")
         else:
             downloaded_file_name = await fry.client.download_media(
-                response.media,
-                TEMP_DOWNLOAD_DIRECTORY
-            )
-            await fry.client.send_file(
-                fry.chat_id,
-                downloaded_file_name,
-                force_document=False,
-                reply_to=message_id_to_reply
-            )
+                response.media, TEMP_DOWNLOAD_DIRECTORY)
+            await fry.client.send_file(fry.chat_id,
+                                       downloaded_file_name,
+                                       force_document=False,
+                                       reply_to=message_id_to_reply)
             """ - cleanup chat after completed - """
             try:
                 msg_level
@@ -60,8 +54,7 @@ async def _(fry):
                                                  [msg.id, response.id])
             else:
                 await fry.client.delete_messages(
-                    conv.chat_id,
-                    [msg.id, response.id, r.id, msg_level.id])
+                    conv.chat_id, [msg.id, response.id, r.id, msg_level.id])
     await fry.delete()
     return os.remove(downloaded_file_name)
 

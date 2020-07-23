@@ -2,8 +2,6 @@
 #
 # Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
-
-
 """
 Lyrics Plugin Syntax:
        .lyrics <aritst name> - <song name>
@@ -30,9 +28,7 @@ async def lyrics(lyric):
     if lyric.pattern_match.group(1) == "now":
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
         if playing is None:
-            await lyric.edit(
-                "`No information current lastfm scrobbling...`"
-            )
+            await lyric.edit("`No information current lastfm scrobbling...`")
             return False
         artist = playing.get_artist()
         song = playing.get_title()
@@ -55,10 +51,8 @@ async def lyrics(lyric):
         )
         os.remove("lyrics.txt")
     else:
-        await lyric.edit(
-            f"**Search query**:\n`{artist}` - `{song}`"
-            f"\n\n```{songs.lyrics}```"
-        )
+        await lyric.edit(f"**Search query**:\n`{artist}` - `{song}`"
+                         f"\n\n```{songs.lyrics}```")
 
     return True
 

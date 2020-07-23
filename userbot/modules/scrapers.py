@@ -194,7 +194,9 @@ async def gsearch(event):
     try:
         gresults = await gsearch.async_search(*search_args)
     except Exception:
-        return await event.edit("`Error: Your query could not be found or it was flagged as unusual traffic.`")
+        return await event.edit(
+            "`Error: Your query could not be found or it was flagged as unusual traffic.`"
+        )
     msg = ""
 
     for i in range(counter):
@@ -262,14 +264,15 @@ async def urban_dict(event):
     except asyncurban.WordNotFoundError:
         return await event.edit("`Error: No definition available.`")
 
-    result = template.format(
-        definition.word, definition.definition, definition.example)
+    result = template.format(definition.word, definition.definition,
+                             definition.example)
 
     if len(result) >= 4096:
         await event.edit("`Output too large, sending as file...`")
         with open("output.txt", "w+") as file:
             file.write("Query: " + definition.word + "\n\nMeaning: " +
-                       definition.definition + "Example: \n" + definition.example)
+                       definition.definition + "Example: \n" +
+                       definition.example)
         await event.client.send_file(
             event.chat_id,
             "output.txt",
@@ -414,7 +417,8 @@ async def translateme(trans):
     elif textx:
         message = textx.text
     else:
-        return await trans.edit("`Give a text or reply to a message to translate!`")
+        return await trans.edit(
+            "`Give a text or reply to a message to translate!`")
 
     try:
         reply_text = translator.translate(deEmojify(message), dest=TRT_LANG)
@@ -606,14 +610,14 @@ async def download_video(v_url):
     except GeoRestrictedError:
         return await v_url.edit(
             "`Video is not available from your geographic location "
-            "due to geographic restrictions imposed by a website.`"
-        )
+            "due to geographic restrictions imposed by a website.`")
     except MaxDownloadsReached:
         return await v_url.edit("`Max-downloads limit has been reached.`")
     except PostProcessingError:
         return await v_url.edit("`There was an error during post processing.`")
     except UnavailableVideoError:
-        return await v_url.edit("`Media is not available in the requested format.`")
+        return await v_url.edit(
+            "`Media is not available in the requested format.`")
     except XAttrMetadataError as XAME:
         return await v_url.edit(f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
     except ExtractorError:

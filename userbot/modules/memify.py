@@ -17,7 +17,9 @@ async def mim(event):
     if event.fwd_from:
         return
     if not event.reply_to_msg_id:
-        await event.edit("`Syntax: reply to an image with .mms` 'text on top' ; 'text on bottom' ")
+        await event.edit(
+            "`Syntax: reply to an image with .mms` 'text on top' ; 'text on bottom' "
+        )
         return
     reply_message = await event.get_reply_message()
     if not reply_message.media:
@@ -45,7 +47,8 @@ async def mim(event):
             await event.reply("`Please unblock @MemeAutobot and try again.`")
             return
         if response.text.startswith("Forward"):
-            await event.edit("`Add `@MemeAutobot` to your forward privacy settings.`")
+            await event.edit(
+                "`Add `@MemeAutobot` to your forward privacy settings.`")
         if "Okay..." in response.text:
             await event.edit("`Converting...`")
             thumb = None
@@ -58,8 +61,8 @@ async def mim(event):
                 file_name = "meme.png"
                 reply_message = await event.get_reply_message()
                 to_download_directory = TEMP_DOWNLOAD_DIRECTORY
-                downloaded_file_name = os.path.join(
-                    to_download_directory, file_name)
+                downloaded_file_name = os.path.join(to_download_directory,
+                                                    file_name)
                 downloaded_file_name = await bot.download_media(
                     reply_message,
                     downloaded_file_name,
@@ -79,8 +82,8 @@ async def mim(event):
             response = await bot_conv.get_response()
             the_download_directory = TEMP_DOWNLOAD_DIRECTORY
             files_name = "memes.webp"
-            download_file_name = os.path.join(
-                the_download_directory, files_name)
+            download_file_name = os.path.join(the_download_directory,
+                                              files_name)
             await bot.download_media(
                 response.media,
                 download_file_name,
@@ -106,8 +109,7 @@ def is_message_image(message):
             return True
         return bool(
             message.media.document
-            and message.media.document.mime_type.split("/")[0] == "image"
-        )
+            and message.media.document.mime_type.split("/")[0] == "image")
 
     return False
 
@@ -118,8 +120,9 @@ async def silently_send_message(conv, text):
     await conv.mark_read(message=response)
     return response
 
+
 CMD_HELP.update({
     "memify":
-        ".mmf texttop ; textbottom\
+    ".mmf texttop ; textbottom\
         \nUsage: Reply a sticker/image/gif with the text you want to add to the top and/or bottom."
 })

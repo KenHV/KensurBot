@@ -25,7 +25,8 @@ async def evaluate(query):
         return await query.edit("``` Give an expression to evaluate. ```")
 
     if expression in ("userbot.session", "config.env"):
-        return await query.edit("`That's a dangerous operation! Not Permitted!`")
+        return await query.edit(
+            "`That's a dangerous operation! Not Permitted!`")
 
     try:
         evaluation = str(eval(expression))
@@ -77,7 +78,8 @@ async def run(run_q):
                                 "execute. Use .help exec for an example.```")
 
     if code in ("userbot.session", "config.env"):
-        return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
+        return await run_q.edit(
+            "`That's a dangerous operation! Not Permitted!`")
 
     if len(code.splitlines()) <= 5:
         codepre = code
@@ -141,10 +143,12 @@ async def terminal_runner(term):
         return await term.edit("`Term commands aren't permitted on channels!`")
 
     if not command:
-        return await term.edit("``` Give a command or use .help term for an example.```")
+        return await term.edit(
+            "``` Give a command or use .help term for an example.```")
 
     if command in ("userbot.session", "config.env"):
-        return await term.edit("`That's a dangerous operation! Not Permitted!`")
+        return await term.edit("`That's a dangerous operation! Not Permitted!`"
+                               )
 
     process = await asyncio.create_subprocess_shell(
         command,
@@ -171,6 +175,8 @@ async def terminal_runner(term):
         await term.edit("`" f"{curruser}:~# {command}" f"\n{result}" "`")
     else:
         await term.edit("`" f"{curruser}:~$ {command}" f"\n{result}" "`")
+
+
 '''
     if BOTLOG:
         await term.client.send_message(

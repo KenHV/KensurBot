@@ -17,7 +17,8 @@ from userbot.events import register
 # ========================= CONSTANTS ============================
 UNAPPROVED_MSG = (
     "`Hey there! Unfortunately, I don't accept private messages from strangers.\n`"
-    "`Please contact me in a group, or wait for me to approve you.`")  # thanks hackintosh5
+    "`Please contact me in a group, or wait for me to approve you.`"
+)  # thanks hackintosh5
 # =================================================================
 
 
@@ -48,8 +49,7 @@ async def permitpm(event):
                 # Send the Unapproved Message again
                 if event.text != prevmsg:
                     async for message in event.client.iter_messages(
-                            event.chat_id,
-                            from_user='me',
+                            event.chat_id, from_user='me',
                             search=UNAPPROVED_MSG):
                         await message.delete()
                     await event.reply(UNAPPROVED_MSG)
@@ -88,9 +88,8 @@ async def permitpm(event):
                     name0 = str(name.first_name)
                     await event.client.send_message(
                         BOTLOG_CHATID,
-                        "[" + name0 + "](tg://user?id=" +
-                        str(event.chat_id) + ")" +
-                        " was just another retarded nibba",
+                        "[" + name0 + "](tg://user?id=" + str(event.chat_id) +
+                        ")" + " was just another retarded nibba",
                     )
 
 

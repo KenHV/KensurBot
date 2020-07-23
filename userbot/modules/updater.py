@@ -26,10 +26,8 @@ async def gen_chlog(repo, diff):
     ch_log = ''
     d_form = "%d/%m/%y"
     for c in repo.iter_commits(diff):
-        ch_log += (
-            f'•[{c.committed_datetime.strftime(d_form)}]: '
-            f'{c.summary} <{c.author}>\n'
-        )
+        ch_log += (f'•[{c.committed_datetime.strftime(d_form)}]: '
+                   f'{c.summary} <{c.author}>\n')
     return ch_log
 
 
@@ -79,8 +77,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         if HEROKU_APP_NAME is None:
             await event.edit(
                 '`[HEROKU]`\n`Please set up the` **HEROKU_APP_NAME** `variable'
-                ' to be able to deploy your userbot...`'
-            )
+                ' to be able to deploy your userbot...`')
             repo.__del__()
             return
         for app in heroku_applications:
@@ -90,12 +87,10 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         if heroku_app is None:
             await event.edit(
                 f'{txt}\n'
-                '`Invalid Heroku credentials for deploying userbot dyno.`'
-            )
+                '`Invalid Heroku credentials for deploying userbot dyno.`')
             return repo.__del__()
         await event.edit('`[HEROKU]`'
-                         '\n`Userbot dyno build in progress, please wait...`'
-                         )
+                         '\n`Userbot dyno build in progress, please wait...`')
         ups_rem.fetch(ac_br)
         repo.git.reset("--hard", "FETCH_HEAD")
         heroku_git_url = heroku_app.git_url.replace(
@@ -121,8 +116,7 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
                              'Restarting, please wait...`')
     else:
         await event.edit('`[HEROKU]`\n'
-                         '`Please set up`  **HEROKU_API_KEY**  `variable...`'
-                         )
+                         '`Please set up`  **HEROKU_API_KEY**  `variable...`')
     return
 
 
@@ -163,8 +157,7 @@ async def upstream(event):
                 f"`Unfortunately, the directory {error} "
                 "does not seem to be a git repository.\n"
                 "But we can fix that by force updating the userbot using "
-                ".update now.`"
-            )
+                ".update now.`")
         repo = Repo.init()
         origin = repo.create_remote('upstream', off_repo)
         origin.fetch()
@@ -198,9 +191,8 @@ async def upstream(event):
         return
 
     if changelog == '' and not force_update:
-        await event.edit(
-            '\n`Your USERBOT is`  **up-to-date**  `with`  '
-            f'**{UPSTREAM_REPO_BRANCH}**\n')
+        await event.edit('\n`Your USERBOT is`  **up-to-date**  `with`  '
+                         f'**{UPSTREAM_REPO_BRANCH}**\n')
         return repo.__del__()
 
     if conf == '' and not force_update:

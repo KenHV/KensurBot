@@ -55,8 +55,8 @@ async def kang(args):
             await args.edit(f"`{random.choice(KANGING_STR)}`")
             photo = io.BytesIO()
             await bot.download_file(message.media.document, photo)
-            if (DocumentAttributeFilename(file_name='sticker.webp') in
-                    message.media.document.attributes):
+            if (DocumentAttributeFilename(file_name='sticker.webp')
+                    in message.media.document.attributes):
                 emoji = message.media.document.attributes[1].alt
                 if emoji != '':
                     emojibypass = True
@@ -170,7 +170,8 @@ async def kang(args):
                         return await args.edit(
                             "`Sticker added in a different pack!"
                             "\nThis pack is newly created."
-                            f"\nYour pack can be found `[here](t.me/addstickers/{packname})")
+                            f"\nYour pack can be found `[here](t.me/addstickers/{packname})"
+                        )
                 if is_anim:
                     await conv.send_file('AnimatedSticker.tgs')
                     remove('AnimatedSticker.tgs')
@@ -294,14 +295,12 @@ async def get_pack_info(event):
         if document_sticker.emoticon not in pack_emojis:
             pack_emojis.append(document_sticker.emoticon)
 
-    OUTPUT = (
-        f"**Sticker Title:** `{get_stickerset.set.title}\n`"
-        f"**Sticker Short Name:** `{get_stickerset.set.short_name}`\n"
-        f"**Official:** `{get_stickerset.set.official}`\n"
-        f"**Archived:** `{get_stickerset.set.archived}`\n"
-        f"**Stickers In Pack:** `{len(get_stickerset.packs)}`\n"
-        f"**Emojis In Pack:**\n{' '.join(pack_emojis)}"
-    )
+    OUTPUT = (f"**Sticker Title:** `{get_stickerset.set.title}\n`"
+              f"**Sticker Short Name:** `{get_stickerset.set.short_name}`\n"
+              f"**Official:** `{get_stickerset.set.official}`\n"
+              f"**Archived:** `{get_stickerset.set.archived}`\n"
+              f"**Stickers In Pack:** `{len(get_stickerset.packs)}`\n"
+              f"**Emojis In Pack:**\n{' '.join(pack_emojis)}")
 
     await event.edit(OUTPUT)
 

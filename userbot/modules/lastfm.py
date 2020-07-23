@@ -56,11 +56,11 @@ async def last_fm(lastFM):
             image = None
         tags = await gettags(isNowPlaying=True, playing=playing)
         rectrack = parse.quote(f"{playing}")
-        rectrack = sub("^", "https://open.spotify.com/search/",
-                       rectrack)
+        rectrack = sub("^", "https://open.spotify.com/search/", rectrack)
         if image:
-            output = (f"[‎]({image})[{LASTFM_USERNAME}]({username}) __is now listening to:"
-                      f"__\n\n• [{playing}]({rectrack})\n`{tags}`")
+            output = (
+                f"[‎]({image})[{LASTFM_USERNAME}]({username}) __is now listening to:"
+                f"__\n\n• [{playing}]({rectrack})\n`{tags}`")
             preview = True
         else:
             output = (f"[{LASTFM_USERNAME}]({username}) __is now listening to:"
@@ -74,9 +74,7 @@ async def last_fm(lastFM):
             printable = await artist_and_song(track)
             tags = await gettags(track)
             rectrack = parse.quote(str(printable))
-            rectrack = sub("^",
-                           "https://open.spotify.com/search/",
-                           rectrack)
+            rectrack = sub("^", "https://open.spotify.com/search/", rectrack)
             output += f"• [{printable}]({rectrack})\n"
             if tags:
                 output += f"`{tags}`\n\n"

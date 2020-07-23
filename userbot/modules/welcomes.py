@@ -48,8 +48,8 @@ async def welcome_to_chat(event):
             current_saved_welcome_message = None
             if cws:
                 if cws.f_mesg_id:
-                    msg_o = await event.client.get_messages(entity=BOTLOG_CHATID,
-                                                            ids=int(cws.f_mesg_id))
+                    msg_o = await event.client.get_messages(
+                        entity=BOTLOG_CHATID, ids=int(cws.f_mesg_id))
                     file_media = msg_o.media
                     current_saved_welcome_message = msg_o.message
                 elif cws.reply:
@@ -86,8 +86,7 @@ async def save_welcome(event):
             await event.client.send_message(
                 BOTLOG_CHATID, f"#WELCOME_NOTE \nCHAT ID: {event.chat_id}"
                 "\nThe following message is saved as the new welcome note "
-                "for the chat, please do NOT delete it !!"
-            )
+                "for the chat, please do NOT delete it !!")
             msg_o = await event.client.forward_messages(
                 entity=BOTLOG_CHATID,
                 messages=msg,

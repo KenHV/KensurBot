@@ -89,7 +89,8 @@ async def ANTI_SPAMBOTS(welcm):
                         data = r.json()
                     except BaseException:
                         print(
-                            "CAS check failed, falling back to legacy anti_spambot behaviour.")
+                            "CAS check failed, falling back to legacy anti_spambot behaviour."
+                        )
                         data = None
 
                     if data and data['ok']:

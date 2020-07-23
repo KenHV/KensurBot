@@ -27,6 +27,7 @@ async def help(event):
         sorted = "**List of all loaded module(s)**\n\
                  \nSpecify which module do you want help for! \
                  \n**Usage:** `.help` <module name>\n\n"
+
         for i in CMD_HELP:
             unsorted += str(i) + " "
         unsorted = unsorted.split()

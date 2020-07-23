@@ -56,7 +56,8 @@ async def add_note(fltr):
     if msg and msg.media and not string:
         if BOTLOG_CHATID:
             await fltr.client.send_message(
-                BOTLOG_CHATID, f"#NOTE\nCHAT ID: {fltr.chat_id}\nKEYWORD: {keyword}"
+                BOTLOG_CHATID,
+                f"#NOTE\nCHAT ID: {fltr.chat_id}\nKEYWORD: {keyword}"
                 "\n\nThe following message is saved as the note's reply data for the chat, please do NOT delete it !!"
             )
             msg_o = await fltr.client.forward_messages(entity=BOTLOG_CHATID,
@@ -97,17 +98,18 @@ async def incom_note(getnt):
                 message_id_to_reply = None
             if note:
                 if note.f_mesg_id:
-                    msg_o = await getnt.client.get_messages(entity=BOTLOG_CHATID,
-                                                            ids=int(
-                                                                note.f_mesg_id))
-                    await getnt.client.send_message(getnt.chat_id,
-                                                    msg_o.mesage,
-                                                    reply_to=message_id_to_reply,
-                                                    file=msg_o.media)
+                    msg_o = await getnt.client.get_messages(
+                        entity=BOTLOG_CHATID, ids=int(note.f_mesg_id))
+                    await getnt.client.send_message(
+                        getnt.chat_id,
+                        msg_o.mesage,
+                        reply_to=message_id_to_reply,
+                        file=msg_o.media)
                 elif note.reply:
-                    await getnt.client.send_message(getnt.chat_id,
-                                                    note.reply,
-                                                    reply_to=message_id_to_reply)
+                    await getnt.client.send_message(
+                        getnt.chat_id,
+                        note.reply,
+                        reply_to=message_id_to_reply)
     except AttributeError:
         pass
 

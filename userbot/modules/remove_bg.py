@@ -48,7 +48,8 @@ async def kbg(remob):
             f"`Removing background from online image hosted at`\n{input_str}")
         output_file_name = await ReTrieveURL(input_str)
     else:
-        return await remob.edit("`I need something to remove the background from.`")
+        return await remob.edit(
+            "`I need something to remove the background from.`")
     contentType = output_file_name.headers.get("content-type")
     if "image" in contentType:
         with io.BytesIO(output_file_name.content) as remove_bg_image:

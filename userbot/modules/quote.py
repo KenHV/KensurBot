@@ -28,21 +28,30 @@ if 1 == 1:
         "no_template": "<b>You didn't specify the template.</b>",
         "delimiter": "</code>, <code>",
         "server_error": "<b>Server error. Please report to developer.</b>",
-        "invalid_token": "<b>You've set an invalid token, get it from `http://antiddos.systems`.</b>",
+        "invalid_token":
+        "<b>You've set an invalid token, get it from `http://antiddos.systems`.</b>",
         "unauthorized": "<b>You're unauthorized to do this.</b>",
-        "not_enough_permissions": "<b>Wrong template. You can use only the default one.</b>",
+        "not_enough_permissions":
+        "<b>Wrong template. You can use only the default one.</b>",
         "templates": "<b>Available Templates:</b> <code>{}</code>",
-        "cannot_send_stickers": "<b>You cannot send stickers in this chat.</b>",
+        "cannot_send_stickers":
+        "<b>You cannot send stickers in this chat.</b>",
         "admin": "admin",
         "creator": "creator",
         "hidden": "hidden",
         "channel": "Channel"
     }
 
-config = dict({"api_url": "http://api.antiddos.systems",
-               "username_colors": ["#fb6169", "#faa357", "#b48bf2", "#85de85",
-                                   "#62d4e3", "#65bdf3", "#ff5694"],
-               "default_username_color": "#b48bf2"})
+config = dict({
+    "api_url":
+    "http://api.antiddos.systems",
+    "username_colors": [
+        "#fb6169", "#faa357", "#b48bf2", "#85de85", "#62d4e3", "#65bdf3",
+        "#ff5694"
+    ],
+    "default_username_color":
+    "#b48bf2"
+})
 
 
 @register(outgoing=True, pattern=r"^\.quote(?: |$)(.*)")
@@ -68,20 +77,24 @@ async def quotecmd(message):  # noqa: C901
     admintitle = ""
     if isinstance(message.to_id, telethon.tl.types.PeerChannel):
         try:
-            user = await bot(telethon.tl.functions.channels.GetParticipantRequest(message.chat_id,
-                                                                                  reply.from_id))
-            if isinstance(user.participant, telethon.tl.types.ChannelParticipantCreator):
+            user = await bot(
+                telethon.tl.functions.channels.GetParticipantRequest(
+                    message.chat_id, reply.from_id))
+            if isinstance(user.participant,
+                          telethon.tl.types.ChannelParticipantCreator):
                 admintitle = user.participant.rank or strings["creator"]
-            elif isinstance(user.participant, telethon.tl.types.ChannelParticipantAdmin):
+            elif isinstance(user.participant,
+                            telethon.tl.types.ChannelParticipantAdmin):
                 admintitle = user.participant.rank or strings["admin"]
             user = user.users[0]
         except telethon.errors.rpcerrorlist.UserNotParticipantError:
             user = await reply.get_sender()
     elif isinstance(message.to_id, telethon.tl.types.PeerChat):
-        chat = await bot(telethon.tl.functions.messages.GetFullChatRequest(reply.to_id))
+        chat = await bot(
+            telethon.tl.functions.messages.GetFullChatRequest(reply.to_id))
         participants = chat.full_chat.participants.participants
-        participant = next(filter(lambda x: x.user_id ==
-                                  reply.from_id, participants), None)
+        participant = next(
+            filter(lambda x: x.user_id == reply.from_id, participants), None)
         if isinstance(participant, telethon.tl.types.ChatParticipantCreator):
             admintitle = strings["creator"]
         elif isinstance(participant, telethon.tl.types.ChatParticipantAdmin):
@@ -143,16 +156,17 @@ async def quotecmd(message):  # noqa: C901
             raise ValueError("Invalid response from server", resp)
     elif resp["status"] == 404:
         if resp["message"] == "ERROR_TEMPLATE_NOT_FOUND":
-            newreq = requests.post(config["api_url"] + "/api/v1/getalltemplates", data={
-                "token": QUOTES_API_TOKEN
-            })
+            newreq = requests.post(config["api_url"] +
+                                   "/api/v1/getalltemplates",
+                                   data={"token": QUOTES_API_TOKEN})
             newreq = newreq.json()
 
             if newreq["status"] == "NOT_ENOUGH_PERMISSIONS":
                 return await message.respond(strings["not_enough_permissions"])
             elif newreq["status"] == "SUCCESS":
                 templates = strings["delimiter"].join(newreq["message"])
-                return await message.respond(strings["templates"].format(templates))
+                return await message.respond(
+                    strings["templates"].format(templates))
             elif newreq["status"] == "INVALID_TOKEN":
                 return await message.respond(strings["invalid_token"])
             else:
@@ -192,9 +206,12 @@ async def get_markdown(reply):
             md_item["Type"] = "bold"
         elif isinstance(entity, telethon.tl.types.MessageEntityItalic):
             md_item["Type"] = "italic"
-        elif isinstance(entity, (telethon.tl.types.MessageEntityMention, telethon.tl.types.MessageEntityTextUrl,
-                                 telethon.tl.types.MessageEntityMentionName, telethon.tl.types.MessageEntityHashtag,
-                                 telethon.tl.types.MessageEntityCashtag, telethon.tl.types.MessageEntityBotCommand,
+        elif isinstance(entity, (telethon.tl.types.MessageEntityMention,
+                                 telethon.tl.types.MessageEntityTextUrl,
+                                 telethon.tl.types.MessageEntityMentionName,
+                                 telethon.tl.types.MessageEntityHashtag,
+                                 telethon.tl.types.MessageEntityCashtag,
+                                 telethon.tl.types.MessageEntityBotCommand,
                                  telethon.tl.types.MessageEntityUrl)):
             md_item["Type"] = "link"
         elif isinstance(entity, telethon.tl.types.MessageEntityCode):

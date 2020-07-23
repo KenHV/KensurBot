@@ -92,13 +92,12 @@ async def mega_downloader(megadl):
     file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
     if os.path.isfile(file_path):
         try:
-            raise FileExistsError(
-                errno.EEXIST, os.strerror(errno.EEXIST), file_path)
+            raise FileExistsError(errno.EEXIST, os.strerror(errno.EEXIST),
+                                  file_path)
         except FileExistsError as e:
             await megadl.edit(f"`{str(e)}`")
             return None
-    downloader = SmartDL(
-        file_url, temp_file_path, progress_bar=False)
+    downloader = SmartDL(file_url, temp_file_path, progress_bar=False)
     display_message = None
     try:
         downloader.start(blocking=False)
@@ -114,11 +113,8 @@ async def mega_downloader(megadl):
         speed = downloader.get_speed(human=True)
         estimated_total_time = round(downloader.get_eta())
         progress_str = "`{0}` | [{1}{2}] `{3}%`".format(
-            status,
-            ''.join(["●" for i in range(
-                    math.floor(percentage / 10))]),
-            ''.join(["○" for i in range(
-                    10 - math.floor(percentage / 10))]),
+            status, ''.join(["●" for i in range(math.floor(percentage / 10))]),
+            ''.join(["○" for i in range(10 - math.floor(percentage / 10))]),
             round(percentage, 2))
         diff = time.time() - start
         try:
@@ -129,11 +125,9 @@ async def mega_downloader(megadl):
                 f"`{humanbytes(downloaded)} of {humanbytes(total_length)}"
                 f" @ {speed}`\n"
                 f"`ETA` -> {time_formatter(estimated_total_time)}\n"
-                f"`Duration` -> {time_formatter(round(diff))}"
-            )
-            if round(diff % 15.00) == 0 and (
-                display_message != current_message or total_length == downloaded
-            ):
+                f"`Duration` -> {time_formatter(round(diff))}")
+            if round(diff % 15.00) == 0 and (display_message != current_message
+                                             or total_length == downloaded):
                 await megadl.edit(current_message)
                 await asyncio.sleep(0.2)
                 display_message = current_message
@@ -146,9 +140,10 @@ async def mega_downloader(megadl):
     if downloader.isSuccessful():
         download_time = round(downloader.get_dl_time() + wait)
         try:
-            P = multiprocessing.Process(target=await decrypt_file(megadl,
-                                                                  file_path, temp_file_path,
-                                                                  hex_key, hex_raw_key),
+            P = multiprocessing.Process(target=await
+                                        decrypt_file(megadl, file_path,
+                                                     temp_file_path, hex_key,
+                                                     hex_raw_key),
                                         name="Decrypt_File")
             P.start()
             P.join()
@@ -169,15 +164,15 @@ async def mega_downloader(megadl):
     return
 
 
-async def decrypt_file(megadl, file_path, temp_file_path,
-                       hex_key, hex_raw_key):
-    cmd = ("cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'"
-           .format(temp_file_path, hex_key, hex_raw_key, file_path))
+async def decrypt_file(megadl, file_path, temp_file_path, hex_key,
+                       hex_raw_key):
+    cmd = ("cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'".format(
+        temp_file_path, hex_key, hex_raw_key, file_path))
     if await subprocess_run(megadl, cmd):
         os.remove(temp_file_path)
     else:
-        raise FileNotFoundError(
-            errno.ENOENT, os.strerror(errno.ENOENT), file_path)
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),
+                                file_path)
     return
 
 

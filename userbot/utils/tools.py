@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import hashlib
 import re
 
@@ -44,24 +43,25 @@ def time_formatter(seconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
-    tmp = (
-        ((str(days) + " day(s), ") if days else "") +
-        ((str(hours) + " hour(s), ") if hours else "") +
-        ((str(minutes) + " minute(s), ") if minutes else "") +
-        ((str(seconds) + " second(s), ") if seconds else "")
-    )
+    tmp = (((str(days) + " day(s), ") if days else "") +
+           ((str(hours) + " hour(s), ") if hours else "") +
+           ((str(minutes) + " minute(s), ") if minutes else "") +
+           ((str(seconds) + " second(s), ") if seconds else ""))
     return tmp[:-2]
 
 
 def human_to_bytes(size: str) -> int:
     units = {
-        "M": 2**20, "MB": 2**20,
-        "G": 2**30, "GB": 2**30,
-        "T": 2**40, "TB": 2**40
+        "M": 2**20,
+        "MB": 2**20,
+        "G": 2**30,
+        "GB": 2**30,
+        "T": 2**40,
+        "TB": 2**40
     }
 
     size = size.upper()
     if not re.match(r' ', size):
         size = re.sub(r'([KMGT])', r' \1', size)
     number, unit = [string.strip() for string in size.split()]
-    return int(float(number)*units[unit])
+    return int(float(number) * units[unit])

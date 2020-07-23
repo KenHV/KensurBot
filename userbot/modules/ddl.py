@@ -23,8 +23,8 @@ async def ddl(event):
     async with bot.conversation("@jnckbot") as conv:
         chat = "@jnckbot"
         try:
-            response = conv.wait_event(events.NewMessage(
-                incoming=True, from_users=994325826))
+            response = conv.wait_event(
+                events.NewMessage(incoming=True, from_users=994325826))
             await bot.forward_messages(chat, reply_message)
             response = await response
             await bot.send_read_acknowledge(conv.chat_id)
@@ -32,9 +32,11 @@ async def ddl(event):
             await event.reply("```Unblock @jnckbot plox```")
             return
         await event.delete()
-    await event.client.send_message(event.chat_id, response.message, reply_to=event.message.reply_to_msg_id)
+    await event.client.send_message(event.chat_id,
+                                    response.message,
+                                    reply_to=event.message.reply_to_msg_id)
 
-CMD_HELP.update({
-    "ddl":
-    ">`.ddl` \
+
+CMD_HELP.update(
+    {"ddl": ">`.ddl` \
 \nUsage: Reply to a media to get direct link."})

@@ -41,7 +41,8 @@ async def get_tz(con):
         return
 
 
-@register(outgoing=True, pattern=r"^\.time(?: |$)(.*)(?<![0-9])(?: |$)([0-9]+)?")
+@register(outgoing=True,
+          pattern=r"^\.time(?: |$)(.*)(?<![0-9])(?: |$)([0-9]+)?")
 async def time_func(tdata):
     """ For .time command, return the time of
         1. The country passed as an argument,
@@ -65,7 +66,8 @@ async def time_func(tdata):
         tz_num = TZ_NUMBER
         timezones = await get_tz(COUNTRY)
     else:
-        return await tdata.edit(f"`It's`  **{dt.now().strftime(t_form)}**  `here.`")
+        return await tdata.edit(
+            f"`It's`  **{dt.now().strftime(t_form)}**  `here.`")
 
     if not timezones:
         return await tdata.edit("`Invaild country.`")
@@ -98,7 +100,8 @@ async def time_func(tdata):
                                 f"({time_zone} timezone).`")
 
 
-@register(outgoing=True, pattern=r"^\.date(?: |$)(.*)(?<![0-9])(?: |$)([0-9]+)?")
+@register(outgoing=True,
+          pattern=r"^\.date(?: |$)(.*)(?<![0-9])(?: |$)([0-9]+)?")
 async def date_func(dat):
     """ For .date command, return the date of
         1. The country passed as an argument,
@@ -122,7 +125,8 @@ async def date_func(dat):
         tz_num = TZ_NUMBER
         timezones = await get_tz(COUNTRY)
     else:
-        return await dat.edit(f"`It's`  **{dt.now().strftime(d_form)}**  `here.`")
+        return await dat.edit(
+            f"`It's`  **{dt.now().strftime(d_form)}**  `here.`")
 
     if not timezones:
         return await dat.edit("`Invaild country.`")

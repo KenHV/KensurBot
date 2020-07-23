@@ -49,11 +49,8 @@ async def mention_afk(mention):
     global COUNT_MSG
     global USERS
     global ISAFK
-    if (
-        mention.message.mentioned
-        and not (await mention.get_sender()).bot
-        and ISAFK
-    ):
+    if (mention.message.mentioned and not (await mention.get_sender()).bot
+            and ISAFK):
         if mention.sender_id not in USERS:
             if AFKREASON:
                 await mention.reply("I'm AFK right now."
@@ -116,8 +113,7 @@ async def set_afk(afk_e):
     global AFKREASON
     if string:
         AFKREASON = string
-        await afk_e.edit("Going AFK!"
-                         f"\nReason: `{string}`")
+        await afk_e.edit("Going AFK!" f"\nReason: `{string}`")
     else:
         await afk_e.edit("Going AFK!")
     if BOTLOG:

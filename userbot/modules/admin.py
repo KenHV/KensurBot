@@ -13,8 +13,7 @@ from telethon.errors import (BadRequestError, ChatAdminRequiredError,
                              ImageProcessFailedError, PhotoCropSizeSmallError,
                              UserAdminInvalidError)
 
-from telethon.errors.rpcerrorlist import (BadRequestError,
-                                          MessageTooLongError,
+from telethon.errors.rpcerrorlist import (BadRequestError, MessageTooLongError,
                                           UserIdInvalidError,
                                           UserAdminInvalidError)
 from telethon.tl.functions.channels import (EditAdminRequest,
@@ -402,9 +401,13 @@ async def muter(moot):
                 try:
                     await moot.delete()
                     await moot.client(
-                        EditBannedRequest(moot.chat_id, moot.sender_id, rights))
-                except (BadRequestError, UserAdminInvalidError, ChatAdminRequiredError, UserIdInvalidError):
-                    await moot.client.send_read_acknowledge(moot.chat_id, moot.id)
+                        EditBannedRequest(moot.chat_id, moot.sender_id,
+                                          rights))
+                except (BadRequestError, UserAdminInvalidError,
+                        ChatAdminRequiredError, UserIdInvalidError):
+                    await moot.client.send_read_acknowledge(
+                        moot.chat_id, moot.id)
+
 
 @register(outgoing=True, pattern=r"^\.zombies(?: |$)(.*)", groups_only=False)
 async def rm_deletedacc(show):
@@ -422,10 +425,8 @@ async def rm_deletedacc(show):
                 del_u += 1
                 await sleep(1)
         if del_u > 0:
-            del_status = (
-                f"`Found` **{del_u}** `ded nibba(s) in this group,"
-                "\nclean them by using .zombies clean`"
-            )
+            del_status = (f"`Found` **{del_u}** `ded nibba(s) in this group,"
+                          "\nclean them by using .zombies clean`")
         return await show.edit(del_status)
 
     # Here laying the sanity check
@@ -447,7 +448,8 @@ async def rm_deletedacc(show):
                 await show.client(
                     EditBannedRequest(show.chat_id, user.id, BANNED_RIGHTS))
             except ChatAdminRequiredError:
-                return await show.edit("`I don't have ban rights in this group`")
+                return await show.edit(
+                    "`I don't have ban rights in this group`")
             except UserAdminInvalidError:
                 del_u -= 1
                 del_a += 1
@@ -460,8 +462,7 @@ async def rm_deletedacc(show):
 
     if del_a > 0:
         del_status = (f"Yeeted **{del_u}** ded nibba(s)"
-                      f"\n**{del_a}** deleted admin accounts are not removed"
-                      )
+                      f"\n**{del_a}** deleted admin accounts are not removed")
     await show.edit(del_status)
     await sleep(2)
     await show.delete()
@@ -671,7 +672,7 @@ async def get_usersdel(show):
             async for user in show.client.iter_participants(show.chat_id):
                 if not user.deleted:
                     mentions += f"\n[{user.first_name}](tg://user?id={user.id}) `{user.id}`"
-         #       else:
+        #       else:
     #                mentions += f"\nDeleted Account `{user.id}`"
         else:
             searchq = show.pattern_match.group(1)
@@ -679,15 +680,16 @@ async def get_usersdel(show):
                     show.chat_id, search=f'{searchq}'):
                 if not user.deleted:
                     mentions += f"\n[{user.first_name}](tg://user?id={user.id}) `{user.id}`"
-         #       else:
-      #              mentions += f"\nDeleted Account `{user.id}`"
+        #       else:
+    #              mentions += f"\nDeleted Account `{user.id}`"
     except ChatAdminRequiredError as err:
         mentions += " " + str(err) + "\n"
     try:
         await show.edit(mentions)
     except MessageTooLongError:
         await show.edit(
-            "Damn, this is a huge group. Uploading deletedusers lists as file.")
+            "Damn, this is a huge group. Uploading deletedusers lists as file."
+        )
         file = open("userslist.txt", "w+")
         file.write(mentions)
         file.close()
@@ -717,7 +719,8 @@ async def get_userdel_from_event(event):
             user = int(user)
 
         if not user:
-            return await event.edit("`Pass the deleted user's username, id or reply!`")
+            return await event.edit(
+                "`Pass the deleted user's username, id or reply!`")
 
         if event.message.entities is not None:
             probable_user_mention_entity = event.message.entities[0]
@@ -755,7 +758,8 @@ async def get_bots(show):
     mentions = f'<b>Bots in {title}:</b>\n'
     try:
         if isinstance(show.to_id, PeerChat):
-            return await show.edit("`I heard that only Supergroups can have bots.`")
+            return await show.edit(
+                "`I heard that only Supergroups can have bots.`")
         else:
             async for user in show.client.iter_participants(
                     show.chat_id, filter=ChannelParticipantsBots):

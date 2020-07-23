@@ -42,8 +42,8 @@ async def _(event):
             downloaded_file_name = await bot.download_media(
                 reply_message,
                 TEMP_DOWNLOAD_DIRECTORY,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "[DOWNLOADING]")))
+                progress_callback=lambda d, t: asyncio.get_event_loop(
+                ).create_task(progress(d, t, mone, c_time, "[DOWNLOADING]")))
             directory_name = downloaded_file_name
             await event.edit(f"Downloaded to `{directory_name}`"
                              "`\ncompressing file...`")
@@ -87,8 +87,8 @@ async def addzip(add):
             downloaded_file_name = await bot.download_media(
                 reply_message,
                 ZIP_DOWNLOAD_DIRECTORY,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "[DOWNLOADING]")))
+                progress_callback=lambda d, t: asyncio.get_event_loop(
+                ).create_task(progress(d, t, mone, c_time, "[DOWNLOADING]")))
             success = str(downloaded_file_name).replace("./zips/", "")
             await add.edit(f"`{success} Successfully added to list`")
         except Exception as e:  # pylint:disable=C0103,W0703

@@ -82,7 +82,8 @@ async def sed(command):
         try:
             check = re.match(repl, to_fix, flags=re.IGNORECASE)
             if check and check.group(0).lower() == to_fix.lower():
-                return await command.edit("`Boi!, that's a reply. Don't use sed`")
+                return await command.edit(
+                    "`Boi!, that's a reply. Don't use sed`")
 
             if "i" in flags and "g" in flags:
                 text = re.sub(repl, repl_with, to_fix, flags=re.I).strip()
@@ -94,7 +95,8 @@ async def sed(command):
             else:
                 text = re.sub(repl, repl_with, to_fix, count=1).strip()
         except sre_err:
-            return await command.edit("B O I! [Learn Regex](https://regexone.com)")
+            return await command.edit(
+                "B O I! [Learn Regex](https://regexone.com)")
         if text:
             await command.edit(f"Did you mean? \n\n{text}")
 

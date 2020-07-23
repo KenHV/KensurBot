@@ -18,9 +18,7 @@ async def _(event):
     if event.pattern_match.group(1) == "now":
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
         if playing is None:
-            return await event.edit(
-                "`Error: No current scrobble found.`"
-            )
+            return await event.edit("`Error: No current scrobble found.`")
         artist = playing.get_artist()
         song = playing.get_title()
     else:
@@ -73,8 +71,9 @@ async def _(event):
             await event.edit("`Unblock `@MusicHuntersBot` and retry`")
             return
         await bot.send_file(event.chat_id, song, caption=details.text)
-        await event.client.delete_messages(conv.chat_id,
-                                           [msg_start.id, response.id, msg.id, details.id, song.id])
+        await event.client.delete_messages(
+            conv.chat_id,
+            [msg_start.id, response.id, msg.id, details.id, song.id])
         await event.delete()
 
 
@@ -85,9 +84,7 @@ async def _(event):
     if event.pattern_match.group(1) == "now":
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
         if playing is None:
-            return await event.edit(
-                "`Error: No scrobbling data found.`"
-            )
+            return await event.edit("`Error: No scrobbling data found.`")
         artist = playing.get_artist()
         song = playing.get_title()
     else:
@@ -100,22 +97,24 @@ async def _(event):
         await asyncio.sleep(2)
         await event.edit("`Downloading...`")
         try:
-            response = conv.wait_event(events.NewMessage(
-                incoming=True, from_users=752979930))
+            response = conv.wait_event(
+                events.NewMessage(incoming=True, from_users=752979930))
             msg = await bot.send_message(chat, track)
             respond = await response
-            res = conv.wait_event(events.NewMessage(
-                incoming=True, from_users=752979930))
+            res = conv.wait_event(
+                events.NewMessage(incoming=True, from_users=752979930))
             r = await res
             """ - don't spam notif - """
             await bot.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await event.reply("`Unblock `@SpotifyMusicDownloaderBot` and retry`")
+            await event.reply(
+                "`Unblock `@SpotifyMusicDownloaderBot` and retry`")
             return
         await bot.forward_messages(event.chat_id, respond.message)
     await event.client.delete_messages(conv.chat_id,
                                        [msg.id, r.id, respond.id])
     await event.delete()
+
 
 CMD_HELP.update({
     "getmusic":

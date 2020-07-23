@@ -25,13 +25,12 @@ async def _(event):
             await event.reply("`Please unblock` @SpotifyNowBot`...`")
             return
         if response.text.startswith("You're"):
-            await event.edit("`You're not listening to anything on Spotify at the moment`")
+            await event.edit(
+                "`You're not listening to anything on Spotify at the moment`")
             return
         else:
             downloaded_file_name = await event.client.download_media(
-                response.media,
-                TEMP_DOWNLOAD_DIRECTORY
-            )
+                response.media, TEMP_DOWNLOAD_DIRECTORY)
             await event.client.send_file(
                 event.chat_id,
                 downloaded_file_name,
