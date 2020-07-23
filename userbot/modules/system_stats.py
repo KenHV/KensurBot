@@ -72,9 +72,9 @@ async def bot_ver(event):
             + str(stderr.decode().strip())
 
         await event.edit("`"
-                         f"Userbot : {verout}\n"
-                         f"Revision: {revout}\n"
-                         f"Telethon: {version.__version__}\n"
+                         f"Userbot  : {verout}\n"
+                         f"Revision : {revout}\n"
+                         f"Telethon : {version.__version__}\n"
                          "`")
     else:
         await event.edit(
@@ -133,9 +133,9 @@ async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
                      "KensurBot is up and running!\n\n"
-                     f"Bot      : v0.6.719\n"
-                     f"Python   : {python_version()}\n"
-                     f"User     : {DEFAULTUSER}"
+                     f"Bot    : v0.6.724\n"
+                     f"Python : {python_version()}\n"
+                     f"User   : {DEFAULTUSER}"
                      "`")
 
 
