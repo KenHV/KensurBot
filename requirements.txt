@@ -46,3 +46,4 @@ telethon>=1.10.6
 TgCrypto>=1.2.0
 wikipedia>=1.4.0
 youtube-dl
+youtube_search

@@ -2,13 +2,7 @@
   "name": "KensurBot",
   "description": "[KensurBot] A modular Telegram userbot running on Python 3.8+ with an sqlalchemy database.",
   "logo": "#",
-  "keywords": [
-    "telegram",
-    "userbot",
-    "plugin",
-    "modular",
-    "productivity"
-  ],
+  "keywords": ["telegram", "userbot", "plugin", "modular", "productivity"],
   "repository": "https://github.com/KenHV/KensurBot",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
   "success_url": "https://t.me/KenVerseChat",
@@ -86,10 +80,6 @@
     "PM_AUTO_BAN": {
       "description": "PM Auto-Ban Feature Switch. Also known as the 'bleep blop, this is a bot...' module.",
       "value": "False"
-    },
-    "YOUTUBE_API_KEY": {
-      "description": "YouTube Data API Key for .yt command. Get from https://console.cloud.google.com",
-      "required": false
     },
     "OCR_SPACE_API_KEY": {
       "description": "OCR API Key for .ocr command. Get from https://ocr.space/ocrapi",
