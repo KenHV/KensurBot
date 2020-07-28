@@ -6,35 +6,35 @@
 """ Userbot module containing various scrapers. """
 
 import asyncio
+import json
 import os
 import re
 import shutil
 import time
-import json
 from asyncio import sleep
 from urllib.parse import quote_plus
 
 import asyncurban
 from bs4 import BeautifulSoup
-from requests import get
-from telethon.tl.types import DocumentAttributeAudio
-
 from emoji import get_emoji_regexp
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
+from requests import get
 from search_engine_parser import GoogleSearch
-from userbot import (BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY)
-from userbot.events import register
-from userbot.utils import chrome, googleimagesdownload, progress
+from telethon.tl.types import DocumentAttributeAudio
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
-from youtube_search import YoutubeSearch
 from youtube_dl import YoutubeDL
 from youtube_dl.utils import (ContentTooShortError, DownloadError,
                               ExtractorError, GeoRestrictedError,
                               MaxDownloadsReached, PostProcessingError,
                               UnavailableVideoError, XAttrMetadataError)
+
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
+from userbot.events import register
+from userbot.utils import chrome, googleimagesdownload, progress
+from youtube_search import YoutubeSearch
 
 CARBONLANG = "auto"
 TTS_LANG = "en"
@@ -468,21 +468,47 @@ async def lang(value):
             f"`Language for {scraper} changed to {LANG.title()}.`")
 
 
-@register(outgoing=True, pattern=r"^\.yt (.*)")
-async def yt_search(video_q):
+@register(outgoing=True, pattern=r"^\.yt (\d*) *(.*)")
+async def yt_search(event):
     """ For .yt command, do a YouTube search from Telegram. """
-    query = video_q.pattern_match.group(1)
+
+    if event.pattern_match.group(1) != "":
+        counter = int(event.pattern_match.group(1))
+        if counter > 10:
+            counter = int(10)
+        if counter <= 0:
+            counter = int(1)
+    else:
+        counter = int(3)
+
+    query = event.pattern_match.group(2)
+
     if not query:
-        await video_q.edit("`Enter query to search`")
-    await video_q.edit("`Processing...`")
+        return await event.edit("`Enter a query to search.`")
+    await event.edit("`Processing...`")
+
     try:
-        results = json.loads(YoutubeSearch(query, max_results=7).to_json())
+        results = json.loads(
+            YoutubeSearch(query, max_results=counter).to_json())
     except KeyError:
-        return await video_q.edit("`Youtube Search gone retard.\nCan't search this query!`")
-    output = f"**Search Query:**\n`{query}`\n\n**Results:**\n\n"
+        return await event.edit(
+            "`Youtube Search gone retard.\nCan't search this query!`")
+
+    output = f"**Search Query:**\n`{query}`\n\n**Results:**\n"
+
     for i in results["videos"]:
-        output += (f"● `{i['title']}`\nhttps://www.youtube.com{i['url_suffix']}\n\n")
-    await video_q.edit(output, link_preview=False)
+        try:
+            title = i["title"]
+            link = "https://youtube.com" + i["url_suffix"]
+            channel = i["channel"]
+            duration = i["duration"]
+            views = i["views"]
+            output += f"[{title}]({link})\nChannel: `{channel}`\nDuration: {duration} | {views}\n\n"
+        except IndexError:
+            break
+
+    await event.edit(output, link_preview=False)
+
 
 @register(outgoing=True, pattern=r"^\.r(a|v) (.*)")
 async def download_video(v_url):
@@ -647,8 +673,9 @@ CMD_HELP.update({
     "\nUsage: Translates text to the language which is set."
     "\nUse >`.lang trt <language code>` to set language for trt. (Default is English)",
     "yt":
-    ">`.yt <text>`"
-    "\nUsage: Does a YouTube search.",
+    ">`.yt <count> <query>`"
+    "\nUsage: Does a YouTube search."
+    "\nCan specify the number of results needed (default is 3).",
     "imdb":
     ">`.imdb <movie-name>`"
     "\nUsage: Shows movie info and other stuff.",
