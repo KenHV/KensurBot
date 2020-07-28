@@ -43,8 +43,7 @@ async def _(event):
                 await bot.forward_messages(event.chat_id, response.message)
 
     except TimeoutError:
-        return await event.edit(
-                "`Error: `@QuotLyBot` is not responding.`")
+        return await event.edit("`Error: `@QuotLyBot` is not responding.`")
 
 
 CMD_HELP.update({

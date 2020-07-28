@@ -7,7 +7,6 @@
 from asyncio import sleep
 from random import choice, getrandbits, randint
 from re import sub
-import time
 
 import requests
 

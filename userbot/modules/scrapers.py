@@ -289,7 +289,8 @@ async def urban_dict(event):
         query = str(event.pattern_match.group(1))
 
     if not query:
-        return await event.edit("`Reply to a message or pass a query to search!`")
+        return await event.edit(
+            "`Reply to a message or pass a query to search!`")
 
     await event.edit("Processing...")
     ud = asyncurban.UrbanDictionary()
