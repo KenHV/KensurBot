@@ -105,9 +105,20 @@ async def carbon_api(e):
     await e.delete()  # Deleting msg
 
 
-@register(outgoing=True, pattern=r"^\.img (\d*) *(.*)")
+@register(outgoing=True, pattern=r"^\.img *(\d*) *(.*)")
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
+
+    if event.is_reply:
+        query = await event.get_reply_message()
+        query = str(query.message)
+    else:
+        query = str(event.pattern_match.group(2))
+
+    if not query:
+        return await event.edit(
+            "`Reply to a message or pass a query to search!`")
+
     await event.edit("`Processing...`")
 
     if event.pattern_match.group(1) != "":
@@ -119,7 +130,6 @@ async def img_sampler(event):
     else:
         counter = int(3)
 
-    query = str(event.pattern_match.group(2))
     response = googleimagesdownload()
 
     # creating list of arguments
@@ -171,9 +181,20 @@ async def moni(event):
         return await event.edit("`Invalid syntax.`")
 
 
-@register(outgoing=True, pattern=r"^\.google (\d*) *(.*)")
+@register(outgoing=True, pattern=r"^\.google *(\d*) *(.*)")
 async def gsearch(event):
     """ For .google command, do a Google search. """
+
+    if event.is_reply:
+        match = await event.get_reply_message()
+        match = str(match.message)
+    else:
+        match = str(event.pattern_match.group(2))
+
+    if not match:
+        return await event.edit(
+            "`Reply to a message or pass a query to search!`")
+
     await event.edit("`Processing...`")
 
     if event.pattern_match.group(1) != "":
@@ -185,7 +206,6 @@ async def gsearch(event):
     else:
         counter = int(3)
 
-    match = str(event.pattern_match.group(2))
     search_args = (str(match), int(1))
     gsearch = GoogleSearch()
 
@@ -217,10 +237,22 @@ async def gsearch(event):
         )
 
 
-@register(outgoing=True, pattern=r"^\.wiki (.*)")
+@register(outgoing=True, pattern=r"^\.wiki ?(.*)")
 async def wiki(wiki_q):
     """ For .wiki command, fetch content from Wikipedia. """
-    match = wiki_q.pattern_match.group(1)
+
+    if wiki_q.is_reply:
+        match = await wiki_q.get_reply_message()
+        match = str(match.message)
+    else:
+        match = str(wiki_q.pattern_match.group(1))
+
+    if not match:
+        return await wiki_q.edit(
+            "`Reply to a message or pass a query to search!`")
+
+    await wiki_q.edit("`Processing...`")
+
     try:
         summary(match)
     except DisambiguationError as error:
@@ -246,15 +278,21 @@ async def wiki(wiki_q):
             BOTLOG_CHATID, f"Wiki query `{match}` was executed successfully")
 
 
-@register(outgoing=True, pattern=r"^\.ud (.*)")
+@register(outgoing=True, pattern=r"^\.ud *(.*)")
 async def urban_dict(event):
     """Output the definition of a word from Urban Dictionary"""
-    ud = asyncurban.UrbanDictionary()
-    await event.edit("Processing...")
-    query = event.pattern_match.group(1)
+
+    if event.is_reply:
+        query = await event.get_reply_message()
+        query = str(query.message)
+    else:
+        query = str(event.pattern_match.group(1))
 
     if not query:
-        return await event.edit("`Error: Provide a word!`")
+        return await event.edit("`Reply to a message or pass a query to search!`")
+
+    await event.edit("Processing...")
+    ud = asyncurban.UrbanDictionary()
     template = "`Query: `{}\n\n`Definition: `{}\n\n`Example:\n`{}"
 
     try:
@@ -285,15 +323,18 @@ async def urban_dict(event):
 @register(outgoing=True, pattern=r"^\.tts(?: |$)([\s\S]*)")
 async def text_to_speech(query):
     """ For .tts command, a wrapper for Google Text-to-Speech. """
-    textx = await query.get_reply_message()
-    message = query.pattern_match.group(1)
-    if message:
-        pass
-    elif textx:
-        message = textx.text
+
+    if query.is_reply:
+        message = await query.get_reply_message()
+        message = str(message.message)
     else:
+        message = str(query.pattern_match.group(1))
+
+    if not message:
         return await query.edit(
             "`Give a text or reply to a message for Text-to-Speech!`")
+
+    await query.edit("`Processing...`")
 
     try:
         gTTS(message, lang=TTS_LANG)
@@ -306,7 +347,6 @@ async def text_to_speech(query):
         return await query.edit('Language is not supported.')
     except RuntimeError:
         return await query.edit('Error loading the languages dictionary.')
-    await query.delete()
     tts = gTTS(message, lang=TTS_LANG)
     tts.save("k.mp3")
     with open("k.mp3", "rb") as audio:
@@ -321,6 +361,7 @@ async def text_to_speech(query):
         if BOTLOG:
             await query.client.send_message(
                 BOTLOG_CHATID, "Text to Speech executed successfully !")
+    await query.delete()
 
 
 # kanged from Blank-x ;---;
@@ -407,17 +448,19 @@ async def imdb(e):
 @register(outgoing=True, pattern=r"^\.trt(?: |$)([\s\S]*)")
 async def translateme(trans):
     """ For .trt command, translate the given text using Google Translate. """
-    translator = Translator()
-    textx = await trans.get_reply_message()
-    message = trans.pattern_match.group(1)
-    if message:
-        pass
-    elif textx:
-        message = textx.text
+
+    if trans.is_reply:
+        message = await trans.get_reply_message()
+        message = str(message.message)
     else:
+        message = str(trans.pattern_match.group(1))
+
+    if not message:
         return await trans.edit(
             "`Give a text or reply to a message to translate!`")
 
+    await trans.edit("`Processing...`")
+    translator = Translator()
     try:
         reply_text = translator.translate(deEmojify(message), dest=TRT_LANG)
     except ValueError:
@@ -468,9 +511,21 @@ async def lang(value):
             f"`Language for {scraper} changed to {LANG.title()}.`")
 
 
-@register(outgoing=True, pattern=r"^\.yt (\d*) *(.*)")
+@register(outgoing=True, pattern=r"^\.yt *(\d*) *(.*)")
 async def yt_search(event):
     """ For .yt command, do a YouTube search from Telegram. """
+
+    if event.is_reply:
+        query = await event.get_reply_message()
+        query = str(query.message)
+    else:
+        query = str(event.pattern_match.group(2))
+
+    if not query:
+        return await event.edit(
+            "`Reply to a message or pass a query to search!`")
+
+    await event.edit("`Processing...`")
 
     if event.pattern_match.group(1) != "":
         counter = int(event.pattern_match.group(1))
@@ -480,12 +535,6 @@ async def yt_search(event):
             counter = int(1)
     else:
         counter = int(3)
-
-    query = event.pattern_match.group(2)
-
-    if not query:
-        return await event.edit("`Enter a query to search.`")
-    await event.edit("`Processing...`")
 
     try:
         results = json.loads(
@@ -510,12 +559,21 @@ async def yt_search(event):
     await event.edit(output, link_preview=False)
 
 
-@register(outgoing=True, pattern=r"^\.r(a|v) (.*)")
+@register(outgoing=True, pattern=r"^\.r(a|v) *(.*)")
 async def download_video(v_url):
     """ For media downloader command, download media from YouTube and many other sites. """
-    url = v_url.pattern_match.group(2)
-    type = v_url.pattern_match.group(1).lower()
 
+    if v_url.is_reply:
+        url = await v_url.get_reply_message()
+        url = str(url.text)
+    else:
+        url = str(v_url.pattern_match.group(2))
+
+    if not url:
+        return await v_url.edit(
+            "`Reply to a message with a URL or pass a URL!`")
+
+    type = v_url.pattern_match.group(1).lower()
     await v_url.edit("`Preparing to download...`")
 
     if type == "a":
@@ -644,7 +702,7 @@ def deEmojify(inputString):
 
 CMD_HELP.update({
     "img":
-    ">`.img <count> <search_query>`"
+    ">`.img [count] <query> [or reply]`"
     "\nUsage: Does an image search on Google."
     "\nCan specify the number of results needed (default is 3).",
     "currency":
@@ -655,14 +713,14 @@ CMD_HELP.update({
     "\nUsage: Beautify your code using carbon.now.sh\n"
     "Use .crblang <text> to set language for your code.",
     "google":
-    ">`.google [count] <query>`"
+    ">`.google [count] <query> [or reply]`"
     "\nUsage: Does a search on Google."
     "\nCan specify the number of results needed (default is 3).",
     "wiki":
-    ">`.wiki <query>`"
+    ">`.wiki <query> [or reply]`"
     "\nUsage: Does a search on Wikipedia.",
     "ud":
-    ">`.ud <query>`"
+    ">`.ud <query> [or reply]`"
     "\nUsage: Does a search on Urban Dictionary.",
     "tts":
     ">`.tts <text> [or reply]`"
@@ -673,14 +731,14 @@ CMD_HELP.update({
     "\nUsage: Translates text to the language which is set."
     "\nUse >`.lang trt <language code>` to set language for trt. (Default is English)",
     "yt":
-    ">`.yt <count> <query>`"
+    ">`.yt [count] <query> [or reply]`"
     "\nUsage: Does a YouTube search."
     "\nCan specify the number of results needed (default is 3).",
     "imdb":
     ">`.imdb <movie-name>`"
     "\nUsage: Shows movie info and other stuff.",
     "rip":
-    ">`.ra <url> or .rv <url>`"
+    ">`.ra <url> [or reply] or .rv <url> [or reply]`"
     "\nUsage: Download videos and songs from YouTube "
     "(and [many other sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html))."
 })
