@@ -109,7 +109,7 @@ async def carbon_api(e):
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
 
-    if event.is_reply:
+    if event.is_reply and not event.pattern_match.group(2):
         query = await event.get_reply_message()
         query = str(query.message)
     else:
@@ -185,7 +185,7 @@ async def moni(event):
 async def gsearch(event):
     """ For .google command, do a Google search. """
 
-    if event.is_reply:
+    if event.is_reply and not event.pattern_match.group(2):
         match = await event.get_reply_message()
         match = str(match.message)
     else:
@@ -241,7 +241,7 @@ async def gsearch(event):
 async def wiki(wiki_q):
     """ For .wiki command, fetch content from Wikipedia. """
 
-    if wiki_q.is_reply:
+    if wiki_q.is_reply and not wiki_q.pattern_match.group(1):
         match = await wiki_q.get_reply_message()
         match = str(match.message)
     else:
@@ -282,7 +282,7 @@ async def wiki(wiki_q):
 async def urban_dict(event):
     """Output the definition of a word from Urban Dictionary"""
 
-    if event.is_reply:
+    if event.is_reply and not event.pattern_match.group(1):
         query = await event.get_reply_message()
         query = str(query.message)
     else:
@@ -325,7 +325,7 @@ async def urban_dict(event):
 async def text_to_speech(query):
     """ For .tts command, a wrapper for Google Text-to-Speech. """
 
-    if query.is_reply:
+    if query.is_reply and not query.pattern_match.group(1):
         message = await query.get_reply_message()
         message = str(message.message)
     else:
@@ -450,7 +450,7 @@ async def imdb(e):
 async def translateme(trans):
     """ For .trt command, translate the given text using Google Translate. """
 
-    if trans.is_reply:
+    if trans.is_reply and not trans.pattern_match.group(1):
         message = await trans.get_reply_message()
         message = str(message.message)
     else:
@@ -516,7 +516,7 @@ async def lang(value):
 async def yt_search(event):
     """ For .yt command, do a YouTube search from Telegram. """
 
-    if event.is_reply:
+    if event.is_reply and not event.pattern_match.group(2):
         query = await event.get_reply_message()
         query = str(query.message)
     else:
@@ -564,7 +564,7 @@ async def yt_search(event):
 async def download_video(v_url):
     """ For media downloader command, download media from YouTube and many other sites. """
 
-    if v_url.is_reply:
+    if v_url.is_reply and not v_url.pattern_match.group(2):
         url = await v_url.get_reply_message()
         url = str(url.text)
     else:
