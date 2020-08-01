@@ -88,8 +88,8 @@ async def mega_downloader(megadl):
     hex_key = data["hex_key"]
     hex_raw_key = data["hex_raw_key"]
     temp_file_name = file_name + ".temp"
-    temp_file_path = TEMP_DOWNLOAD_DIRECTORY + temp_file_name
-    file_path = TEMP_DOWNLOAD_DIRECTORY + file_name
+    temp_file_path = os.path.join(TEMP_DOWNLOAD_DIRECTORY, temp_file_name)
+    file_path = os.path.join(TEMP_DOWNLOAD_DIRECTORY, file_name)
     if os.path.isfile(file_path):
         try:
             raise FileExistsError(errno.EEXIST, os.strerror(errno.EEXIST),
