@@ -34,9 +34,8 @@ async def fban(event):
     else:
         user_link = fban_id
 
-    if (fed_list := get_flist()) == '':
-        return await event.edit(
-            "`Do` `.help fban` `to learn how to use this command!`")
+    if len((fed_list := get_flist())) == 0:
+        return await event.edit("`You haven't connected any federations yet!`")
 
     await event.edit(f"`Fbanning `{user_link}`...`")
 
@@ -75,9 +74,8 @@ async def unfban(event):
     else:
         user_link = unfban_id
 
-    if (fed_list := get_flist()) == '':
-        return await event.edit(
-            "`Do` `.help fban` `to learn how to use this command!`")
+    if len((fed_list := get_flist())) == 0:
+        return await event.edit("`You haven't connected any federations yet!`")
 
     await event.edit(f"`Un-fbanning `{user_link}`...`")
 
@@ -90,8 +88,8 @@ async def unfban(event):
     await event.edit(f"`Un-fbanned `{user_link}`!\nReason: `{reason}")
 
 
-@register(outgoing=True, pattern=r"^\.addf +(.*)")
-async def addflist(event):
+@register(outgoing=True, pattern=r"^\.addf *(.*)")
+async def addf(event):
     """Adds current chat to connected federations."""
     try:
         from userbot.modules.sql_helper.fban_sql import add_flist
@@ -112,7 +110,7 @@ async def addflist(event):
 
 
 @register(outgoing=True, pattern=r"^\.delf$")
-async def delflist(event):
+async def delf(event):
     """Removes current chat from connected federations."""
     try:
         from userbot.modules.sql_helper.fban_sql import del_flist
@@ -124,15 +122,16 @@ async def delflist(event):
 
 
 @register(outgoing=True, pattern=r"^\.listf$")
-async def fban(event):
+async def listf(event):
     """List all connected federations."""
     try:
         from userbot.modules.sql_helper.fban_sql import get_flist
     except IntegrityError:
         return await event.edit("`Running on Non-SQL mode!`")
 
-    if (fed_list := get_flist()) == '':
-        return await event.edit("`You haven't connected any chats yet!.`")
+    if len((fed_list := get_flist())) == 0:
+        return await event.edit(
+            "`You haven't connected to any federations yet!`")
 
     msg = "**Connected federations:**\n\n"
 
