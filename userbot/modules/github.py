@@ -12,7 +12,7 @@ from userbot.events import register
 GIT_TEMP_DIR = "./userbot/temp/"
 
 
-@register(outgoing=True, pattern=r"\.git (.*)")
+@register(outgoing=True, pattern=r"\.git(?: |$)(.*)")
 async def github(event):
     URL = f"https://api.github.com/users/{event.pattern_match.group(1)}"
     await event.get_chat()

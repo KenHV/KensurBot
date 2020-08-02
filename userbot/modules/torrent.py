@@ -10,7 +10,7 @@ from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
 
-@register(outgoing=True, pattern=r"^\.ts (.*)")
+@register(outgoing=True, pattern=r"^\.ts(?: |$)(.*)")
 async def torrent(event):
     await event.edit("`Searching...`")
     query = event.pattern_match.group(1)
