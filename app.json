@@ -127,7 +127,6 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
-      "value": "pecinta shitpost @userbotindo",
       "required": false
     },
     "G_DRIVE_DATA": {
