@@ -7,9 +7,8 @@
 
 import os
 
-from telethon import TelegramClient
-
 from dotenv import load_dotenv
+from telethon import TelegramClient
 
 load_dotenv("config.env")
 

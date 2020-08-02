@@ -10,12 +10,12 @@ from re import sub
 from sys import setrecursionlimit
 from urllib import parse
 
+from pylast import User, WSError
 from telethon.errors import AboutTooLongError
 from telethon.errors.rpcerrorlist import FloodWaitError
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
 
-from pylast import User, WSError
 from userbot import (BIO_PREFIX, BOTLOG, BOTLOG_CHATID, CMD_HELP, DEFAULT_BIO,
                      LASTFM_USERNAME, bot, lastfm)
 from userbot.events import register

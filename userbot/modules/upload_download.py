@@ -16,11 +16,11 @@ import os
 import subprocess
 import time
 
-from telethon.tl.types import DocumentAttributeVideo
-
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pySmartDL import SmartDL
+from telethon.tl.types import DocumentAttributeVideo
+
 from userbot import CMD_HELP, LOGS, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 from userbot.utils import humanbytes, progress

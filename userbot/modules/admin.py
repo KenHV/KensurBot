@@ -12,10 +12,9 @@ from os import remove
 from telethon.errors import (BadRequestError, ChatAdminRequiredError,
                              ImageProcessFailedError, PhotoCropSizeSmallError,
                              UserAdminInvalidError)
-
 from telethon.errors.rpcerrorlist import (BadRequestError, MessageTooLongError,
-                                          UserIdInvalidError,
-                                          UserAdminInvalidError)
+                                          UserAdminInvalidError,
+                                          UserIdInvalidError)
 from telethon.tl.functions.channels import (EditAdminRequest,
                                             EditBannedRequest,
                                             EditPhotoRequest)

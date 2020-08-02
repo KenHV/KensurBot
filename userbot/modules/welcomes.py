@@ -24,7 +24,7 @@ async def welcome_to_chat(event):
                     await event.client.delete_messages(event.chat_id,
                                                        cws.previous_welcome)
                 except Exception as e:
-                    LOGS.warn(str(e))
+                    LOGS.warning(str(e))
             a_user = await event.get_user()
             chat = await event.get_chat()
             me = await event.client.get_me()

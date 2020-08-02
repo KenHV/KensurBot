@@ -10,11 +10,11 @@
 import asyncio
 import os
 
-from bs4 import BeautifulSoup
-
 import barcode
 import qrcode
 from barcode.writer import ImageWriter
+from bs4 import BeautifulSoup
+
 from userbot import CMD_HELP, LOGS
 from userbot.events import register
 

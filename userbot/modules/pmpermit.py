@@ -5,11 +5,11 @@
 #
 """ Userbot module for keeping control who PM you. """
 
+from sqlalchemy.exc import IntegrityError
 from telethon.tl.functions.contacts import BlockRequest, UnblockRequest
 from telethon.tl.functions.messages import ReportSpamRequest
 from telethon.tl.types import User
 
-from sqlalchemy.exc import IntegrityError
 from userbot import (BOTLOG, BOTLOG_CHATID, CMD_HELP, COUNT_PM, LASTMSG, LOGS,
                      PM_AUTO_BAN)
 from userbot.events import register

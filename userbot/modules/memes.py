@@ -9,7 +9,6 @@ from random import choice, getrandbits, randint
 from re import sub
 
 import requests
-
 from cowpy import cow
 
 from userbot import CMD_HELP
