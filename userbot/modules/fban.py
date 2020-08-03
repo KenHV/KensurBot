@@ -1,8 +1,10 @@
 # Copyright (C) 2020 KenHV
 
+from asyncio.exceptions import TimeoutError
+
 from sqlalchemy.exc import IntegrityError
 
-from userbot import CMD_HELP
+from userbot import CMD_HELP, bot
 from userbot.events import register
 
 
@@ -12,7 +14,7 @@ async def fban(event):
     try:
         from userbot.modules.sql_helper.fban_sql import get_flist
     except IntegrityError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
 
     if (reply_msg := await event.get_reply_message()):
         fban_id = reply_msg.from_id
@@ -26,7 +28,7 @@ async def fban(event):
 
     if fban_id == self_user.id or fban_id == "@" + self_user.username:
         return await event.edit(
-            "`Error: This action has been prevented by KensurBot self preservation protocols.`"
+            "**Error: This action has been prevented by KensurBot self preservation protocols.**"
         )
 
     if isinstance(fban_id, int):
@@ -35,17 +37,43 @@ async def fban(event):
         user_link = fban_id
 
     if len((fed_list := get_flist())) == 0:
-        return await event.edit("`You haven't connected any federations yet!`")
+        return await event.edit(
+            "**You haven't connected to any federations yet!**")
 
-    await event.edit(f"`Fbanning `{user_link}`...`")
+    await event.edit(f"**Fbanning** {user_link}...")
+    failed = []
+    total = int(0)
 
     for i in fed_list:
-        await event.client.send_message(
-            int(i.chat_id),
-            f"/fban [{fban_id}](tg://user?id={fban_id}) {reason}")
+        total += 1
+        chat = int(i.chat_id)
+
+        try:
+            async with bot.conversation(chat) as conv:
+                await conv.send_message(
+                    f"/fban [{fban_id}](tg://user?id={fban_id}) {reason}")
+                reply = await conv.get_response()
+                await bot.send_read_acknowledge(conv.chat_id,
+                                                message=reply,
+                                                clear_mentions=True)
+
+                if "New FedBan" not in reply.text:
+                    failed.append(i.fed_name)
+        except TimeoutError:
+            failed.append(i.fed_name)
 
     reason = reason if reason else "Not specified."
-    await event.edit(f"`Fbanned `{user_link}`!\nReason: `{reason}")
+
+    if failed:
+        status = f"Failed to fban in {len(failed)} feds.\n"
+        for i in failed:
+            status += "• " + i + "\n"
+    else:
+        status = f"Success! Fbanned in {total} feds."
+
+    await event.edit(
+        f"**Fbanned **{user_link}!\n**Reason:** {reason}\n**Status:** {status}"
+    )
 
 
 @register(outgoing=True, pattern=r"^\.unfban(?: |$)(.*)")
@@ -54,7 +82,7 @@ async def unfban(event):
     try:
         from userbot.modules.sql_helper.fban_sql import get_flist
     except IntegrityError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
 
     if (reply_msg := await event.get_reply_message()):
         unfban_id = reply_msg.from_id
@@ -67,7 +95,7 @@ async def unfban(event):
     self_user = await event.client.get_me()
 
     if unfban_id == self_user.id or unfban_id == "@" + self_user.username:
-        return await event.edit("`Wait, that's illegal`")
+        return await event.edit("**Wait, that's illegal**")
 
     if isinstance(unfban_id, int):
         user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
@@ -75,17 +103,44 @@ async def unfban(event):
         user_link = unfban_id
 
     if len((fed_list := get_flist())) == 0:
-        return await event.edit("`You haven't connected any federations yet!`")
+        return await event.edit(
+            "**You haven't connected any federations yet!**")
 
-    await event.edit(f"`Un-fbanning `{user_link}`...`")
+    await event.edit(f"**Un-fbanning **{user_link}**...**")
+    failed = []
+    total = int(0)
 
     for i in fed_list:
-        await event.client.send_message(
-            int(i.chat_id),
-            f"/unfban [{unfban_id}](tg://user?id={unfban_id}) {reason}")
+        total += 1
+        chat = int(i.chat_id)
+        try:
+            async with bot.conversation(chat) as conv:
+                await conv.send_message(
+                    f"/unfban [{unfban_id}](tg://user?id={unfban_id}) {reason}"
+                )
+                reply = await conv.get_response()
+                await bot.send_read_acknowledge(conv.chat_id,
+                                                message=reply,
+                                                clear_mentions=True)
+
+                if "New un-FedBan" not in reply.text:
+                    failed.append(i.fed_name)
+        except TimeoutError:
+            failed.append(i.fed_name)
 
     reason = reason if reason else "Not specified."
-    await event.edit(f"`Un-fbanned `{user_link}`!\nReason: `{reason}")
+
+    if failed:
+        status = f"Failed to un-fban in {len(failed)} feds.\n"
+        for i in failed:
+            status += "• " + i + "\n"
+    else:
+        status = f"Success! Un-fbanned in {total} feds."
+
+    reason = reason if reason else "Not specified."
+    await event.edit(
+        f"**Un-fbanned** {user_link}!\n**Reason:** {reason}\n**Status:** {status}"
+    )
 
 
 @register(outgoing=True, pattern=r"^\.addf(?: |$)(.*)")
@@ -94,19 +149,19 @@ async def addf(event):
     try:
         from userbot.modules.sql_helper.fban_sql import add_flist
     except IntegrityError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
 
     if not (fed_name := event.pattern_match.group(1)):
-        return await event.edit("`Pass a name in order connect to this group!`"
-                                )
+        return await event.edit(
+            "**Pass a name in order connect to this group!**")
 
     try:
         add_flist(event.chat_id, fed_name)
     except IntegrityError:
         return await event.edit(
-            "`This group is already connected to federations list.`")
+            "**This group is already connected to federations list.**")
 
-    await event.edit("`Added this group to federations list!`")
+    await event.edit("**Added this group to federations list!**")
 
 
 @register(outgoing=True, pattern=r"^\.delf$")
@@ -115,10 +170,10 @@ async def delf(event):
     try:
         from userbot.modules.sql_helper.fban_sql import del_flist
     except IntegrityError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
 
     del_flist(event.chat_id)
-    await event.edit("`Removed this group from federations list!`")
+    await event.edit("**Removed this group from federations list!**")
 
 
 @register(outgoing=True, pattern=r"^\.listf$")
@@ -127,11 +182,11 @@ async def listf(event):
     try:
         from userbot.modules.sql_helper.fban_sql import get_flist
     except IntegrityError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
 
     if len((fed_list := get_flist())) == 0:
         return await event.edit(
-            "`You haven't connected to any federations yet!`")
+            "**You haven't connected to any federations yet!**")
 
     msg = "**Connected federations:**\n\n"
 
