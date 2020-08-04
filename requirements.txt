@@ -8,7 +8,6 @@ cowpy
 cryptg
 dnspython
 emoji
-git+https://github.com/johnwmillr/LyricsGenius.git
 gitpython
 google-api-python-client
 google-auth-httplib2
@@ -22,6 +21,7 @@ heroku3>=3.4.0
 httplib2
 humanize
 lxml
+lyricsgenius
 oauth2client
 Pillow>=6.0.0
 psycopg2
