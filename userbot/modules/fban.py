@@ -196,6 +196,18 @@ async def listf(event):
     await event.edit(msg)
 
 
+@register(outgoing=True, pattern=r"^\.clearf$")
+async def delf(event):
+    """Removes all chats from connected federations."""
+    try:
+        from userbot.modules.sql_helper.fban_sql import del_flist_all
+    except IntegrityError:
+        return await event.edit("**Running on Non-SQL mode!**")
+
+    del_flist_all()
+    await event.edit("**Disconnected from all connected federations!**")
+
+
 CMD_HELP.update({
     "fban":
     ">`.fban <id/username> <reason>`"
@@ -210,4 +222,6 @@ CMD_HELP.update({
     "\nUsage: Removes current group from connected federations."
     "\n\n>`.listf`"
     "\nUsage: Lists all connected federations by specified name."
+    "\n\n>`.clearf`"
+    "\nUsage: Disconnects from all connected federations. Use it carefully."
 })
