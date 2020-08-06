@@ -3,6 +3,7 @@
 
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
+from asyncio.exceptions import TimeoutError
 
 from userbot import CMD_HELP, bot
 from userbot.events import register
@@ -20,18 +21,21 @@ async def ddl(event):
         await event.edit("`¯\_ (ツ) _/¯`")
         return
     await event.edit("```Generating direct link..```")
-    async with bot.conversation("@jnckbot") as conv:
-        chat = "@jnckbot"
-        try:
-            response = conv.wait_event(
-                events.NewMessage(incoming=True, from_users=994325826))
-            await bot.forward_messages(chat, reply_message)
-            response = await response
-            await bot.send_read_acknowledge(conv.chat_id)
-        except YouBlockedUserError:
-            await event.reply("```Unblock @jnckbot plox```")
-            return
-        await event.delete()
+    try:
+        async with bot.conversation("@jnckbot") as conv:
+            chat = "@jnckbot"
+            try:
+                response = conv.wait_event(
+                    events.NewMessage(incoming=True, from_users=994325826))
+                await bot.forward_messages(chat, reply_message)
+                response = await response
+                await bot.send_read_acknowledge(conv.chat_id)
+            except YouBlockedUserError:
+                await event.reply("```Unblock @jnckbot plox```")
+                return
+            await event.delete()
+    except TimeoutError:
+        return await event.edit("**Error:** @jnckbot **is not responding.**")
     await event.client.send_message(event.chat_id,
                                     response.message,
                                     reply_to=event.message.reply_to_msg_id)
