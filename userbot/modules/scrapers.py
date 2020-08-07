@@ -105,7 +105,7 @@ async def carbon_api(e):
     await e.delete()  # Deleting msg
 
 
-@register(outgoing=True, pattern=r"^\.img *(\d*) *(.*)")
+@register(outgoing=True, pattern=r"^\.img(?: |$)(\d*)? ?(.*)")
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
 
@@ -181,7 +181,7 @@ async def moni(event):
         return await event.edit("`Invalid syntax.`")
 
 
-@register(outgoing=True, pattern=r"^\.google *(\d*) *(.*)")
+@register(outgoing=True, pattern=r"^\.google(?: |$)(\d*)? ?(.*)")
 async def gsearch(event):
     """ For .google command, do a Google search. """
 
@@ -237,7 +237,7 @@ async def gsearch(event):
         )
 
 
-@register(outgoing=True, pattern=r"^\.wiki ?(.*)")
+@register(outgoing=True, pattern=r"^\.wiki(?: |$)(.*)")
 async def wiki(wiki_q):
     """ For .wiki command, fetch content from Wikipedia. """
 
@@ -278,7 +278,7 @@ async def wiki(wiki_q):
             BOTLOG_CHATID, f"Wiki query `{match}` was executed successfully")
 
 
-@register(outgoing=True, pattern=r"^\.ud *(.*)")
+@register(outgoing=True, pattern=r"^\.ud(?: |$)(.*)")
 async def urban_dict(event):
     """Output the definition of a word from Urban Dictionary"""
 
@@ -512,7 +512,7 @@ async def lang(value):
             f"`Language for {scraper} changed to {LANG.title()}.`")
 
 
-@register(outgoing=True, pattern=r"^\.yt *(\d*) *(.*)")
+@register(outgoing=True, pattern=r"^\.yt(?: |$)(\d*)? ?(.*)")
 async def yt_search(event):
     """ For .yt command, do a YouTube search from Telegram. """
 
@@ -560,7 +560,7 @@ async def yt_search(event):
     await event.edit(output, link_preview=False)
 
 
-@register(outgoing=True, pattern=r"^\.r(a|v) *(.*)")
+@register(outgoing=True, pattern=r"^\.r(a|v)(?: |$)(.*)")
 async def download_video(v_url):
     """ For media downloader command, download media from YouTube and many other sites. """
 
