@@ -5,7 +5,6 @@ asyncurban
 bs4
 cffi
 cowpy
-cryptg
 dnspython
 emoji
 gitpython
