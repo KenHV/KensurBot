@@ -6,7 +6,7 @@ from userbot import CMD_HELP, bot
 from userbot.events import register
 
 
-@register(outgoing=True, pattern=r"^\.fban(?: |$)(.*)")
+@register(outgoing=True, disable_edited=True, pattern=r"^\.fban(?: |$)(.*)")
 async def fban(event):
     """Bans a user from connected federations."""
     try:
@@ -74,7 +74,7 @@ async def fban(event):
     )
 
 
-@register(outgoing=True, pattern=r"^\.unfban(?: |$)(.*)")
+@register(outgoing=True, disable_edited=True, pattern=r"^\.unfban(?: |$)(.*)")
 async def unfban(event):
     """Unbans a user from connected federations."""
     try:
@@ -194,7 +194,7 @@ async def listf(event):
     await event.edit(msg)
 
 
-@register(outgoing=True, pattern=r"^\.clearf$")
+@register(outgoing=True, disable_edited=True, pattern=r"^\.clearf$")
 async def delf(event):
     """Removes all chats from connected federations."""
     try:
