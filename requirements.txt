@@ -42,7 +42,7 @@ speedtest-cli
 sqlalchemy
 telegraph
 telethon-session-sqlalchemy
-telethon==1.15.0
+telethon
 TgCrypto
 wikipedia
 youtube-dl
