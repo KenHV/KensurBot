@@ -10,8 +10,16 @@ from random import choice, randint
 
 from telethon.events import StopPropagation
 
-from userbot import (AFKREASON, BOTLOG, BOTLOG_CHATID, CMD_HELP, COUNT_MSG,
-                     ISAFK, PM_AUTO_BAN, USERS)
+from userbot import (
+    AFKREASON,
+    BOTLOG,
+    BOTLOG_CHATID,
+    CMD_HELP,
+    COUNT_MSG,
+    ISAFK,
+    PM_AUTO_BAN,
+    USERS,
+)
 from userbot.events import register
 
 # ========================= CONSTANTS ============================
@@ -49,20 +57,20 @@ async def mention_afk(mention):
     global COUNT_MSG
     global USERS
     global ISAFK
-    if (mention.message.mentioned and not (await mention.get_sender()).bot
-            and ISAFK):
+    if mention.message.mentioned and not (await mention.get_sender()).bot and ISAFK:
         if mention.sender_id not in USERS:
             if AFKREASON:
-                await mention.reply("I'm AFK right now."
-                                    f"\nBecause `{AFKREASON}`")
+                await mention.reply("I'm AFK right now." f"\nBecause `{AFKREASON}`")
             else:
                 await mention.reply(str(choice(AFKSTR)))
             USERS.update({mention.sender_id: 1})
         else:
             if USERS[mention.sender_id] % randint(2, 4) == 0:
                 if AFKREASON:
-                    await mention.reply(f"I'm still AFK.\
-                            \nReason: `{AFKREASON}`")
+                    await mention.reply(
+                        f"I'm still AFK.\
+                            \nReason: `{AFKREASON}`"
+                    )
                 else:
                     await mention.reply(str(choice(AFKSTR)))
             USERS[mention.sender_id] = USERS[mention.sender_id] + 1
@@ -75,11 +83,15 @@ async def afk_on_pm(sender):
     global ISAFK
     global USERS
     global COUNT_MSG
-    if sender.is_private and sender.sender_id != 777000 and not (
-            await sender.get_sender()).bot:
+    if (
+        sender.is_private
+        and sender.sender_id != 777000
+        and not (await sender.get_sender()).bot
+    ):
         if PM_AUTO_BAN:
             try:
                 from userbot.modules.sql_helper.pm_permit_sql import is_approved
+
                 apprv = is_approved(sender.sender_id)
             except AttributeError:
                 apprv = True
@@ -88,16 +100,20 @@ async def afk_on_pm(sender):
         if apprv and ISAFK:
             if sender.sender_id not in USERS:
                 if AFKREASON:
-                    await sender.reply(f"I'm AFK right now.\
-                    \nReason: `{AFKREASON}`")
+                    await sender.reply(
+                        f"I'm AFK right now.\
+                    \nReason: `{AFKREASON}`"
+                    )
                 else:
                     await sender.reply(str(choice(AFKSTR)))
                 USERS.update({sender.sender_id: 1})
             else:
                 if USERS[sender.sender_id] % randint(2, 4) == 0:
                     if AFKREASON:
-                        await sender.reply(f"I'm still AFK.\
-                        \nReason: `{AFKREASON}`")
+                        await sender.reply(
+                            f"I'm still AFK.\
+                        \nReason: `{AFKREASON}`"
+                        )
                     else:
                         await sender.reply(str(choice(AFKSTR)))
                 USERS[sender.sender_id] = USERS[sender.sender_id] + 1
@@ -137,26 +153,37 @@ async def type_afk_is_not_true(notafk):
         if BOTLOG:
             await notafk.client.send_message(
                 BOTLOG_CHATID,
-                "You've recieved " + str(COUNT_MSG) + " messages from " +
-                str(len(USERS)) + " chats while you were away",
+                "You've recieved "
+                + str(COUNT_MSG)
+                + " messages from "
+                + str(len(USERS))
+                + " chats while you were away",
             )
             for i in USERS:
                 name = await notafk.client.get_entity(i)
                 name0 = str(name.first_name)
                 await notafk.client.send_message(
                     BOTLOG_CHATID,
-                    "[" + name0 + "](tg://user?id=" + str(i) + ")" +
-                    " sent you " + "`" + str(USERS[i]) + " messages`",
+                    "["
+                    + name0
+                    + "](tg://user?id="
+                    + str(i)
+                    + ")"
+                    + " sent you "
+                    + "`"
+                    + str(USERS[i])
+                    + " messages`",
                 )
         COUNT_MSG = 0
         USERS = {}
         AFKREASON = None
 
 
-CMD_HELP.update({
-    "afk":
-    ">`.afk [Optional Reason]`"
-    "\nUsage: Sets you as afk.\nReplies to anyone who tags/PM's "
-    "you telling them that you are AFK(reason)."
-    "\n\nSwitches off AFK when you type back anything, anywhere."
-})
+CMD_HELP.update(
+    {
+        "afk": ">`.afk [Optional Reason]`"
+        "\nUsage: Sets you as afk.\nReplies to anyone who tags/PM's "
+        "you telling them that you are AFK(reason)."
+        "\n\nSwitches off AFK when you type back anything, anywhere."
+    }
+)

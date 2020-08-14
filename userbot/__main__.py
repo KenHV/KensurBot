@@ -13,9 +13,11 @@ from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
 from userbot import LOGS, bot
 from userbot.modules import ALL_MODULES
 
-INVALID_PH = '\nERROR: The Phone No. entered is INVALID' \
-             '\n Tip: Use Country Code along with number.' \
-             '\n or check your phone number and try again !'
+INVALID_PH = (
+    "\nERROR: The Phone No. entered is INVALID"
+    "\n Tip: Use Country Code along with number."
+    "\n or check your phone number and try again !"
+)
 
 try:
     bot.start()
@@ -28,8 +30,10 @@ for module_name in ALL_MODULES:
 
 LOGS.info("Your userbot is running!!!")
 
-LOGS.info("Congratulation, now type .alive to see message if bot is live\n"
-          "If you need assistance, head to https://t.me/KenVerseChat")
+LOGS.info(
+    "Congratulation, now type .alive to see message if bot is live\n"
+    "If you need assistance, head to https://t.me/KenVerseChat"
+)
 
 if len(argv) not in (1, 3, 4):
     bot.disconnect()

@@ -1,7 +1,7 @@
 import os
+from asyncio.exceptions import TimeoutError
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
-from asyncio.exceptions import TimeoutError
 
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY, bot
 from userbot.events import register
@@ -43,29 +43,35 @@ async def _(fry):
                 await fry.edit("`Please disable your forward privacy setting...`")
             else:
                 downloaded_file_name = await fry.client.download_media(
-                    response.media, TEMP_DOWNLOAD_DIRECTORY)
-                await fry.client.send_file(fry.chat_id,
-                                           downloaded_file_name,
-                                           force_document=False,
-                                           reply_to=message_id_to_reply)
+                    response.media, TEMP_DOWNLOAD_DIRECTORY
+                )
+                await fry.client.send_file(
+                    fry.chat_id,
+                    downloaded_file_name,
+                    force_document=False,
+                    reply_to=message_id_to_reply,
+                )
                 """ - cleanup chat after completed - """
                 try:
                     msg_level
                 except NameError:
-                    await fry.client.delete_messages(conv.chat_id,
-                                                     [msg.id, response.id])
+                    await fry.client.delete_messages(
+                        conv.chat_id, [msg.id, response.id]
+                    )
                 else:
                     await fry.client.delete_messages(
-                        conv.chat_id, [msg.id, response.id, r.id, msg_level.id])
+                        conv.chat_id, [msg.id, response.id, r.id, msg_level.id]
+                    )
     except TimeoutError:
         return await fry.edit("**Error:** @image_deepfrybot **is not responding.**")
     await fry.delete()
     return os.remove(downloaded_file_name)
 
 
-CMD_HELP.update({
-    "deepfry":
-    ">`.df` or >`.df [level(1-8)]`"
-    "\nUsage: deepfry image/sticker from the reply."
-    "\n@image_deepfrybot"
-})
+CMD_HELP.update(
+    {
+        "deepfry": ">`.df` or >`.df [level(1-8)]`"
+        "\nUsage: deepfry image/sticker from the reply."
+        "\n@image_deepfrybot"
+    }
+)

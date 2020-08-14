@@ -38,8 +38,7 @@ async def remove_notes(clr):
     if rm_note(clr.chat_id, notename) is False:
         return await clr.edit("`Couldn't find note:` **{}**".format(notename))
     else:
-        return await clr.edit(
-            "`Successfully deleted note:` **{}**".format(notename))
+        return await clr.edit("`Successfully deleted note:` **{}**".format(notename))
 
 
 @register(outgoing=True, pattern=r"^\.save (\w*)")
@@ -58,12 +57,11 @@ async def add_note(fltr):
             await fltr.client.send_message(
                 BOTLOG_CHATID,
                 f"#NOTE\nCHAT ID: {fltr.chat_id}\nKEYWORD: {keyword}"
-                "\n\nThe following message is saved as the note's reply data for the chat, please do NOT delete it !!"
+                "\n\nThe following message is saved as the note's reply data for the chat, please do NOT delete it !!",
             )
-            msg_o = await fltr.client.forward_messages(entity=BOTLOG_CHATID,
-                                                       messages=msg,
-                                                       from_peer=fltr.chat_id,
-                                                       silent=True)
+            msg_o = await fltr.client.forward_messages(
+                entity=BOTLOG_CHATID, messages=msg, from_peer=fltr.chat_id, silent=True
+            )
             msg_id = msg_o.id
         else:
             return await fltr.edit(
@@ -74,15 +72,14 @@ async def add_note(fltr):
         string = rep_msg.text
     success = "`Note {} successfully. Use` #{} `to get it`"
     if add_note(str(fltr.chat_id), keyword, string, msg_id) is False:
-        return await fltr.edit(success.format('updated', keyword))
+        return await fltr.edit(success.format("updated", keyword))
     else:
-        return await fltr.edit(success.format('added', keyword))
+        return await fltr.edit(success.format("added", keyword))
 
 
-@register(pattern=r"^#\w*",
-          disable_edited=True,
-          disable_errors=True,
-          ignore_unsafe=True)
+@register(
+    pattern=r"^#\w*", disable_edited=True, disable_errors=True, ignore_unsafe=True
+)
 async def incom_note(getnt):
     """ Notes logic. """
     try:
@@ -99,17 +96,18 @@ async def incom_note(getnt):
             if note:
                 if note.f_mesg_id:
                     msg_o = await getnt.client.get_messages(
-                        entity=BOTLOG_CHATID, ids=int(note.f_mesg_id))
+                        entity=BOTLOG_CHATID, ids=int(note.f_mesg_id)
+                    )
                     await getnt.client.send_message(
                         getnt.chat_id,
                         msg_o.mesage,
                         reply_to=message_id_to_reply,
-                        file=msg_o.media)
+                        file=msg_o.media,
+                    )
                 elif note.reply:
                     await getnt.client.send_message(
-                        getnt.chat_id,
-                        note.reply,
-                        reply_to=message_id_to_reply)
+                        getnt.chat_id, note.reply, reply_to=message_id_to_reply
+                    )
     except AttributeError:
         pass
 
@@ -129,28 +127,29 @@ async def kick_marie_notes(kick):
         if bot_type == "marie":
             await kick.reply("/clear %s" % (i.strip()))
         if bot_type == "rose":
-            i = i.replace('`', '')
+            i = i.replace("`", "")
             await kick.reply("/clear %s" % (i.strip()))
         await sleep(0.3)
-    await kick.respond(
-        "```Successfully purged bots notes yaay!```\n Gimme cookies!")
+    await kick.respond("```Successfully purged bots notes yaay!```\n Gimme cookies!")
     if BOTLOG:
         await kick.client.send_message(
-            BOTLOG_CHATID, "I cleaned all Notes at " + str(kick.chat_id))
+            BOTLOG_CHATID, "I cleaned all Notes at " + str(kick.chat_id)
+        )
 
 
-CMD_HELP.update({
-    "notes":
-    "`#<notename>`"
-    "\nUsage: Gets the specified note."
-    "\n\n>`.save <notename> <notedata>` or reply to a message with >`.save <notename>`"
-    "\nUsage: Saves the replied message as a note with the notename. "
-    "(Works with pics, docs, and stickers too!)"
-    "\n\n>`.notes`"
-    "\nUsage: Gets all saved notes in a chat."
-    "\n\n>`.clear <notename>`"
-    "\nUsage: Deletes the specified note."
-    "\n\n>`.rmbotnotes <marie/rose>`"
-    "\nUsage: Removes all notes of admin bots"
-    " (Currently supported: Marie, Rose and their clones.) in the chat."
-})
+CMD_HELP.update(
+    {
+        "notes": "`#<notename>`"
+        "\nUsage: Gets the specified note."
+        "\n\n>`.save <notename> <notedata>` or reply to a message with >`.save <notename>`"
+        "\nUsage: Saves the replied message as a note with the notename. "
+        "(Works with pics, docs, and stickers too!)"
+        "\n\n>`.notes`"
+        "\nUsage: Gets all saved notes in a chat."
+        "\n\n>`.clear <notename>`"
+        "\nUsage: Deletes the specified note."
+        "\n\n>`.rmbotnotes <marie/rose>`"
+        "\nUsage: Removes all notes of admin bots"
+        " (Currently supported: Marie, Rose and their clones.) in the chat."
+    }
+)

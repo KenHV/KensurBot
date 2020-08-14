@@ -27,7 +27,7 @@ async def figlet(e):
         "dotm": "dotmatrix",
         "bubble": "bubble",
         "bulb": "bulbhead",
-        "digi": "digital"
+        "digi": "digital",
     }
     input_str = e.pattern_match.group(1)
     if "." in input_str:
@@ -51,10 +51,11 @@ async def figlet(e):
     await e.delete()
 
 
-CMD_HELP.update({
-    "figlet":
-    ">`.figlet`"
-    "\nUsage: Enhance ur text to strip line with anvil."
-    "\n\nExample: `.figlet TEXT.STYLE`"
-    "\nSTYLE LIST: `slant`, `3D`, `5line`, `alpha`, `banner`, `doh`, `iso`, `letter`, `allig`, `dotm`, `bubble`, `bulb`, `digi`"
-})
+CMD_HELP.update(
+    {
+        "figlet": ">`.figlet`"
+        "\nUsage: Enhance ur text to strip line with anvil."
+        "\n\nExample: `.figlet TEXT.STYLE`"
+        "\nSTYLE LIST: `slant`, `3D`, `5line`, `alpha`, `banner`, `doh`, `iso`, `letter`, `allig`, `dotm`, `bubble`, `bulb`, `digi`"
+    }
+)

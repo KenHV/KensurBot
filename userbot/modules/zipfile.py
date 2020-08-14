@@ -11,8 +11,7 @@ import time
 import zipfile
 from datetime import date
 
-from userbot import (CMD_HELP, TEMP_DOWNLOAD_DIRECTORY, ZIP_DOWNLOAD_DIRECTORY,
-                     bot)
+from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY, ZIP_DOWNLOAD_DIRECTORY, bot
 from userbot.events import register
 from userbot.utils import progress
 
@@ -42,15 +41,19 @@ async def _(event):
             downloaded_file_name = await bot.download_media(
                 reply_message,
                 TEMP_DOWNLOAD_DIRECTORY,
-                progress_callback=lambda d, t: asyncio.get_event_loop(
-                ).create_task(progress(d, t, mone, c_time, "[DOWNLOADING]")))
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(d, t, mone, c_time, "[DOWNLOADING]")
+                ),
+            )
             directory_name = downloaded_file_name
-            await event.edit(f"Downloaded to `{directory_name}`"
-                             "`\ncompressing file...`")
+            await event.edit(
+                f"Downloaded to `{directory_name}`" "`\ncompressing file...`"
+            )
         except Exception as e:  # pylint:disable=C0103,W0703
             await mone.edit(str(e))
-    zipfile.ZipFile(directory_name + '.zip', 'w',
-                    zipfile.ZIP_DEFLATED).write(directory_name)
+    zipfile.ZipFile(directory_name + ".zip", "w", zipfile.ZIP_DEFLATED).write(
+        directory_name
+    )
     c_time = time.time()
     await bot.send_file(
         event.chat_id,
@@ -59,7 +62,9 @@ async def _(event):
         allow_cache=False,
         reply_to=event.message.id,
         progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-            progress(d, t, mone, c_time, "[UPLOADING]")))
+            progress(d, t, mone, c_time, "[UPLOADING]")
+        ),
+    )
     await event.edit("`Done!!`")
     await asyncio.sleep(7)
     await event.delete()
@@ -87,8 +92,10 @@ async def addzip(add):
             downloaded_file_name = await bot.download_media(
                 reply_message,
                 ZIP_DOWNLOAD_DIRECTORY,
-                progress_callback=lambda d, t: asyncio.get_event_loop(
-                ).create_task(progress(d, t, mone, c_time, "[DOWNLOADING]")))
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(d, t, mone, c_time, "[DOWNLOADING]")
+                ),
+            )
             success = str(downloaded_file_name).replace("./zips/", "")
             await add.edit(f"`{success} Successfully added to list`")
         except Exception as e:  # pylint:disable=C0103,W0703
@@ -105,7 +112,7 @@ async def upload_zip(up):
     input_str = up.pattern_match.group(1)
     curdate = today.strftime("%m%d%y")
     title = str(input_str) if input_str else "zipfile" + f"{curdate}"
-    zipf = zipfile.ZipFile(title + '.zip', 'w', zipfile.ZIP_DEFLATED)
+    zipf = zipfile.ZipFile(title + ".zip", "w", zipfile.ZIP_DEFLATED)
     zipdir(ZIP_DOWNLOAD_DIRECTORY, zipf)
     zipf.close()
     c_time = time.time()
@@ -116,7 +123,9 @@ async def upload_zip(up):
         allow_cache=False,
         reply_to=up.message.id,
         progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-            progress(d, t, mone, c_time, "[UPLOADING]", input_str)))
+            progress(d, t, mone, c_time, "[UPLOADING]", input_str)
+        ),
+    )
     os.rmdir(ZIP_DOWNLOAD_DIRECTORY)
     await up.delete()
 
@@ -138,14 +147,15 @@ def zipdir(path, ziph):
             os.remove(os.path.join(root, file))
 
 
-CMD_HELP.update({
-    "zipfile":
-    "`.compress` [optional: <reply to file >]"
-    "\nUsage: make files to zip."
-    "\n\n`.addzip` <reply to file >"
-    "\nUsage: add files to zip list."
-    "\n\n`.upzip` [optional: <zip title>]"
-    "\nUsage: upload zip list."
-    "\n\n`.rmzip` [optional: <zip title>]"
-    "\nUsage: clear zip list."
-})
+CMD_HELP.update(
+    {
+        "zipfile": "`.compress` [optional: <reply to file >]"
+        "\nUsage: make files to zip."
+        "\n\n`.addzip` <reply to file >"
+        "\nUsage: add files to zip list."
+        "\n\n`.upzip` [optional: <zip title>]"
+        "\nUsage: upload zip list."
+        "\n\n`.rmzip` [optional: <zip title>]"
+        "\nUsage: clear zip list."
+    }
+)

@@ -20,10 +20,12 @@ from userbot import CMD_HELP, bot
 from userbot.events import register
 
 opener = urllib.request.build_opener()
-useragent = ('Mozilla/5.0 (Linux; Android 10; SM-G975F) '
-             'AppleWebKit/537.36 (KHTML, like Gecko) '
-             'Chrome/80.0.3987.149 Mobile Safari/537.36')
-opener.addheaders = [('User-agent', useragent)]
+useragent = (
+    "Mozilla/5.0 (Linux; Android 10; SM-G975F) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/80.0.3987.149 Mobile Safari/537.36"
+)
+opener.addheaders = [("User-agent", useragent)]
 
 
 @register(outgoing=True, pattern=r"^\.reverse(?: |$)(\d*)")
@@ -44,32 +46,28 @@ async def okgoogle(img):
         try:
             image = Image.open(photo)
         except OSError:
-            return await img.edit('`Unsupported sexuality, most likely.`')
+            return await img.edit("`Unsupported sexuality, most likely.`")
         name = "okgoogle.png"
         image.save(name, "PNG")
         image.close()
         # https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
-        searchUrl = 'https://www.google.com/searchbyimage/upload'
-        multipart = {
-            'encoded_image': (name, open(name, 'rb')),
-            'image_content': ''
-        }
-        response = requests.post(searchUrl,
-                                 files=multipart,
-                                 allow_redirects=False)
-        fetchUrl = response.headers['Location']
+        searchUrl = "https://www.google.com/searchbyimage/upload"
+        multipart = {"encoded_image": (name, open(name, "rb")), "image_content": ""}
+        response = requests.post(searchUrl, files=multipart, allow_redirects=False)
+        fetchUrl = response.headers["Location"]
 
         if response != 400:
-            await img.edit("`Image successfully uploaded to Google. Maybe.`"
-                           "\n`Parsing source now. Maybe.`")
+            await img.edit(
+                "`Image successfully uploaded to Google. Maybe.`"
+                "\n`Parsing source now. Maybe.`"
+            )
         else:
             return await img.edit("`Google told me to fuck off.`")
 
         os.remove(name)
-        match = await ParseSauce(fetchUrl +
-                                 "&preferences?hl=en&fg=1#languages")
-        guess = match['best_guess']
-        imgspage = match['similar_images']
+        match = await ParseSauce(fetchUrl + "&preferences?hl=en&fg=1#languages")
+        guess = match["best_guess"]
+        imgspage = match["similar_images"]
 
         if guess and imgspage:
             await img.edit(f"[{guess}]({fetchUrl})\n\n`Looking for images...`")
@@ -83,48 +81,50 @@ async def okgoogle(img):
             k = requests.get(i)
             yeet.append(k.content)
         try:
-            await img.client.send_file(entity=await
-                                       img.client.get_input_entity(img.chat_id
-                                                                   ),
-                                       file=yeet,
-                                       reply_to=img)
+            await img.client.send_file(
+                entity=await img.client.get_input_entity(img.chat_id),
+                file=yeet,
+                reply_to=img,
+            )
         except TypeError:
             pass
         await img.edit(
-            f"[{guess}]({fetchUrl})\n\n[Visually similar images]({imgspage})")
+            f"[{guess}]({fetchUrl})\n\n[Visually similar images]({imgspage})"
+        )
 
 
 async def ParseSauce(googleurl):
     """Parse/Scrape the HTML code for the info we want."""
 
     source = opener.open(googleurl).read()
-    soup = BeautifulSoup(source, 'html.parser')
+    soup = BeautifulSoup(source, "html.parser")
 
-    results = {'similar_images': '', 'best_guess': ''}
+    results = {"similar_images": "", "best_guess": ""}
 
     try:
-        for similar_image in soup.findAll('input', {'class': 'gLFyf'}):
-            url = 'https://www.google.com/search?tbm=isch&q=' + \
-                urllib.parse.quote_plus(similar_image.get('value'))
-            results['similar_images'] = url
+        for similar_image in soup.findAll("input", {"class": "gLFyf"}):
+            url = "https://www.google.com/search?tbm=isch&q=" + urllib.parse.quote_plus(
+                similar_image.get("value")
+            )
+            results["similar_images"] = url
     except BaseException:
         pass
 
-    for best_guess in soup.findAll('div', attrs={'class': 'r5a77d'}):
-        results['best_guess'] = best_guess.get_text()
+    for best_guess in soup.findAll("div", attrs={"class": "r5a77d"}):
+        results["best_guess"] = best_guess.get_text()
 
     return results
 
 
 async def scam(results, lim):
 
-    single = opener.open(results['similar_images']).read()
-    decoded = single.decode('utf-8')
+    single = opener.open(results["similar_images"]).read()
+    decoded = single.decode("utf-8")
 
     imglinks = []
     counter = 0
 
-    pattern = r'^,\[\"(.*[.png|.jpg|.jpeg])\",[0-9]+,[0-9]+\]$'
+    pattern = r"^,\[\"(.*[.png|.jpg|.jpeg])\",[0-9]+,[0-9]+\]$"
     oboi = re.findall(pattern, decoded, re.I | re.M)
 
     for imglink in oboi:
@@ -137,8 +137,9 @@ async def scam(results, lim):
     return imglinks
 
 
-CMD_HELP.update({
-    "reverse":
-    ">`.reverse`"
-    "\nUsage: Reply to a pic/sticker to revers-search it on Google Images !!"
-})
+CMD_HELP.update(
+    {
+        "reverse": ">`.reverse`"
+        "\nUsage: Reply to a pic/sticker to revers-search it on Google Images !!"
+    }
+)
