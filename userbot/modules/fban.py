@@ -20,7 +20,7 @@ async def fban(event):
     else:
         pattern = str(event.pattern_match.group(1)).split()
         fban_id = pattern[0]
-        reason = "".join(pattern[1:])
+        reason = " ".join(pattern[1:])
 
     self_user = await event.client.get_me()
 
@@ -88,7 +88,7 @@ async def unfban(event):
     else:
         pattern = str(event.pattern_match.group(1)).split()
         unfban_id = pattern[0]
-        reason = "".join(pattern[1:])
+        reason = " ".join(pattern[1:])
 
     self_user = await event.client.get_me()
 
