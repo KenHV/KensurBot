@@ -14,13 +14,19 @@ async def fban(event):
     except IntegrityError:
         return await event.edit("**Running on Non-SQL mode!**")
 
-    if (reply_msg := await event.get_reply_message()) :
+    reply_msg = await event.get_reply_message()
+
+    if reply_msg:
         fban_id = reply_msg.from_id
         reason = event.pattern_match.group(1)
-    else:
+        user_link = f"[{fban_id}](tg://user?id={fban_id})"
+    elif not reply_msg:
         pattern = str(event.pattern_match.group(1)).split()
         fban_id = pattern[0]
         reason = " ".join(pattern[1:])
+        user_link = fban_id
+    else:
+        return
 
     self_user = await event.client.get_me()
 
@@ -28,11 +34,6 @@ async def fban(event):
         return await event.edit(
             "**Error: This action has been prevented by KensurBot self preservation protocols.**"
         )
-
-    if isinstance(fban_id, int):
-        user_link = f"[{fban_id}](tg://user?id={fban_id})"
-    else:
-        user_link = fban_id
 
     if len((fed_list := get_flist())) == 0:
         return await event.edit("**You haven't connected to any federations yet!**")
@@ -44,11 +45,10 @@ async def fban(event):
     for i in fed_list:
         total += 1
         chat = int(i.chat_id)
-
         try:
             async with bot.conversation(chat) as conv:
                 await conv.send_message(
-                    f"/fban [{fban_id}](tg://user?id={fban_id}) {reason}"
+                    f"/fban {user_link} {reason}"
                 )
                 reply = await conv.get_response()
                 await bot.send_read_acknowledge(
@@ -82,23 +82,24 @@ async def unfban(event):
     except IntegrityError:
         return await event.edit("**Running on Non-SQL mode!**")
 
-    if (reply_msg := await event.get_reply_message()) :
+    reply_msg = await event.get_reply_message()
+
+    if reply_msg:
         unfban_id = reply_msg.from_id
         reason = event.pattern_match.group(1)
-    else:
+        user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
+    elif not reply_msg:
         pattern = str(event.pattern_match.group(1)).split()
         unfban_id = pattern[0]
         reason = " ".join(pattern[1:])
+        user_link = unfban_id
+    else:
+        return
 
     self_user = await event.client.get_me()
 
     if unfban_id == self_user.id or unfban_id == "@" + self_user.username:
         return await event.edit("**Wait, that's illegal**")
-
-    if isinstance(unfban_id, int):
-        user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
-    else:
-        user_link = unfban_id
 
     if len((fed_list := get_flist())) == 0:
         return await event.edit("**You haven't connected any federations yet!**")
@@ -113,7 +114,7 @@ async def unfban(event):
         try:
             async with bot.conversation(chat) as conv:
                 await conv.send_message(
-                    f"/unfban [{unfban_id}](tg://user?id={unfban_id}) {reason}"
+                    f"/unfban {user_link} {reason}"
                 )
                 reply = await conv.get_response()
                 await bot.send_read_acknowledge(
