@@ -13,7 +13,7 @@ from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TERM_ALIAS
 from userbot.events import register
 
 
-@register(outgoing=True, pattern=r"^\.eval(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.eval(?: |$|\n)(.*)")
 async def evaluate(query):
     """ For .eval command, evaluates the given Python expression. """
     if query.is_channel and not query.is_group:
@@ -63,11 +63,11 @@ async def evaluate(query):
 
     if BOTLOG:
         await query.client.send_message(
-            BOTLOG_CHATID, f"Eval query {expression} was executed successfully"
+            BOTLOG_CHATID, f"Eval query {expression} was executed successfully."
         )
 
 
-@register(outgoing=True, pattern=r"^\.exec(?: |$)([\s\S]*)")
+@register(outgoing=True, pattern=r"^\.exec(?: |$|\n)([\s\S]*)")
 async def run(run_q):
     """ For .exec command, which executes the dynamically created program """
     code = run_q.pattern_match.group(1)
@@ -121,16 +121,16 @@ async def run(run_q):
         )
     else:
         await run_q.edit(
-            "**Query: **\n`" f"{codepre}" "`\n**Result: **\n`No Result Returned/False`"
+            "**Query: **\n`" f"{codepre}" "`\n**Result: **\n`No result returned/False`"
         )
 
     if BOTLOG:
         await run_q.client.send_message(
-            BOTLOG_CHATID, "Exec query " + codepre + " was executed successfully"
+            BOTLOG_CHATID, "Exec query " + codepre + " was executed successfully."
         )
 
 
-@register(outgoing=True, pattern=r"^\.term(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.term(?: |$|\n)(.*)")
 async def terminal_runner(term):
     """ For .term command, runs bash commands and scripts on your server. """
     curruser = TERM_ALIAS
@@ -177,14 +177,11 @@ async def terminal_runner(term):
     else:
         await term.edit("`" f"{curruser}:~$ {command}" f"\n{result}" "`")
 
-
-"""
     if BOTLOG:
         await term.client.send_message(
-            BOTLOG_CHATID,
-            "Terminal Command " + command + " was executed sucessfully",
+            BOTLOG_CHATID, "Terminal command " + command + " was executed sucessfully.",
         )
-"""
+
 
 CMD_HELP.update(
     {
