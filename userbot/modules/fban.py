@@ -55,7 +55,7 @@ async def fban(event):
                     conv.chat_id, message=reply, clear_mentions=True
                 )
 
-                if "New FedBan" not in reply.text:
+                if ("New FedBan" not in reply.text) and ("Starting a federation ban" not in reply.text) and ("Start a federation ban" not in reply.text) and ("FedBan reason updated" not in reply.text):
                     failed.append(i.fed_name)
         except:
             failed.append(i.fed_name)
@@ -121,7 +121,7 @@ async def unfban(event):
                     conv.chat_id, message=reply, clear_mentions=True
                 )
 
-                if "New un-FedBan" not in reply.text:
+                if ("New un-FedBan" not in reply.text) and ("I'll give" not in reply.text) and ("Un-FedBan" not in reply.text):
                     failed.append(i.fed_name)
         except:
             failed.append(i.fed_name)
