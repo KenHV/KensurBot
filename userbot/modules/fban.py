@@ -47,15 +47,18 @@ async def fban(event):
         chat = int(i.chat_id)
         try:
             async with bot.conversation(chat) as conv:
-                await conv.send_message(
-                    f"/fban {user_link} {reason}"
-                )
+                await conv.send_message(f"/fban {user_link} {reason}")
                 reply = await conv.get_response()
                 await bot.send_read_acknowledge(
                     conv.chat_id, message=reply, clear_mentions=True
                 )
 
-                if ("New FedBan" not in reply.text) and ("Starting a federation ban" not in reply.text) and ("Start a federation ban" not in reply.text) and ("FedBan reason updated" not in reply.text):
+                if (
+                    ("New FedBan" not in reply.text)
+                    and ("Starting a federation ban" not in reply.text)
+                    and ("Start a federation ban" not in reply.text)
+                    and ("FedBan reason updated" not in reply.text)
+                ):
                     failed.append(i.fed_name)
         except:
             failed.append(i.fed_name)
@@ -63,7 +66,7 @@ async def fban(event):
     reason = reason if reason else "Not specified."
 
     if failed:
-        status = f"Failed to fban in {len(failed)} feds.\n"
+        status = f"Failed to fban in {len(failed)}/{total} feds.\n"
         for i in failed:
             status += "• " + i + "\n"
     else:
@@ -113,15 +116,17 @@ async def unfban(event):
         chat = int(i.chat_id)
         try:
             async with bot.conversation(chat) as conv:
-                await conv.send_message(
-                    f"/unfban {user_link} {reason}"
-                )
+                await conv.send_message(f"/unfban {user_link} {reason}")
                 reply = await conv.get_response()
                 await bot.send_read_acknowledge(
                     conv.chat_id, message=reply, clear_mentions=True
                 )
 
-                if ("New un-FedBan" not in reply.text) and ("I'll give" not in reply.text) and ("Un-FedBan" not in reply.text):
+                if (
+                    ("New un-FedBan" not in reply.text)
+                    and ("I'll give" not in reply.text)
+                    and ("Un-FedBan" not in reply.text)
+                ):
                     failed.append(i.fed_name)
         except:
             failed.append(i.fed_name)
@@ -129,7 +134,7 @@ async def unfban(event):
     reason = reason if reason else "Not specified."
 
     if failed:
-        status = f"Failed to un-fban in {len(failed)} feds.\n"
+        status = f"Failed to un-fban in {len(failed)}/{total} feds.\n"
         for i in failed:
             status += "• " + i + "\n"
     else:
