@@ -150,8 +150,8 @@ async def img_sampler(event):
     # this is a temporary workaround for it (maybe permanent)
     try:
         paths = response.download(arguments)
-    except Exception:
-        return await event.edit("`tf is you searchin, stoopid?`")
+    except Exception as e:
+        return await event.edit(f"`Error: {e}`")
 
     lst = paths[0][query]
     await event.client.send_file(
