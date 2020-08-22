@@ -14,19 +14,16 @@ async def fban(event):
     except IntegrityError:
         return await event.edit("**Running on Non-SQL mode!**")
 
-    reply_msg = await event.get_reply_message()
-
-    if reply_msg:
+    if event.is_reply:
+        reply_msg = await event.get_reply_message()
         fban_id = reply_msg.from_id
         reason = event.pattern_match.group(1)
         user_link = f"[{fban_id}](tg://user?id={fban_id})"
-    elif not reply_msg:
+    else:
         pattern = str(event.pattern_match.group(1)).split()
         fban_id = pattern[0]
         reason = " ".join(pattern[1:])
         user_link = fban_id
-    else:
-        return
 
     self_user = await event.client.get_me()
 
@@ -85,19 +82,16 @@ async def unfban(event):
     except IntegrityError:
         return await event.edit("**Running on Non-SQL mode!**")
 
-    reply_msg = await event.get_reply_message()
-
-    if reply_msg:
+    if event.is_reply:
+        reply_msg = await event.get_reply_message()
         unfban_id = reply_msg.from_id
         reason = event.pattern_match.group(1)
         user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
-    elif not reply_msg:
+    else:
         pattern = str(event.pattern_match.group(1)).split()
         unfban_id = pattern[0]
         reason = " ".join(pattern[1:])
         user_link = unfban_id
-    else:
-        return
 
     self_user = await event.client.get_me()
 
