@@ -160,6 +160,9 @@ TERM_ALIAS = os.environ.get("TERM_ALIAS") or None
 # Genius Lyrics API
 GENIUS = os.environ.get("GENIUS_ACCESS_TOKEN") or None
 
+# Uptobox
+USR_TOKEN = os.environ.get("USR_TOKEN_UPTOBOX") or None
+
 # Setting Up CloudMail.ru and MEGA.nz extractor binaries,
 # and giving them correct perms to work properly.
 if not os.path.exists("bin"):
