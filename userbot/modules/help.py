@@ -30,8 +30,7 @@ async def help(event):
 
         for i in CMD_HELP:
             unsorted += str(i) + " "
-        unsorted = unsorted.split()
-        unsorted.sort()
+        unsorted = sorted(unsorted.split())
         for i in unsorted:
             sorted += "`" + str(i)
             sorted += "`\t\t\t•\t\t\t "

@@ -10,7 +10,7 @@ from userbot import CMD_HELP, bot
 from userbot.events import register
 
 
-@register(outgoing=True, pattern="^\.ddl(?: |$)(.*)")
+@register(outgoing=True, pattern=r"^\.ddl(?: |$)(.*)")
 async def ddl(event):
     if event.fwd_from:
         return
@@ -19,7 +19,7 @@ async def ddl(event):
         return
     reply_message = await event.get_reply_message()
     if not reply_message.media:
-        await event.edit("`¯\_ (ツ) _/¯`")
+        await event.edit(r"`¯\_ (ツ) _/¯`")
         return
     await event.edit("```Generating direct link..```")
     try:

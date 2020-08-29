@@ -8,15 +8,16 @@
 import os
 
 from telethon.errors import ImageProcessFailedError, PhotoCropSizeSmallError
-from telethon.errors.rpcerrorlist import PhotoExtInvalidError, UsernameOccupiedError
-from telethon.tl.functions.account import UpdateProfileRequest, UpdateUsernameRequest
+from telethon.errors.rpcerrorlist import (PhotoExtInvalidError,
+                                          UsernameOccupiedError)
+from telethon.tl.functions.account import (UpdateProfileRequest,
+                                           UpdateUsernameRequest)
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest
-from telethon.tl.functions.photos import (
-    DeletePhotosRequest,
-    GetUserPhotosRequest,
-    UploadProfilePhotoRequest,
-)
-from telethon.tl.types import Channel, Chat, InputPhoto, MessageMediaPhoto, User
+from telethon.tl.functions.photos import (DeletePhotosRequest,
+                                          GetUserPhotosRequest,
+                                          UploadProfilePhotoRequest)
+from telethon.tl.types import (Channel, Chat, InputPhoto, MessageMediaPhoto,
+                               User)
 
 from userbot import CMD_HELP, bot
 from userbot.events import register
@@ -187,6 +188,4 @@ CMD_HELP.update(
         "\n\n>`.reserved`"
         "\nUsage: Shows usernames reserved by you."
         "\n\n>`.count`"
-        "\nUsage: Counts your groups, chats, bots etc..."
-    }
-)
+        "\nUsage: Counts your groups, chats, bots etc..."})

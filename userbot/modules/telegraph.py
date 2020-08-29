@@ -16,7 +16,8 @@ auth_url = r["auth_url"]
 async def telegraphs(graph):
     """ For .telegraph command, upload media & text to telegraph site. """
     await graph.edit("`Processing...`")
-    if not graph.text[0].isalpha() and graph.text[0] not in ("/", "#", "@", "!"):
+    if not graph.text[0].isalpha() and graph.text[0] not in (
+            "/", "#", "@", "!"):
         if graph.fwd_from:
             return
         if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):

@@ -83,7 +83,8 @@ async def mim(event):
                 response = await bot_conv.get_response()
                 the_download_directory = TEMP_DOWNLOAD_DIRECTORY
                 files_name = "memes.webp"
-                download_file_name = os.path.join(the_download_directory, files_name)
+                download_file_name = os.path.join(
+                    the_download_directory, files_name)
                 await bot.download_media(
                     response.media, download_file_name,
                 )

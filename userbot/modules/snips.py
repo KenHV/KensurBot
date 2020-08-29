@@ -8,7 +8,10 @@ from userbot import BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
 
 
-@register(outgoing=True, pattern=r"^\$\w*", ignore_unsafe=True, disable_errors=True)
+@register(outgoing=True,
+          pattern=r"^\$\w*",
+          ignore_unsafe=True,
+          disable_errors=True)
 async def on_snip(event):
     """ Snips logic. """
     try:

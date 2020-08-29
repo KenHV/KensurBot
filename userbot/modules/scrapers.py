@@ -26,16 +26,10 @@ from telethon.tl.types import DocumentAttributeAudio
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
 from youtube_dl import YoutubeDL
-from youtube_dl.utils import (
-    ContentTooShortError,
-    DownloadError,
-    ExtractorError,
-    GeoRestrictedError,
-    MaxDownloadsReached,
-    PostProcessingError,
-    UnavailableVideoError,
-    XAttrMetadataError,
-)
+from youtube_dl.utils import (ContentTooShortError, DownloadError,
+                              ExtractorError, GeoRestrictedError,
+                              MaxDownloadsReached, PostProcessingError,
+                              UnavailableVideoError, XAttrMetadataError)
 from youtube_search import YoutubeSearch
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
@@ -171,8 +165,7 @@ async def moni(event):
             currency_from = input_sgra[1].upper()
             currency_to = input_sgra[2].upper()
             request_url = "https://api.exchangeratesapi.io/latest?base={}".format(
-                currency_from
-            )
+                currency_from)
             current_response = get(request_url).json()
             if currency_to in current_response["rates"]:
                 current_rate = float(current_response["rates"][currency_to])
@@ -308,7 +301,10 @@ async def urban_dict(event):
     except asyncurban.UrbanException as e:
         return await event.edit("**Error:** {e}.")
 
-    result = template.format(definition.word, definition.definition, definition.example)
+    result = template.format(
+        definition.word,
+        definition.definition,
+        definition.example)
 
     if len(result) >= 4096:
         await event.edit("`Output too large, sending as file...`")
@@ -387,14 +383,14 @@ async def imdb(e):
         remove_space = movie_name.split(" ")
         final_name = "+".join(remove_space)
         page = get(
-            "https://www.imdb.com/find?ref_=nv_sr_fn&q=r" + final_name + "&s=all"
-        )
+            "https://www.imdb.com/find?ref_=nv_sr_fn&q=r" +
+            final_name +
+            "&s=all")
         soup = BeautifulSoup(page.content, "lxml")
         odds = soup.findAll("tr", "odd")
         mov_title = odds[0].findNext("td").findNext("td").text
-        mov_link = (
-            "http://www.imdb.com/" + odds[0].findNext("td").findNext("td").a["href"]
-        )
+        mov_link = ("http://www.imdb.com/" +
+                    odds[0].findNext("td").findNext("td").a["href"])
         page1 = get(mov_link)
         soup = BeautifulSoup(page1.content, "lxml")
         if soup.find("div", "poster"):
@@ -426,7 +422,8 @@ async def imdb(e):
             actors.pop()
             stars = actors[0] + "," + actors[1] + "," + actors[2]
         if soup.find("div", "inline canwrap"):
-            story_line = soup.find("div", "inline canwrap").findAll("p")[0].text
+            story_line = soup.find(
+                "div", "inline canwrap").findAll("p")[0].text
         else:
             story_line = "Not available"
         info = soup.findAll("div", "txt-block")
@@ -564,7 +561,10 @@ async def yt_search(event):
         counter = int(3)
 
     try:
-        results = json.loads(YoutubeSearch(query, max_results=counter).to_json())
+        results = json.loads(
+            YoutubeSearch(
+                query,
+                max_results=counter).to_json())
     except KeyError:
         return await event.edit(
             "`Youtube Search gone retard.\nCan't search this query!`"
@@ -721,8 +721,10 @@ CMD_HELP.update(
         "google": ">`.google [count] <query> [or reply]`"
         "\nUsage: Does a search on Google."
         "\nCan specify the number of results needed (default is 3).",
-        "wiki": ">`.wiki <query> [or reply]`" "\nUsage: Does a search on Wikipedia.",
-        "ud": ">`.ud <query> [or reply]`" "\nUsage: Does a search on Urban Dictionary.",
+        "wiki": ">`.wiki <query> [or reply]`"
+        "\nUsage: Does a search on Wikipedia.",
+        "ud": ">`.ud <query> [or reply]`"
+        "\nUsage: Does a search on Urban Dictionary.",
         "tts": ">`.tts <text> [or reply]`"
         "\nUsage: Translates text to speech for the language which is set."
         "\nUse >`.lang tts <language code>` to set language for tts. (Default is English.)",
@@ -732,9 +734,9 @@ CMD_HELP.update(
         "yt": ">`.yt [count] <query> [or reply]`"
         "\nUsage: Does a YouTube search."
         "\nCan specify the number of results needed (default is 3).",
-        "imdb": ">`.imdb <movie-name>`" "\nUsage: Shows movie info and other stuff.",
+        "imdb": ">`.imdb <movie-name>`"
+        "\nUsage: Shows movie info and other stuff.",
         "rip": ">`.ra <url> [or reply] or .rv <url> [or reply]`"
         "\nUsage: Download videos and songs from YouTube "
         "(and [many other sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html)).",
-    }
-)
+    })

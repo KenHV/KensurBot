@@ -8,9 +8,7 @@ from userbot.events import register
 async def welcome_to_chat(event):
     try:
         from userbot.modules.sql_helper.welcome_sql import (
-            get_current_welcome_settings,
-            update_previous_welcome,
-        )
+            get_current_welcome_settings, update_previous_welcome)
     except AttributeError:
         return
     cws = get_current_welcome_settings(event.chat_id)
@@ -115,7 +113,8 @@ async def save_welcome(event):
 @register(outgoing=True, pattern=r"^\.checkwelcome$")
 async def show_welcome(event):
     try:
-        from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
+        from userbot.modules.sql_helper.welcome_sql import \
+            get_current_welcome_settings
     except AttributeError:
         return await event.edit("`Running on Non-SQL mode!`")
     cws = get_current_welcome_settings(event.chat_id)
@@ -155,6 +154,4 @@ CMD_HELP.update(
         "\n\n>`.checkwelcome`"
         "\nUsage: Check whether you have a welcome note in the chat."
         "\n\n>`.rmwelcome`"
-        "\nUsage: Deletes the welcome note for the current chat."
-    }
-)
+        "\nUsage: Deletes the welcome note for the current chat."})

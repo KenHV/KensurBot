@@ -31,7 +31,8 @@ async def sysdetails(sysd):
             )
 
             stdout, stderr = await fetch.communicate()
-            result = str(stdout.decode().strip()) + str(stderr.decode().strip())
+            result = str(stdout.decode().strip()) + \
+                str(stderr.decode().strip())
 
             await sysd.edit("`" + result + "`")
         except FileNotFoundError:
@@ -146,16 +147,16 @@ async def amireallyalivereset(ureset):
     await ureset.edit("`" "Successfully reset user for alive!" "`")
 
 
-CMD_HELP.update(
-    {
-        "sysd": ">`.sysd`" "\nUsage: Shows system information using neofetch.",
-        "botver": ">`.botver`" "\nUsage: Shows the userbot version.",
-        "pip": ">`.pip <module(s)>`" "\nUsage: Does a search of pip modules(s).",
-        "alive": ">`.alive`"
-        "\nUsage: Type .alive to see wether your bot is working or not."
-        "\n\n>`.aliveu <text>`"
-        "\nUsage: Changes the 'user' in alive to the text you want."
-        "\n\n>`.resetalive`"
-        "\nUsage: Resets the user to default.",
-    }
-)
+CMD_HELP.update({"sysd": ">`.sysd`"
+                 "\nUsage: Shows system information using neofetch.",
+                 "botver": ">`.botver`"
+                 "\nUsage: Shows the userbot version.",
+                 "pip": ">`.pip <module(s)>`"
+                 "\nUsage: Does a search of pip modules(s).",
+                 "alive": ">`.alive`"
+                 "\nUsage: Type .alive to see wether your bot is working or not."
+                 "\n\n>`.aliveu <text>`"
+                 "\nUsage: Changes the 'user' in alive to the text you want."
+                 "\n\n>`.resetalive`"
+                 "\nUsage: Resets the user to default.",
+                 })

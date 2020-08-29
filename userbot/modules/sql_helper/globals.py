@@ -34,7 +34,8 @@ def gvarstatus(variable):
 
 
 def addgvar(variable, value):
-    if SESSION.query(Globals).filter(Globals.variable == str(variable)).one_or_none():
+    if SESSION.query(Globals).filter(
+            Globals.variable == str(variable)).one_or_none():
         delgvar(variable)
     adder = Globals(str(variable), value)
     SESSION.add(adder)

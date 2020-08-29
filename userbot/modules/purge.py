@@ -134,16 +134,15 @@ async def selfdestruct(destroy):
     """
 
 
-CMD_HELP.update(
-    {
-        "purge": ">`.purge`" "\nUsage: Purges all messages starting from the reply.",
-        "purgeme": ">`.purgeme <x>`"
-        "\nUsage: Deletes x amount of your latest messages.",
-        "del": ">`.del`" "\nUsage: Deletes the message you replied to.",
-        "edit": ">`.edit <newmessage>`"
-        "\nUsage: Replace your last message with <newmessage>.",
-        "sd": ">`.sd <x> <message>`"
-        "\nUsage: Creates a message that selfdestructs in x seconds."
-        "\nKeep the seconds under 100 since it puts your bot to sleep.",
-    }
-)
+CMD_HELP.update({"purge": ">`.purge`"
+                 "\nUsage: Purges all messages starting from the reply.",
+                 "purgeme": ">`.purgeme <x>`"
+                 "\nUsage: Deletes x amount of your latest messages.",
+                 "del": ">`.del`"
+                 "\nUsage: Deletes the message you replied to.",
+                 "edit": ">`.edit <newmessage>`"
+                 "\nUsage: Replace your last message with <newmessage>.",
+                 "sd": ">`.sd <x> <message>`"
+                 "\nUsage: Creates a message that selfdestructs in x seconds."
+                 "\nKeep the seconds under 100 since it puts your bot to sleep.",
+                 })

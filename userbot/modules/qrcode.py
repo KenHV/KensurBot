@@ -82,7 +82,8 @@ async def bq(event):
 
     bar_code_type = "code128"
     try:
-        bar_code_mode_f = barcode.get(bar_code_type, message, writer=ImageWriter())
+        bar_code_mode_f = barcode.get(
+            bar_code_type, message, writer=ImageWriter())
         filename = bar_code_mode_f.save(bar_code_type)
         await event.client.send_file(event.chat_id, filename, reply_to=reply_msg_id)
         os.remove(filename)
@@ -131,15 +132,12 @@ async def make_qr(makeqr):
     await makeqr.delete()
 
 
-CMD_HELP.update(
-    {
-        "qr": ">`.makeqr <content>`"
-        "\nUsage: Make a QR Code from the given content."
-        "\nExample: .makeqr www.google.com"
-        "\nNote: use `.decode <reply to barcode/qrcode>` to get decoded content.",
-        "barcode": ">`.barcode <content>`"
-        "\nUsage: Make a BarCode from the given content."
-        "\nExample: .barcode www.google.com"
-        "\nNote: use `.decode <reply to barcode/qrcode>` to get decoded content.",
-    }
-)
+CMD_HELP.update({"qr": ">`.makeqr <content>`"
+                 "\nUsage: Make a QR Code from the given content."
+                 "\nExample: .makeqr www.google.com"
+                 "\nNote: use `.decode <reply to barcode/qrcode>` to get decoded content.",
+                 "barcode": ">`.barcode <content>`"
+                 "\nUsage: Make a BarCode from the given content."
+                 "\nExample: .barcode www.google.com"
+                 "\nNote: use `.decode <reply to barcode/qrcode>` to get decoded content.",
+                 })

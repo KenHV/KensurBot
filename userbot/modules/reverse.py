@@ -52,8 +52,17 @@ async def okgoogle(img):
         image.close()
         # https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
         searchUrl = "https://www.google.com/searchbyimage/upload"
-        multipart = {"encoded_image": (name, open(name, "rb")), "image_content": ""}
-        response = requests.post(searchUrl, files=multipart, allow_redirects=False)
+        multipart = {
+            "encoded_image": (
+                name,
+                open(
+                    name,
+                    "rb")),
+            "image_content": ""}
+        response = requests.post(
+            searchUrl,
+            files=multipart,
+            allow_redirects=False)
         fetchUrl = response.headers["Location"]
 
         if response != 400:
@@ -103,9 +112,8 @@ async def ParseSauce(googleurl):
 
     try:
         for similar_image in soup.findAll("input", {"class": "gLFyf"}):
-            url = "https://www.google.com/search?tbm=isch&q=" + urllib.parse.quote_plus(
-                similar_image.get("value")
-            )
+            url = "https://www.google.com/search?tbm=isch&q=" + \
+                urllib.parse.quote_plus(similar_image.get("value"))
             results["similar_images"] = url
     except BaseException:
         pass
@@ -137,9 +145,5 @@ async def scam(results, lim):
     return imglinks
 
 
-CMD_HELP.update(
-    {
-        "reverse": ">`.reverse`"
-        "\nUsage: Reply to a pic/sticker to revers-search it on Google Images !!"
-    }
-)
+CMD_HELP.update({"reverse": ">`.reverse`"
+                 "\nUsage: Reply to a pic/sticker to revers-search it on Google Images !!"})
