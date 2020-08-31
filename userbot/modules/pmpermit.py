@@ -15,10 +15,9 @@ from userbot import (BOTLOG, BOTLOG_CHATID, CMD_HELP, COUNT_PM, LASTMSG, LOGS,
 from userbot.events import register
 
 # ========================= CONSTANTS ============================
-UNAPPROVED_MSG = (
-    "`Hey there! Unfortunately, I don't accept private messages from strangers.\n`"
-    "`Please contact me in a group, or wait for me to approve you.`"
-)  # thanks hackintosh5
+DEF_UNAPPROVED_MSG = (
+    "Hey there! Unfortunately, I don't accept private messages from strangers.\n"
+    "Please contact me in a group, or wait for me to approve you.")
 # =================================================================
 
 
@@ -43,6 +42,13 @@ async def permitpm(event):
         apprv = is_approved(event.chat_id)
         notifsoff = gvarstatus("NOTIF_OFF")
 
+        # Use user custom unapproved message
+        getmsg = gvarstatus("unapproved_msg")
+        if getmsg is not None:
+            UNAPPROVED_MSG = getmsg
+        else:
+            UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
+
         # This part basically is a sanity check
         # If the message that sent before is Unapproved Message
         # then stop sending it again to prevent FloodHit
@@ -56,9 +62,9 @@ async def permitpm(event):
                         event.chat_id, from_user="me", search=UNAPPROVED_MSG
                     ):
                         await message.delete()
-                    await event.reply(UNAPPROVED_MSG)
+                    await event.reply(f"`{UNAPPROVED_MSG}`")
             else:
-                await event.reply(UNAPPROVED_MSG)
+                await event.reply(f"`{UNAPPROVED_MSG}`")
             LASTMSG.update({event.chat_id: event.text})
             if notifsoff:
                 await event.client.send_read_acknowledge(event.chat_id)
@@ -114,10 +120,17 @@ async def auto_accept(event):
         and not (await event.get_sender()).bot
     ):
         try:
-            from userbot.modules.sql_helper.pm_permit_sql import (approve,
-                                                                  is_approved)
+            from userbot.modules.sql_helper.pm_permit_sql import (
+                approve, is_approved, gvarstatus)
         except AttributeError:
             return
+
+        # Use user custom unapproved message
+        get_message = gvarstatus("unapproved_msg")
+        if get_message is not None:
+            UNAPPROVED_MSG = get_message
+        else:
+            UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
 
         chat = await event.get_chat()
         if isinstance(chat, User):
@@ -127,7 +140,7 @@ async def auto_accept(event):
                 event.chat_id, reverse=True, limit=1
             ):
                 if (
-                    message.message is not UNAPPROVED_MSG
+                    message.text is not UNAPPROVED_MSG
                     and message.from_id == self_user.id
                 ):
                     try:
@@ -171,6 +184,7 @@ async def approvepm(apprvpm):
     """ For .approve command, give someone the permissions to PM you. """
     try:
         from userbot.modules.sql_helper.pm_permit_sql import approve
+        from userbot.modules.sql_helper.globals import gvarstatus
     except AttributeError:
         return await apprvpm.edit("`Running on Non-SQL mode!`")
 
@@ -186,17 +200,24 @@ async def approvepm(apprvpm):
         name0 = str(aname.first_name)
         uid = apprvpm.chat_id
 
+    # Get user custom msg
+    getmsg = gvarstatus("unapproved_msg")
+    if getmsg is not None:
+        UNAPPROVED_MSG = getmsg
+    else:
+        UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
+
+    async for message in apprvpm.client.iter_messages(apprvpm.chat_id,
+                                                      from_user='me',
+                                                      search=UNAPPROVED_MSG):
+        await message.delete()
+
     try:
         approve(uid)
     except IntegrityError:
         return await apprvpm.edit("`User may already be approved.`")
 
     await apprvpm.edit(f"[{name0}](tg://user?id={uid}) `approved to PM!`")
-
-    async for message in apprvpm.client.iter_messages(
-        apprvpm.chat_id, from_user="me", search=UNAPPROVED_MSG
-    ):
-        await message.delete()
 
     if BOTLOG:
         await apprvpm.client.send_message(
@@ -282,6 +303,63 @@ async def unblockpm(unblock):
         )
 
 
+@register(outgoing=True, pattern=r"^\.(set|get|reset) pmpermit(?: |$)(\w*)")
+async def add_pmsg(cust_msg):
+    """Set your own Unapproved message"""
+    if not PM_AUTO_BAN:
+        return await cust_msg.edit("You need to set `PM_AUTO_BAN` to `True`")
+    try:
+        import userbot.modules.sql_helper.globals as sql
+    except AttributeError:
+        await cust_msg.edit("`Running on Non-SQL mode!`")
+        return
+
+    await cust_msg.edit("`Processing...`")
+    conf = cust_msg.pattern_match.group(1)
+
+    custom_message = sql.gvarstatus("unapproved_msg")
+
+    if conf.lower() == "set":
+        message = await cust_msg.get_reply_message()
+        status = "Saved"
+
+        # check and clear user unapproved message first
+        if custom_message is not None:
+            sql.delgvar("unapproved_msg")
+            status = "Updated"
+
+        if message:
+            # TODO: allow user to have a custom text formatting
+            # eg: bold, underline, striketrough, link
+            # for now all text are in monoscape
+            msg = message.message  # get the plain text
+            sql.addgvar("unapproved_msg", msg)
+        else:
+            return await cust_msg.edit("`Reply to a message.`")
+
+        await cust_msg.edit("`Message saved as PMPermit message.`")
+
+        if BOTLOG:
+            await cust_msg.client.send_message(
+                BOTLOG_CHATID,
+                f"***{status} PMPermit message :*** \n\n{msg}"
+            )
+
+    if conf.lower() == "reset":
+        if custom_message is not None:
+            sql.delgvar("unapproved_msg")
+            await cust_msg.edit("`Pmpermit message has been reset to default.`")
+        else:
+            await cust_msg.edit("`You haven't set a custom PMPermit message yet.`")
+
+    if conf.lower() == "get":
+        if custom_message is not None:
+            await cust_msg.edit("**This is your current PMPermit message:**"
+                                f"\n\n{custom_message}")
+        else:
+            await cust_msg.edit("**You haven't set a custom PMPermit message yet.**\n"
+                                f"Using default message: \n\n`{DEF_UNAPPROVED_MSG}`")
+
 CMD_HELP.update(
     {
         "pmpermit": ">`.approve`"
@@ -296,5 +374,11 @@ CMD_HELP.update(
         "\nUsage: Clears/Disables any notifications of unapproved PMs."
         "\n\n>`.notifon`"
         "\nUsage: Allows notifications for unapproved PMs."
+        "\n\n`.set pmpermit` <reply to msg>"
+        "\nUsage: Sets a custom PMPermit message."
+        "\n\n`.get pmpermit`"
+        "\nUsage: Shows your current PMPermit message."
+        "\n\n`.reset pmpermit`"
+        "\nUsage: Resets PMPermit message to default."
     }
 )
