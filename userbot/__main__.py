@@ -14,9 +14,9 @@ from userbot import LOGS, bot
 from userbot.modules import ALL_MODULES
 
 INVALID_PH = (
-    "\nERROR: The Phone No. entered is INVALID"
-    "\n Tip: Use Country Code along with number."
-    "\n or check your phone number and try again !"
+    "\nError: Invalid phone number."
+    "\nTip: Prefix number with country code"
+    "\nor check your phone number and try again."
 )
 
 try:
@@ -28,10 +28,10 @@ except PhoneNumberInvalidError:
 for module_name in ALL_MODULES:
     imported_module = import_module("userbot.modules." + module_name)
 
-LOGS.info("Your userbot is running!!!")
+LOGS.info("Your userbot is running!")
 
 LOGS.info(
-    "Congratulation, now type .alive to see message if bot is live\n"
+    "Congratulations, the bot is up and running! Send .help in any chat for more info.\n"
     "If you need assistance, head to https://t.me/KenVerseChat"
 )
 
