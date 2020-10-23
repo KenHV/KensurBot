@@ -723,7 +723,7 @@ async def get_usersdel(show):
         await show.edit(
             "Damn, this is a huge group. Uploading deletedusers lists as file."
         )
-        file = open("userslist.txt", "w+")
+        file = open("deleteduserslist.txt", "w+")
         file.write(mentions)
         file.close()
         await show.client.send_file(
