@@ -141,7 +141,7 @@ async def auto_accept(event):
             ):
                 if (
                     message.text is not UNAPPROVED_MSG
-                    and message.from_id == self_user.id
+                    and message.sender_id == self_user.id
                 ):
                     try:
                         approve(event.chat_id)
@@ -190,7 +190,7 @@ async def approvepm(apprvpm):
 
     if apprvpm.reply_to_msg_id:
         reply = await apprvpm.get_reply_message()
-        replied_user = await apprvpm.client.get_entity(reply.from_id)
+        replied_user = await apprvpm.client.get_entity(reply.sender_id)
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         uid = replied_user.id
@@ -234,7 +234,7 @@ async def disapprovepm(disapprvpm):
 
     if disapprvpm.reply_to_msg_id:
         reply = await disapprvpm.get_reply_message()
-        replied_user = await disapprvpm.client.get_entity(reply.from_id)
+        replied_user = await disapprvpm.client.get_entity(reply.sender_id)
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         dissprove(aname)
@@ -260,7 +260,7 @@ async def blockpm(block):
     """ For .block command, block people from PMing you! """
     if block.reply_to_msg_id:
         reply = await block.get_reply_message()
-        replied_user = await block.client.get_entity(reply.from_id)
+        replied_user = await block.client.get_entity(reply.sender_id)
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         await block.client(BlockRequest(aname))
@@ -291,7 +291,7 @@ async def unblockpm(unblock):
     """ For .unblock command, let people PMing you again! """
     if unblock.reply_to_msg_id:
         reply = await unblock.get_reply_message()
-        replied_user = await unblock.client.get_entity(reply.from_id)
+        replied_user = await unblock.client.get_entity(reply.sender_id)
         name0 = str(replied_user.first_name)
         await unblock.client(UnblockRequest(replied_user.id))
         await unblock.edit("`You have been unblocked.`")
