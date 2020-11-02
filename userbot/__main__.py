@@ -32,8 +32,7 @@ LOGS.info("Your userbot is running!")
 
 LOGS.info(
     "Congratulations, the bot is up and running! Send .help in any chat for more info.\n"
-    "If you need assistance, head to https://t.me/KenVerseChat"
-)
+    "If you need assistance, head to https://t.me/KenVerseChat")
 
 if len(argv) not in (1, 3, 4):
     bot.disconnect()
