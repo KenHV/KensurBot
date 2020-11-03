@@ -49,23 +49,27 @@ async def mention_afk(mention):
     global COUNT_MSG
     global USERS
     global ISAFK
-    if mention.message.mentioned and not (await mention.get_sender()).bot and ISAFK:
-        if mention.sender_id not in USERS:
+    if mention.message.mentioned and ISAFK:
+        is_bot = False
+        if (sender := await mention.get_sender()):
+            is_bot = sender.bot
+        if not is_bot and mention.sender_id not in USERS:
             if AFKREASON:
                 await mention.reply("I'm AFK right now." f"\nBecause `{AFKREASON}`")
             else:
                 await mention.reply(str(choice(AFKSTR)))
             USERS.update({mention.sender_id: 1})
         else:
-            if USERS[mention.sender_id] % randint(2, 4) == 0:
-                if AFKREASON:
-                    await mention.reply(
-                        f"I'm still AFK.\
-                            \nReason: `{AFKREASON}`"
-                    )
-                else:
-                    await mention.reply(str(choice(AFKSTR)))
-            USERS[mention.sender_id] = USERS[mention.sender_id] + 1
+            if not is_bot and sender:
+                if USERS[mention.sender_id] % randint(2, 4) == 0:
+                    if AFKREASON:
+                        await mention.reply(
+                            f"I'm still AFK.\
+                                \nReason: `{AFKREASON}`"
+                        )
+                    else:
+                        await mention.reply(str(choice(AFKSTR)))
+                USERS[mention.sender_id] = USERS[mention.sender_id] + 1
         COUNT_MSG = COUNT_MSG + 1
 
 
