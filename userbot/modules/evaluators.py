@@ -156,7 +156,7 @@ async def terminal_runner(term):
             "``` Give a command or use .help term for an example.```"
         )
 
-    if command in ("userbot.session", "config.env"):
+    if command in ("userbot.session", "config.env", "env", "$", "$*", "echo"):
         return await term.edit("`That's a dangerous operation! Not Permitted!`")
 
     process = await asyncio.create_subprocess_shell(
