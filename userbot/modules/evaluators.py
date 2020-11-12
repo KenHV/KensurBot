@@ -81,7 +81,7 @@ async def run(run_q):
             "execute. Use .help exec for an example.```"
         )
 
-    if code in ("userbot.session", "config.env"):
+    if code in ("userbot.session", "config.env", "env"):
         return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
 
     if len(code.splitlines()) <= 5:
