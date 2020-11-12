@@ -6,6 +6,7 @@
 """ Userbot module for executing code and terminal commands from Telegram. """
 
 import asyncio
+import re
 from os import remove
 from sys import executable
 
@@ -24,8 +25,12 @@ async def evaluate(query):
     else:
         return await query.edit("``` Give an expression to evaluate. ```")
 
-    if expression in ("userbot.session", "config.env"):
-        return await query.edit("`That's a dangerous operation! Not Permitted!`")
+    for i in ("userbot.session", "env"):
+        if expression.find(i) != -1:
+            return await query.edit("`That's a dangerous operation! Not Permitted!`")
+
+    if not re.search(r"echo[ \-\w]*\$\w+", expression) is None:
+        return await expression.edit("`That's a dangerous operation! Not Permitted!`")
 
     try:
         evaluation = str(eval(expression))
@@ -80,7 +85,11 @@ async def run(run_q):
             "execute. Use .help exec for an example.```"
         )
 
-    if code in ("userbot.session", "config.env"):
+    for i in ("userbot.session", "env"):
+        if code.find(i) != -1:
+            return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
+
+    if not re.search(r"echo[ \-\w]*\$\w+", run_q) is None:
         return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
 
     if len(code.splitlines()) <= 5:
@@ -154,7 +163,11 @@ async def terminal_runner(term):
             "``` Give a command or use .help term for an example.```"
         )
 
-    if command in ("userbot.session", "config.env", "env", "$", "$*", "echo"):
+    for i in ("userbot.session", "env"):
+        if command.find(i) != -1:
+            return await term.edit("`That's a dangerous operation! Not Permitted!`")
+
+    if not re.search(r"echo[ \-\w]*\$\w+", command) is None:
         return await term.edit("`That's a dangerous operation! Not Permitted!`")
 
     process = await asyncio.create_subprocess_shell(
