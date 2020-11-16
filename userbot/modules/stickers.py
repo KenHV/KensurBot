@@ -22,8 +22,6 @@ from telethon.tl.types import (DocumentAttributeFilename,
 from userbot import CMD_HELP, bot
 from userbot.events import register
 
-combot_stickers_url = "https://combot.org/telegram/stickers?q="
-
 KANGING_STR = [
     "Using Witchery to kang this sticker...",
     "Plagiarising hehe...",
@@ -351,26 +349,23 @@ async def sticker_to_png(sticker):
     return
 
 
-@register(outgoing=True, pattern=r"^\.stickers ?(.*)")
+@register(outgoing=True, pattern=r"^\.findsticker (.*)")
 async def cb_sticker(event):
-    split = event.pattern_match.group(1)
-    if not split:
-        await event.edit("`Provide some name to search for pack.`")
-        return
-    await event.edit("`Searching sticker packs`")
-    text = requests.get(combot_stickers_url + split).text
+    query = event.pattern_match.group(1)
+    if not query:
+        return await event.edit("**Pass a query to search!**")
+    await event.edit("**Searching sticker packs...**")
+    text = requests.get("https://combot.org/telegram/stickers?q=" + query).text
     soup = bs(text, "lxml")
     results = soup.find_all("div", {'class': "sticker-pack__header"})
     if not results:
-        await event.edit("`No results found :(.`")
-        return
-    reply = f"**Sticker packs found for {split} are :**"
+        return await event.edit("**No results found.**")
+    reply = f"**Search Query:**\n {query}\n\n**Results:**\n"
     for pack in results:
         if pack.button:
             packtitle = (pack.find("div", "sticker-pack__title")).get_text()
             packlink = (pack.a).get('href')
-            packid = (pack.button).get('data-popup')
-            reply += f"\n **• ID: **`{packid}`\n [{packtitle}]({packlink})"
+            reply += f"- [{packtitle}]({packlink})\n\n"
     await event.edit(reply)
 
 
@@ -386,5 +381,5 @@ CMD_HELP.update(
         "\nUsage: Gets info about the sticker pack."
         "\n\n>`.getsticker`"
         "\nUsage: reply to a sticker to get 'PNG' file of sticker."
-        "\n\n>`.stickers` <name of user or pack>"
-        "\nUsage: Fetch sticker Packs according to your query."})
+        "\n\n>`.findsticker <name of user or pack>`"
+        "\nUsage: Searches for sticker packs."})
