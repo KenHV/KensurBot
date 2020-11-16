@@ -35,8 +35,8 @@ async def fastpurger(purg):
     if msgs:
         await purg.client.delete_messages(chat, msgs)
     done = await purg.client.send_message(
-        purg.chat_id, "`Fast purge complete!`" f"\nPurged {str(count)} messages"
-    )
+        purg.chat_id, "`Fast purge complete!`"
+        f"\nPurged {str(count)} messages")
     """
     if BOTLOG:
         await purg.client.send_message(
@@ -54,14 +54,16 @@ async def purgeme(delme):
     count = int(message[9:])
     i = 1
 
-    async for message in delme.client.iter_messages(delme.chat_id, from_user="me"):
+    async for message in delme.client.iter_messages(delme.chat_id,
+                                                    from_user="me"):
         if i > count + 1:
             break
         i += 1
         await message.delete()
 
     smsg = await delme.client.send_message(
-        delme.chat_id, "`Purge complete!` Purged " + str(count) + " messages.",
+        delme.chat_id,
+        "`Purge complete!` Purged " + str(count) + " messages.",
     )
     """
     if BOTLOG:
@@ -134,15 +136,21 @@ async def selfdestruct(destroy):
     """
 
 
-CMD_HELP.update({"purge": ">`.purge`"
-                 "\nUsage: Purges all messages starting from the reply.",
-                 "purgeme": ">`.purgeme <x>`"
-                 "\nUsage: Deletes x amount of your latest messages.",
-                 "del": ">`.del`"
-                 "\nUsage: Deletes the message you replied to.",
-                 "edit": ">`.edit <newmessage>`"
-                 "\nUsage: Replace your last message with <newmessage>.",
-                 "sd": ">`.sd <x> <message>`"
-                 "\nUsage: Creates a message that selfdestructs in x seconds."
-                 "\nKeep the seconds under 100 since it puts your bot to sleep.",
-                 })
+CMD_HELP.update({
+    "purge":
+    ">`.purge`"
+    "\nUsage: Purges all messages starting from the reply.",
+    "purgeme":
+    ">`.purgeme <x>`"
+    "\nUsage: Deletes x amount of your latest messages.",
+    "del":
+    ">`.del`"
+    "\nUsage: Deletes the message you replied to.",
+    "edit":
+    ">`.edit <newmessage>`"
+    "\nUsage: Replace your last message with <newmessage>.",
+    "sd":
+    ">`.sd <x> <message>`"
+    "\nUsage: Creates a message that selfdestructs in x seconds."
+    "\nKeep the seconds under 100 since it puts your bot to sleep.",
+})

@@ -57,16 +57,15 @@ async def kang(args):
             await args.edit(f"`{random.choice(KANGING_STR)}`")
             photo = io.BytesIO()
             await bot.download_file(message.media.document, photo)
-            if (
-                DocumentAttributeFilename(file_name="sticker.webp")
-                in message.media.document.attributes
-            ):
+            if (DocumentAttributeFilename(file_name="sticker.webp")
+                    in message.media.document.attributes):
                 emoji = message.media.document.attributes[1].alt
                 if emoji != "":
                     emojibypass = True
         elif "tgsticker" in message.media.document.mime_type:
             await args.edit(f"`{random.choice(KANGING_STR)}`")
-            await bot.download_file(message.media.document, "AnimatedSticker.tgs")
+            await bot.download_file(message.media.document,
+                                    "AnimatedSticker.tgs")
 
             attributes = message.media.document.attributes
             for attribute in attributes:
@@ -114,14 +113,11 @@ async def kang(args):
             cmd = "/newanimated"
 
         response = urllib.request.urlopen(
-            urllib.request.Request(f"http://t.me/addstickers/{packname}")
-        )
+            urllib.request.Request(f"http://t.me/addstickers/{packname}"))
         htmlstr = response.read().decode("utf8").split("\n")
 
-        if (
-            "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>."
-            not in htmlstr
-        ):
+        if ("  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>."
+                not in htmlstr):
             async with bot.conversation("Stickers") as conv:
                 await conv.send_message("/addsticker")
                 await conv.get_response()
@@ -133,11 +129,8 @@ async def kang(args):
                     pack += 1
                     packname = f"a{user.id}_by_{user.username}_{pack}"
                     packnick = f"@{user.username}'s kang pack Vol.{pack}"
-                    await args.edit(
-                        "`Switching to Pack "
-                        + str(pack)
-                        + " due to insufficient space`"
-                    )
+                    await args.edit("`Switching to Pack " + str(pack) +
+                                    " due to insufficient space`")
                     await conv.send_message(packname)
                     x = await conv.get_response()
                     if x.text == "Invalid pack selected.":
@@ -288,7 +281,8 @@ async def get_pack_info(event):
 
     try:
         stickerset_attr = rep_msg.document.attributes[1]
-        await event.edit("`Fetching details of the sticker pack, please wait..`")
+        await event.edit(
+            "`Fetching details of the sticker pack, please wait..`")
     except BaseException:
         return await event.edit("`This is not a sticker. Reply to a sticker.`")
 
@@ -300,22 +294,18 @@ async def get_pack_info(event):
             InputStickerSetID(
                 id=stickerset_attr.stickerset.id,
                 access_hash=stickerset_attr.stickerset.access_hash,
-            )
-        )
-    )
+            )))
     pack_emojis = []
     for document_sticker in get_stickerset.packs:
         if document_sticker.emoticon not in pack_emojis:
             pack_emojis.append(document_sticker.emoticon)
 
-    OUTPUT = (
-        f"**Sticker Title:** `{get_stickerset.set.title}\n`"
-        f"**Sticker Short Name:** `{get_stickerset.set.short_name}`\n"
-        f"**Official:** `{get_stickerset.set.official}`\n"
-        f"**Archived:** `{get_stickerset.set.archived}`\n"
-        f"**Stickers In Pack:** `{len(get_stickerset.packs)}`\n"
-        f"**Emojis In Pack:**\n{' '.join(pack_emojis)}"
-    )
+    OUTPUT = (f"**Sticker Title:** `{get_stickerset.set.title}\n`"
+              f"**Sticker Short Name:** `{get_stickerset.set.short_name}`\n"
+              f"**Official:** `{get_stickerset.set.official}`\n"
+              f"**Archived:** `{get_stickerset.set.archived}`\n"
+              f"**Stickers In Pack:** `{len(get_stickerset.packs)}`\n"
+              f"**Emojis In Pack:**\n{' '.join(pack_emojis)}")
 
     await event.edit(OUTPUT)
 
@@ -369,17 +359,18 @@ async def cb_sticker(event):
     await event.edit(reply)
 
 
-CMD_HELP.update(
-    {
-        "stickers": ">`.kang [emoji('s)]?`"
-        "\nUsage: Reply .kang to a sticker or an image to kang it to your userbot pack "
-        "\nor specify the emoji you want to."
-        "\n\n>`.kang (emoji['s]]?` [number]?"
-        "\nUsage: Kang's the sticker/image to the specified pack but uses 🤔 as emoji "
-        "or choose the emoji you want to."
-        "\n\n>`.stkrinfo`"
-        "\nUsage: Gets info about the sticker pack."
-        "\n\n>`.getsticker`"
-        "\nUsage: reply to a sticker to get 'PNG' file of sticker."
-        "\n\n>`.findsticker <name of user or pack>`"
-        "\nUsage: Searches for sticker packs."})
+CMD_HELP.update({
+    "stickers":
+    ">`.kang [emoji('s)]?`"
+    "\nUsage: Reply .kang to a sticker or an image to kang it to your userbot pack "
+    "\nor specify the emoji you want to."
+    "\n\n>`.kang (emoji['s]]?` [number]?"
+    "\nUsage: Kang's the sticker/image to the specified pack but uses 🤔 as emoji "
+    "or choose the emoji you want to."
+    "\n\n>`.stkrinfo`"
+    "\nUsage: Gets info about the sticker pack."
+    "\n\n>`.getsticker`"
+    "\nUsage: reply to a sticker to get 'PNG' file of sticker."
+    "\n\n>`.findsticker <name of user or pack>`"
+    "\nUsage: Searches for sticker packs."
+})

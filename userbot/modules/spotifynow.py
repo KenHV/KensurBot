@@ -33,8 +33,7 @@ async def _(event):
                 return
             else:
                 downloaded_file_name = await event.client.download_media(
-                    response.media, TEMP_DOWNLOAD_DIRECTORY
-                )
+                    response.media, TEMP_DOWNLOAD_DIRECTORY)
                 link = response.reply_markup.rows[0].buttons[0].url
                 await event.client.send_file(
                     event.chat_id,
@@ -43,17 +42,18 @@ async def _(event):
                     caption=f"[Play on Spotify]({link})",
                 )
                 """ - cleanup chat after completed - """
-                await event.client.delete_messages(conv.chat_id, [msg.id, response.id])
+                await event.client.delete_messages(conv.chat_id,
+                                                   [msg.id, response.id])
     except TimeoutError:
-        return await event.edit("**Error:** @SpotifyNowBot **is not responding.**")
+        return await event.edit(
+            "**Error:** @SpotifyNowBot **is not responding.**")
     await event.delete()
     return os.remove(downloaded_file_name)
 
 
-CMD_HELP.update(
-    {
-        "spotifynow": ">`.spotnow`"
-        "\nUsage: Show what you're listening on spotify."
-        "\n@SpotifyNowBot"
-    }
-)
+CMD_HELP.update({
+    "spotifynow":
+    ">`.spotnow`"
+    "\nUsage: Show what you're listening on spotify."
+    "\n@SpotifyNowBot"
+})

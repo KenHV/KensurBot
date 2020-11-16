@@ -44,12 +44,12 @@ async def mim(event):
                 await bot.send_file(chat, reply_message.media)
                 response = await bot_conv.get_response()
             except YouBlockedUserError:
-                await event.reply("`Please unblock @MemeAutobot and try again.`")
+                await event.reply(
+                    "`Please unblock @MemeAutobot and try again.`")
                 return
             if response.text.startswith("Forward"):
                 await event.edit(
-                    "`Add `@MemeAutobot` to your forward privacy settings.`"
-                )
+                    "`Add `@MemeAutobot` to your forward privacy settings.`")
             if "Okay..." in response.text:
                 await event.edit("`Converting...`")
                 thumb = None
@@ -63,10 +63,10 @@ async def mim(event):
                     reply_message = await event.get_reply_message()
                     to_download_directory = TEMP_DOWNLOAD_DIRECTORY
                     downloaded_file_name = os.path.join(
-                        to_download_directory, file_name
-                    )
+                        to_download_directory, file_name)
                     downloaded_file_name = await bot.download_media(
-                        reply_message, downloaded_file_name,
+                        reply_message,
+                        downloaded_file_name,
                     )
                     if os.path.exists(downloaded_file_name):
                         await bot.send_file(
@@ -83,10 +83,11 @@ async def mim(event):
                 response = await bot_conv.get_response()
                 the_download_directory = TEMP_DOWNLOAD_DIRECTORY
                 files_name = "memes.webp"
-                download_file_name = os.path.join(
-                    the_download_directory, files_name)
+                download_file_name = os.path.join(the_download_directory,
+                                                  files_name)
                 await bot.download_media(
-                    response.media, download_file_name,
+                    response.media,
+                    download_file_name,
                 )
                 requires_file_name = TEMP_DOWNLOAD_DIRECTORY + "memes.webp"
                 await bot.send_file(  # pylint:disable=E0602
@@ -102,7 +103,8 @@ async def mim(event):
             else:
                 await bot.send_file(event.chat_id, response.media)
     except TimeoutError:
-        return await event.edit("**Error:** @MemeAutobot **is not responding.**")
+        return await event.edit(
+            "**Error:** @MemeAutobot **is not responding.**")
 
 
 def is_message_image(message):
@@ -111,8 +113,7 @@ def is_message_image(message):
             return True
         return bool(
             message.media.document
-            and message.media.document.mime_type.split("/")[0] == "image"
-        )
+            and message.media.document.mime_type.split("/")[0] == "image")
 
     return False
 
@@ -124,9 +125,8 @@ async def silently_send_message(conv, text):
     return response
 
 
-CMD_HELP.update(
-    {
-        "memify": ".mmf texttop ; textbottom\
+CMD_HELP.update({
+    "memify":
+    ".mmf texttop ; textbottom\
         \nUsage: Reply a sticker/image/gif with the text you want to add to the top and/or bottom."
-    }
-)
+})

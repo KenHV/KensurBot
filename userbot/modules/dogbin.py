@@ -31,7 +31,8 @@ async def paste(pstl):
         message = await pstl.get_reply_message()
         if message.media:
             downloaded_file_name = await pstl.client.download_media(
-                message, TEMP_DOWNLOAD_DIRECTORY,
+                message,
+                TEMP_DOWNLOAD_DIRECTORY,
             )
             m_list = None
             with open(downloaded_file_name, "rb") as fd:
@@ -53,23 +54,21 @@ async def paste(pstl):
         dogbin_final_url = DOGBIN_URL + key
 
         if response["isUrl"]:
-            reply_text = (
-                "`Pasted successfully!`\n\n"
-                f"`Shortened URL:` {dogbin_final_url}\n\n"
-                "`Original(non-shortened) URLs`\n"
-                f"`Dogbin URL`: {DOGBIN_URL}v/{key}\n"
-            )
+            reply_text = ("`Pasted successfully!`\n\n"
+                          f"`Shortened URL:` {dogbin_final_url}\n\n"
+                          "`Original(non-shortened) URLs`\n"
+                          f"`Dogbin URL`: {DOGBIN_URL}v/{key}\n")
         else:
-            reply_text = (
-                "`Pasted successfully!`\n\n"
-                f"`Dogbin URL`: {dogbin_final_url}")
+            reply_text = ("`Pasted successfully!`\n\n"
+                          f"`Dogbin URL`: {dogbin_final_url}")
     else:
         reply_text = "`Failed to reach Dogbin`"
 
     await pstl.edit(reply_text)
     if BOTLOG:
         await pstl.client.send_message(
-            BOTLOG_CHATID, "Paste query was executed successfully",
+            BOTLOG_CHATID,
+            "Paste query was executed successfully",
         )
 
 
@@ -101,35 +100,32 @@ async def get_dogbin_content(dog_url):
         resp.raise_for_status()
     except exceptions.HTTPError as HTTPErr:
         await dog_url.edit(
-            "Request returned an unsuccessful status code.\n\n" + str(HTTPErr)
-        )
+            "Request returned an unsuccessful status code.\n\n" + str(HTTPErr))
         return
     except exceptions.Timeout as TimeoutErr:
         await dog_url.edit("Request timed out." + str(TimeoutErr))
         return
     except exceptions.TooManyRedirects as RedirectsErr:
         await dog_url.edit(
-            "Request exceeded the configured number of maximum redirections."
-            + str(RedirectsErr)
-        )
+            "Request exceeded the configured number of maximum redirections." +
+            str(RedirectsErr))
         return
 
-    reply_text = (
-        "`Fetched dogbin URL content successfully!`"
-        "\n\n`Content:` " + resp.text)
+    reply_text = ("`Fetched dogbin URL content successfully!`"
+                  "\n\n`Content:` " + resp.text)
 
     await dog_url.edit(reply_text)
     if BOTLOG:
         await dog_url.client.send_message(
-            BOTLOG_CHATID, "Get dogbin content query was executed successfully",
+            BOTLOG_CHATID,
+            "Get dogbin content query was executed successfully",
         )
 
 
-CMD_HELP.update(
-    {
-        "dogbin": ">`.paste <text/reply>`"
-        "\nUsage: Create a paste or a shortened url using dogbin (https://del.dog/)"
-        "\n\n>`.getpaste`"
-        "\nUsage: Gets the content of a paste or shortened url from dogbin (https://del.dog/)"
-    }
-)
+CMD_HELP.update({
+    "dogbin":
+    ">`.paste <text/reply>`"
+    "\nUsage: Create a paste or a shortened url using dogbin (https://del.dog/)"
+    "\n\n>`.getpaste`"
+    "\nUsage: Gets the content of a paste or shortened url from dogbin (https://del.dog/)"
+})

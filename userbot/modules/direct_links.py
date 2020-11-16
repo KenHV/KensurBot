@@ -28,11 +28,10 @@ async def subprocess_run(cmd):
     result = await subproc.communicate()
     exitCode = subproc.returncode
     if exitCode != 0:
-        reply += (
-            '**An error was detected while running subprocess.**\n'
-            f'exitCode : `{exitCode}`\n'
-            f'stdout : `{result[0].decode().strip()}`\n'
-            f'stderr : `{result[1].decode().strip()}`')
+        reply += ('**An error was detected while running subprocess.**\n'
+                  f'exitCode : `{exitCode}`\n'
+                  f'stdout : `{result[0].decode().strip()}`\n'
+                  f'stderr : `{result[1].decode().strip()}`')
         return reply
     return result
 
@@ -313,8 +312,7 @@ async def uptobox(request, url: str) -> str:
                 await request.edit(
                     "`[ERROR]`\n"
                     f"`statusCode`: **{data.get('error').get('code')}**\n"
-                    f"`reason`: **{data.get('error').get('message')}**"
-                )
+                    f"`reason`: **{data.get('error').get('message')}**")
                 return
             file_name = data.get('file_name')
             file_size = naturalsize(data.get('file_size'))
@@ -340,30 +338,25 @@ async def uptobox(request, url: str) -> str:
                     if status == "Success":
                         webLink = result.get('data').get('dlLink')
                         await request.edit(
-                            f"[{file_name} ({file_size})]({webLink})"
-                        )
+                            f"[{file_name} ({file_size})]({webLink})")
                         return
                     else:
                         await request.edit(
                             "`[ERROR]`\n"
                             f"`statusCode`: **{result.get('statusCode')}**\n"
                             f"`reason`: **{result.get('data')}**\n"
-                            f"`status`: **{status}**"
-                        )
+                            f"`status`: **{status}**")
                         return
             elif status == "Success":
                 webLink = result.get('data').get('dlLink')
-                await request.edit(
-                    f"[{file_name} ({file_size})]({webLink})"
-                )
+                await request.edit(f"[{file_name} ({file_size})]({webLink})")
                 return
             else:
                 await request.edit(
                     "`[ERROR]`\n"
                     f"`statusCode`: **{result.get('statusCode')}**\n"
                     f"`reason`: **{result.get('data')}**\n"
-                    f"`status`: **{status}**"
-                )
+                    f"`status`: **{status}**")
                 return
 
 

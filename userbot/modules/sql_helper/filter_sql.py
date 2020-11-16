@@ -20,10 +20,8 @@ class Filters(BASE):
 
     def __eq__(self, other):
         return bool(
-            isinstance(other, Filters)
-            and self.chat_id == other.chat_id
-            and self.keyword == other.keyword
-        )
+            isinstance(other, Filters) and self.chat_id == other.chat_id
+            and self.keyword == other.keyword)
 
 
 Filters.__table__.create(checkfirst=True)

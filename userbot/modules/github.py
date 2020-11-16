@@ -19,7 +19,8 @@ async def github(event):
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as request:
             if request.status == 404:
-                await event.reply("`" + event.pattern_match.group(1) + " not found`")
+                await event.reply("`" + event.pattern_match.group(1) +
+                                  " not found`")
                 return
 
             result = await request.json()
@@ -58,4 +59,5 @@ async def github(event):
 
 
 CMD_HELP.update(
-    {"github": "`.git`" "\nUsage: Like .whois but for GitHub usernames."})
+    {"github": "`.git`"
+     "\nUsage: Like .whois but for GitHub usernames."})

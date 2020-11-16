@@ -25,9 +25,8 @@ async def on_snip(event):
         message_id_to_reply = None
     if snip:
         if snip.f_mesg_id:
-            msg_o = await event.client.get_messages(
-                entity=BOTLOG_CHATID, ids=int(snip.f_mesg_id)
-            )
+            msg_o = await event.client.get_messages(entity=BOTLOG_CHATID,
+                                                    ids=int(snip.f_mesg_id))
             await event.client.send_message(
                 event.chat_id,
                 msg_o.message,
@@ -36,9 +35,9 @@ async def on_snip(event):
             )
             await event.delete()
         elif snip.reply:
-            await event.client.send_message(
-                event.chat_id, snip.reply, reply_to=message_id_to_reply
-            )
+            await event.client.send_message(event.chat_id,
+                                            snip.reply,
+                                            reply_to=message_id_to_reply)
             await event.delete()
 
 
@@ -62,8 +61,10 @@ async def on_snip_save(event):
                 "please do NOT delete it !!",
             )
             msg_o = await event.client.forward_messages(
-                entity=BOTLOG_CHATID, messages=msg, from_peer=event.chat_id, silent=True
-            )
+                entity=BOTLOG_CHATID,
+                messages=msg,
+                from_peer=event.chat_id,
+                silent=True)
             msg_id = msg_o.id
         else:
             return await event.edit(
@@ -110,16 +111,15 @@ async def on_snip_delete(event):
         await event.edit(f"`Couldn't find snip:` **{name}**")
 
 
-CMD_HELP.update(
-    {
-        "snips": ">`$<snip_name>`"
-        "\nUsage: Gets the specified snip, anywhere."
-        "\n\n>`.snip <name> <data> or reply to a message with .snip <name>`"
-        "\nUsage: Saves the message as a snip (global note) with the name."
-        " (Works with pics, docs, and stickers too!)"
-        "\n\n>`.snips`"
-        "\nUsage: Gets all saved snips."
-        "\n\n>`.remsnip <snip_name>`"
-        "\nUsage: Deletes the specified snip."
-    }
-)
+CMD_HELP.update({
+    "snips":
+    ">`$<snip_name>`"
+    "\nUsage: Gets the specified snip, anywhere."
+    "\n\n>`.snip <name> <data> or reply to a message with .snip <name>`"
+    "\nUsage: Saves the message as a snip (global note) with the name."
+    " (Works with pics, docs, and stickers too!)"
+    "\n\n>`.snips`"
+    "\nUsage: Gets all saved snips."
+    "\n\n>`.remsnip <snip_name>`"
+    "\nUsage: Deletes the specified snip."
+})

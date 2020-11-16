@@ -124,9 +124,9 @@ def register(**args):
 
                     ftext += "\n\n\nLast 10 commits:\n"
 
-                    process = await asyncsubshell(
-                        command, stdout=asyncsub.PIPE, stderr=asyncsub.PIPE
-                    )
+                    process = await asyncsubshell(command,
+                                                  stdout=asyncsub.PIPE,
+                                                  stderr=asyncsub.PIPE)
                     stdout, stderr = await process.communicate()
                     result = str(stdout.decode().strip()) + \
                         str(stderr.decode().strip())
@@ -139,11 +139,15 @@ def register(**args):
 
                     if LOGSPAMMER:
                         await check.client.send_file(
-                            BOTLOG_CHATID, "error.log", caption=text,
+                            BOTLOG_CHATID,
+                            "error.log",
+                            caption=text,
                         )
                     else:
                         await check.client.send_file(
-                            check.chat_id, "error.log", caption=text,
+                            check.chat_id,
+                            "error.log",
+                            caption=text,
                         )
 
                     remove("error.log")

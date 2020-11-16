@@ -20,8 +20,8 @@ from telethon.sessions import StringSession
 load_dotenv("config.env")
 
 # Bot Logs setup:
-CONSOLE_LOGGER_VERBOSE = sb(os.environ.get(
-    "CONSOLE_LOGGER_VERBOSE") or "False")
+CONSOLE_LOGGER_VERBOSE = sb(
+    os.environ.get("CONSOLE_LOGGER_VERBOSE") or "False")
 
 if CONSOLE_LOGGER_VERBOSE:
     basicConfig(
@@ -29,22 +29,20 @@ if CONSOLE_LOGGER_VERBOSE:
         level=DEBUG,
     )
 else:
-    basicConfig(
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level=INFO)
+    basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                level=INFO)
 LOGS = getLogger(__name__)
 
 if version_info[0] < 3 or version_info[1] < 8:
-    LOGS.info(
-        "You MUST have a python version of at least 3.8."
-        "Multiple features depend on this. Bot quitting."
-    )
+    LOGS.info("You MUST have a python version of at least 3.8."
+              "Multiple features depend on this. Bot quitting.")
     quit(1)
 
 # Check if the config was edited by using the already used variable.
 # Basically, its the 'virginity check' for the config file ;)
-CONFIG_CHECK = (os.environ.get(
-    "___________PLOX_______REMOVE_____THIS_____LINE__________") or None)
+CONFIG_CHECK = (
+    os.environ.get("___________PLOX_______REMOVE_____THIS_____LINE__________")
+    or None)
 
 if CONFIG_CHECK:
     LOGS.info(
@@ -83,8 +81,8 @@ UPSTREAM_REPO_URL = (os.environ.get("UPSTREAM_REPO_URL")
 UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH") or "sql-extended"
 
 # Console verbose logging
-CONSOLE_LOGGER_VERBOSE = sb(os.environ.get(
-    "CONSOLE_LOGGER_VERBOSE") or "False")
+CONSOLE_LOGGER_VERBOSE = sb(
+    os.environ.get("CONSOLE_LOGGER_VERBOSE") or "False")
 
 # SQL Database URI
 DB_URI = os.environ.get("DATABASE_URL") or None
@@ -169,9 +167,12 @@ if not os.path.exists("bin"):
     os.mkdir("bin")
 
 binaries = {
-    "https://raw.githubusercontent.com/adekmaulana/megadown/master/megadown": "bin/megadown",
-    "https://raw.githubusercontent.com/yshalsager/cmrudl.py/master/cmrudl.py": "bin/cmrudl",
-    "https://raw.githubusercontent.com/adekmaulana/python-scripts/master/shell/megadirect": "bin/megadirect",
+    "https://raw.githubusercontent.com/adekmaulana/megadown/master/megadown":
+    "bin/megadown",
+    "https://raw.githubusercontent.com/yshalsager/cmrudl.py/master/cmrudl.py":
+    "bin/cmrudl",
+    "https://raw.githubusercontent.com/adekmaulana/python-scripts/master/shell/megadirect":
+    "bin/megadirect",
 }
 
 for binary, path in binaries.items():
@@ -218,8 +219,7 @@ with bot:
     except BaseException:
         LOGS.info(
             "BOTLOG_CHATID environment variable isn't a "
-            "valid entity. Check your environment variables/config.env file."
-        )
+            "valid entity. Check your environment variables/config.env file.")
         quit(1)
 
 # Global Variables

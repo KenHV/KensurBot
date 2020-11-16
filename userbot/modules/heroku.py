@@ -29,7 +29,8 @@ else:
 async def variable(var):
     exe = var.pattern_match.group(1)
     if app is None:
-        await var.edit("`[HEROKU]" "\nPlease setup your`  **HEROKU_APP_NAME**.")
+        await var.edit("`[HEROKU]"
+                       "\nPlease setup your`  **HEROKU_APP_NAME**.")
         return False
     if exe == "get":
         await var.edit("`Getting information...`")
@@ -58,8 +59,9 @@ async def variable(var):
                 for item in configvars:
                     msg += f"`{item}` = `{configvars[item]}`\n"
                 await var.client.send_message(
-                    BOTLOG_CHATID, "#CONFIGVARS\n\n" "**ConfigVars**:\n" f"{msg}"
-                )
+                    BOTLOG_CHATID, "#CONFIGVARS\n\n"
+                    "**ConfigVars**:\n"
+                    f"{msg}")
                 await var.edit("`Received to BOTLOG_CHATID...`")
                 return True
             else:
@@ -75,7 +77,9 @@ async def variable(var):
             if BOTLOG:
                 await var.client.send_message(
                     BOTLOG_CHATID,
-                    "#DELCONFIGVAR\n\n" "**Delete ConfigVar**:\n" f"`{variable}`",
+                    "#DELCONFIGVAR\n\n"
+                    "**Delete ConfigVar**:\n"
+                    f"`{variable}`",
                 )
             await var.edit("`Information deleted...`")
             del heroku_var[variable]
@@ -102,7 +106,9 @@ async def set_var(var):
         if BOTLOG:
             await var.client.send_message(
                 BOTLOG_CHATID,
-                "#ADDCONFIGVAR\n\n" "**Add ConfigVar**:\n" f"`{variable}` = `{value}`",
+                "#ADDCONFIGVAR\n\n"
+                "**Add ConfigVar**:\n"
+                f"`{variable}` = `{value}`",
             )
         await var.edit("`Information added...`")
     heroku_var[variable] = value
@@ -122,11 +128,9 @@ async def dyno_usage(dyno):
     user_id = Heroku.account().id
     path = "/accounts/" + user_id + "/actions/get-quota"
     async with aiohttp.ClientSession() as session:
-        useragent = (
-            "Mozilla/5.0 (Linux; Android 10; SM-G975F) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/81.0.4044.117 Mobile Safari/537.36"
-        )
+        useragent = ("Mozilla/5.0 (Linux; Android 10; SM-G975F) "
+                     "AppleWebKit/537.36 (KHTML, like Gecko) "
+                     "Chrome/81.0.4044.117 Mobile Safari/537.36")
         headers = {
             "User-Agent": useragent,
             "Authorization": f"Bearer {HEROKU_API_KEY}",
@@ -134,9 +138,9 @@ async def dyno_usage(dyno):
         }
         async with session.get(heroku_api + path, headers=headers) as r:
             if r.status != 200:
-                await dyno.client.send_message(
-                    dyno.chat_id, f"`{r.reason}`", reply_to=dyno.id
-                )
+                await dyno.client.send_message(dyno.chat_id,
+                                               f"`{r.reason}`",
+                                               reply_to=dyno.id)
                 await dyno.edit("`Can't get information...`")
                 return False
             result = await r.json()
@@ -163,27 +167,28 @@ async def dyno_usage(dyno):
             AppHours = math.floor(AppQuotaUsed / 60)
             AppMinutes = math.floor(AppQuotaUsed % 60)
 
-            await dyno.edit(
-                "**Dyno Usage**:\n\n"
-                f"-> `Dyno usage for`  **{app.name}**:\n"
-                f"     •  **{AppHours} hour(s), "
-                f"{AppMinutes} minute(s)  -  {AppPercentage}%**"
-                "\n\n"
-                "-> `Dyno hours quota remaining this month`:\n"
-                f"     •  **{hours} hour(s), {minutes} minute(s)  "
-                f"-  {percentage}%**"
-            )
+            await dyno.edit("**Dyno Usage**:\n\n"
+                            f"-> `Dyno usage for`  **{app.name}**:\n"
+                            f"     •  **{AppHours} hour(s), "
+                            f"{AppMinutes} minute(s)  -  {AppPercentage}%**"
+                            "\n\n"
+                            "-> `Dyno hours quota remaining this month`:\n"
+                            f"     •  **{hours} hour(s), {minutes} minute(s)  "
+                            f"-  {percentage}%**")
             return True
 
 
-CMD_HELP.update({"heroku": ">.`usage`"
-                 "\nUsage: Check your heroku dyno hours remaining"
-                 "\n\n>`.set var <NEW VAR> <VALUE>`"
-                 "\nUsage: add new variable or update existing value variable"
-                 "\n!!! WARNING !!!, after setting a variable the bot will restarted"
-                 "\n\n>`.get var or .get var <VAR>`"
-                 "\nUsage: get your existing varibles, use it only on your private group!"
-                 "\nThis returns all of your private information, please be caution..."
-                 "\n\n>`.del var <VAR>`"
-                 "\nUsage: delete existing variable"
-                 "\n!!! WARNING !!!, after deleting variable the bot will restarted"})
+CMD_HELP.update({
+    "heroku":
+    ">.`usage`"
+    "\nUsage: Check your heroku dyno hours remaining"
+    "\n\n>`.set var <NEW VAR> <VALUE>`"
+    "\nUsage: add new variable or update existing value variable"
+    "\n!!! WARNING !!!, after setting a variable the bot will restarted"
+    "\n\n>`.get var or .get var <VAR>`"
+    "\nUsage: get your existing varibles, use it only on your private group!"
+    "\nThis returns all of your private information, please be caution..."
+    "\n\n>`.del var <VAR>`"
+    "\nUsage: delete existing variable"
+    "\n!!! WARNING !!!, after deleting variable the bot will restarted"
+})

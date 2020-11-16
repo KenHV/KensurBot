@@ -52,9 +52,8 @@ async def last_fm(lastFM):
     username = f"https://www.last.fm/user/{LASTFM_USERNAME}"
     if playing is not None:
         try:
-            image = User(
-                LASTFM_USERNAME,
-                lastfm).get_now_playing().get_cover_image()
+            image = User(LASTFM_USERNAME,
+                         lastfm).get_now_playing().get_cover_image()
         except IndexError:
             image = None
         try:
@@ -69,10 +68,8 @@ async def last_fm(lastFM):
                 f"__\n\n• [{playing}]({rectrack})\n`{tags}`")
             preview = True
         else:
-            output = (
-                f"[{LASTFM_USERNAME}]({username}) __is now listening to:"
-                f"__\n\n• [{playing}]({rectrack})\n`{tags}`"
-            )
+            output = (f"[{LASTFM_USERNAME}]({username}) __is now listening to:"
+                      f"__\n\n• [{playing}]({rectrack})\n`{tags}`")
     else:
         recent = User(LASTFM_USERNAME, lastfm).get_recent_tracks(limit=5)
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
@@ -146,8 +143,8 @@ async def get_curr_track(lfmbio):
                 try:
                     if BOTLOG and LastLog:
                         await bot.send_message(
-                            BOTLOG_CHATID, f"Attempted to change bio to\n{lfmbio}"
-                        )
+                            BOTLOG_CHATID,
+                            f"Attempted to change bio to\n{lfmbio}")
                     await bot(UpdateProfileRequest(about=lfmbio))
                 except AboutTooLongError:
                     short_bio = f"🎧: {SONG}"
@@ -157,8 +154,7 @@ async def get_curr_track(lfmbio):
                 await bot(UpdateProfileRequest(about=DEFAULT_BIO))
                 if BOTLOG and LastLog:
                     await bot.send_message(
-                        BOTLOG_CHATID, f"Reset bio back to\n{DEFAULT_BIO}"
-                    )
+                        BOTLOG_CHATID, f"Reset bio back to\n{DEFAULT_BIO}")
         except AttributeError:
             try:
                 if user_info.about != DEFAULT_BIO:
@@ -166,17 +162,19 @@ async def get_curr_track(lfmbio):
                     await bot(UpdateProfileRequest(about=DEFAULT_BIO))
                     if BOTLOG and LastLog:
                         await bot.send_message(
-                            BOTLOG_CHATID, f"Reset bio back to\n{DEFAULT_BIO}"
-                        )
+                            BOTLOG_CHATID, f"Reset bio back to\n{DEFAULT_BIO}")
             except FloodWaitError as err:
                 if BOTLOG and LastLog:
-                    await bot.send_message(BOTLOG_CHATID, f"Error changing bio:\n{err}")
+                    await bot.send_message(BOTLOG_CHATID,
+                                           f"Error changing bio:\n{err}")
         except FloodWaitError as err:
             if BOTLOG and LastLog:
-                await bot.send_message(BOTLOG_CHATID, f"Error changing bio:\n{err}")
+                await bot.send_message(BOTLOG_CHATID,
+                                       f"Error changing bio:\n{err}")
         except WSError as err:
             if BOTLOG and LastLog:
-                await bot.send_message(BOTLOG_CHATID, f"Error changing bio:\n{err}")
+                await bot.send_message(BOTLOG_CHATID,
+                                       f"Error changing bio:\n{err}")
         await sleep(2)
     RUNNING = False
 
@@ -220,9 +218,12 @@ async def lastlog(lstlog):
         await lstlog.edit(LFM_LOG_ERR)
 
 
-CMD_HELP.update({"lastfm": ">`.lastfm`"
-                 "\nUsage: Shows currently scrobbling track or most recent scrobbles if nothing is playing."
-                 "\n\n>`.lastbio <on/off>`"
-                 "\nUsage: Enables/Disables last.fm current playing to bio."
-                 "\n\n>`.lastlog <on/off>`"
-                 "\nUsage: Enable/Disable last.fm bio logging in the bot-log group."})
+CMD_HELP.update({
+    "lastfm":
+    ">`.lastfm`"
+    "\nUsage: Shows currently scrobbling track or most recent scrobbles if nothing is playing."
+    "\n\n>`.lastbio <on/off>`"
+    "\nUsage: Enables/Disables last.fm current playing to bio."
+    "\n\n>`.lastlog <on/off>`"
+    "\nUsage: Enable/Disable last.fm bio logging in the bot-log group."
+})
