@@ -28,17 +28,14 @@ from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
 
 # =================== CONSTANT ===================
-PP_TOO_SMOL = "`The image is too small`"
-PP_ERROR = "`Failure while processing the image`"
-NO_ADMIN = "`I am not an admin!`"
-NO_PERM = "`I don't have sufficient permissions!`"
-NO_SQL = "`Running on Non-SQL mode!`"
+PP_TOO_SMOL = "**The image is too small!**"
+PP_ERROR = "**Failure while processing the image!**"
+NO_ADMIN = "**I am not an admin!**"
+NO_PERM = "**I don't have sufficient permissions!**"
+NO_SQL = "**Running on Non-SQL mode!**"
 
-CHAT_PP_CHANGED = "`Chat Picture Changed`"
-CHAT_PP_ERROR = ("`Some issue with updating the pic,`"
-                 "`maybe coz I'm not an admin,`"
-                 "`or don't have enough rights.`")
-INVALID_MEDIA = "`Invalid Extension`"
+CHAT_PP_CHANGED = "**Chat picture changed!**"
+INVALID_MEDIA = "**Invalid extension!**"
 
 BANNED_RIGHTS = ChatBannedRights(
     until_date=None,
@@ -434,18 +431,19 @@ async def rm_deletedacc(show):
 
     con = show.pattern_match.group(1).lower()
     del_u = 0
-    del_status = "`No deleted accounts found, Group is clean`"
+    del_status = "**No deleted accounts found, group is clean.**"
 
     if con != "clean":
-        await show.edit("`Searching for ded nibbas...`")
+        await show.edit("**Searching for deleted accounts...**")
         async for user in show.client.iter_participants(show.chat_id):
 
             if user.deleted:
                 del_u += 1
                 await sleep(1)
         if del_u > 0:
-            del_status = (f"`Found` **{del_u}** `ded nibba(s) in this group,"
-                          "\nclean them by using .zombies clean`")
+            del_status = (
+                f"Found **{del_u}** deleted account(s) in this group."
+                "\nClean them by using `.zombies clean`")
         return await show.edit(del_status)
 
     # Here laying the sanity check
@@ -455,9 +453,9 @@ async def rm_deletedacc(show):
 
     # Well
     if not (admin or creator):
-        return await show.edit("`I am not an admin here!`")
+        return await show.edit(NO_ADMIN)
 
-    await show.edit("`Yeeting ded nibbas...`")
+    await show.edit("**Removing deleted accounts...**")
     del_u = 0
     del_a = 0
 
@@ -467,8 +465,7 @@ async def rm_deletedacc(show):
                 await show.client(
                     EditBannedRequest(show.chat_id, user.id, BANNED_RIGHTS))
             except ChatAdminRequiredError:
-                return await show.edit(
-                    "`I don't have ban rights in this group`")
+                return await show.edit(NO_PERM)
             except UserAdminInvalidError:
                 del_u -= 1
                 del_a += 1
@@ -477,11 +474,11 @@ async def rm_deletedacc(show):
             del_u += 1
 
     if del_u > 0:
-        del_status = f"Yeeted **{del_u}** ded nibba(s)"
+        del_status = f"Removed **{del_u}** deleted account(s)."
 
     if del_a > 0:
-        del_status = (f"Yeeted **{del_u}** ded nibba(s)"
-                      f"\n**{del_a}** deleted admin accounts are not removed")
+        del_status = (f"Removed **{del_u}** deleted account(s)."
+                      f"\n**{del_a}** deleted admin accounts are not removed.")
     await show.edit(del_status)
     await sleep(2)
     await show.delete()
@@ -490,7 +487,7 @@ async def rm_deletedacc(show):
         await show.client.send_message(
             BOTLOG_CHATID,
             "#CLEANUP\n"
-            f"Cleaned **{del_u}** deleted account(s)!"
+            f"Removed **{del_u}** deleted account(s)."
             f"\nCHAT: {show.chat.title}(`{show.chat_id}`)",
         )
 
