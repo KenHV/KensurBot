@@ -463,25 +463,22 @@ async def translateme(trans):
 
     if not message:
         return await trans.edit(
-            "`Give a text or reply to a message to translate!`")
+            "**Give some text or reply to a message to translate!**")
 
-    await trans.edit("`Processing...`")
+    await trans.edit("**Processing...**")
     translator = Translator()
     try:
         reply_text = translator.translate(deEmojify(message), dest=TRT_LANG)
     except ValueError:
-        return await trans.edit("Invalid destination language.")
+        return await trans.edit(
+            "**Invalid language selected, use **`.lang tts <language code>`**.**"
+        )
 
     source_lan = LANGUAGES[f"{reply_text.src.lower()}"]
     transl_lan = LANGUAGES[f"{reply_text.dest.lower()}"]
     reply_text = f"From **{source_lan.title()}**\nTo **{transl_lan.title()}:**\n\n{reply_text.text}"
 
     await trans.edit(reply_text)
-    if BOTLOG:
-        await trans.client.send_message(
-            BOTLOG_CHATID,
-            f"Translated some {source_lan.title()} stuff to {transl_lan.title()} just now.",
-        )
 
 
 @register(pattern=r"\.lang (trt|tts) (.*)", outgoing=True)
