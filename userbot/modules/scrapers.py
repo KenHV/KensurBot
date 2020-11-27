@@ -17,7 +17,7 @@ from urllib.parse import quote_plus
 import asyncurban
 from bs4 import BeautifulSoup
 from emoji import get_emoji_regexp
-from googletrans import LANGUAGES, Translator
+from google_trans_new import LANGUAGES, google_translator
 from gtts import gTTS
 from gtts.lang import tts_langs
 from requests import get
@@ -466,17 +466,21 @@ async def translateme(trans):
             "**Give some text or reply to a message to translate!**")
 
     await trans.edit("**Processing...**")
-    translator = Translator()
+    translator = google_translator()
     try:
-        reply_text = translator.translate(deEmojify(message), dest=TRT_LANG)
+        reply_text = translator.translate(deEmojify(message),
+                                          lang_tgt=TRT_LANG)
     except ValueError:
         return await trans.edit(
             "**Invalid language selected, use **`.lang tts <language code>`**.**"
         )
 
-    source_lan = LANGUAGES[f"{reply_text.src.lower()}"]
-    transl_lan = LANGUAGES[f"{reply_text.dest.lower()}"]
-    reply_text = f"From **{source_lan.title()}**\nTo **{transl_lan.title()}:**\n\n{reply_text.text}"
+    try:
+        source_lan = translator.detect(deEmojify(message))[1].title()
+    except:
+        source_lan = "(Google didn't provide this info)"
+
+    reply_text = f"From: **{source_lan}**\nTo: **{LANGUAGES.get(TRT_LANG).title()}**\n\n{reply_text}"
 
     await trans.edit(reply_text)
 

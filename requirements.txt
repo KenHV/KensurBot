@@ -12,7 +12,7 @@ google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 google_images_download
-googletrans
+google_trans_new
 gTTS
 gTTS-token
 hachoir
@@ -40,8 +40,8 @@ search-engine-parser
 speedtest-cli
 sqlalchemy
 telegraph
-telethon-session-sqlalchemy
 telethon
+telethon-session-sqlalchemy
 TgCrypto
 wikipedia
 youtube-dl
