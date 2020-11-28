@@ -382,6 +382,8 @@ async def unmoot(unmot):
             await unmot.edit("**Unmuted successfully!**")
         except UserIdInvalidError:
             return await unmot.edit("**Uh oh my unmute logic broke!**")
+        except UserAdminInvalidError:
+            pass
 
         if BOTLOG:
             await unmot.client.send_message(
