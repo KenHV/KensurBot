@@ -5,7 +5,7 @@
   "keywords": ["telegram", "userbot", "plugin", "modular", "productivity"],
   "repository": "https://github.com/KenHV/KensurBot",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02",
-  "success_url": "https://t.me/KenVerseChat",
+  "success_url": "https://t.me/KensurOT",
   "stack": "container",
   "env": {
     "ALIVE_NAME": {

@@ -27,7 +27,7 @@ I made this fork to cherry-pick some modules I needed. Eventually I started mess
 
 ## Updates and support
 
-Follow my [channel](https://t.me/KenVerse) for updates and join my [group](https://t.me/KenVerseChat) for support.
+Follow my [channel](https://t.me/KenVerse) for updates and join my [group](https://t.me/KensurOT) for support.
 
 ## Credits
 
