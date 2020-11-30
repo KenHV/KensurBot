@@ -72,12 +72,12 @@ async def killdabot(event):
 async def reedme(e):
     await e.edit(
         "Here's something for you to read:\n"
-        "\n[Setup Guide - Basic](https://telegra.ph/How-to-host-a-Telegram-Userbot-11-02)"
+        "\n[Setup Guide - Basic](https://kenharris.xyz/userbot.html)"
         "\n[Setup Guide - Google Drive](https://telegra.ph/How-To-Setup-Google-Drive-04-03)"
         "\n[Setup Guide - LastFM Module](https://telegra.ph/How-to-set-up-LastFM-module-for-Paperplane-userbot-11-02)"
         "\n[Video Tutorial - 576p](https://mega.nz/#!ErwCESbJ!1ZvYAKdTEfb6y1FnqqiLhHH9vZg4UB2QZNYL9fbQ9vs)"
         "\n[Video Tutorial - 1080p](https://mega.nz/#!x3JVhYwR!u7Uj0nvD8_CyyARrdKrFqlZEBFTnSVEiqts36HBMr-o)"
-        "\n[Special - Note](https://telegra.ph/Special-Note-11-02)")
+    )
 
 
 # Copyright (c) Gegham Zakaryan | 2019
