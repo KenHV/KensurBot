@@ -37,7 +37,7 @@ async def torrent(event):
         return await event.edit("`Error: No results found`")
 
     await event.edit("`Uploading results...`")
-    tsfileloc = f"{TEMP_DOWNLOAD_DIRECTORY}/{query}.txt"
+    tsfileloc = f"{TEMP_DOWNLOAD_DIRECTORY}{query}.txt"
     with open(tsfileloc, "w+", encoding="utf8") as out_file:
         out_file.write(str(listdata))
     caption = f"Torrents for:` {query}`"
