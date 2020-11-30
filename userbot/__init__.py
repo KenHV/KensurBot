@@ -71,10 +71,6 @@ PM_AUTO_BAN = sb(os.environ.get("PM_AUTO_BAN") or "False")
 HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME") or None
 HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY") or None
 
-# Github Credentials for updater and Gitupload.
-GIT_REPO_NAME = os.environ.get("GIT_REPO_NAME") or None
-GITHUB_ACCESS_TOKEN = os.environ.get("GITHUB_ACCESS_TOKEN") or None
-
 # Custom (forked) repo URL and BRANCH for updater.
 UPSTREAM_REPO_URL = (os.environ.get("UPSTREAM_REPO_URL")
                      or "https://github.com/KenHV/KensurBot.git")
@@ -89,9 +85,6 @@ DB_URI = os.environ.get("DATABASE_URL") or None
 
 # OCR API key
 OCR_SPACE_API_KEY = os.environ.get("OCR_SPACE_API_KEY") or None
-
-# Telegraph
-TELEGRAPH_SHORT_NAME = os.environ.get("TELEGRAPH_SHORT_NAME") or None
 
 # Default .alive name
 ALIVE_NAME = os.environ.get("ALIVE_NAME") or None

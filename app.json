@@ -9,30 +9,22 @@
   "stack": "container",
   "env": {
     "ALIVE_NAME": {
-      "description": "Set your name which will be displayed on .alive messages, etc.",
-      "required": true
+      "description": "Set your name which will be displayed on .alive messages, etc."
     },
     "API_KEY": {
-      "description": "Get this value from my.telegram.org.",
-      "required": true
+      "description": "Get this value from my.telegram.org."
     },
     "API_HASH": {
-      "description": "Get this value from my.telegram.org.",
-      "required": true
+      "description": "Get this value from my.telegram.org."
     },
     "STRING_SESSION": {
-      "description": "Get this value by running [python3 string_session.py] in Termux or local system.",
-      "required": true
+      "description": "Get this value by running [python3 string_session.py] in Termux or local system."
     },
     "HEROKU_API_KEY": {
-      "description": "Your Heroku API key, get it from 'https://dashboard.heroku.com/account'",
-      "value": "",
-      "required": true
+      "description": "Your Heroku API key, get it from 'https://dashboard.heroku.com/account'"
     },
     "HEROKU_APP_NAME": {
-      "description": "Add the Heroku app name here. It helps with userbot updates.",
-      "value": "",
-      "required": true
+      "description": "Add the Heroku app name here. It helps with userbot updates."
     },
     "UPSTREAM_REPO_URL": {
       "description": "In case you maintain a fork, add your repo URL here.",
@@ -67,18 +59,17 @@
     },
     "BOTLOG": {
       "description": "Incase you want to turn off logging, put this to false",
-      "value": "False"
+      "value": "True"
     },
     "BOTLOG_CHATID": {
-      "description": "ChatID of the Log group. Set it to '0' if BOTLOG = False and/or if LOGSPAMMER = False.",
-      "value": "0"
+      "description": "ChatID of the Log group. Make sure no one else is in this group except you."
     },
     "CONSOLE_LOGGER_VERBOSE": {
       "description": "If you need verbosity on the console logging",
       "value": "False"
     },
     "PM_AUTO_BAN": {
-      "description": "PM Auto-Ban Feature Switch. Also known as the 'bleep blop, this is a bot...' module.",
+      "description": "PMPermit module, let's you approve/disapprove PMs. Unapproved users will get blocked after their 5th message.",
       "value": "False"
     },
     "OCR_SPACE_API_KEY": {
@@ -134,21 +125,16 @@
       "required": false
     },
     "GENIUS_ACCESS_TOKEN": {
-      "description": "Client Access Token from https://genius.com/api-clients.",
+      "description": "Client Access Token from https://genius.com/api-clients, needed for lyrics module.",
       "required": false
     },
     "WEATHER_DEFCITY": {
       "description": "Set the default city for the userbot's weather module.",
       "required": false
     },
-    "TELEGRAPH_SHORT_NAME": {
-      "description": "For telegraph module",
-      "value": "0",
-      "required": true
-    },
     "LOGSPAMMER": {
-      "description": "Set this to True in case you want the error logs to be stored in the userbot log group, instead of spitting out the file in the current chat, requires a valid BOTLOG_CHATID to be set.",
-      "value": "False"
+      "description": "Despite the name, it avoids sending logs (if there's a crash) everywhere and stores it in your botlog group instead.",
+      "value": "True"
     },
     "USR_TOKEN_UPTOBOX": {
       "description": "API for direct link uptobox, https://docs.uptobox.com/#how-to-find-my-api-token",
