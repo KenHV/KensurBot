@@ -50,7 +50,7 @@ async def download(target_file):
         display_message = None
         while not downloader.isFinished():
             status = downloader.get_status().capitalize()
-            total_length = downloader.filesize if downloader.filesize else None
+            total_length = downloader.filesize or None
             downloaded = downloader.get_dl_size()
             now = time.time()
             diff = now - c_time

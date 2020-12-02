@@ -648,16 +648,14 @@ class googleimagesdownload:
             item, item_name, end_content = self.get_next_tab(page)
             if item == "no_tabs":
                 break
-            else:
-                if len(item_name) > 100 or item_name == "background-color":
-                    break
-                else:
-                    # Append all the links in the list named 'Links'
-                    tabs[item_name] = item
-                    # Timer could be used to slow down the request for image
-                    # downloads
-                    time.sleep(0.1)
-                    page = page[end_content:]
+            if len(item_name) > 100 or item_name == "background-color":
+                break
+            # Append all the links in the list named 'Links'
+            tabs[item_name] = item
+            # Timer could be used to slow down the request for image
+            # downloads
+            time.sleep(0.1)
+            page = page[end_content:]
         return tabs
 
     # Format the object in readable format
@@ -716,9 +714,8 @@ class googleimagesdownload:
             image_name = image_name + ".jpg"
 
         try:
-            output_file = open(file_name, "wb")
-            output_file.write(data)
-            output_file.close()
+            with open(file_name, "wb") as output_file:
+                output_file.write(data)
         except IOError as e:
             raise e
         except OSError as e:
@@ -1078,14 +1075,12 @@ class googleimagesdownload:
                         "/" + return_image_name)
 
                 try:
-                    output_file = open(path, "wb")
-                    output_file.write(data)
-                    output_file.close()
+                    with open(path, "wb") as output_file:
+                        output_file.write(data)
                     if save_source:
                         list_path = main_directory + "/" + save_source + ".txt"
-                        list_file = open(list_path, "a")
-                        list_file.write(path + "\t" + img_src + "\n")
-                        list_file.close()
+                        with open(list_path, "a") as list_file:
+                            list_file.write(path + "\t" + img_src + "\n")
                 except OSError as e:
                     download_status = "fail"
                     download_message = (
@@ -1239,14 +1234,12 @@ class googleimagesdownload:
                             str(count) + "." + image_name)
 
                 try:
-                    output_file = open(path, "wb")
-                    output_file.write(data)
-                    output_file.close()
+                    with open(path, "wb") as output_file:
+                        output_file.write(data)
                     if save_source:
                         list_path = main_directory + "/" + save_source + ".txt"
-                        list_file = open(list_path, "a")
-                        list_file.write(path + "\t" + img_src + "\n")
-                        list_file.close()
+                        with open(list_path, "a") as list_file:
+                            list_file.write(path + "\t" + img_src + "\n")
                     absolute_path = os.path.abspath(path)
                 except OSError as e:
                     download_status = "fail"
@@ -1656,11 +1649,9 @@ class googleimagesdownload:
                                 os.makedirs("logs")
                         except OSError as e:
                             print(e)
-                        json_file = open("logs/" + search_keyword[i] + ".json",
-                                         "w")
-                        json.dump(items, json_file, indent=4, sort_keys=True)
-                        json_file.close()
-
+                        with open("logs/" + search_keyword[i] + ".json",
+                                         "w") as json_file:
+                            json.dump(items, json_file, indent=4, sort_keys=True)
                     # Related images
                     if arguments["related_images"]:
                         print(

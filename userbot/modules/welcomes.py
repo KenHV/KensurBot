@@ -29,7 +29,7 @@ async def welcome_to_chat(event):
             chat = await event.get_chat()
             me = await event.client.get_me()
 
-            title = chat.title if chat.title else "this chat"
+            title = chat.title or "this chat"
             participants = await event.client.get_participants(chat)
             count = len(participants)
             mention = "[{}](tg://user?id={})".format(a_user.first_name,
