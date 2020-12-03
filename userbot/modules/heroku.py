@@ -29,12 +29,11 @@ else:
 async def variable(var):
     exe = var.pattern_match.group(1)
     if app is None:
-        await var.edit("`[HEROKU]"
-                       "\nPlease setup your`  **HEROKU_APP_NAME**.")
+        await var.edit("**Please setup your** `HEROKU_APP_NAME`**.**")
         return False
+    await var.edit("**Processing...**")
+    variable = var.pattern_match.group(2)
     if exe == "get":
-        await var.edit("`Getting information...`")
-        variable = var.pattern_match.group(2)
         if variable != "":
             if variable in heroku_var:
                 if BOTLOG:
@@ -44,13 +43,13 @@ async def variable(var):
                         "**ConfigVar**:\n"
                         f"`{variable}` = `{heroku_var[variable]}`\n",
                     )
-                    await var.edit("`Received to BOTLOG_CHATID...`")
+                    await var.edit("**Check your botlog group.**")
                     return True
                 else:
-                    await var.edit("`Please set BOTLOG to True...`")
+                    await var.edit("**Enable** `BOTLOG`**!**")
                     return False
             else:
-                await var.edit("`Information don't exists...`")
+                await var.edit("**Error: ConfigVar not found.**")
                 return True
         else:
             configvars = heroku_var.to_dict()
@@ -62,16 +61,14 @@ async def variable(var):
                     BOTLOG_CHATID, "#CONFIGVARS\n\n"
                     "**ConfigVars**:\n"
                     f"{msg}")
-                await var.edit("`Received to BOTLOG_CHATID...`")
+                await var.edit("**Check your botlog group.**")
                 return True
             else:
-                await var.edit("`Please set BOTLOG to True...`")
+                await var.edit("**Enable** `BOTLOG`**!**")
                 return False
     elif exe == "del":
-        await var.edit("`Deleting information...`")
-        variable = var.pattern_match.group(2)
         if variable == "":
-            await var.edit("`Specify ConfigVars you want to del...`")
+            await var.edit("**Error: Give me a ConfigVar to delete!**")
             return False
         if variable in heroku_var:
             if BOTLOG:
@@ -81,10 +78,10 @@ async def variable(var):
                     "**Delete ConfigVar**:\n"
                     f"`{variable}`",
                 )
-            await var.edit("`Information deleted...`")
+            await var.edit("**Deleted ConfigVar.**")
             del heroku_var[variable]
         else:
-            await var.edit("`Information don't exists...`")
+            await var.edit("**Error: ConfigVar not found.**")
             return True
 
 
@@ -101,7 +98,7 @@ async def set_var(var):
                 "**Change ConfigVar**:\n"
                 f"`{variable}` = `{value}`",
             )
-        await var.edit("`Information sets...`")
+        await var.edit("**Successfully set ConfigVar.**")
     else:
         if BOTLOG:
             await var.client.send_message(
@@ -110,7 +107,7 @@ async def set_var(var):
                 "**Add ConfigVar**:\n"
                 f"`{variable}` = `{value}`",
             )
-        await var.edit("`Information added...`")
+        await var.edit("**Successfully set ConfigVar.**")
     heroku_var[variable] = value
 
 
@@ -119,12 +116,12 @@ async def set_var(var):
 """
 
 
-@register(outgoing=True, pattern=r"^\.usage(?: |$)")
+@register(outgoing=True, pattern=r"^\.usage$")
 async def dyno_usage(dyno):
     """
         Get your account Dyno Usage
     """
-    await dyno.edit("`Getting Information...`")
+    await dyno.edit("**Processing...**")
     user_id = Heroku.account().id
     path = "/accounts/" + user_id + "/actions/get-quota"
     async with aiohttp.ClientSession() as session:
@@ -141,7 +138,7 @@ async def dyno_usage(dyno):
                 await dyno.client.send_message(dyno.chat_id,
                                                f"`{r.reason}`",
                                                reply_to=dyno.id)
-                await dyno.edit("`Can't get information...`")
+                await dyno.edit("**Error: Heroku is being Heroku.**")
                 return False
             result = await r.json()
             quota = result["account_quota"]
@@ -167,28 +164,25 @@ async def dyno_usage(dyno):
             AppHours = math.floor(AppQuotaUsed / 60)
             AppMinutes = math.floor(AppQuotaUsed % 60)
 
-            await dyno.edit("**Dyno Usage**:\n\n"
-                            f"-> `Dyno usage for`  **{app.name}**:\n"
-                            f"     •  **{AppHours} hour(s), "
-                            f"{AppMinutes} minute(s)  -  {AppPercentage}%**"
-                            "\n\n"
-                            "-> `Dyno hours quota remaining this month`:\n"
-                            f"     •  **{hours} hour(s), {minutes} minute(s)  "
-                            f"-  {percentage}%**")
+            await dyno.edit(
+                "**Heroku dyno hour stats for current month**\n\n"
+                f"**Usage ({app.name}):** {AppHours} hour(s), {AppMinutes} minute(s) - {AppPercentage}%\n"
+                f"**Remaining (total):** {hours} hour(s), {minutes} minute(s) - {percentage}%"
+            )
             return True
 
 
 CMD_HELP.update({
     "heroku":
     ">.`usage`"
-    "\nUsage: Check your heroku dyno hours remaining"
-    "\n\n>`.set var <NEW VAR> <VALUE>`"
-    "\nUsage: add new variable or update existing value variable"
-    "\n!!! WARNING !!!, after setting a variable the bot will restarted"
-    "\n\n>`.get var or .get var <VAR>`"
-    "\nUsage: get your existing varibles, use it only on your private group!"
-    "\nThis returns all of your private information, please be caution..."
-    "\n\n>`.del var <VAR>`"
-    "\nUsage: delete existing variable"
-    "\n!!! WARNING !!!, after deleting variable the bot will restarted"
+    "\nUsage: Shows Heroku dyno hour stats."
+    "\n\n>`.set var <configvar> <value>`"
+    "\nUsage: Adds new ConfigVar or updates existing ConfigVar."
+    "\nBot will restart after using this command."
+    "\n\n>`.get var <configvar>[optional]`"
+    "\nUsage: Shows current values for specified or all ConfigVars."
+    "\nMake sure to run the command on a private group if you don't have Botlog set up."
+    "\n\n>`.del var <configvar>`"
+    "\nUsage: Removes specified ConfigVar."
+    "\nBot will restart after using this command."
 })
