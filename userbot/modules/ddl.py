@@ -15,13 +15,11 @@ async def ddl(event):
     if event.fwd_from:
         return
     if not event.reply_to_msg_id:
-        await event.edit("`Sending information..`")
-        return
+        return await event.edit("**Reply to a message containing media!**")
     reply_message = await event.get_reply_message()
     if not reply_message.media:
-        await event.edit(r"`¯\_ (ツ) _/¯`")
-        return
-    await event.edit("```Generating direct link..```")
+        return await event.edit("**Reply to a message containing media!**")
+    await event.edit("**Generating direct link...**")
     try:
         async with bot.conversation("@jnckbot") as conv:
             chat = "@jnckbot"
@@ -32,11 +30,11 @@ async def ddl(event):
                 response = await response
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await event.reply("```Unblock @jnckbot plox```")
+                await event.reply("**Unblock @jnckbot!**")
                 return
             await event.delete()
     except TimeoutError:
-        return await event.edit("**Error:** @jnckbot **is not responding.**")
+        return await event.edit("**Error: @jnckbot is not responding.**")
     await event.client.send_message(event.chat_id,
                                     response.message,
                                     reply_to=event.message.reply_to_msg_id)
