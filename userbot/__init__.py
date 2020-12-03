@@ -87,7 +87,7 @@ DB_URI = os.environ.get("DATABASE_URL") or None
 OCR_SPACE_API_KEY = os.environ.get("OCR_SPACE_API_KEY") or None
 
 # Default .alive name
-ALIVE_NAME = os.environ.get("ALIVE_NAME") or None
+ALIVE_NAME = str(os.environ.get("ALIVE_NAME")) or None
 
 # remove.bg API key
 REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY") or None
