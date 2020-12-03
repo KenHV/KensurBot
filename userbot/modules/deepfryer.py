@@ -9,39 +9,41 @@ from userbot.events import register
 
 @register(outgoing=True, pattern=r"^\.df(:? |$)([1-8])?")
 async def _(fry):
-    await fry.edit("`Sending information...`")
+    await fry.edit("**Processing...**")
     level = fry.pattern_match.group(2)
     if fry.fwd_from:
         return
+
     if not fry.reply_to_msg_id:
-        await fry.edit("`Reply to any user message photo...`")
-        return
+        return await fry.edit("**Reply to a message containing an image!**")
+
     reply_message = await fry.get_reply_message()
+
     if not reply_message.media:
-        await fry.edit("`No image found to fry...`")
-        return
-    if reply_message.sender.bot:
-        await fry.edit("`Reply to actual user...`")
-        return
+        return await fry.edit("**Reply to a message containing an image!**")
+
     chat = "@image_deepfrybot"
     message_id_to_reply = fry.message.reply_to_msg_id
     try:
         async with fry.client.conversation(chat) as conv:
             try:
                 msg = await conv.send_message(reply_message)
+
                 if level:
                     m = f"/deepfry {level}"
                     msg_level = await conv.send_message(m, reply_to=msg.id)
                     r = await conv.get_response()
+
                 response = await conv.get_response()
                 """ - don't spam notif - """
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await fry.reply("`Please unblock` @image_deepfrybot`...`")
-                return
+                return await fry.reply("**Please unblock @image_deepfrybot.**")
+
             if response.text.startswith("Forward"):
                 await fry.edit(
-                    "`Please disable your forward privacy setting...`")
+                    "**Error: Whitelist @image_deepfrybot in your forward privacy settings.**"
+                )
             else:
                 downloaded_file_name = await fry.client.download_media(
                     response.media, TEMP_DOWNLOAD_DIRECTORY)
