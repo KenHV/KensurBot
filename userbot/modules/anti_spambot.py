@@ -138,19 +138,19 @@ async def ANTI_SPAMBOTS(welcm):
                     if ANTI_SPAMBOT_SHOUT:
                         await welcm.reply(
                             "@admins\n"
-                            "`ANTI SPAMBOT DETECTOR!\n"
-                            "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`"
-                            f"REASON: {reason}")
+                            "**Anti spambot detector!\n"
+                            "This user matches my algorithms as a spambot!**"
+                            f"Reason: {reason}")
                         kicked = False
                         reported = True
                 else:
                     try:
 
                         await welcm.reply(
-                            "`Potential Spambot Detected !!`\n"
-                            f"`REASON:` {reason}\n"
-                            "Kicking away for now, will log the ID for further purposes.\n"
-                            f"`USER:` [{check_user.first_name}](tg://user?id={check_user.id})"
+                            "**Potential spambot detected!**\n"
+                            f"**Reason:** {reason}\n"
+                            "Kicking away for now, will log the ID.\n"
+                            f"**User:** [{check_user.first_name}](tg://user?id={check_user.id})"
                         )
 
                         await welcm.client.kick_participant(
@@ -162,9 +162,9 @@ async def ANTI_SPAMBOTS(welcm):
                         if ANTI_SPAMBOT_SHOUT:
                             await welcm.reply(
                                 "@admins\n"
-                                "`ANTI SPAMBOT DETECTOR!\n"
-                                "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`"
-                                f"REASON: {reason}")
+                                "**Anti spambot detector!\n"
+                                "This user matches my algorithms as a spambot!**"
+                                f"Reason: {reason}")
                             kicked = False
                             reported = True
 
