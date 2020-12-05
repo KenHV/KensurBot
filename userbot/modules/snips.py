@@ -47,7 +47,7 @@ async def on_snip_save(event):
     try:
         from userbot.modules.sql_helper.snips_sql import add_snip
     except AttributeError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
     keyword = event.pattern_match.group(1)
     string = event.text.partition(keyword)[2]
     msg = await event.get_reply_message()
@@ -58,7 +58,7 @@ async def on_snip_save(event):
                 BOTLOG_CHATID,
                 f"#SNIP\nKEYWORD: {keyword}"
                 "\n\nThe following message is saved as the data for the snip, "
-                "please do NOT delete it !!",
+                "please do NOT delete it!",
             )
             msg_o = await event.client.forward_messages(
                 entity=BOTLOG_CHATID,
@@ -68,12 +68,12 @@ async def on_snip_save(event):
             msg_id = msg_o.id
         else:
             return await event.edit(
-                "`Saving snips with media requires the BOTLOG_CHATID to be set.`"
+                "**Saving snips with media requires the BOTLOG_CHATID to be set.**"
             )
     elif event.reply_to_msg_id and not string:
         rep_msg = await event.get_reply_message()
         string = rep_msg.text
-    success = "`Snip {} successfully. Use` **${}** `anywhere to get it`"
+    success = "**Snip {} successfully. Use** `${}` **anywhere to get it**"
     if add_snip(keyword, string, msg_id) is False:
         await event.edit(success.format("updated", keyword))
     else:
@@ -86,13 +86,13 @@ async def on_snip_list(event):
     try:
         from userbot.modules.sql_helper.snips_sql import get_snips
     except AttributeError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
 
-    message = "`No snips available right now.`"
+    message = "**No snips available right now.**"
     all_snips = get_snips()
     for a_snip in all_snips:
-        if message == "`No snips available right now.`":
-            message = "Available snips:\n"
+        if message == "**No snips available right now.**":
+            message = "**Available snips:**\n\n"
         message += f"`${a_snip.snip}`\n"
     await event.edit(message)
 
@@ -103,12 +103,12 @@ async def on_snip_delete(event):
     try:
         from userbot.modules.sql_helper.snips_sql import remove_snip
     except AttributeError:
-        return await event.edit("`Running on Non-SQL mode!`")
+        return await event.edit("**Running on Non-SQL mode!**")
     name = event.pattern_match.group(1)
     if remove_snip(name) is True:
-        await event.edit(f"`Successfully deleted snip:` **{name}**")
+        await event.edit(f"**Successfully deleted snip:** `{name}`")
     else:
-        await event.edit(f"`Couldn't find snip:` **{name}**")
+        await event.edit(f"**Couldn't find snip:** `{name}`")
 
 
 CMD_HELP.update({

@@ -21,35 +21,36 @@ async def kbg(remob):
     """ For .rbg command, Remove Image Background. """
     if REM_BG_API_KEY is None:
         return await remob.edit(
-            "`Error: Remove.BG API key missing! Add it to environment vars or config.env.`"
+            "**Error: Remove.BG API key missing! Add it to environment vars or config.env.**"
         )
     input_str = remob.pattern_match.group(1)
     message_id = remob.message.id
     if remob.reply_to_msg_id:
         message_id = remob.reply_to_msg_id
         reply_message = await remob.get_reply_message()
-        await remob.edit("`Processing..`")
+        await remob.edit("**Processing...**")
         try:
             if isinstance(
                     reply_message.media, MessageMediaPhoto
             ) or "image" in reply_message.media.document.mime_type.split("/"):
                 downloaded_file_name = await remob.client.download_media(
                     reply_message, TEMP_DOWNLOAD_DIRECTORY)
-                await remob.edit("`Removing background from this image..`")
+                await remob.edit("**Removing background from this image...**")
                 output_file_name = await ReTrieveFile(downloaded_file_name)
                 os.remove(downloaded_file_name)
             else:
-                await remob.edit("`How do I remove the background from this ?`"
-                                 )
+                await remob.edit(
+                    "**How do I remove the background from this?**")
         except Exception as e:
             return await remob.edit(str(e))
     elif input_str:
         await remob.edit(
-            f"`Removing background from online image hosted at`\n{input_str}")
+            f"**Removing background from online image hosted at**\n{input_str}"
+        )
         output_file_name = await ReTrieveURL(input_str)
     else:
         return await remob.edit(
-            "`I need something to remove the background from.`")
+            "**I need something to remove the background from.**")
     contentType = output_file_name.headers.get("content-type")
     if "image" in contentType:
         with io.BytesIO(output_file_name.content) as remove_bg_image:

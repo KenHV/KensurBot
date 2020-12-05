@@ -22,7 +22,8 @@ from userbot.events import register
 async def who(event):
 
     await event.edit(
-        "`Sit tight while I steal some data from *Global Network Zone*...`")
+        "**Sit tight while I steal some data from the Global Network Zone...**"
+    )
 
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
@@ -30,13 +31,13 @@ async def who(event):
     replied_user = await get_user(event)
     if replied_user is None:
         return await event.edit(
-            "`Well that's an anonymous admin, good luck figuring out which one!`"
+            "**Well that's an anonymous admin, good luck figuring out which one!**"
         )
 
     try:
         photo, caption = await fetch_info(replied_user, event)
     except AttributeError:
-        return await event.edit("`Could not fetch info of that user.`")
+        return await event.edit("**Couldn't fetch the info of this user.**")
 
     message_id_to_reply = event.message.reply_to_msg_id
 

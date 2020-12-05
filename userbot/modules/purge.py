@@ -30,12 +30,12 @@ async def fastpurger(purg):
                 await purg.client.delete_messages(chat, msgs)
                 msgs = []
     else:
-        return await purg.edit("`I need a mesasge to start purging from.`")
+        return await purg.edit("**I need a mesasge to start purging from.**")
 
     if msgs:
         await purg.client.delete_messages(chat, msgs)
     done = await purg.client.send_message(
-        purg.chat_id, "`Fast purge complete!`"
+        purg.chat_id, "**Fast purge complete!**"
         f"\nPurged {str(count)} messages")
     """
     if BOTLOG:
@@ -63,7 +63,7 @@ async def purgeme(delme):
 
     smsg = await delme.client.send_message(
         delme.chat_id,
-        "`Purge complete!` Purged " + str(count) + " messages.",
+        "**Purge complete!** Purged " + str(count) + " messages.",
     )
     """
     if BOTLOG:
@@ -90,7 +90,7 @@ async def delete_it(delme):
                     BOTLOG_CHATID, "Deletion of message was successful")
             """
         except rpcbaseerrors.BadRequestError:
-            await delme.edit("Well, I can't delete a message")
+            await delme.edit("**Well, I can't delete a message.**")
             """
             if BOTLOG:
                 await delme.client.send_message(
@@ -125,10 +125,9 @@ async def selfdestruct(destroy):
     message = destroy.text
     counter = int(message[4:6])
     text = str(destroy.text[6:])
-    await destroy.delete()
-    smsg = await destroy.client.send_message(destroy.chat_id, text)
+    await destroy.edit(text)
     await sleep(counter)
-    await smsg.delete()
+    await destroy.delete()
     """
     if BOTLOG:
         await destroy.client.send_message(BOTLOG_CHATID,
@@ -152,5 +151,5 @@ CMD_HELP.update({
     "sd":
     ">`.sd <x> <message>`"
     "\nUsage: Creates a message that selfdestructs in x seconds."
-    "\nKeep the seconds under 100 since it puts your bot to sleep.",
+    "\n<x> should be a two digit value, 3rd digit and further digits will be taken as <message>.",
 })

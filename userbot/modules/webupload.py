@@ -15,7 +15,7 @@ from userbot.events import register
     r"^\.web ?(.+?|) (anonfiles|transfer|filebin|anonymousfiles|megaupload|bayfiles|letsupload|0x0)",
 )
 async def _(event):
-    await event.edit("`Processing ...`")
+    await event.edit("**Processing...**")
     input_str = event.pattern_match.group(1)
     selected_transfer = event.pattern_match.group(2)
     if input_str:
@@ -47,7 +47,7 @@ async def _(event):
         selected_one = CMD_WEB[selected_transfer].format(
             full_file_path=file_name, bare_local_name=filename)
     except KeyError:
-        await event.edit("`Invalid selected Transfer.`")
+        await event.edit("**Invalid selction.**")
         return
     cmd = selected_one
     # start the subprocess $SHELL

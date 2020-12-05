@@ -139,7 +139,7 @@ async def amireallyaliveuser(username):
         newuser = message[8:]
         global DEFAULTUSER
         DEFAULTUSER = newuser
-    await username.edit(f"**Successfully changed user to** `{newuser}` **!**")
+    await username.edit(f"**Successfully changed user to** `{newuser}`**!**")
 
 
 @register(outgoing=True, pattern=r"^\.resetalive$")
@@ -147,7 +147,7 @@ async def amireallyalivereset(ureset):
     """ For .resetalive command, reset the username in the .alive command. """
     global DEFAULTUSER
     DEFAULTUSER = str(ALIVE_NAME) if ALIVE_NAME else uname().node
-    await ureset.edit("`" "Successfully reset user for alive!" "`")
+    await ureset.edit("**Successfully reset user for alive!**")
 
 
 CMD_HELP.update({

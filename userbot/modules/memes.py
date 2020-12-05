@@ -666,7 +666,7 @@ async def who(event):
 
     except BaseException:
         await event.edit(
-            "`Can't slap this person, need to fetch some sticks and stones !!`"
+            "**Can't slap this person, need to fetch some sticks and stones!**"
         )
 
 
@@ -785,7 +785,7 @@ async def stretch(stret):
     elif textx:
         message = textx.text
     else:
-        await stret.edit("`GiiiiiiiB sooooooomeeeeeee teeeeeeext!`")
+        await stret.edit("**Giiiiiiib sooooooomeeeeeee teeeeeeext!**")
         return
 
     count = randint(3, 10)
@@ -916,7 +916,7 @@ async def spongemocktext(mock):
     elif textx:
         message = textx.text
     else:
-        await mock.edit("`gIvE sOMEtHInG tO MoCk!`")
+        await mock.edit("**gIvE sOMEtHInG tO MoCk!**")
         return
 
     for charac in message:
@@ -939,7 +939,7 @@ async def claptext(memereview):
     elif textx:
         message = textx.text
     else:
-        await memereview.edit("`Hah, I don't clap pointlessly!`")
+        await memereview.edit("**Hah, I don't clap pointlessly!**")
         return
     reply_text = "👏 "
     reply_text += message.replace(" ", " 👏 ")
@@ -1025,7 +1025,7 @@ async def scam(event):
         scam_action = str(args[0]).lower()
         scam_time = int(args[1])
     else:
-        await event.edit("`Invalid Syntax !!`")
+        await event.edit("**Invalid syntax!**")
         return
     try:
         if scam_time > 0:
@@ -1046,7 +1046,7 @@ async def typewriter(typew):
     elif textx:
         message = textx.text
     else:
-        await typew.edit("`Give a text to type!`")
+        await typew.edit("**Give text to type!**")
         return
     sleep_time = 0.03
     typing_symbol = "|"

@@ -15,7 +15,7 @@ async def _(event):
         return
     chat = "@SpotifyNowBot"
     now = f"/now"
-    await event.edit("`Processing...`")
+    await event.edit("**Processing...**")
     try:
         async with event.client.conversation(chat) as conv:
             try:
@@ -24,11 +24,11 @@ async def _(event):
                 """ - don't spam notif - """
                 await bot.send_read_acknowledge(conv.chat_id)
             except YouBlockedUserError:
-                await event.reply("`Please unblock` @SpotifyNowBot`...`")
+                await event.reply("**Please unblock** @SpotifyNowBot**.**")
                 return
             if response.text.startswith("You're"):
                 await event.edit(
-                    "`You're not listening to anything on Spotify at the moment`"
+                    "**You're not listening to anything on Spotify at the moment.**"
                 )
                 return
             else:

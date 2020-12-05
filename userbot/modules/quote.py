@@ -14,12 +14,12 @@ async def _(event):
     if event.fwd_from:
         return
     if not event.reply_to_msg_id:
-        return await event.edit("`Reply to a text message.`")
+        return await event.edit("**Reply to a text message.**")
     reply_message = await event.get_reply_message()
     if not reply_message.text:
-        return await event.edit("`Reply to a text message.`")
+        return await event.edit("**Reply to a text message.**")
     chat = "@QuotLyBot"
-    await event.edit("`Processing...`")
+    await event.edit("**Processing...**")
 
     try:
         async with bot.conversation(chat) as conv:
@@ -32,18 +32,18 @@ async def _(event):
 
             except YouBlockedUserError:
                 return await event.reply(
-                    "`Please unblock @QuotLyBot and try again`")
+                    "**Please unblock @QuotLyBot and try again**")
 
             if response.text.startswith("Hi!"):
                 await event.edit(
-                    "`Can you kindly disable your forward privacy settings for good?`"
+                    "**Can you kindly disable your forward privacy settings for good?**"
                 )
             else:
                 await event.delete()
                 await bot.forward_messages(event.chat_id, response.message)
 
     except TimeoutError:
-        return await event.edit("`Error: `@QuotLyBot` is not responding.`")
+        return await event.edit("**Error: **@QuotLyBot** is not responding.**")
 
 
 CMD_HELP.update({

@@ -68,9 +68,9 @@ async def locks(event):
         what = "everything"
     else:
         if not input_str:
-            return await event.edit("`I can't lock nothing !!`")
+            return await event.edit("**I can't lock nothing!**")
         else:
-            return await event.edit(f"`Invalid lock type:` {input_str}")
+            return await event.edit(f"**Invalid lock type:** `{input_str}`")
 
     lock_rights = ChatBannedRights(
         until_date=None,
@@ -89,10 +89,10 @@ async def locks(event):
         await event.client(
             EditChatDefaultBannedRightsRequest(peer=peer_id,
                                                banned_rights=lock_rights))
-        await event.edit(f"`Locked {what} for this chat !!`")
+        await event.edit(f"**Locked {what} for this chat!**")
     except BaseException as e:
         return await event.edit(
-            f"`Do I have proper rights for that ??`\n**Error:** {str(e)}")
+            f"**Do I have proper rights for that ??**\nError: `{str(e)}`")
 
 
 @register(outgoing=True, pattern=r"^\.unlock ?(.*)")
@@ -153,9 +153,9 @@ async def rem_locks(event):
         what = "everything"
     else:
         if not input_str:
-            return await event.edit("`I can't unlock nothing !!`")
+            return await event.edit("**I can't unlock nothing!**")
         else:
-            return await event.edit(f"`Invalid unlock type:` {input_str}")
+            return await event.edit(f"**Invalid unlock type:** `{input_str}`")
 
     unlock_rights = ChatBannedRights(
         until_date=None,
@@ -174,10 +174,10 @@ async def rem_locks(event):
         await event.client(
             EditChatDefaultBannedRightsRequest(peer=peer_id,
                                                banned_rights=unlock_rights))
-        await event.edit(f"`Unlocked {what} for this chat !!`")
+        await event.edit(f"**Unlocked {what} for this chat!**")
     except BaseException as e:
         return await event.edit(
-            f"`Do I have proper rights for that ??`\n**Error:** {str(e)}")
+            f"**Do I have proper rights for that ??**\nError: `{str(e)}`")
 
 
 CMD_HELP.update({
