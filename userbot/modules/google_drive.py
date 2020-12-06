@@ -549,7 +549,8 @@ async def create_dir(service, folder_name):
         'mimeType': 'application/vnd.google-apps.folder',
     }
     try:
-        pass
+        if parent_Id is not None:
+            pass
     except NameError:
         """ - Fallback to G_DRIVE_FOLDER_ID else root dir - """
         if G_DRIVE_FOLDER_ID is not None:
@@ -575,7 +576,8 @@ async def upload(gdrive, service, file_path, file_name, mimeType):
         "mimeType": mimeType,
     }
     try:
-        pass
+        if parent_Id is not None:
+            pass
     except NameError:
         """ - Fallback to G_DRIVE_FOLDER_ID else root dir - """
         if G_DRIVE_FOLDER_ID is not None:
@@ -659,7 +661,8 @@ async def task_directory(gdrive, service, folder_path):
 async def reset_parentId():
     global parent_Id
     try:
-        pass
+        if parent_Id is not None:
+            pass
     except NameError:
         if G_DRIVE_FOLDER_ID is not None:
             parent_Id = G_DRIVE_FOLDER_ID
@@ -782,7 +785,8 @@ async def google_drive_managers(gdrive):
             'mimeType': 'application/vnd.google-apps.folder',
         }
         try:
-            pass
+            if parent_Id is not None:
+                pass
         except NameError:
             """ - Fallback to G_DRIVE_FOLDER_ID else to root dir - """
             if G_DRIVE_FOLDER_ID is not None:
