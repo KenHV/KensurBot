@@ -15,46 +15,37 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ - ProjectBish Google Drive managers - """
 
+import asyncio
+import base64
 import io
+import json
+import logging
+import math
 import os
 import pickle
-import base64
-import json
-import asyncio
-import math
-import time
 import re
-import requests
-import logging
-
-import userbot.modules.sql_helper.google_drive_sql as helper
-
-from bs4 import BeautifulSoup
-from os.path import isfile, isdir, join, getctime
+import time
 from mimetypes import guess_type
+from os.path import getctime, isdir, isfile, join
 
-from telethon import events
-
+import requests
+from bs4 import BeautifulSoup
+from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from telethon import events
 
-from userbot import (
-    G_DRIVE_DATA,
-    G_DRIVE_CLIENT_ID,
-    G_DRIVE_CLIENT_SECRET,
-    G_DRIVE_FOLDER_ID,
-    BOTLOG_CHATID,
-    TEMP_DOWNLOAD_DIRECTORY,
-    CMD_HELP,
-    LOGS,
-)
+import userbot.modules.sql_helper.google_drive_sql as helper
+from userbot import (BOTLOG_CHATID, CMD_HELP, G_DRIVE_CLIENT_ID,
+                     G_DRIVE_CLIENT_SECRET, G_DRIVE_DATA, G_DRIVE_FOLDER_ID,
+                     LOGS, TEMP_DOWNLOAD_DIRECTORY)
 from userbot.events import register
-from userbot.utils import progress, humanbytes, time_formatter, human_to_bytes
-from userbot.utils.exceptions import CancelProcess
 from userbot.modules.aria import aria2, check_metadata
+from userbot.utils import human_to_bytes, humanbytes, progress, time_formatter
+from userbot.utils.exceptions import CancelProcess
+
 # =========================================================== #
 #                          STATIC                             #
 # =========================================================== #
