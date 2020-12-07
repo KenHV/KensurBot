@@ -748,7 +748,9 @@ async def lists(gdrive):
     if service is False:
         return False
     message = ""
-    fields = "nextPageToken, files(name, id, " "mimeType, webViewLink, webContentLink)"
+    fields = (
+        "nextPageToken, files(name, size, id, " "mimeType, webViewLink, webContentLink)"
+    )
     page_token = None
     result = []
     while True:
@@ -778,12 +780,15 @@ async def lists(gdrive):
                 break
 
             file_name = files.get("name")
+            file_size = files.get("size", 0)
             if files.get("mimeType") == "application/vnd.google-apps.folder":
                 link = files.get("webViewLink")
                 message += f"📁️ • [{file_name}]({link})\n"
             else:
                 link = files.get("webContentLink")
-                message += f"📄️ • [{file_name}]({link})\n"
+                message += (
+                    f"📄️ • [{file_name}]({link}) (__{humanbytes(int(file_size))}__)\n"
+                )
             result.append(files)
         if len(result) >= page_size:
             break
