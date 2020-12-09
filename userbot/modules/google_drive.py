@@ -887,6 +887,21 @@ async def google_drive_managers(gdrive):
             except IndexError:
                 """ - If failed assumming value is folderId/fileId - """
                 f_id = name_or_id
+                if "http://" in name_or_id or "https://" in name_or_id:
+                    if "uc?id=" in name_or_id:
+                        f_id = name_or_id.split("uc?id=")[1]
+                        f_id = re.split("[? &]", f_id)[0]
+                    elif "folders/" in name_or_id:
+                        f_id = name_or_id.split("folders/")[1]
+                        f_id = re.split("[? &]", f_id)[0]
+                    elif "folders/" in name_or_id:
+                        f_id = name_or_id.split("folders/")[1]
+                        f_id = re.split("[? &]", f_id)[0]
+                    elif "/view" in name_or_id:
+                        f_id = name_or_id.split("/")[-2]
+                    elif "open?id=" in name_or_id:
+                        f_id = name_or_id.split("open?id=")[1]
+                        f_id = re.split("[? &]", f_id)[0]
                 try:
                     f = await get_information(service, f_id)
                 except Exception as e:
