@@ -291,16 +291,16 @@ async def urban_dict(event):
 
     if not query:
         return await event.edit(
-            "`Reply to a message or pass a query to search!`")
+            "**Reply to a message or pass a query to search!**")
 
     await event.edit("Processing...")
     ud = asyncurban.UrbanDictionary()
-    template = "`Query: `{}\n\n`Definition: `{}\n\n`Example:\n`{}"
+    template = "**Query:** `{}`\n\n**Definition:**\n{}\n\n**Example:**\n__{}__"
 
     try:
         definition = await ud.get_word(query)
     except asyncurban.UrbanException as e:
-        return await event.edit("**Error:** {e}.")
+        return await event.edit(f"**Error:** {e}.")
 
     result = template.format(definition.word, definition.definition,
                              definition.example)
@@ -308,7 +308,7 @@ async def urban_dict(event):
     if len(result) < 4096:
         return await event.edit(result)
 
-    await event.edit("`Output too large, sending as file...`")
+    await event.edit("**Output too large, sending as file...**")
     with open("output.txt", "w+") as file:
         file.write("Query: " + definition.word + "\n\nMeaning: " +
                    definition.definition + "Example: \n" + definition.example)
