@@ -10,7 +10,6 @@
      downloading/uploading from/to the server. """
 
 import asyncio
-import json
 import math
 import os
 import subprocess
@@ -102,124 +101,15 @@ async def download(target_file):
         await target_file.edit("**Reply to a message to download to my local server.**")
 
 
-@register(pattern=r"\.uploadir (.*)", outgoing=True)
-async def uploadir(udir_event):
-    """ For .uploadir command, allows you to upload everything from a folder in the server"""
-    input_str = udir_event.pattern_match.group(1)
-    if os.path.exists(input_str):
-        await udir_event.edit("**Processing...**")
-        lst_of_files = []
-        for r, d, f in os.walk(input_str):
-            for file in f:
-                lst_of_files.append(os.path.join(r, file))
-            for file in d:
-                lst_of_files.append(os.path.join(r, file))
-        LOGS.info(lst_of_files)
-        uploaded = 0
-        await udir_event.edit(
-            "**Found** `{}` **files. Uploading will start soon.**\nPlease wait!".format(
-                len(lst_of_files)
-            )
-        )
-        for single_file in lst_of_files:
-            if os.path.exists(single_file):
-                # https://stackoverflow.com/a/678242/4723940
-                caption_rts = os.path.basename(single_file)
-                c_time = time.time()
-                if not caption_rts.lower().endswith(".mp4"):
-                    await udir_event.client.send_file(
-                        udir_event.chat_id,
-                        single_file,
-                        caption=caption_rts,
-                        force_document=False,
-                        allow_cache=False,
-                        reply_to=udir_event.message.id,
-                        progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                            progress(d, t, udir_event, c_time, "[Upload]", single_file)
-                        ),
-                    )
-                else:
-                    thumb_image = os.path.join(input_str, "thumb.jpg")
-                    c_time = time.time()
-                    metadata = extractMetadata(createParser(single_file))
-                    duration = 0
-                    width = 0
-                    height = 0
-                    if metadata.has("duration"):
-                        duration = metadata.get("duration").seconds
-                    if metadata.has("width"):
-                        width = metadata.get("width")
-                    if metadata.has("height"):
-                        height = metadata.get("height")
-                    await udir_event.client.send_file(
-                        udir_event.chat_id,
-                        single_file,
-                        caption=caption_rts,
-                        thumb=thumb_image,
-                        force_document=False,
-                        allow_cache=False,
-                        reply_to=udir_event.message.id,
-                        attributes=[
-                            DocumentAttributeVideo(
-                                duration=duration,
-                                w=width,
-                                h=height,
-                                round_message=False,
-                                supports_streaming=True,
-                            )
-                        ],
-                        progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                            progress(d, t, udir_event, c_time, "[Upload]", single_file)
-                        ),
-                    )
-                os.remove(single_file)
-                uploaded += 1
-        await udir_event.edit(f"**Uploaded** `{uploaded}` **files successfully!**")
-    else:
-        await udir_event.edit("**404: Directory not found.**")
-
-
-@register(pattern=r"\.upload (.*)", outgoing=True)
-async def upload(u_event):
-    """ For .upload command, allows you to upload a file from the userbot's server """
-    await u_event.edit("Processing ...")
-    input_str = u_event.pattern_match.group(1)
-    if input_str in ("userbot.session", "config.env"):
-        return await u_event.edit("**That's a dangerous operation! Not permitted!**")
-    if os.path.exists(input_str):
-        c_time = time.time()
-        await u_event.client.send_file(
-            u_event.chat_id,
-            input_str,
-            force_document=True,
-            allow_cache=False,
-            reply_to=u_event.message.id,
-            progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                progress(d, t, u_event, c_time, "[Upload]", input_str)
-            ),
-        )
-        await u_event.edit("**Uploaded successfully!**")
-    else:
-        await u_event.edit("**404: File not found.**")
-
-
 def get_video_thumb(file, output=None, width=90):
     """ Get video thumbnail """
     metadata = extractMetadata(createParser(file))
+    durations = str(
+        int((0, metadata.get("duration").seconds)[metadata.has("duration")] / 2)
+    )
     popen = subprocess.Popen(
         [
-            "ffmpeg",
-            "-i",
-            file,
-            "-ss",
-            str(
-                int((0, metadata.get("duration").seconds)[metadata.has("duration")] / 2)
-            ),
-            "-filter:v",
-            f"scale={width}:-1",
-            "-vframes",
-            "1",
-            output,
+            f"ffmpeg -i {file} -ss {durations} -filter:v scale={width}:-1 -vframes 1 {output}"
         ],
         shell=True,
         stdout=subprocess.PIPE,
@@ -230,121 +120,66 @@ def get_video_thumb(file, output=None, width=90):
     return None
 
 
-def extract_w_h(file):
-    """ Get width and height of media """
-    command_to_run = [
-        "ffprobe",
-        "-v",
-        "quiet",
-        "-print_format",
-        "json",
-        "-show_format",
-        "-show_streams",
-        file,
-    ]
-    # https://stackoverflow.com/a/11236144/4723940
-    try:
-        t_response = subprocess.check_output(command_to_run, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as exc:
-        LOGS.warning(exc)
+@register(pattern=r"^\.upload (.*)", outgoing=True)
+async def upload(u_event):
+    """ For .upload command, allows you to upload a file from the userbot's server """
+    await u_event.edit("Processing ...")
+    input_str = u_event.pattern_match.group(1)
+    if input_str in ("userbot.session", "config.env"):
+        return await u_event.edit("`That's a dangerous operation! Not Permitted!`")
+    if os.path.exists(input_str):
+        file_name = input_str.split("/")[-1]
+        if input_str.lower().endswith(("mp4", "mkv", "webm")):
+            metadata = extractMetadata(createParser(input_str))
+            duration = 0
+            width = 0
+            height = 0
+            if metadata.has("duration"):
+                duration = metadata.get("duration").seconds
+            if metadata.has("width"):
+                width = metadata.get("width")
+            if metadata.has("height"):
+                height = metadata.get("height")
+            thumb = get_video_thumb(input_str, output="thumb.png")
+            c_time = time.time()
+            await u_event.client.send_file(
+                u_event.chat_id,
+                input_str,
+                thumb=thumb,
+                caption=file_name,
+                force_document=False,
+                allow_cache=False,
+                reply_to=u_event.message.id,
+                attributes=[
+                    DocumentAttributeVideo(
+                        duration=duration,
+                        w=width,
+                        h=height,
+                        round_message=False,
+                        supports_streaming=True,
+                    )
+                ],
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(d, t, u_event, c_time, "[UPLOAD]", input_str)
+                ),
+            )
+            await u_event.edit("Uploaded successfully !!")
+        else:
+            c_time = time.time()
+            await u_event.client.send_file(
+                u_event.chat_id,
+                input_str,
+                caption=file_name,
+                force_document=False,
+                allow_cache=False,
+                reply_to=u_event.message.id,
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(d, t, u_event, c_time, "[UPLOAD]", input_str)
+                ),
+            )
+            await u_event.edit("Uploaded successfully !!")
     else:
-        x_reponse = t_response.decode("UTF-8")
-        response_json = json.loads(x_reponse)
-        width = int(response_json["streams"][0]["width"])
-        height = int(response_json["streams"][0]["height"])
-        return width, height
-
-
-@register(pattern=r"\.uploadas(stream|vn|all) (.*)", outgoing=True)
-async def uploadas(uas_event):
-    """ For .uploadas command, allows you to specify some arguments for upload. """
-    await uas_event.edit("**Processing...**")
-    type_of_upload = uas_event.pattern_match.group(1)
-    supports_streaming = False
-    round_message = False
-    spam_big_messages = False
-    if type_of_upload == "all":
-        spam_big_messages = True
-    elif type_of_upload == "stream":
-        supports_streaming = True
-    elif type_of_upload == "vn":
-        round_message = True
-    input_str = uas_event.pattern_match.group(2)
-    thumb = None
-    file_name = None
-    if "|" in input_str:
-        file_name, thumb = input_str.split("|")
-        file_name = file_name.strip()
-        thumb = thumb.strip()
-    else:
-        file_name = input_str
-        thumb_path = "a_random_f_file_name" + ".jpg"
-        thumb = get_video_thumb(file_name, output=thumb_path)
-    if os.path.exists(file_name):
-        metadata = extractMetadata(createParser(file_name))
-        duration = 0
-        width = 0
-        height = 0
-        if metadata.has("duration"):
-            duration = metadata.get("duration").seconds
-        if metadata.has("width"):
-            width = metadata.get("width")
-        if metadata.has("height"):
-            height = metadata.get("height")
-        try:
-            if supports_streaming:
-                c_time = time.time()
-                await uas_event.client.send_file(
-                    uas_event.chat_id,
-                    file_name,
-                    thumb=thumb,
-                    caption=input_str,
-                    force_document=False,
-                    allow_cache=False,
-                    reply_to=uas_event.message.id,
-                    attributes=[
-                        DocumentAttributeVideo(
-                            duration=duration,
-                            w=width,
-                            h=height,
-                            round_message=False,
-                            supports_streaming=True,
-                        )
-                    ],
-                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                        progress(d, t, uas_event, c_time, "[Upload]", file_name)
-                    ),
-                )
-            elif round_message:
-                c_time = time.time()
-                await uas_event.client.send_file(
-                    uas_event.chat_id,
-                    file_name,
-                    thumb=thumb,
-                    allow_cache=False,
-                    reply_to=uas_event.message.id,
-                    video_note=True,
-                    attributes=[
-                        DocumentAttributeVideo(
-                            duration=0,
-                            w=1,
-                            h=1,
-                            round_message=True,
-                            supports_streaming=True,
-                        )
-                    ],
-                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                        progress(d, t, uas_event, c_time, "[Upload]", file_name)
-                    ),
-                )
-            elif spam_big_messages:
-                return await uas_event.edit("**TBD: Not (yet) implemented**")
-            os.remove(thumb)
-            await uas_event.edit("**Uploaded successfully!**")
-        except FileNotFoundError as err:
-            await uas_event.edit(str(err))
-    else:
-        await uas_event.edit("**404: File not found.**")
+        await u_event.edit("404: File Not Found")
 
 
 CMD_HELP.update(
