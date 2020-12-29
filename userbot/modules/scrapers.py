@@ -22,7 +22,7 @@ from gtts import gTTS
 from gtts.lang import tts_langs
 from requests import get
 from search_engine_parser import GoogleSearch
-from telethon.tl.types import DocumentAttributeAudio
+from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
 from youtube_dl import YoutubeDL
@@ -40,7 +40,9 @@ from youtube_search import YoutubeSearch
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
+from userbot.modules.upload_download import get_video_thumb
 from userbot.utils import chrome, googleimagesdownload, progress
+from userbot.utils.FastTelethon import upload_file
 
 CARBONLANG = "auto"
 
@@ -678,9 +680,27 @@ async def download_video(v_url):
     c_time = time.time()
     if song:
         await v_url.edit(f"**Preparing to upload song:**\n**{rip_data['title']}**")
+        with open(rip_data["id"] + ".mp3", "rb") as f:
+            result = await upload_file(
+                client=v_url.client,
+                file=f,
+                name=f"{rip_data['id']}.mp3",
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(
+                        d, t, v_url, c_time, "Uploading..", f"{rip_data['title']}.mp3"
+                    )
+                ),
+            )
+        img_extensions = ["jpg", "jpeg", "webp"]
+        img_filenames = [
+            fn_img
+            for fn_img in os.listdir()
+            if any(fn_img.endswith(ext_img) for ext_img in img_extensions)
+        ]
+        thumb_image = img_filenames[0]
         await v_url.client.send_file(
             v_url.chat_id,
-            f"{rip_data['id']}.mp3",
+            result,
             supports_streaming=True,
             attributes=[
                 DocumentAttributeAudio(
@@ -689,24 +709,41 @@ async def download_video(v_url):
                     performer=str(rip_data["uploader"]),
                 )
             ],
-            progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                progress(d, t, v_url, c_time, "Uploading..", f"{rip_data['title']}.mp3")
-            ),
+            thumb=thumb_image,
         )
+        os.remove(thumb_image)
         os.remove(f"{rip_data['id']}.mp3")
         await v_url.delete()
     elif video:
         await v_url.edit(f"**Preparing to upload video:**\n**{rip_data['title']}**")
+        thumb_image = await get_video_thumb(rip_data["id"] + ".mp4", "thumb.png")
+        with open(rip_data["id"] + ".mp4", "rb") as f:
+            result = await upload_file(
+                client=v_url.client,
+                file=f,
+                name=f"{rip_data['id']}.mp4",
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(
+                        d, t, v_url, c_time, "Uploading..", f"{rip_data['title']}.mp4"
+                    )
+                ),
+            )
         await v_url.client.send_file(
             v_url.chat_id,
-            f"{rip_data['id']}.mp4",
-            supports_streaming=True,
+            result,
+            thumb=thumb_image,
+            attributes=[
+                DocumentAttributeVideo(
+                    duration=rip_data["duration"],
+                    w=rip_data["width"],
+                    h=rip_data["height"],
+                    supports_streaming=True,
+                )
+            ],
             caption=rip_data["title"],
-            progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                progress(d, t, v_url, c_time, "Uploading..", f"{rip_data['title']}.mp4")
-            ),
         )
         os.remove(f"{rip_data['id']}.mp4")
+        os.remove(thumb_image)
         await v_url.delete()
 
 

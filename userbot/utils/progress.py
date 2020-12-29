@@ -22,7 +22,7 @@ from .tools import humanbytes, time_formatter
 
 
 async def progress(
-    current, total, gdrive, start, prog_type, file_name=None, is_cancelled=False
+    current, total, event, start, prog_type, file_name=None, is_cancelled=False
 ):
     now = time.time()
     diff = now - start
@@ -54,4 +54,4 @@ async def progress(
             f"`ETA` -> {time_formatter(eta)}\n"
             f"`Duration` -> {time_formatter(elapsed_time)}"
         )
-        await gdrive.edit(f"`{prog_type}`\n\n" f"`Status`\n{tmp}")
+        await event.edit(f"`{prog_type}`\n\n" f"`Status`\n{tmp}")

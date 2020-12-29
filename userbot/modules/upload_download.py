@@ -23,6 +23,7 @@ from telethon.tl.types import DocumentAttributeVideo
 from userbot import CMD_HELP, LOGS, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 from userbot.utils import humanbytes, progress
+from userbot.utils.FastTelethon import download_file, upload_file
 
 
 @register(pattern=r"\.download(?: |$)(.*)", outgoing=True)
@@ -66,7 +67,7 @@ async def download(target_file):
                     f"**Name:** `{file_name}`\n"
                     f"\n**{status}...** | {progress_str}"
                     f"\n{humanbytes(downloaded)} of {humanbytes(total_length)}"
-                    f" @ {speed}"
+                    f" @ {humanbytes(speed)}"
                     f"\n**ETA:** {estimated_total_time}"
                 )
 
@@ -83,41 +84,38 @@ async def download(target_file):
             await target_file.edit(f"**Incorrect URL**\n{url}")
     elif target_file.reply_to_msg_id:
         try:
+            replied = await target_file.get_reply_message()
+            file = replied.document
+            file_name = replied.document.attributes[-1].file_name
+            outdir = TEMP_DOWNLOAD_DIRECTORY + file_name
             c_time = time.time()
-            downloaded_file_name = await target_file.client.download_media(
-                await target_file.get_reply_message(),
-                TEMP_DOWNLOAD_DIRECTORY,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, target_file, c_time, "[Download]")
-                ),
-            )
+            with open(outdir, "wb") as f:
+                result = await download_file(
+                    client=target_file.client,
+                    location=file,
+                    out=f,
+                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                        progress(d, t, target_file, c_time, "[DOWNLOAD]", input_str)
+                    ),
+                )
         except Exception as e:  # pylint:disable=C0103,W0703
             await target_file.edit(str(e))
         else:
-            await target_file.edit(
-                f"**Downloaded to `{downloaded_file_name}` successfully!**"
-            )
+            await target_file.edit(f"**Downloaded to `{result.name}` successfully!**")
     else:
         await target_file.edit("**Reply to a message to download to my local server.**")
 
 
-def get_video_thumb(file, output=None, width=90):
+async def get_video_thumb(file, output=None, width=90):
     """ Get video thumbnail """
-    metadata = extractMetadata(createParser(file))
-    durations = str(
-        int((0, metadata.get("duration").seconds)[metadata.has("duration")] / 2)
-    )
+    extractMetadata(createParser(file))
     popen = subprocess.Popen(
-        [
-            f"ffmpeg -i {file} -ss {durations} -filter:v scale={width}:-1 -vframes 1 {output}"
-        ],
+        [f"ffmpeg -i {file} -ss 00:00:01.000 -vframes 1 {output}"],
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
     )
-    if not popen.returncode and os.path.lexists(file):
-        return output
-    return None
+    return output
 
 
 @register(pattern=r"^\.upload (.*)", outgoing=True)
@@ -128,7 +126,18 @@ async def upload(u_event):
     if input_str in ("userbot.session", "config.env"):
         return await u_event.edit("`That's a dangerous operation! Not Permitted!`")
     if os.path.exists(input_str):
+        thumb = await get_video_thumb(input_str, output="thumb.png")
         file_name = input_str.split("/")[-1]
+        c_time = time.time()
+        with open(input_str, "rb") as f:
+            result = await upload_file(
+                client=u_event.client,
+                file=f,
+                name=file_name,
+                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(d, t, u_event, c_time, "[FILE - UPLOAD]", input_str)
+                ),
+            )
         if input_str.lower().endswith(("mp4", "mkv", "webm")):
             metadata = extractMetadata(createParser(input_str))
             duration = 0
@@ -140,11 +149,9 @@ async def upload(u_event):
                 width = metadata.get("width")
             if metadata.has("height"):
                 height = metadata.get("height")
-            thumb = get_video_thumb(input_str, output="thumb.png")
-            c_time = time.time()
             await u_event.client.send_file(
                 u_event.chat_id,
-                input_str,
+                result,
                 thumb=thumb,
                 caption=file_name,
                 force_document=False,
@@ -159,23 +166,17 @@ async def upload(u_event):
                         supports_streaming=True,
                     )
                 ],
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, u_event, c_time, "[UPLOAD]", input_str)
-                ),
             )
+            os.remove(thumb)
             await u_event.edit("Uploaded successfully !!")
         else:
-            c_time = time.time()
             await u_event.client.send_file(
                 u_event.chat_id,
-                input_str,
+                result,
                 caption=file_name,
                 force_document=False,
                 allow_cache=False,
                 reply_to=u_event.message.id,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, u_event, c_time, "[UPLOAD]", input_str)
-                ),
             )
             await u_event.edit("Uploaded successfully !!")
     else:
