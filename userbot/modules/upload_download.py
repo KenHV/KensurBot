@@ -108,13 +108,14 @@ async def download(target_file):
 
 async def get_video_thumb(file, output=None, width=90):
     """ Get video thumbnail """
-    extractMetadata(createParser(file))
-    popen = subprocess.Popen(
-        [f"ffmpeg -i {file} -ss 00:00:01.000 -vframes 1 {output}"],
+    command = f"ffmpeg -i {file} -ss 00:00:01.000 -filter:v scale={width}:-1 -vframes 1 {output}"
+    subprocess.Popen(
+        command,
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
     )
+    await asyncio.sleep(1.5)
     return output
 
 
@@ -126,7 +127,6 @@ async def upload(u_event):
     if input_str in ("userbot.session", "config.env"):
         return await u_event.edit("`That's a dangerous operation! Not Permitted!`")
     if os.path.exists(input_str):
-        thumb = await get_video_thumb(input_str, output="thumb.png")
         file_name = input_str.split("/")[-1]
         c_time = time.time()
         with open(input_str, "rb") as f:
@@ -139,6 +139,7 @@ async def upload(u_event):
                 ),
             )
         if input_str.lower().endswith(("mp4", "mkv", "webm")):
+            thumb = await get_video_thumb(input_str, output="thumb_image.jpg")
             metadata = extractMetadata(createParser(input_str))
             duration = 0
             width = 0
