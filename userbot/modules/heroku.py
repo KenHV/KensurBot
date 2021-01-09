@@ -29,7 +29,9 @@ else:
 async def variable(var):
     exe = var.pattern_match.group(1)
     if app is None:
-        await var.edit("**Please setup your** `HEROKU_APP_NAME`**.**")
+        await var.edit(
+            "**Please setup your** `HEROKU_APP_NAME` **and** `HEROKU_API_KEY`**.**"
+        )
         return False
     await var.edit("**Processing...**")
     variable = var.pattern_match.group(2)
@@ -87,7 +89,11 @@ async def variable(var):
 
 @register(outgoing=True, pattern=r"^\.set var (\w*) ([\s\S]*)")
 async def set_var(var):
-    await var.edit("`Setting information...`")
+    if app is None:
+        return await var.edit(
+            "**Please setup your** `HEROKU_APP_NAME` **and** `HEROKU_API_KEY`**.**"
+        )
+    await var.edit("**Setting ConfigVar...**")
     variable = var.pattern_match.group(1)
     value = var.pattern_match.group(2)
     if variable in heroku_var:
@@ -121,6 +127,10 @@ async def dyno_usage(dyno):
     """
         Get your account Dyno Usage
     """
+    if app is None:
+        return await dyno.edit(
+            "**Please setup your** `HEROKU_APP_NAME` **and** `HEROKU_API_KEY`**.**"
+        )
     await dyno.edit("**Processing...**")
     user_id = Heroku.account().id
     path = "/accounts/" + user_id + "/actions/get-quota"
