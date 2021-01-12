@@ -191,8 +191,7 @@ async def upstream(event):
     if conf == "" and not force_update:
         await print_changelogs(event, ac_br, changelog)
         await event.delete()
-        return await event.respond(
-            "**Do** `.update now` **or** `.update deploy` **to update.**")
+        return await event.respond("**Do** `.update deploy` **to update.**")
 
     if force_update:
         await event.edit(
@@ -211,6 +210,7 @@ CMD_HELP.update({
     "and shows a changelog if so."
     "\n\n>`.update now`"
     "\nUsage: Performs a quick update."
+    "\nHeroku resets updates performed using this method after a while. Use `deploy` instead."
     "\n\n>`.update deploy`"
     "\nUsage: Performs a full update (recommended)."
 })
