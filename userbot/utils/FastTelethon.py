@@ -23,6 +23,8 @@ from typing import (
 from telethon import TelegramClient, helpers, utils
 from telethon.crypto import AuthKey
 from telethon.network import MTProtoSender
+from telethon.tl.alltlobjects import LAYER
+from telethon.tl.functions import InvokeWithLayerRequest
 from telethon.tl.functions.auth import (
     ExportAuthorizationRequest,
     ImportAuthorizationRequest,
@@ -262,10 +264,10 @@ class ParallelTransferrer:
         if not self.auth_key:
             log.debug(f"Exporting auth to DC {self.dc_id}")
             auth = await self.client(ExportAuthorizationRequest(self.dc_id))
-            req = self.client._init_with(
-                ImportAuthorizationRequest(id=auth.id, bytes=auth.bytes)
+            self.client._init_request.query = ImportAuthorizationRequest(
+                id=auth.id, bytes=auth.bytes
             )
-            await sender.send(req)
+            await sender.send(InvokeWithLayerRequest(LAYER, self.client._init_request))
             self.auth_key = sender.auth_key
         return sender
 
