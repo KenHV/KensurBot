@@ -1,7 +1,6 @@
 # Copyright (C) 2020 KenHV
 
 from sqlalchemy.exc import IntegrityError
-
 from userbot import CMD_HELP, bot
 from userbot.events import register
 
@@ -18,17 +17,17 @@ async def fban(event):
         reply_msg = await event.get_reply_message()
         fban_id = reply_msg.sender_id
         reason = event.pattern_match.group(1)
-        user_link = f"[{fban_id}](tg://user?id={fban_id})"
     else:
         pattern = str(event.pattern_match.group(1)).split()
         fban_id = pattern[0]
         reason = " ".join(pattern[1:])
-        user_link = fban_id
 
-    self_user = await event.client.get_me()
+    try:
+        fban_id = await event.client.get_peer_id(fban_id)
+    except:
+        pass
 
-    if fban_id == self_user.id or user_link.lower(
-    ) == "@" + self_user.username.lower():
+    if event.sender_id == fban_id:
         return await event.edit(
             "**Error: This action has been prevented by KensurBot self preservation protocols.**"
         )
@@ -36,6 +35,8 @@ async def fban(event):
     if len((fed_list := get_flist())) == 0:
         return await event.edit(
             "**You haven't connected to any federations yet!**")
+
+    user_link = f"[{fban_id}](tg://user?id={fban_id})"
 
     await event.edit(f"**Fbanning** {user_link}...")
     failed = []
@@ -86,22 +87,24 @@ async def unfban(event):
         reply_msg = await event.get_reply_message()
         unfban_id = reply_msg.sender_id
         reason = event.pattern_match.group(1)
-        user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
     else:
         pattern = str(event.pattern_match.group(1)).split()
         unfban_id = pattern[0]
         reason = " ".join(pattern[1:])
-        user_link = unfban_id
 
-    self_user = await event.client.get_me()
+    try:
+        unfban_id = await event.client.get_peer_id(unfban_id)
+    except:
+        pass
 
-    if unfban_id == self_user.id or user_link.lower(
-    ) == "@" + self_user.username.lower():
+    if event.sender_id == unfban_id:
         return await event.edit("**Wait, that's illegal**")
 
     if len((fed_list := get_flist())) == 0:
         return await event.edit(
-            "**You haven't connected any federations yet!**")
+            "**You haven't connected to any federations yet!**")
+
+    user_link = f"[{unfban_id}](tg://user?id={unfban_id})"
 
     await event.edit(f"**Un-fbanning **{user_link}**...**")
     failed = []
