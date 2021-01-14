@@ -32,14 +32,13 @@ from youtube_dl.utils import (ContentTooShortError, DownloadError,
                               UnavailableVideoError, XAttrMetadataError)
 from youtube_search import YoutubeSearch
 
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
 from userbot.utils import chrome, googleimagesdownload, progress
 
 CARBONLANG = "auto"
 TTS_LANG = "en"
 TRT_LANG = "en"
-TEMP_DOWNLOAD_DIRECTORY = "/root/userbot/.bin"
 
 
 @register(outgoing=True, pattern=r"^\.crblang (.*)")
@@ -63,14 +62,14 @@ async def carbon_api(e):
         pcode = str(textx.message)  # Importing message to module
     code = quote_plus(pcode)  # Converting to urlencoded
     await e.edit("**Processing...\n25%**")
-    file_path = TEMP_DOWNLOAD_DIRECTORY + "carbon.png"
+    dl_path = "./.carbon/"
+    file_path = dl_path + "carbon.png"
     if os.path.isfile(file_path):
         os.remove(file_path)
     url = CARBON.format(code=code, lang=CARBONLANG)
     driver = await chrome()
     driver.get(url)
-    await e.edit("**Processing..\n50%**")
-    download_path = "./"
+    await e.edit("**Processing...\n50%**")
     driver.command_executor._commands["send_command"] = (
         "POST",
         "/session/$sessionId/chromium/send_command",
@@ -79,7 +78,7 @@ async def carbon_api(e):
         "cmd": "Page.setDownloadBehavior",
         "params": {
             "behavior": "allow",
-            "downloadPath": download_path
+            "downloadPath": dl_path
         },
     }
     driver.execute("send_command", params)
