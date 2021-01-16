@@ -347,5 +347,7 @@ CMD_HELP.update(
         "\nUsage: Downloads file to the server."
         "\n\n>`.upload <path in server>`"
         "\nUsage: Uploads a locally stored file to the chat."
+        "\n\n>`.updir` <folder path in server>"
+        "\nUsage: Uploads Folder/Directory from the server"
     }
 )
