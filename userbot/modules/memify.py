@@ -51,8 +51,11 @@ async def memify(event):
         dls_path = jpg_file
 
     await event.edit("**Adding text...**")
-    webp_file = await draw_meme_text(dls_path, input_str)
-    await event.client.send_file(entity=event.chat.id,
+    try:
+        webp_file = await draw_meme_text(dls_path, input_str)
+    except Exception as e:
+        return await event.edit(f"**An error occurred:**\n`{e}`")
+    await event.client.send_file(entity=event.chat_id,
                                  file=webp_file,
                                  force_document=False,
                                  reply_to=reply_msg)
