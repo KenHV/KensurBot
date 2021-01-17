@@ -19,6 +19,7 @@ hachoir
 heroku3
 httplib2
 humanize
+lottie
 lxml
 lyricsgenius
 oauth2client
