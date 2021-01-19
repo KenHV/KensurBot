@@ -3,6 +3,7 @@ aria2p
 async_generator
 asyncurban
 bs4
+CairoSVG
 cffi
 cowpy
 dnspython

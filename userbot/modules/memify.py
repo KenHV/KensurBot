@@ -9,7 +9,7 @@ import textwrap
 from typing import Optional, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
-from userbot import CMD_HELP, LOGS, TEMP_DOWNLOAD_DIRECTORY
+from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
 
@@ -28,122 +28,95 @@ async def memify(event):
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
 
-    dls = await event.client.download_media(reply_msg, TEMP_DOWNLOAD_DIRECTORY)
-    dls_path = os.path.join(TEMP_DOWNLOAD_DIRECTORY, os.path.basename(dls))
+    input_file = await event.client.download_media(reply_msg,
+                                                   TEMP_DOWNLOAD_DIRECTORY)
+    input_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY,
+                              os.path.basename(input_file))
 
-    if dls_path.endswith(".tgs"):
-        await event.edit("**Extracting first frame..**")
-        png_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.png")
-        cmd = f"lottie_convert.py --frame 0 -if lottie -of png {dls_path} {png_file}"
-        stdout, stderr = (await runcmd(cmd))[:2]
-        os.remove(dls_path)
-        if not os.path.lexists(png_file):
-            return await event.edit("**Couldn't parse this image.**")
-        dls_path = png_file
+    if input_file.endswith(".tgs"):
+        await event.edit("**Extracting first frame...**")
+        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.webp")
+        cmd = f"lottie_convert.py --frame 0 {input_file} {converted_file}"
+        await runcmd(cmd)
+        os.remove(input_file)
+        if not os.path.lexists(converted_file):
+            return await event.edit("**Couldn't parse this animated sticker.**"
+                                    )
+        input_file = converted_file
 
-    elif dls_path.endswith(".mp4"):
-        await event.edit("**Extracting first frame..**")
-        jpg_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.jpg")
-        await take_screen_shot(dls_path, 0, jpg_file)
-        os.remove(dls_path)
-        if not os.path.lexists(jpg_file):
+    elif input_file.endswith(".mp4"):
+        await event.edit("**Extracting first frame...**")
+        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.png")
+        await take_screen_shot(input_file, 0, converted_file)
+        os.remove(input_file)
+        if not os.path.lexists(converted_file):
             return await event.edit("**Couldn't parse this video.**")
-        dls_path = jpg_file
+        input_file = converted_file
 
     await event.edit("**Adding text...**")
     try:
-        webp_file = await draw_meme_text(dls_path, input_str)
+        final_image = await add_text_img(input_file, input_str)
     except Exception as e:
         return await event.edit(f"**An error occurred:**\n`{e}`")
     await event.client.send_file(entity=event.chat_id,
-                                 file=webp_file,
-                                 force_document=False,
+                                 file=final_image,
                                  reply_to=reply_msg)
     await event.delete()
-    os.remove(webp_file)
+    os.remove(final_image)
+    os.remove(input_file)
 
 
-async def draw_meme_text(image_path, text):
-    img = Image.open(image_path).convert("RGB")
-    os.remove(image_path)
-    i_width, i_height = img.size
-    m_font = ImageFont.truetype("bin/impact.ttf", int((70 / 640) * i_width))
+async def add_text_img(image_path, text):
+    font_size = 12
+    stroke_width = 2
+
     if ";" in text:
         upper_text, lower_text = text.split(";")
     else:
         upper_text = text
         lower_text = ''
+
+    img = Image.open(image_path).convert("RGBA")
+    img_info = img.info
+    image_width, image_height = img.size
+    font = ImageFont.truetype(font="bin/impact.ttf",
+                              size=int(image_height * font_size) // 100)
     draw = ImageDraw.Draw(img)
-    current_h, pad = 10, 5
 
-    if upper_text:
-        for u_text in textwrap.wrap(upper_text, width=15):
-            u_width, u_height = draw.textsize(u_text, font=m_font)
+    char_width, char_height = font.getsize('A')
+    chars_per_line = image_width // char_width
+    top_lines = textwrap.wrap(upper_text, width=chars_per_line)
+    bottom_lines = textwrap.wrap(lower_text, width=chars_per_line)
 
-            draw.text(xy=(((i_width - u_width) / 2) - 1,
-                          int((current_h / 640) * i_width)),
-                      text=u_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
-            draw.text(xy=(((i_width - u_width) / 2) + 1,
-                          int((current_h / 640) * i_width)),
-                      text=u_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
-            draw.text(xy=((i_width - u_width) / 2,
-                          int(((current_h / 640) * i_width)) - 1),
-                      text=u_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
-            draw.text(xy=(((i_width - u_width) / 2),
-                          int(((current_h / 640) * i_width)) + 1),
-                      text=u_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
+    if top_lines:
+        y = 10
+        for line in top_lines:
+            line_width, line_height = font.getsize(line)
+            x = (image_width - line_width) / 2
+            draw.text((x, y),
+                      line,
+                      fill='white',
+                      font=font,
+                      stroke_width=stroke_width,
+                      stroke_fill='black')
+            y += line_height
 
-            draw.text(xy=((i_width - u_width) / 2,
-                          int((current_h / 640) * i_width)),
-                      text=u_text,
-                      font=m_font,
-                      fill=(255, 255, 255))
-            current_h += u_height + pad
+    if bottom_lines:
+        y = image_height - char_height * len(bottom_lines) - 15
+        for line in bottom_lines:
+            line_width, line_height = font.getsize(line)
+            x = (image_width - line_width) / 2
+            draw.text((x, y),
+                      line,
+                      fill='white',
+                      font=font,
+                      stroke_width=stroke_width,
+                      stroke_fill='black')
+            y += line_height
 
-    if lower_text:
-        for l_text in textwrap.wrap(lower_text, width=15):
-            u_width, u_height = draw.textsize(l_text, font=m_font)
-
-            draw.text(xy=(((i_width - u_width) / 2) - 1,
-                          i_height - u_height - int((20 / 640) * i_width)),
-                      text=l_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
-            draw.text(xy=(((i_width - u_width) / 2) + 1,
-                          i_height - u_height - int((20 / 640) * i_width)),
-                      text=l_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
-            draw.text(xy=((i_width - u_width) / 2, (i_height - u_height - int(
-                (20 / 640) * i_width)) - 1),
-                      text=l_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
-            draw.text(xy=((i_width - u_width) / 2, (i_height - u_height - int(
-                (20 / 640) * i_width)) + 1),
-                      text=l_text,
-                      font=m_font,
-                      fill=(0, 0, 0))
-
-            draw.text(xy=((i_width - u_width) / 2, i_height - u_height - int(
-                (20 / 640) * i_width)),
-                      text=l_text,
-                      font=m_font,
-                      fill=(255, 255, 255))
-            current_h += u_height + pad
-
-    image_name = "memify.webp"
-    webp_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, image_name)
-    img.save(webp_file, "webp")
-    return webp_file
+    final_image = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "memify.webp")
+    img.save(final_image, **img_info)
+    return final_image
 
 
 async def runcmd(cmd: str) -> Tuple[str, str, int, int]:
@@ -163,12 +136,10 @@ async def take_screen_shot(video_file: str,
     """ take a screenshot """
     ttl = duration // 2
     thumb_image_path = path or os.path.join(
-        TEMP_DOWNLOAD_DIRECTORY, f"{os.path.basename(video_file)}.jpg")
+        TEMP_DOWNLOAD_DIRECTORY, f"{os.path.basename(video_file)}.png")
     command = f'''ffmpeg -ss {ttl} -i "{video_file}" -vframes 1 "{thumb_image_path}"'''
     err = (await runcmd(command))[1]
-    if err:
-        LOGS.info(err)
-    return thumb_image_path if os.path.exists(thumb_image_path) else None
+    return thumb_image_path if os.path.exists(thumb_image_path) else err
 
 
 CMD_HELP.update({
