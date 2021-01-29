@@ -178,8 +178,10 @@ async def approvepm(apprvpm):
 
     else:
         aname = await apprvpm.client.get_entity(apprvpm.chat_id)
+        if not isinstance(aname, User):
+            return await apprvpm.edit("**This can be done only with users.**")
         name0 = str(aname.first_name)
-        uid = apprvpm.chat_id
+        uid = apprvpm.chat_id            
 
     # Get user custom msg
     getmsg = gvarstatus("unapproved_msg")
@@ -219,7 +221,9 @@ async def disapprovepm(disapprvpm):
     else:
         dissprove(disapprvpm.chat_id)
         aname = await disapprvpm.client.get_entity(disapprvpm.chat_id)
-        name0 = str(aname.first_name)
+        if not isinstance(aname, User):
+            return await disapprvpm.edit("**This can be done only with users.**")
+        name0 = str(aname.first_name)   
 
     await disapprvpm.edit(
         f"[{name0}](tg://user?id={disapprvpm.chat_id}) `disapproved to PM!`")
@@ -246,10 +250,12 @@ async def blockpm(block):
     else:
         await block.client(BlockRequest(block.chat_id))
         aname = await block.client.get_entity(block.chat_id)
+        if not isinstance(aname, User):
+            return await block.edit("**This can be done only with users.**")
         await block.edit("**You've been blocked!**")
         name0 = str(aname.first_name)
-        uid = block.chat_id
-
+        uid = block.chat_id            
+          
     try:
         from userbot.modules.sql_helper.pm_permit_sql import dissprove
 
