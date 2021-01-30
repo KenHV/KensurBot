@@ -160,21 +160,31 @@ async def notifon(non_event):
     await non_event.edit("**Notifications from unapproved PMs unmuted!**")
 
 
-@register(outgoing=True, pattern=r"^\.approve$")
+@register(outgoing=True, pattern=r"^\.approve(?:$| )(.*)")
 async def approvepm(apprvpm):
     """ For .approve command, give someone the permissions to PM you. """
     try:
         from userbot.modules.sql_helper.globals import gvarstatus
         from userbot.modules.sql_helper.pm_permit_sql import approve
     except AttributeError:
-        return await apprvpm.edit("`Running on Non-SQL mode!`")
+        return await apprvpm.edit("**Running on Non-SQL mode!**")
 
     if apprvpm.reply_to_msg_id:
         reply = await apprvpm.get_reply_message()
         replied_user = await apprvpm.client.get_entity(reply.sender_id)
-        aname = replied_user.id
-        name0 = str(replied_user.first_name)
         uid = replied_user.id
+        name0 = str(replied_user.first_name)
+
+    elif apprvpm.pattern_match.group(1):
+        inputArgs = apprvpm.pattern_match.group(1)
+        try:
+            user = await apprvpm.client.get_entity(inputArgs)
+        except:
+            return await apprvpm.edit("**Invalid username/ID.**")
+        if not isinstance(user, User):
+            return await apprvpm.edit("**This can be done only with users.**")
+        uid = user.id
+        name0 = str(user.first_name)
 
     else:
         aname = await apprvpm.client.get_entity(apprvpm.chat_id)
@@ -196,7 +206,7 @@ async def approvepm(apprvpm):
     except IntegrityError:
         return await apprvpm.edit("**User may already be approved.**")
 
-    await apprvpm.edit(f"[{name0}](tg://user?id={uid}) `approved to PM!`")
+    await apprvpm.edit(f"[{name0}](tg://user?id={uid}) **approved to PM!**")
 
     if BOTLOG:
         await apprvpm.client.send_message(
@@ -205,7 +215,7 @@ async def approvepm(apprvpm):
         )
 
 
-@register(outgoing=True, pattern=r"^\.disapprove$")
+@register(outgoing=True, pattern=r"^\.disapprove(?:$| )(.*)")
 async def disapprovepm(disapprvpm):
     try:
         from userbot.modules.sql_helper.pm_permit_sql import dissprove
@@ -218,6 +228,20 @@ async def disapprovepm(disapprvpm):
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         dissprove(aname)
+
+    elif disapprvpm.pattern_match.group(1):
+        inputArgs = disapprvpm.pattern_match.group(1)
+        try:
+            user = await disapprvpm.client.get_entity(inputArgs)
+        except:
+            return await disapprvpm.edit("**Invalid username/ID.**")
+        if not isinstance(user, User):
+            return await disapprvpm.edit(
+                "**This can be done only with users.**")
+        aname = user.id
+        dissprove(aname)
+        name0 = str(user.first_name)
+
     else:
         dissprove(disapprvpm.chat_id)
         aname = await disapprvpm.client.get_entity(disapprvpm.chat_id)
@@ -227,12 +251,12 @@ async def disapprovepm(disapprvpm):
         name0 = str(aname.first_name)
 
     await disapprvpm.edit(
-        f"[{name0}](tg://user?id={disapprvpm.chat_id}) `disapproved to PM!`")
+        f"[{name0}](tg://user?id={aname}) **disapproved to PM!**")
 
     if BOTLOG:
         await disapprvpm.client.send_message(
             BOTLOG_CHATID,
-            f"[{name0}](tg://user?id={disapprvpm.chat_id})"
+            f"[{name0}](tg://user?id={aname})"
             " was disapproved to PM you.",
         )
 
