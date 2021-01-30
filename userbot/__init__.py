@@ -79,7 +79,7 @@ HEROKU_API_KEY = os.environ.get("HEROKU_API_KEY") or None
 # Custom (forked) repo URL and BRANCH for updater.
 UPSTREAM_REPO_URL = (os.environ.get("UPSTREAM_REPO_URL")
                      or "https://github.com/KenHV/KensurBot.git")
-UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH") or "sql-extended"
+UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH") or "experimental"
 
 # Console verbose logging
 CONSOLE_LOGGER_VERBOSE = sb(
