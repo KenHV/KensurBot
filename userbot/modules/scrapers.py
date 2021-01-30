@@ -37,8 +37,6 @@ from userbot.events import register
 from userbot.utils import chrome, googleimagesdownload, progress
 
 CARBONLANG = "auto"
-TTS_LANG = "en"
-TRT_LANG = "en"
 
 
 @register(outgoing=True, pattern=r"^\.crblang (.*)")
@@ -338,7 +336,17 @@ async def text_to_speech(query):
     await query.edit("**Processing...**")
 
     try:
-        gTTS(message, lang=TTS_LANG)
+        from userbot.modules.sql_helper.globals import gvarstatus
+    except AttributeError:
+        return await query.edit("**Running on Non-SQL mode!**")
+
+    if gvarstatus("tts_lang") is not None:
+        target_lang = str(gvarstatus("tts_lang"))
+    else:
+        target_lang = "en"
+
+    try:
+        gTTS(message, lang=target_lang)
     except AssertionError:
         return await query.edit(
             "**The text is empty.**\n"
@@ -348,13 +356,13 @@ async def text_to_speech(query):
         return await query.edit("**Language is not supported.**")
     except RuntimeError:
         return await query.edit("**Error loading the languages dictionary.**")
-    tts = gTTS(message, lang=TTS_LANG)
+    tts = gTTS(message, lang=target_lang)
     tts.save("k.mp3")
     with open("k.mp3", "rb") as audio:
         linelist = list(audio)
         linecount = len(linelist)
     if linecount == 1:
-        tts = gTTS(message, lang=TTS_LANG)
+        tts = gTTS(message, lang=target_lang)
         tts.save("k.mp3")
     with open("k.mp3", "r"):
         await query.client.send_file(query.chat_id, "k.mp3", voice_note=True)
@@ -460,12 +468,23 @@ async def translateme(trans):
 
     await trans.edit("**Processing...**")
     translator = google_translator()
+
+    try:
+        from userbot.modules.sql_helper.globals import gvarstatus
+    except AttributeError:
+        return await trans.edit("**Running on Non-SQL mode!**")
+
+    if gvarstatus("trt_lang") is not None:
+        target_lang = str(gvarstatus("trt_lang"))
+    else:
+        target_lang = "en"
+
     try:
         reply_text = translator.translate(deEmojify(message),
-                                          lang_tgt=TRT_LANG)
+                                          lang_tgt=target_lang)
     except ValueError:
         return await trans.edit(
-            "**Invalid language selected, use **`.lang tts <language code>`**.**"
+            "**Invalid language selected, use **`.lang trt <language code>`**.**"
         )
 
     try:
@@ -473,7 +492,7 @@ async def translateme(trans):
     except:
         source_lan = "(Google didn't provide this info)"
 
-    reply_text = f"From: **{source_lan}**\nTo: **{LANGUAGES.get(TRT_LANG).title()}**\n\n{reply_text}"
+    reply_text = f"From: **{source_lan}**\nTo: **{LANGUAGES.get(target_lang).title()}**\n\n{reply_text}"
 
     await trans.edit(reply_text)
 
@@ -482,26 +501,40 @@ async def translateme(trans):
 async def lang(value):
     """ For .lang command, change the default langauge of userbot scrapers. """
     util = value.pattern_match.group(1).lower()
+
+    try:
+        from userbot.modules.sql_helper.globals import gvarstatus, addgvar, delgvar
+    except AttributeError:
+        return await lang.edit("**Running on Non-SQL mode!**")
+
     if util == "trt":
         scraper = "Translator"
-        global TRT_LANG
         arg = value.pattern_match.group(2).lower()
+
         if arg not in LANGUAGES:
             return await value.edit(
                 f"**Invalid language code!**\nAvailable language codes:\n\n`{LANGUAGES}`"
             )
-        TRT_LANG = arg
+
+        if gvarstatus("trt_lang"):
+            delgvar("trt_lang")
+        addgvar("trt_lang", arg)
         LANG = LANGUAGES[arg]
+
     elif util == "tts":
         scraper = "Text to Speech"
-        global TTS_LANG
         arg = value.pattern_match.group(2).lower()
+
         if arg not in tts_langs():
             return await value.edit(
                 f"**Invalid language code!**\nAvailable language codes:\n\n`{tts_langs()}`"
             )
-        TTS_LANG = arg
+
+        if gvarstatus("tts_lang"):
+            delgvar("tts_lang")
+        addgvar("tts_lang", arg)
         LANG = tts_langs()[arg]
+
     await value.edit(f"**Language for {scraper} changed to {LANG.title()}.**")
     if BOTLOG:
         await value.client.send_message(
