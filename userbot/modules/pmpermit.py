@@ -177,12 +177,20 @@ async def approvepm(apprvpm):
 
     elif apprvpm.pattern_match.group(1):
         inputArgs = apprvpm.pattern_match.group(1)
+
+        try:
+            inputArgs = int(inputArgs)
+        except ValueError:
+            pass
+
         try:
             user = await apprvpm.client.get_entity(inputArgs)
         except:
             return await apprvpm.edit("**Invalid username/ID.**")
+
         if not isinstance(user, User):
             return await apprvpm.edit("**This can be done only with users.**")
+
         uid = user.id
         name0 = str(user.first_name)
 
@@ -231,13 +239,21 @@ async def disapprovepm(disapprvpm):
 
     elif disapprvpm.pattern_match.group(1):
         inputArgs = disapprvpm.pattern_match.group(1)
+
+        try:
+            inputArgs = int(inputArgs)
+        except ValueError:
+            pass
+
         try:
             user = await disapprvpm.client.get_entity(inputArgs)
         except:
             return await disapprvpm.edit("**Invalid username/ID.**")
+
         if not isinstance(user, User):
             return await disapprvpm.edit(
                 "**This can be done only with users.**")
+
         aname = user.id
         dissprove(aname)
         name0 = str(user.first_name)
