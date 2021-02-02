@@ -142,132 +142,31 @@ async def get_video_thumb(file, output):
 
 
 @register(pattern=r"^\.upload (.*)", outgoing=True)
-async def upload(u_event):
-    """ For .upload command, allows you to upload a file from the userbot's server """
-    await u_event.edit("Processing ...")
-    input_str = u_event.pattern_match.group(1)
-    if input_str in ("userbot.session", "config.env"):
-        return await u_event.edit("`That's a dangerous operation! Not Permitted!`")
-    if os.path.exists(input_str):
-        file_name = input_str.split("/")[-1]
-        c_time = time.time()
-        start_time = datetime.now()
-        with open(input_str, "rb") as f:
-            result = await upload_file(
-                client=u_event.client,
-                file=f,
-                name=file_name,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, u_event, c_time, "[FILE - UPLOAD]", input_str)
-                ),
-            )
-        up_time = (datetime.now() - start_time).seconds
-        if input_str.lower().endswith(("mp4", "mkv", "webm")):
-            thumb = await get_video_thumb(input_str, "thumb_image.jpg")
-            metadata = extractMetadata(createParser(input_str))
-            duration = 0
-            width = 0
-            height = 0
-            if metadata.has("duration"):
-                duration = metadata.get("duration").seconds
-            if metadata.has("width"):
-                width = metadata.get("width")
-            if metadata.has("height"):
-                height = metadata.get("height")
-            await u_event.client.send_file(
-                u_event.chat_id,
-                result,
-                thumb=thumb,
-                caption=file_name,
-                force_document=False,
-                allow_cache=False,
-                reply_to=u_event.message.id,
-                attributes=[
-                    DocumentAttributeVideo(
-                        duration=duration,
-                        w=width,
-                        h=height,
-                        round_message=False,
-                        supports_streaming=True,
-                    )
-                ],
-            )
-            if thumb is not None:
-                os.remove(thumb)
-            await u_event.edit(f"Uploaded successfully in `{up_time}` seconds.")
-        elif input_str.lower().endswith(("mp3", "flac", "wav")):
-            metadata = extractMetadata(createParser(files))
-            duration = 0
-            artist = ""
-            title = ""
-            if metadata.has("duration"):
-                duration = metadata.get("duration").seconds
-            if metadata.has("artist"):
-                artist = metadata.get("artist")
-            if metadata.has("title"):
-                title = metadata.get("title")
-            await u_event.client.send_file(
-                u_event.chat_id,
-                result,
-                caption=filename,
-                force_document=False,
-                allow_cache=False,
-                attributes=[
-                    DocumentAttributeAudio(
-                        duration=duration,
-                        title=title,
-                        performer=artist,
-                    )
-                ],
-            )
-            await u_event.edit(f"Uploaded successfully in `{up_time}` seconds.")
-        else:
-            await u_event.client.send_file(
-                u_event.chat_id,
-                result,
-                caption=file_name,
-                force_document=False,
-                allow_cache=False,
-                reply_to=u_event.message.id,
-            )
-            await u_event.edit(f"Uploaded successfully in `{up_time}` seconds.")
-    else:
-        await u_event.edit("`404: File Not Found`")
-
-
-@register(pattern=r"^\.updir (.*)", outgoing=True)
-async def dir_upload(event):
-    """For .updir command allows you to upload directory/folder to tg."""
-    lst_files = []
+async def upload(event):
+    if event.fwd_from:
+        return
+    await event.edit("`Processing...`")
     input_str = event.pattern_match.group(1)
-    if os.path.exists(input_str) and os.path.isdir(input_str):
-        await event.edit("`Processing...`")
-        listfile = [
-            f
-            for f in os.listdir(input_str)
-            if os.path.isfile(os.path.join(input_str, f))
-        ]
-        if not listfile:
-            await event.edit(f"Folder `{input_str}` is empty.")
-            return
-        for file in listfile:
-            lst_files.append(os.path.join(input_str, file))
-            if len(lst_files) == 0:
-                return await event.edit(f"Folder `{input_str}` is empty.")
-        await event.edit(f"Found `{len(lst_files)}` files. Now uploading...")
-        for files in sorted(lst_files, key=str.casefold):
-            filename = os.path.basename(files)
-            msg = await event.reply(f"Uploading `{filename}`")
-            with open(files, "rb") as f:
+    if os.path.exists(input_str):
+        if os.path.isfile(input_str):
+            c_time = time.time()
+            start_time = datetime.now()
+            file_name = os.path.basename(input_str)
+            thumb = None
+            attributes = []
+            with open(input_str, "rb") as f:
                 result = await upload_file(
-                    event.client,
-                    f,
-                    filename,
+                    client=event.client,
+                    file=f,
+                    name=file_name,
+                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                        progress(d, t, event, c_time, "[FILE - UPLOAD]", input_str)
+                    ),
                 )
-            if filename.lower().endswith((".mp4", ".mkv", ".webm")):
-                thumb = await get_video_thumb(files, "thumb_image.png")
-                await asyncio.sleep(1)
-                metadata = extractMetadata(createParser(files))
+            up_time = (datetime.now() - start_time).seconds
+            if input_str.lower().endswith(("mp4", "mkv", "webm")):
+                thumb = await get_video_thumb(input_str, "thumb_image.jpg")
+                metadata = extractMetadata(createParser(input_str))
                 duration = 0
                 width = 0
                 height = 0
@@ -277,77 +176,133 @@ async def dir_upload(event):
                     width = metadata.get("width")
                 if metadata.has("height"):
                     height = metadata.get("height")
-                await event.client.send_file(
-                    event.chat_id,
-                    result,
-                    thumb=thumb,
-                    caption=filename,
-                    force_document=False,
-                    allow_cache=False,
-                    attributes=[
-                        DocumentAttributeVideo(
-                            duration=duration,
-                            w=width,
-                            h=height,
-                            supports_streaming=True,
-                        )
-                    ],
-                )
-                if thumb is not None:
-                    os.remove(thumb)
-                await msg.delete()
-            elif filename.lower().endswith(("mp3", "flac", "wav")):
-                metadata = extractMetadata(createParser(files))
+                attributes = [
+                    DocumentAttributeVideo(
+                        duration=duration,
+                        w=width,
+                        h=height,
+                        round_message=False,
+                        supports_streaming=True,
+                    )
+                ]
+            elif input_str.lower().endswith(("mp3", "flac", "wav")):
+                metadata = extractMetadata(createParser(input_str))
                 duration = 0
                 artist = ""
                 title = ""
                 if metadata.has("duration"):
                     duration = metadata.get("duration").seconds
-                if metadata.has("artist"):
-                    artist = metadata.get("artist")
                 if metadata.has("title"):
                     title = metadata.get("title")
-                await event.client.send_file(
-                    event.chat_id,
-                    result,
-                    caption=filename,
-                    force_document=False,
-                    allow_cache=False,
-                    attributes=[
+                if metadata.has("artist"):
+                    artist = metadata.get("artist")
+                attributes = [
+                    DocumentAttributeAudio(
+                        duration=duration,
+                        title=title,
+                        performer=artist,
+                    )
+                ]
+            await event.client.send_file(
+                event.chat_id,
+                result,
+                thumb=thumb,
+                caption=file_name,
+                force_document=False,
+                allow_cache=False,
+                reply_to=event.message.id,
+                attributes=attributes,
+            )
+            if thumb is not None:
+                os.remove(thumb)
+            await event.edit(f"Uploaded successfully in `{up_time}` seconds.")
+        elif os.path.isdir(input_str):
+            start_time = datetime.now()
+            lst_files = []
+            for root, dirs, files in os.walk(input_str):
+                for file in files:
+                    lst_files.append(os.path.join(root, file))
+            if len(lst_files) == 0:
+                return await event.edit(f"`{input_str}` is empty.")
+            await event.edit(f"Found `{len(lst_files)}` files. Now uploading...")
+            for files in sorted(lst_files):
+                file_name = os.path.basename(files)
+                thumb = None
+                attributes = []
+                msg = await event.reply(f"Uploading `{files}`")
+                with open(files, "rb") as f:
+                    result = await upload_file(
+                        client=event.client,
+                        file=f,
+                        name=file_name,
+                    )
+                if file_name.lower().endswith(("mp4", "mkv", "webm")):
+                    thumb = await get_video_thumb(files, "thumb_image.jpg")
+                    metadata = extractMetadata(createParser(files))
+                    duration = 0
+                    width = 0
+                    height = 0
+                    if metadata.has("duration"):
+                        duration = metadata.get("duration").seconds
+                    if metadata.has("width"):
+                        width = metadata.get("width")
+                    if metadata.has("height"):
+                        height = metadata.get("height")
+                    attributes = [
+                        DocumentAttributeVideo(
+                            duration=duration,
+                            w=width,
+                            h=height,
+                            round_message=False,
+                            supports_streaming=True,
+                        )
+                    ]
+                elif file_name.lower().endswith(("mp3", "flac", "wav")):
+                    metadata = extractMetadata(createParser(files))
+                    duration = 0
+                    title = ""
+                    artist = ""
+                    if metadata.has("duration"):
+                        duration = metadata.get("duration").seconds
+                    if metadata.has("title"):
+                        title = metadata.get("title")
+                    if metadata.has("artist"):
+                        artist = metadata.get("artist")
+                    attributes = [
                         DocumentAttributeAudio(
                             duration=duration,
                             title=title,
                             performer=artist,
                         )
-                    ],
-                )
-                await msg.delete()
-            else:
+                    ]
                 await event.client.send_file(
                     event.chat_id,
                     result,
+                    thumb=thumb,
+                    caption=file_name,
                     force_document=False,
                     allow_cache=False,
+                    attributes=attributes,
                 )
                 await msg.delete()
-        await event.delete()
-        await event.respond(
-            f"Successfully uploaded `{len(lst_files)}` files in `{input_str}` folder."
-        )
-    elif os.path.isfile(input_str):
-        await event.edit("Please use `.up <filename>` for single file")
-        return
+                if thumb is not None:
+                    os.remove(thumb)
+
+            await event.delete()
+            up_time = (datetime.now() - start_time).seconds
+            await event.respond(
+                f"Uploaded `{len(lst_files)}` files in `{input_str}` folder "
+                f"in `{up_time}` seconds."
+            )
     else:
-        await event.edit("`404: Folder Not Found`")
+        await event.edit("`404: File/Folder Not Found`")
 
 
 CMD_HELP.update(
     {
         "download": ">`.download <link|filename> or reply to media`"
         "\nUsage: Downloads file to the server."
-        "\n\n>`.upload <path in server>`"
-        "\nUsage: Uploads a locally stored file to the chat."
-        "\n\n>`.updir` <folder path in server>"
-        "\nUsage: Uploads Folder/Directory from the server"
+        "\n\n>`.upload` <file/folder path in server>"
+        "\nUsage: Uploads a locally stored file/folder to the chat."
     }
 )
