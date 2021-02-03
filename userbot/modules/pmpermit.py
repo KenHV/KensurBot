@@ -265,6 +265,7 @@ async def disapprovepm(disapprvpm):
             return await disapprvpm.edit(
                 "**This can be done only with users.**")
         name0 = str(aname.first_name)
+        aname = aname.id
 
     await disapprvpm.edit(
         f"[{name0}](tg://user?id={aname}) **disapproved to PM!**")
