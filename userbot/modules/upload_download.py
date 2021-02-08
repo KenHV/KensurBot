@@ -92,10 +92,15 @@ async def download(target_file):
             media = replied.media
             if hasattr(media, "document"):
                 file = media.document
+                mime_type = file.mime_type
                 attribs = file.attributes
                 for attr in attribs:
                     if isinstance(attr, DocumentAttributeFilename):
                         filename = attr.file_name
+                    elif "audio" in mime_type:
+                        filename = "audio-" + str(datetime.now()) + ".ogg"
+                    elif "video" in mime_type:
+                        filename = "video-" + str(datetime.now()) + ".mp4"
                 outdir = TEMP_DOWNLOAD_DIRECTORY + filename
                 c_time = time.time()
                 start_time = datetime.now()
