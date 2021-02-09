@@ -17,6 +17,8 @@
 import math
 import time
 
+from telethon.errors.rpcerrorlist import MessageNotModifiedError
+
 from .exceptions import CancelProcess
 from .tools import humanbytes, time_formatter
 
@@ -52,4 +54,7 @@ async def progress(current, total, event, start, prog_type, is_cancelled=False):
             f"**ETA:** {time_formatter(eta)}\n"
             f"**Duration:** {time_formatter(elapsed_time)}"
         )
-        await event.edit(f"**{prog_type}**\n\n{tmp}")
+        try:
+            await event.edit(f"**{prog_type}**\n\n{tmp}")
+        except MessageNotModifiedError:
+            pass
