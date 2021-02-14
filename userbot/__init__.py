@@ -16,6 +16,7 @@ from pylast import LastFMNetwork, md5
 from pySmartDL import SmartDL
 from requests import get
 from telethon import TelegramClient
+from telethon.network.connection.tcpabridged import ConnectionTcpAbridged
 from telethon.sessions import StringSession
 
 from .storage import Storage
@@ -170,6 +171,7 @@ if STRING_SESSION:
         session=StringSession(STRING_SESSION),
         api_id=API_KEY,
         api_hash=API_HASH,
+        connection=ConnectionTcpAbridged,
         auto_reconnect=True,
         connection_retries=-1,
     )
