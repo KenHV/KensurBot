@@ -46,10 +46,11 @@ async def progress(current,
             status = "Unknown"
         progress_str = "`{0}` | [{1}{2}] `{3}%`".format(
             status,
-            "".join(["●" for i in range(math.floor(percentage / 10))]),
-            "".join(["○" for i in range(10 - math.floor(percentage / 10))]),
+            "".join("●" for i in range(math.floor(percentage / 10))),
+            "".join("○" for i in range(10 - math.floor(percentage / 10))),
             round(percentage, 2),
         )
+
         tmp = (f"{progress_str}\n"
                f"`{humanbytes(current)} of {humanbytes(total)}"
                f" @ {humanbytes(speed)}`\n"
