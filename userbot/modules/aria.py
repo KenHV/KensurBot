@@ -192,16 +192,19 @@ async def check_progress_for_dl(gid, event, previous):
         file = aria2.get_download(gid)
         complete = file.is_complete
         try:
-            if not (complete or file.error_message):
+            if (complete or file.error_message):
+                await event.edit(f"`{msg}`")
+            else:
                 percentage = int(file.progress)
                 downloaded = percentage * int(file.total_length) / 100
                 prog_str = "`Downloading` | [{0}{1}] `{2}`".format(
-                    "".join(["●" for i in range(math.floor(percentage / 10))]),
-                    "".join([
+                    "".join("●" for i in range(math.floor(percentage / 10))),
+                    "".join(
                         "○" for i in range(10 - math.floor(percentage / 10))
-                    ]),
+                    ),
                     file.progress_string(),
                 )
+
                 msg = (
                     f"`Name`: `{file.name}`\n"
                     f"`Status` -> **{file.status.capitalize()}**\n"
@@ -212,8 +215,6 @@ async def check_progress_for_dl(gid, event, previous):
                 if msg != previous:
                     await event.edit(msg)
                     msg = previous
-            else:
-                await event.edit(f"`{msg}`")
             await sleep(5)
             await check_progress_for_dl(gid, event, previous)
             file = aria2.get_download(gid)
