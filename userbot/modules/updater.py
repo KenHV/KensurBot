@@ -24,13 +24,11 @@ requirements_path = path.join(
 
 
 async def gen_chlog(repo, diff):
-    ch_log = ""
     d_form = "%d/%m/%y"
-    for c in repo.iter_commits(diff):
-        ch_log += (
-            f"- {c.summary} ({c.committed_datetime.strftime(d_form)}) <{c.author}>\n"
-        )
-    return ch_log
+    return "".join(
+        f"- {c.summary} ({c.committed_datetime.strftime(d_form)}) <{c.author}>\n"
+        for c in repo.iter_commits(diff)
+    )
 
 
 async def print_changelogs(event, ac_br, changelog):
