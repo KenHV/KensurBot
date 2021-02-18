@@ -58,6 +58,7 @@ from userbot.utils.exceptions import CancelProcess
 # =========================================================== #
 GOOGLE_AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
 GOOGLE_TOKEN_URI = "https://oauth2.googleapis.com/token"
+G_DRIVE_DIR_MIME_TYPE = "application/vnd.google-apps.folder"
 SCOPES = [
     "https://www.googleapis.com/auth/drive",
     "https://www.googleapis.com/auth/drive.metadata",
@@ -888,26 +889,20 @@ async def google_drive_managers(gdrive):
                 """ - If failed assumming value is folderId/fileId - """
                 f_id = name_or_id
                 if "http://" in name_or_id or "https://" in name_or_id:
-                    if "uc?id=" in name_or_id:
-                        f_id = name_or_id.split("uc?id=")[1]
-                        f_id = re.split("[? &]", f_id)[0]
-                    elif "folders/" in name_or_id:
-                        f_id = name_or_id.split("folders/")[1]
+                    if "id=" in name_or_id:
+                        f_id = name_or_id.split("id=")[1]
                         f_id = re.split("[? &]", f_id)[0]
                     elif "folders/" in name_or_id:
                         f_id = name_or_id.split("folders/")[1]
                         f_id = re.split("[? &]", f_id)[0]
                     elif "/view" in name_or_id:
                         f_id = name_or_id.split("/")[-2]
-                    elif "open?id=" in name_or_id:
-                        f_id = name_or_id.split("open?id=")[1]
-                        f_id = re.split("[? &]", f_id)[0]
                 try:
                     f = await get_information(service, f_id)
                 except Exception as e:
                     reply += (
                         f"`[FILE/FOLDER - ERROR]`\n\n"
-                        "`Status` : **BAD**"
+                        "`Status` : **BAD**\n"
                         f"`Reason` : `{str(e)}`\n\n"
                     )
                     continue
@@ -1295,6 +1290,150 @@ async def check_progress_for_dl(gdrive, gid, previous):
                     pass
 
 
+async def list_drive_dir(service, file_id: str) -> list:
+    query = f"'{file_id}' in parents and (name contains '*')"
+    fields = "nextPageToken, files(id, name, mimeType, size)"
+    page_token = None
+    page_size = 100
+    files = []
+    while True:
+        response = (
+            service.files()
+            .list(
+                supportsAllDrives=True,
+                includeItemsFromAllDrives=True,
+                q=query,
+                spaces="drive",
+                fields=fields,
+                pageToken=page_token,
+                pageSize=page_size,
+                corpora="allDrives",
+                orderBy="folder, name",
+            )
+            .execute()
+        )
+        files.extend(response.get("files", []))
+        page_token = response.get("nextPageToken", None)
+        if page_token is None:
+            break
+    return files
+
+
+async def create_folder(service, folder_name: str, parent_id: str) -> str:
+    metadata = {
+        "name": folder_name,
+        "mimeType": "application/vnd.google-apps.folder",
+    }
+    if parent_id is not None:
+        metadata["parents"] = [parent_id]
+    folder = (
+        service.files()
+        .create(body=metadata, fields="id", supportsAllDrives=True)
+        .execute()
+    )
+    return folder["id"]
+
+
+async def copy_file(service, file_id: str, parent_id: str) -> str:
+    body = {}
+    if parent_id:
+        body["parents"] = [parent_id]
+    drive_file = (
+        service.files()
+        .copy(body=body, fileId=file_id, supportsTeamDrives=True)
+        .execute()
+    )
+    return drive_file["id"]
+
+
+async def copy_dir(service, file_id: str, parent_id: str) -> str:
+    files = await list_drive_dir(service, file_id)
+    if len(files) == 0:
+        return parent_id
+    new_id = None
+    for file_ in files:
+        if file_["mimeType"] == G_DRIVE_DIR_MIME_TYPE:
+            dir_id = await create_folder(service, file_["name"], parent_id)
+            new_id = await copy_dir(service, file_["id"], dir_id)
+        else:
+            await copy_file(service, file_["id"], parent_id)
+            await asyncio.sleep(0.5)  # due to user rate limits
+            new_id = parent_id
+    return new_id
+
+
+async def copy(service, file_id: str) -> str:
+    drive_file = (
+        service.files()
+        .get(fileId=file_id, fields="name, mimeType", supportsTeamDrives=True)
+        .execute()
+    )
+    if drive_file["mimeType"] == G_DRIVE_DIR_MIME_TYPE:
+        dir_id = await create_folder(service, drive_file["name"], G_DRIVE_FOLDER_ID)
+        await copy_dir(service, file_id, dir_id)
+        ret_id = dir_id
+    else:
+        ret_id = await copy_file(service, file_id, G_DRIVE_FOLDER_ID)
+    return ret_id
+
+
+async def count_dir_size(service, file_id: str) -> int:
+    _size = 0
+    files = await list_drive_dir(service, file_id)
+    for _file in files:
+        try:
+            if _file.get("mimeType") == G_DRIVE_DIR_MIME_TYPE:
+                dir_id = _file.get("id")
+                _size += int(await count_dir_size(service, dir_id))
+            else:
+                _size += int(_file.get("size"))
+        except TypeError:
+            pass
+    return _size
+
+
+@register(outgoing=True, pattern=r"^\.gcl(?: |$)(.*)")
+async def gdrive_clone(event):
+    service = await create_app(event)
+    if service is False:
+        return None
+    input_str = event.pattern_match.group(1)
+    if not input_str:
+        return await event.edit("`What should i clone?`")
+    _file_id = input_str
+    await event.edit("`Processing...`")
+    if "https://" or "http://" in input_str:
+        if "id=" in input_str:
+            _file_id = input_str.split("id=")[1]
+            _file_id = re.split("[? &]", _file_id)[0]
+        elif "folders/" in input_str:
+            _file_id = input_str.split("folders/")[1]
+            _file_id = re.split("[? &]", _file_id)[0]
+        elif "/view" in input_str:
+            _file_id = input_str.split("/")[-2]
+    try:
+        await get_information(service, _file_id)
+    except BaseException as gd_e:
+        return await event.edit(
+            f"`[FILE/FOLDER ERROR]`\n\nStatus : **BAD**\nError : `{gd_e}`"
+        )
+    _clone_id = await copy(service, _file_id)
+    _drive_meta = await get_information(service, _clone_id)
+    _name = _drive_meta.get("name")
+    if _drive_meta.get("mimeType") == G_DRIVE_DIR_MIME_TYPE:
+        _mime_type = "[FOLDER - CLONE]"
+        _link = _drive_meta.get("webViewLink")
+        _size = await count_dir_size(service, _drive_meta.get("id"))
+        _icon = "📁️"
+    else:
+        _mime_type = "[FILE - CLONE]"
+        _link = _drive_meta.get("webContentLink")
+        _size = _drive_meta.get("size", 0)
+        _icon = "📄️"
+    msg = f"`{_mime_type}`\n\n{_icon} [{_name}]({_link})\nSize : `{humanbytes(int(_size))}`"
+    await event.edit(msg)
+
+
 CMD_HELP.update(
     {
         "gdrive": ">`.gdauth`"
@@ -1323,6 +1462,8 @@ CMD_HELP.update(
         "\n\n>`.gdfset rm`"
         "\nUsage: remove set parentId from cmd\n>`.gdfset put` "
         "into **G_DRIVE_FOLDER_ID** and if empty upload will go to root."
+        "\n\n>`.gcl <Public GDrive Link / GDrive ID>`"
+        "\nUsage: Copy File or Folder into your Drive"
         "\n\nNOTE:"
         "\nfor >`.gdlist` you can combine -l and -p flags with or without name "
         "at the same time, it must be `-l` flags first before use `-p` flags.\n"
