@@ -30,6 +30,10 @@
       "description": "In case you maintain a fork, add your repo URL here.",
       "required": false
     },
+    "BITLY_TOKEN": {
+      "description": "BITLY TOKEN.",
+      "required": false
+    },
     "UPSTREAM_REPO_BRANCH": {
       "description": "In case you maintain a fork, add your repo BRANCH here.",
       "required": false
