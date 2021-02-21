@@ -92,7 +92,7 @@ async def carbon_api(e):
         file_path,
         caption=("Made using [Carbon](https://carbon.now.sh/about/),"
                  "\na project by [Dawn Labs](https://dawnlabs.io/)"),
-        force_document=True,
+        force_document=False,
         reply_to=e.message.reply_to_msg_id,
     )
 
