@@ -9,6 +9,7 @@ import textwrap
 from typing import Optional, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
+
 from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
@@ -28,10 +29,8 @@ async def memify(event):
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
 
-    input_file = await event.client.download_media(reply_msg,
-                                                   TEMP_DOWNLOAD_DIRECTORY)
-    input_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY,
-                              os.path.basename(input_file))
+    input_file = await event.client.download_media(reply_msg, TEMP_DOWNLOAD_DIRECTORY)
+    input_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, os.path.basename(input_file))
 
     if input_file.endswith(".tgs"):
         await event.edit("**Extracting first frame...**")
@@ -40,8 +39,7 @@ async def memify(event):
         await runcmd(cmd)
         os.remove(input_file)
         if not os.path.lexists(converted_file):
-            return await event.edit("**Couldn't parse this animated sticker.**"
-                                    )
+            return await event.edit("**Couldn't parse this animated sticker.**")
         input_file = converted_file
 
     elif input_file.endswith(".mp4"):
@@ -58,9 +56,9 @@ async def memify(event):
         final_image = await add_text_img(input_file, input_str)
     except Exception as e:
         return await event.edit(f"**An error occurred:**\n`{e}`")
-    await event.client.send_file(entity=event.chat_id,
-                                 file=final_image,
-                                 reply_to=reply_msg)
+    await event.client.send_file(
+        entity=event.chat_id, file=final_image, reply_to=reply_msg
+    )
     await event.delete()
     os.remove(final_image)
     os.remove(input_file)
@@ -74,16 +72,17 @@ async def add_text_img(image_path, text):
         upper_text, lower_text = text.split(";")
     else:
         upper_text = text
-        lower_text = ''
+        lower_text = ""
 
     img = Image.open(image_path).convert("RGBA")
     img_info = img.info
     image_width, image_height = img.size
-    font = ImageFont.truetype(font="bin/impact.ttf",
-                              size=int(image_height * font_size) // 100)
+    font = ImageFont.truetype(
+        font="bin/impact.ttf", size=int(image_height * font_size) // 100
+    )
     draw = ImageDraw.Draw(img)
 
-    char_width, char_height = font.getsize('A')
+    char_width, char_height = font.getsize("A")
     chars_per_line = image_width // char_width
     top_lines = textwrap.wrap(upper_text, width=chars_per_line)
     bottom_lines = textwrap.wrap(lower_text, width=chars_per_line)
@@ -93,12 +92,14 @@ async def add_text_img(image_path, text):
         for line in top_lines:
             line_width, line_height = font.getsize(line)
             x = (image_width - line_width) / 2
-            draw.text((x, y),
-                      line,
-                      fill='white',
-                      font=font,
-                      stroke_width=stroke_width,
-                      stroke_fill='black')
+            draw.text(
+                (x, y),
+                line,
+                fill="white",
+                font=font,
+                stroke_width=stroke_width,
+                stroke_fill="black",
+            )
             y += line_height
 
     if bottom_lines:
@@ -106,12 +107,14 @@ async def add_text_img(image_path, text):
         for line in bottom_lines:
             line_width, line_height = font.getsize(line)
             x = (image_width - line_width) / 2
-            draw.text((x, y),
-                      line,
-                      fill='white',
-                      font=font,
-                      stroke_width=stroke_width,
-                      stroke_fill='black')
+            draw.text(
+                (x, y),
+                line,
+                fill="white",
+                font=font,
+                stroke_width=stroke_width,
+                stroke_fill="black",
+            )
             y += line_height
 
     final_image = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "memify.webp")
@@ -123,28 +126,34 @@ async def runcmd(cmd: str) -> Tuple[str, str, int, int]:
     """ run command in terminal """
     args = shlex.split(cmd)
     process = await asyncio.create_subprocess_exec(
-        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
     stdout, stderr = await process.communicate()
-    return (stdout.decode('utf-8', 'replace').strip(),
-            stderr.decode('utf-8',
-                          'replace').strip(), process.returncode, process.pid)
+    return (
+        stdout.decode("utf-8", "replace").strip(),
+        stderr.decode("utf-8", "replace").strip(),
+        process.returncode,
+        process.pid,
+    )
 
 
-async def take_screen_shot(video_file: str,
-                           duration: int,
-                           path: str = '') -> Optional[str]:
+async def take_screen_shot(
+    video_file: str, duration: int, path: str = ""
+) -> Optional[str]:
     """ take a screenshot """
     ttl = duration // 2
     thumb_image_path = path or os.path.join(
-        TEMP_DOWNLOAD_DIRECTORY, f"{os.path.basename(video_file)}.png")
+        TEMP_DOWNLOAD_DIRECTORY, f"{os.path.basename(video_file)}.png"
+    )
     command = f'''ffmpeg -ss {ttl} -i "{video_file}" -vframes 1 "{thumb_image_path}"'''
     err = (await runcmd(command))[1]
     return thumb_image_path if os.path.exists(thumb_image_path) else err
 
 
-CMD_HELP.update({
-    "memify":
-    ">`.mmf <top text>;<bottom text>`"
-    "\nUsage: Reply to an image/sticker/gif/video to add text to it."
-    "\nIf it's a video, text will be added to the first frame."
-})
+CMD_HELP.update(
+    {
+        "memify": ">`.mmf <top text>;<bottom text>`"
+        "\nUsage: Reply to an image/sticker/gif/video to add text to it."
+        "\nIf it's a video, text will be added to the first frame."
+    }
+)

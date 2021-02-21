@@ -58,9 +58,10 @@ async def mention(event):
         await event.edit(newstr, parse_mode="html")
 
 
-CMD_HELP.update({
-    "mention":
-    "Mention users with a custom name."
-    "\nUsage: `Hi @ender1324[bluid boi]`"
-    "\nResult: Hi [bluid boi](tg://resolve?domain=ender1324)"
-})
+CMD_HELP.update(
+    {
+        "mention": "Mention users with a custom name."
+        "\nUsage: `Hi @ender1324[bluid boi]`"
+        "\nResult: Hi [bluid boi](tg://resolve?domain=ender1324)"
+    }
+)

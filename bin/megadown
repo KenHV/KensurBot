@@ -105,7 +105,7 @@ function check_deps {
 # 2:url
 function urldecode {
 
-	: "${*//+/ }"; echo -e "${_//%/\\x}"; 
+	: "${*//+/ }"; echo -e "${_//%/\\x}";
 }
 
 # 1:b64_encoded_string
@@ -487,7 +487,7 @@ if [ $(echo -n "$link" | grep -E -o 'mega(\.co)?\.nz') ]; then
 	fi
 
 	dl_temp_url=$(echo "$mega_res_json" | jq -r .[0].g)
-	
+
 	if [ $metadata ]; then
 		echo "{\"file_name\" : \"${file_name}\", \"file_size\" : ${file_size}, \"url\" : \"${dl_temp_url}\", \"hex_raw_key\" : \"${hex_raw_key:32:16}0000000000000000\", \"hex_key\" : \"${hex_key}\"}"
 		exit 0

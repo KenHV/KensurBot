@@ -637,16 +637,14 @@ async def coin(event):
         if input_str == "heads":
             await event.edit("The coin landed on: **Heads**.\nAs expected.")
         elif input_str == "tails":
-            await event.edit(
-                "The coin landed on: **Heads**.\nBetter luck next time?")
+            await event.edit("The coin landed on: **Heads**.\nBetter luck next time?")
         else:
             await event.edit("The coin landed on: **Heads**.")
     elif r == "tails":
         if input_str == "tails":
             await event.edit("The coin landed on: **Tails**.\nAs expected.")
         elif input_str == "heads":
-            await event.edit(
-                "The coin landed on: **Tails**.\nBetter luck next time?")
+            await event.edit("The coin landed on: **Tails**.\nBetter luck next time?")
         else:
             await event.edit("The coin landed on: **Tails**.")
 
@@ -677,7 +675,7 @@ async def slap(replied_user, event):
     username = replied_user.username
 
     if username:
-        slapped = "@{}".format(username)
+        slapped = f"@{username}"
     else:
         slapped = f"[{first_name}](tg://user?id={user_id})"
 
@@ -688,7 +686,8 @@ async def slap(replied_user, event):
     where = choice(WHERE)
 
     return "..." + temp.format(
-        victim=slapped, item=item, hits=hit, throws=throw, where=where)
+        victim=slapped, item=item, hits=hit, throws=throw, where=where
+    )
 
 
 @register(outgoing=True, pattern=r"^\.(yes|no|maybe|decide)$")
@@ -700,10 +699,9 @@ async def decide(event):
     else:
         r = requests.get(f"https://yesno.wtf/api").json()
     await event.delete()
-    await event.client.send_message(event.chat_id,
-                                    str(r["answer"]).upper(),
-                                    reply_to=message_id,
-                                    file=r["image"])
+    await event.client.send_message(
+        event.chat_id, str(r["answer"]).upper(), reply_to=message_id, file=r["image"]
+    )
 
 
 @register(outgoing=True, pattern=r"^\.cry$")
@@ -789,8 +787,7 @@ async def stretch(stret):
         return
 
     count = randint(3, 10)
-    reply_text = sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count),
-                     message)
+    reply_text = sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count), message)
     await stret.edit(reply_text)
 
 
@@ -954,7 +951,8 @@ async def bluetext(bt_e):
         await bt_e.edit(
             "/COLORS_MUST_CLICK\n"
             "/ARE_YOU_A_STUPID_ANIMAL_WHICH_IS_ATTRACTED_TO_COLOURS\n"
-            "/CLICK_HERE")
+            "/CLICK_HERE"
+        )
 
 
 @register(outgoing=True, pattern=r"^\.f (.*)")
@@ -990,8 +988,10 @@ async def let_me_google_that_for_you(lmgtfy_q):
     lfy_url = f"http://lmgtfy.com/?s=g&iie=1&q={query_encoded}"
     payload = {"format": "json", "url": lfy_url}
     r = requests.get("http://is.gd/create.php", params=payload)
-    await lmgtfy_q.edit(f"Here you are, help yourself.\
-    \n[{query}]({r.json()['shorturl']})")
+    await lmgtfy_q.edit(
+        f"Here you are, help yourself.\
+    \n[{query}]({r.json()['shorturl']})"
+    )
 
 
 @register(pattern=r"^\.scam(?: |$)(.*)", outgoing=True)
@@ -1062,9 +1062,9 @@ async def typewriter(typew):
         await sleep(sleep_time)
 
 
-CMD_HELP.update({
-    "memes":
-    ".cowsay\
+CMD_HELP.update(
+    {
+        "memes": ".cowsay\
 \nUsage: cow which says things.\
 \n\n.cp\
 \nUsage: Copypasta the famous meme\
@@ -1116,4 +1116,5 @@ CMD_HELP.update({
 \n[Available Actions: (typing, contact, game, location, voice, round, video, photo, document, cancel)]\
 \nUsage: Create fake chat actions, for fun. (Default action: typing)\
 \n\n\nThanks to 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot) for some of these."
-})
+    }
+)

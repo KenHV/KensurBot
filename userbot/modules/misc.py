@@ -26,8 +26,9 @@ async def randomise(items):
             "**2 or more items are required!**\nCheck `.help random` for more info."
         )
     index = randint(1, len(itemo) - 1)
-    await items.edit("**Query: **\n`" + items.text[8:] + "`\n**Output: **\n`" +
-                     itemo[index] + "`")
+    await items.edit(
+        "**Query: **\n`" + items.text[8:] + "`\n**Output: **\n`" + itemo[index] + "`"
+    )
 
 
 @register(outgoing=True, pattern=r"^\.sleep ([0-9]+)$")
@@ -50,8 +51,7 @@ async def killthebot(event):
     """ For .shutdown command, shut the bot down."""
     await event.edit("**Shutting down...**")
     if BOTLOG:
-        await event.client.send_message(BOTLOG_CHATID, "#SHUTDOWN \n"
-                                        "Bot shut down")
+        await event.client.send_message(BOTLOG_CHATID, "#SHUTDOWN \n" "Bot shut down")
     await bot.disconnect()
 
 
@@ -59,8 +59,7 @@ async def killthebot(event):
 async def killdabot(event):
     await event.edit("**Restarting...**")
     if BOTLOG:
-        await event.client.send_message(BOTLOG_CHATID, "#RESTART \n"
-                                        "Bot Restarted")
+        await event.client.send_message(BOTLOG_CHATID, "#RESTART \n" "Bot Restarted")
     await bot.disconnect()
     # Spin a new instance of bot
     execl(sys.executable, sys.executable, *sys.argv)
@@ -125,35 +124,25 @@ async def raw(event):
                 reply_to=reply_to_id,
                 caption="**Here's the decoded message data!**",
             )
-            await event.edit(
-                "**Check botlog group for the decoded message data.**")
+            await event.edit("**Check botlog group for the decoded message data.**")
         except:
             await event.edit("**This feature needs BOTLOG_CHATID to be set.**")
 
 
-CMD_HELP.update({
-    "random":
-    ">`.random <item1> <item2> ... <itemN>`"
-    "\nUsage: Get a random item from the list of items.",
-    "sleep":
-    ">`.sleep <seconds>`"
-    "\nUsage: Lets your bot snooze for a few seconds.",
-    "shutdown":
-    ">`.shutdown`"
-    "\nUsage: Shuts down the bot.",
-    "repo":
-    ">`.repo`"
-    "\nUsage: GitHub repo of this bot",
-    "readme":
-    ">`.readme`"
-    "\nUsage: Provides links to setup the userbot and it's modules.",
-    "repeat":
-    ">`.repeat <no> <text>`"
-    "\nUsage: Repeats the text for a number of times. Don't confuse this with spam tho.",
-    "restart":
-    ">`.restart`"
-    "\nUsage: Restarts the bot.",
-    "raw":
-    ">`.raw`"
-    "\nUsage: Get detailed JSON-like formatted data about replied message.",
-})
+CMD_HELP.update(
+    {
+        "random": ">`.random <item1> <item2> ... <itemN>`"
+        "\nUsage: Get a random item from the list of items.",
+        "sleep": ">`.sleep <seconds>`"
+        "\nUsage: Lets your bot snooze for a few seconds.",
+        "shutdown": ">`.shutdown`" "\nUsage: Shuts down the bot.",
+        "repo": ">`.repo`" "\nUsage: GitHub repo of this bot",
+        "readme": ">`.readme`"
+        "\nUsage: Provides links to setup the userbot and it's modules.",
+        "repeat": ">`.repeat <no> <text>`"
+        "\nUsage: Repeats the text for a number of times. Don't confuse this with spam tho.",
+        "restart": ">`.restart`" "\nUsage: Restarts the bot.",
+        "raw": ">`.raw`"
+        "\nUsage: Get detailed JSON-like formatted data about replied message.",
+    }
+)

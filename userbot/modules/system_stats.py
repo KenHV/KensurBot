@@ -34,8 +34,7 @@ async def sysdetails(sysd):
             )
 
             stdout, stderr = await fetch.communicate()
-            result = str(stdout.decode().strip()) + \
-                str(stderr.decode().strip())
+            result = str(stdout.decode().strip()) + str(stderr.decode().strip())
 
             await sysd.edit("`" + result + "`")
         except FileNotFoundError:
@@ -70,11 +69,11 @@ async def bot_ver(event):
         stdout, stderr = await rev.communicate()
         revout = str(stdout.decode().strip()) + str(stderr.decode().strip())
 
-        await event.edit(f"**Userbot:** `{verout}`\n"
-                         f"**Revision:** `{revout}`\n")
+        await event.edit(f"**Userbot:** `{verout}`\n" f"**Revision:** `{revout}`\n")
     else:
         await event.edit(
-            "**Shame that you don't have git, you're running v1.0 anyway!**")
+            "**Shame that you don't have git, you're running v1.0 anyway!**"
+        )
 
 
 @register(outgoing=True, pattern=r"^\.pip(?: |$)(.*)")
@@ -108,15 +107,19 @@ async def pipcheck(pip):
                 )
                 remove("output.txt")
                 return
-            await pip.edit("**Query: **\n`"
-                           f"pip3 search {pipmodule}"
-                           "`\n**Result: **\n`"
-                           f"{pipout}"
-                           "`")
+            await pip.edit(
+                "**Query: **\n`"
+                f"pip3 search {pipmodule}"
+                "`\n**Result: **\n`"
+                f"{pipout}"
+                "`"
+            )
         else:
-            await pip.edit("**Query: **\n`"
-                           f"pip3 search {pipmodule}"
-                           "`\n**Result: **\n`No result returned/False`")
+            await pip.edit(
+                "**Query: **\n`"
+                f"pip3 search {pipmodule}"
+                "`\n**Result: **\n`No result returned/False`"
+            )
     else:
         await pip.edit("**Use .help pip to see an example.**")
 
@@ -124,17 +127,18 @@ async def pipcheck(pip):
 @register(outgoing=True, pattern=r"^\.alive$")
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
-    await alive.edit("**KensurBot v1.0 is up and running!**\n\n"
-                     f"**Telethon:** {version.__version__}\n"
-                     f"**Python:** {python_version()}\n"
-                     f"**User:** {DEFAULTUSER}")
+    await alive.edit(
+        "**KensurBot v1.0 is up and running!**\n\n"
+        f"**Telethon:** {version.__version__}\n"
+        f"**Python:** {python_version()}\n"
+        f"**User:** {DEFAULTUSER}"
+    )
 
 
 @register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
     """ For .aliveu command, change the username in the .alive command. """
     message = username.text
-    output = ".aliveu [new user without brackets] nor can it be empty"
     if message != ".aliveu" and message[7:8] == " ":
         newuser = message[8:]
         global DEFAULTUSER
@@ -150,21 +154,16 @@ async def amireallyalivereset(ureset):
     await ureset.edit("**Successfully reset user for alive!**")
 
 
-CMD_HELP.update({
-    "sysd":
-    ">`.sysd`"
-    "\nUsage: Shows system information using neofetch.",
-    "botver":
-    ">`.botver`"
-    "\nUsage: Shows the userbot version.",
-    "pip":
-    ">`.pip <module(s)>`"
-    "\nUsage: Does a search of pip modules(s).",
-    "alive":
-    ">`.alive`"
-    "\nUsage: Type .alive to see wether your bot is working or not."
-    "\n\n>`.aliveu <text>`"
-    "\nUsage: Changes the 'user' in alive to the text you want."
-    "\n\n>`.resetalive`"
-    "\nUsage: Resets the user to default.",
-})
+CMD_HELP.update(
+    {
+        "sysd": ">`.sysd`" "\nUsage: Shows system information using neofetch.",
+        "botver": ">`.botver`" "\nUsage: Shows the userbot version.",
+        "pip": ">`.pip <module(s)>`" "\nUsage: Does a search of pip modules(s).",
+        "alive": ">`.alive`"
+        "\nUsage: Type .alive to see wether your bot is working or not."
+        "\n\n>`.aliveu <text>`"
+        "\nUsage: Changes the 'user' in alive to the text you want."
+        "\n\n>`.resetalive`"
+        "\nUsage: Resets the user to default.",
+    }
+)

@@ -30,7 +30,8 @@ async def lyrics(lyric):
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
         if playing is None:
             return await lyric.edit(
-                "**LastFM says you're not playing anything right now.**")
+                "**LastFM says you're not playing anything right now.**"
+            )
         artist = playing.get_artist()
         song = playing.get_title()
     else:
@@ -42,25 +43,26 @@ async def lyrics(lyric):
 
     if songs is None:
         return await lyric.edit(
-            f"**Couldn't find lyrics for** `{artist} - {song}`**.**")
+            f"**Couldn't find lyrics for** `{artist} - {song}`**.**"
+        )
 
     if len(songs.lyrics) > 4096:
         await lyric.edit("**Uploading lyrics as file...**")
         with open("lyrics.txt", "w+") as f:
             f.write(f"Search query: \n{artist} - {song}\n\n{songs.lyrics}")
-        await lyric.client.send_file(lyric.chat_id,
-                                     "lyrics.txt",
-                                     reply_to=lyric.id)
+        await lyric.client.send_file(lyric.chat_id, "lyrics.txt", reply_to=lyric.id)
         os.remove("lyrics.txt")
     else:
-        await lyric.edit(f"**Search query**:\n`{artist}` - `{song}`"
-                         f"\n\n{songs.lyrics}")
+        await lyric.edit(
+            f"**Search query**:\n`{artist}` - `{song}`" f"\n\n{songs.lyrics}"
+        )
 
 
-CMD_HELP.update({
-    "lyrics":
-    ">`.lyrics` **<artist name> - <song name>**"
-    "\nUsage: Gets lyrics for given song."
-    "\n\n>`.lyrics now`"
-    "\nUsage: Gets lyrics for current LastFM scrobble."
-})
+CMD_HELP.update(
+    {
+        "lyrics": ">`.lyrics` **<artist name> - <song name>**"
+        "\nUsage: Gets lyrics for given song."
+        "\n\n>`.lyrics now`"
+        "\nUsage: Gets lyrics for current LastFM scrobble."
+    }
+)

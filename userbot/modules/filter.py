@@ -31,7 +31,8 @@ async def filter_incoming_handler(handler):
                 if pro:
                     if trigger.f_mesg_id:
                         msg_o = await handler.client.get_messages(
-                            entity=BOTLOG_CHATID, ids=int(trigger.f_mesg_id))
+                            entity=BOTLOG_CHATID, ids=int(trigger.f_mesg_id)
+                        )
                         await handler.reply(msg_o.message, file=msg_o.media)
                     elif trigger.reply:
                         await handler.reply(trigger.reply)
@@ -88,10 +89,9 @@ async def remove_a_filter(r_handler):
         return await r_handler.edit("`Running on Non-SQL mode!`")
     filt = r_handler.pattern_match.group(1)
     if not remove_filter(r_handler.chat_id, filt):
-        await r_handler.edit("`Filter` **{}** `doesn't exist.`".format(filt))
+        await r_handler.edit(f"`Filter` **{filt}** `doesn't exist.`")
     else:
-        await r_handler.edit(
-            "`Filter` **{}** `was deleted successfully`".format(filt))
+        await r_handler.edit(f"`Filter` **{filt}** `was deleted successfully`")
 
 
 @register(outgoing=True, pattern=r"^\.rmbotfilters (.*)")
@@ -112,11 +112,11 @@ async def kick_marie_filter(event):
             i = i.replace("`", "")
             await event.reply("/stop %s" % (i.strip()))
         await sleep(0.3)
-    await event.respond(
-        "```Successfully purged bots filters yaay!```\n Gimme cookies!")
+    await event.respond("```Successfully purged bots filters yaay!```\n Gimme cookies!")
     if BOTLOG:
         await event.client.send_message(
-            BOTLOG_CHATID, "I cleaned all filters at " + str(event.chat_id))
+            BOTLOG_CHATID, "I cleaned all filters at " + str(event.chat_id)
+        )
 
 
 @register(outgoing=True, pattern=r"^\.filters$")
@@ -131,20 +131,21 @@ async def filters_active(event):
     for filt in filters:
         if transact == "`There are no filters in this chat.`":
             transact = "Active filters in this chat:\n"
-        transact += "`{}`\n".format(filt.keyword)
+        transact += f"`{filt.keyword}`\n"
     await event.edit(transact)
 
 
-CMD_HELP.update({
-    "filter":
-    ">`.filters`"
-    "\nUsage: Lists all active userbot filters in a chat."
-    "\n\n>`.filter <keyword> <reply text>` or reply to a message with >`.filter <keyword>`"
-    "\nUsage: Saves the replied message as a reply to the 'keyword'."
-    "\nThe bot will reply to the message whenever 'keyword' is mentioned."
-    "\nWorks with everything from files to stickers."
-    "\n\n>`.stop <filter>`"
-    "\nUsage: Stops the specified filter."
-    "\n\n>`.rmbotfilters <marie/rose>`"
-    "\nUsage: Removes all filters of admin bots (Currently supported: Marie, Rose and their clones.) in the chat."
-})
+CMD_HELP.update(
+    {
+        "filter": ">`.filters`"
+        "\nUsage: Lists all active userbot filters in a chat."
+        "\n\n>`.filter <keyword> <reply text>` or reply to a message with >`.filter <keyword>`"
+        "\nUsage: Saves the replied message as a reply to the 'keyword'."
+        "\nThe bot will reply to the message whenever 'keyword' is mentioned."
+        "\nWorks with everything from files to stickers."
+        "\n\n>`.stop <filter>`"
+        "\nUsage: Stops the specified filter."
+        "\n\n>`.rmbotfilters <marie/rose>`"
+        "\nUsage: Removes all filters of admin bots (Currently supported: Marie, Rose and their clones.) in the chat."
+    }
+)

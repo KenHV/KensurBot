@@ -52,13 +52,16 @@ async def paste(pstl):
         dogbin_final_url = DOGBIN_URL + key
 
         if response["isUrl"]:
-            reply_text = ("**Pasted successfully!**\n\n"
-                          f"**Shortened URL:** {dogbin_final_url}\n\n"
-                          "**Original(non-shortened) URLs**\n"
-                          f"**Dogbin URL**: {DOGBIN_URL}v/{key}\n")
+            reply_text = (
+                "**Pasted successfully!**\n\n"
+                f"**Shortened URL:** {dogbin_final_url}\n\n"
+                "**Original(non-shortened) URLs**\n"
+                f"**Dogbin URL**: {DOGBIN_URL}v/{key}\n"
+            )
         else:
-            reply_text = ("**Pasted successfully!**\n\n"
-                          f"**Dogbin URL**: {dogbin_final_url}")
+            reply_text = (
+                "**Pasted successfully!**\n\n" f"**Dogbin URL**: {dogbin_final_url}"
+            )
     else:
         reply_text = "`Failed to reach Dogbin`"
 
@@ -84,11 +87,11 @@ async def get_dogbin_content(dog_url):
     format_view = f"{DOGBIN_URL}v/"
 
     if message.startswith(format_view):
-        message = message[len(format_view):]
+        message = message[len(format_view) :]
     elif message.startswith(format_normal):
-        message = message[len(format_normal):]
+        message = message[len(format_normal) :]
     elif message.startswith("del.dog/"):
-        message = message[len("del.dog/"):]
+        message = message[len("del.dog/") :]
     else:
         return await dog_url.edit("**Is that even a dogbin URL?**")
 
@@ -98,17 +101,19 @@ async def get_dogbin_content(dog_url):
         resp.raise_for_status()
     except exceptions.HTTPError as HTTPErr:
         return await dog_url.edit(
-            "**Request returned an unsuccessful status code.**\n\n" +
-            str(HTTPErr))
+            "**Request returned an unsuccessful status code.**\n\n" + str(HTTPErr)
+        )
     except exceptions.Timeout as TimeoutErr:
         return await dog_url.edit("**Request timed out.**" + str(TimeoutErr))
     except exceptions.TooManyRedirects as RedirectsErr:
         return await dog_url.edit(
             "**Request exceeded the configured number of maximum redirections.**"
-            + str(RedirectsErr))
+            + str(RedirectsErr)
+        )
 
-    reply_text = ("**Fetched dogbin URL content successfully!**"
-                  "\n\n**Content:** " + resp.text)
+    reply_text = (
+        "**Fetched dogbin URL content successfully!**" "\n\n**Content:** " + resp.text
+    )
 
     await dog_url.edit(reply_text)
     if BOTLOG:
@@ -118,10 +123,11 @@ async def get_dogbin_content(dog_url):
         )
 
 
-CMD_HELP.update({
-    "dogbin":
-    ">`.paste <text/reply>`"
-    "\nUsage: Create a paste or a shortened url using dogbin (https://del.dog/)"
-    "\n\n>`.getpaste`"
-    "\nUsage: Gets the content of a paste or shortened url from dogbin (https://del.dog/)"
-})
+CMD_HELP.update(
+    {
+        "dogbin": ">`.paste <text/reply>`"
+        "\nUsage: Create a paste or a shortened url using dogbin (https://del.dog/)"
+        "\n\n>`.getpaste`"
+        "\nUsage: Gets the content of a paste or shortened url from dogbin (https://del.dog/)"
+    }
+)

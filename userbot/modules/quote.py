@@ -25,14 +25,14 @@ async def _(event):
         async with bot.conversation(chat) as conv:
             try:
                 response = conv.wait_event(
-                    events.NewMessage(incoming=True, from_users=1031952739))
+                    events.NewMessage(incoming=True, from_users=1031952739)
+                )
                 await bot.forward_messages(chat, reply_message)
                 response = await response
                 await bot.send_read_acknowledge(conv.chat_id)
 
             except YouBlockedUserError:
-                return await event.reply(
-                    "**Please unblock @QuotLyBot and try again**")
+                return await event.reply("**Please unblock @QuotLyBot and try again**")
 
             if response.text.startswith("Hi!"):
                 await event.edit(
@@ -46,8 +46,9 @@ async def _(event):
         return await event.edit("**Error: **@QuotLyBot** is not responding.**")
 
 
-CMD_HELP.update({
-    "quote":
-    ">`.q`"
-    "\nUsage: Reply to a text message to convert to sticker using Quotly bot."
-})
+CMD_HELP.update(
+    {
+        "quote": ">`.q`"
+        "\nUsage: Reply to a text message to convert to sticker using Quotly bot."
+    }
+)

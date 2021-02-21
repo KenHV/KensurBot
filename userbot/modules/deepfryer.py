@@ -46,7 +46,8 @@ async def _(fry):
                 )
             else:
                 downloaded_file_name = await fry.client.download_media(
-                    response.media, TEMP_DOWNLOAD_DIRECTORY)
+                    response.media, TEMP_DOWNLOAD_DIRECTORY
+                )
                 await fry.client.send_file(
                     fry.chat_id,
                     downloaded_file_name,
@@ -57,22 +58,23 @@ async def _(fry):
                 try:
                     msg_level
                 except NameError:
-                    await fry.client.delete_messages(conv.chat_id,
-                                                     [msg.id, response.id])
+                    await fry.client.delete_messages(
+                        conv.chat_id, [msg.id, response.id]
+                    )
                 else:
                     await fry.client.delete_messages(
-                        conv.chat_id,
-                        [msg.id, response.id, r.id, msg_level.id])
+                        conv.chat_id, [msg.id, response.id, r.id, msg_level.id]
+                    )
     except TimeoutError:
-        return await fry.edit(
-            "**Error:** @image_deepfrybot **is not responding.**")
+        return await fry.edit("**Error:** @image_deepfrybot **is not responding.**")
     await fry.delete()
     return os.remove(downloaded_file_name)
 
 
-CMD_HELP.update({
-    "deepfry":
-    ">`.df` or >`.df [level(1-8)]`"
-    "\nUsage: deepfry image/sticker from the reply."
-    "\n@image_deepfrybot"
-})
+CMD_HELP.update(
+    {
+        "deepfry": ">`.df` or >`.df [level(1-8)]`"
+        "\nUsage: deepfry image/sticker from the reply."
+        "\n@image_deepfrybot"
+    }
+)

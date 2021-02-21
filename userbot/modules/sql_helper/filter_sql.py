@@ -20,8 +20,10 @@ class Filters(BASE):
 
     def __eq__(self, other):
         return bool(
-            isinstance(other, Filters) and self.chat_id == other.chat_id
-            and self.keyword == other.keyword)
+            isinstance(other, Filters)
+            and self.chat_id == other.chat_id
+            and self.keyword == other.keyword
+        )
 
 
 Filters.__table__.create(checkfirst=True)
@@ -36,8 +38,7 @@ def get_filter(chat_id, keyword):
 
 def get_filters(chat_id):
     try:
-        return SESSION.query(Filters).filter(
-            Filters.chat_id == str(chat_id)).all()
+        return SESSION.query(Filters).filter(Filters.chat_id == str(chat_id)).all()
     finally:
         SESSION.close()
 
