@@ -41,11 +41,9 @@ async def telegraphs(graph):
                     media_urls = upload_file(downloaded_file_name)
                 except exceptions.TelegraphException as exc:
                     await graph.edit("**Error:** " + str(exc))
-                    os.remove(downloaded_file_name)
                 else:
                     end = datetime.now()
                     ms_two = (end - start).seconds
-                    os.remove(downloaded_file_name)
                     await graph.edit(
                         "**Successfully uploaded to** [telegra.ph](https://telegra.ph{})**.**"
                         .format(media_urls[0], (ms + ms_two)),
