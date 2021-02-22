@@ -26,7 +26,7 @@ async def telegraphs(graph):
             start = datetime.now()
             r_message = await graph.get_reply_message()
             input_str = graph.pattern_match.group(1)
-            if input_str == "media":
+            if input_str == "m":
                 downloaded_file_name = await bot.download_media(
                     r_message, TEMP_DOWNLOAD_DIRECTORY)
                 end = datetime.now()
