@@ -12,7 +12,7 @@ r = telegraph.create_account(short_name="telegraph")
 auth_url = r["auth_url"]
 
 
-@register(outgoing=True, pattern=r"^\.telegraph (media|text)$")
+@register(outgoing=True, pattern=r"^\.tg (m|text)$")
 async def telegraphs(graph):
     """ For .telegraph command, upload media & text to telegraph site. """
     await graph.edit("**Processing...**")
@@ -87,6 +87,6 @@ def resize_image(image):
 
 CMD_HELP.update({
     "telegraph":
-    ">`.telegraph media|text`"
+    ">`.tg m|text`"
     "\nUsage: Upload text & media on Telegraph."
 })
