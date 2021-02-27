@@ -360,6 +360,7 @@ async def download_gdrive(gdrive, service, uri):
                     file_Id = uri
     try:
         file = await get_information(service, file_Id)
+        await gdrive.edit("`Downloading from GD...`")
     except HttpError as e:
         if "404" in str(e):
             drive = "https://drive.google.com"
