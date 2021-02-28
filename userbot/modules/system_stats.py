@@ -122,20 +122,12 @@ async def pipcheck(pip):
         await pip.edit("**Use .help pip to see an example.**")
 
 
-@register(outgoing=True, pattern=r"^\.alive$")
-async def amireallyalive(alive):
-    """ For .alive command, check if the bot is running.  """
-    await alive.edit("**KensurBot v1.0 is up and running!**\n\n"
-                     f"**Telethon:** {version.__version__}\n"
-                     f"**Python:** {python_version()}\n"
-                     f"**User:** {DEFAULTUSER}")
-    
 @register(outgoing=True, pattern=r"^.(alive|on)$")
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     ALIVE_IMG = alive()
     output = (
-        "Bot services is running...\n"
+        "**KensurBot v1.0 is up and running!**\n\n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
         f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
         f"•  🐍 `Python         : v{python_version()} `\n"
