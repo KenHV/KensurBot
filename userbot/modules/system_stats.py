@@ -121,7 +121,7 @@ async def pipcheck(pip):
     else:
         await pip.edit("**Use .help pip to see an example.**")
         
-@register(outgoing=True, pattern=r"^\.pek$")
+@register(outgoing=True, pattern=r"^\.alive$")
 async def oke(pek):   
     ALIVE_IMG = aliv()
     output = (
