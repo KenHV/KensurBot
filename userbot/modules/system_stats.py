@@ -120,8 +120,20 @@ async def pipcheck(pip):
                            "`\n**Result: **\n`No result returned/False`")
     else:
         await pip.edit("**Use .help pip to see an example.**")
-
-
+        
+@register(outgoing=True, pattern=r"^\.pek$")
+async def oke(pek):   
+    kl = alive()
+    output = (
+        "Bot services is running...\n"
+        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+        f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
+        f"•  🐍 `Python         : v{python_version()} `\n"
+        f"•  👤 `User           :`  {DEFAULTUSER} \n"
+        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+    )
+    await pek.client.send_file(alive.chat_id, ALIVE_IMG, caption=output)
+ 
 @register(outgoing=True, pattern=r"^\.alive$")
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
