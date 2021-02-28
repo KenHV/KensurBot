@@ -134,7 +134,7 @@ async def amireallyalive(alive):
         f"•  👤 `User           :`  {DEFAULTUSER} \n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
     )
-    await bot.send_file(alive.chat_id, ALIVE_IMG, caption=output)   
+    await bot.send_photo(alive.chat_id, ALIVE_IMG, caption=output)   
 
 
 @register(outgoing=True, pattern=r"^\.pek$")
