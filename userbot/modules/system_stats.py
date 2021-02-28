@@ -15,6 +15,7 @@ from telethon import version
 
 from userbot import ALIVE_NAME, CMD_HELP
 from userbot.events import register
+from userbot.utils.alive_random import alive
 
 # ================= CONSTANT =================
 DEFAULTUSER = ALIVE_NAME or "Set `ALIVE_NAME` ConfigVar!"
@@ -128,6 +129,20 @@ async def amireallyalive(alive):
                      f"**Telethon:** {version.__version__}\n"
                      f"**Python:** {python_version()}\n"
                      f"**User:** {DEFAULTUSER}")
+    
+@register(outgoing=True, pattern=r"^.(alive|on)$")
+async def amireallyalive(alive):
+    """ For .alive command, check if the bot is running.  """
+    ALIVE_IMG = alive()
+    output = (
+        "Bot services is running...\n"
+        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+        f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
+        f"•  🐍 `Python         : v{python_version()} `\n"
+        f"•  👤 `User           :`  {DEFAULTUSER} \n"
+        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n
+    )
+    await bot.send_file(alive.chat_id, ALIVE_IMG, caption=output)   
 
 
 @register(outgoing=True, pattern=r"^\.aliveu")
