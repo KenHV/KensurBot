@@ -125,30 +125,14 @@ async def pipcheck(pip):
 @register(outgoing=True, pattern=r"^\.alive$")
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
-    ALIVE_IMG = alive()
-    output = f'''
-"**KensurBot v1.0 is up and running!**\n\n"
-"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
-f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
-f"•  🐍 `Python         : v{python_version()} `\n"
-f"•  👤 `User           :`  {DEFAULTUSER} \n"
-"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
-'''
-    await bot.send_file(ALIVE_IMG, caption=output)   
-
-
-@register(outgoing=True, pattern=r"^\.pek$")
-async def amireallyalive(alive):
-    """ For .alive command, check if the bot is running.  """
-    output = f'''
-"**KensurBot v1.0 is up and running!**\n\n"
-"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
-f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
-f"•  🐍 `Python         : v{python_version()} `\n"
-f"•  👤 `User           :`  {DEFAULTUSER} \n"
-"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
-'''
-    await alive.edit(output) 
+    await alive.edit(
+        "**KensurBot v1.0 is up and running!**\n\n"
+        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+        f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
+        f"•  🐍 `Python         : v{python_version()} `\n"
+        f"•  👤 `User           :`  {DEFAULTUSER} \n"
+        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶"
+    )
     
 @register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
