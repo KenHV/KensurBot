@@ -140,12 +140,15 @@ f"•  👤 `User           :`  {DEFAULTUSER} \n"
 @register(outgoing=True, pattern=r"^\.pek$")
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
-    await alive.edit(
-        "**KensurBot v1.0 is up and running!**\n\n"
-        f"**Telethon:** {version.__version__}\n"
-        f"**Python:** {python_version()}\n"
-        f"**User:** {DEFAULTUSER}"
-    )    
+    output = f'''
+"**KensurBot v1.0 is up and running!**\n\n"
+"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
+f"•  🐍 `Python         : v{python_version()} `\n"
+f"•  👤 `User           :`  {DEFAULTUSER} \n"
+"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+'''
+    await alive.edit(output) 
     
 @register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
