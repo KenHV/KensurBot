@@ -132,7 +132,7 @@ async def amireallyalive(alive):
         f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
         f"•  🐍 `Python         : v{python_version()} `\n"
         f"•  👤 `User           :`  {DEFAULTUSER} \n"
-        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n
+        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
     )
     await bot.send_file(alive.chat_id, ALIVE_IMG, caption=output)   
 
