@@ -11,6 +11,7 @@ from datetime import datetime
 from speedtest import Speedtest
 from telethon import functions
 
+from userbot.utils.jam import clock
 from userbot import CMD_HELP
 from userbot.events import register
 import wget
@@ -33,6 +34,7 @@ def humanbytes(size: float) -> str:
 async def speedtst(spd):
     """ For .speed command, use SpeedTest to check server speeds. """
     await spd.edit("`Running speed test . . .`")
+    x = clock()
     test = Speedtest()
 
     test.get_best_server()
@@ -41,7 +43,7 @@ async def speedtst(spd):
     test.results.share()
     result = test.results.dict()
     path = wget.download(result["share"])
-    output = f"⌛ Started at `{result['timestamp']}`\n\n"
+    output = f"⌛ Started at `{x}`\n\n"
     output += "☁️ Client:\n\n"
     output += f"🖥 ISP: `{result['client']['isp']}`\n"
     output += f"⚙ Country: `{result['client']['country']}`\n\n"
