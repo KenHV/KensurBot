@@ -137,6 +137,16 @@ async def amireallyalive(alive):
     await bot.send_file(alive.chat_id, ALIVE_IMG, caption=output)   
 
 
+@register(outgoing=True, pattern=r"^\.pek$")
+async def amireallyalive(alive):
+    """ For .alive command, check if the bot is running.  """
+    await alive.edit(
+        "**KensurBot v1.0 is up and running!**\n\n"
+        f"**Telethon:** {version.__version__}\n"
+        f"**Python:** {python_version()}\n"
+        f"**User:** {DEFAULTUSER}"
+    )    
+    
 @register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
     """ For .aliveu command, change the username in the .alive command. """
