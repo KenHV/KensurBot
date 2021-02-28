@@ -9,6 +9,7 @@ import os
 from distutils.util import strtobool as sb
 from logging import DEBUG, INFO, basicConfig, getLogger
 from pathlib import Path
+import time
 from sys import version_info
 
 from dotenv import load_dotenv
@@ -23,6 +24,7 @@ from .storage import Storage
 STORAGE = (lambda n: Storage(Path("data") / n))
 
 load_dotenv("config.env")
+StartTime = time.time()
 
 # Bot Logs setup:
 CONSOLE_LOGGER_VERBOSE = sb(
