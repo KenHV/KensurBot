@@ -125,7 +125,7 @@ async def pipcheck(pip):
 async def oke(pek):   
     ALIVE_IMG = aliv()
     output = (
-        "Bot services is running...\n"
+        "**KensurBot v1.0 is up and running!**\n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
         f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
         f"•  🐍 `Python         : v{python_version()} `\n"
@@ -133,18 +133,6 @@ async def oke(pek):
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
     )
     await pek.client.send_file(pek.chat_id, ALIVE_IMG, caption=output)
- 
-@register(outgoing=True, pattern=r"^\.alive$")
-async def amireallyalive(alive):
-    """ For .alive command, check if the bot is running.  """
-    await alive.edit(
-        "**KensurBot v1.0 is up and running!**\n\n"
-        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
-        f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
-        f"•  🐍 `Python         : v{python_version()} `\n"
-        f"•  👤 `User           :`  {DEFAULTUSER} \n"
-        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶"
-    )
     
 @register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
