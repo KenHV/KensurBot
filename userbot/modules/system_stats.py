@@ -126,15 +126,15 @@ async def pipcheck(pip):
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     ALIVE_IMG = alive()
-    output = (
-        "**KensurBot v1.0 is up and running!**\n\n"
-        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
-        f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
-        f"•  🐍 `Python         : v{python_version()} `\n"
-        f"•  👤 `User           :`  {DEFAULTUSER} \n"
-        "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
-    )
-    await bot.send_photo(alive.chat_id, ALIVE_IMG, caption=output)   
+    output = f'''
+"**KensurBot v1.0 is up and running!**\n\n"
+"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
+f"•  🐍 `Python         : v{python_version()} `\n"
+f"•  👤 `User           :`  {DEFAULTUSER} \n"
+"⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
+'''
+    await bot.send_file(ALIVE_IMG, caption=output)   
 
 
 @register(outgoing=True, pattern=r"^\.pek$")
