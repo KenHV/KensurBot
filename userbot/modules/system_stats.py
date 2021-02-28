@@ -123,7 +123,7 @@ async def pipcheck(pip):
         
 @register(outgoing=True, pattern=r"^\.pek$")
 async def oke(pek):   
-    kl = alive()
+    ALIVE_IMG = alive()
     output = (
         "Bot services is running...\n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
