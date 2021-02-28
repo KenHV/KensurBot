@@ -133,6 +133,7 @@ async def oke(pek):
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
     )
     await pek.client.send_file(pek.chat_id, ALIVE_IMG, caption=output)
+    await pek.delete()
     
 @register(outgoing=True, pattern=r"^\.aliveu")
 async def amireallyaliveuser(username):
