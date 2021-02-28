@@ -15,7 +15,7 @@ from telethon import version
 
 from userbot import ALIVE_NAME, CMD_HELP, bot
 from userbot.events import register
-from userbot.utils.alive_random import alive
+from userbot.utils.alive_random import aliv
 
 # ================= CONSTANT =================
 DEFAULTUSER = ALIVE_NAME or "Set `ALIVE_NAME` ConfigVar!"
@@ -123,7 +123,7 @@ async def pipcheck(pip):
         
 @register(outgoing=True, pattern=r"^\.pek$")
 async def oke(pek):   
-    ALIVE_IMG = alive()
+    ALIVE_IMG = aliv()
     output = (
         "Bot services is running...\n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
@@ -132,7 +132,7 @@ async def oke(pek):
         f"•  👤 `User           :`  {DEFAULTUSER} \n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
     )
-    await pek.client.send_file(alive.chat_id, ALIVE_IMG, caption=output)
+    await pek.client.send_file(pek.chat_id, ALIVE_IMG, caption=output)
  
 @register(outgoing=True, pattern=r"^\.alive$")
 async def amireallyalive(alive):
