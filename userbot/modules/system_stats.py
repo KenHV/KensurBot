@@ -13,13 +13,41 @@ from shutil import which
 
 from telethon import version
 
-from userbot import ALIVE_NAME, CMD_HELP, bot
+from userbot import ALIVE_NAME, CMD_HELP, bot, StartTime
 from userbot.events import register
 from userbot.utils.alive_random import aliv
+import time
+from time import gmtime, mktime
 
 # ================= CONSTANT =================
 DEFAULTUSER = ALIVE_NAME or "Set `ALIVE_NAME` ConfigVar!"
 # ============================================
+async def get_readable_time(seconds: int) -> str:
+    count = 0
+    up_time = ""
+    time_list = []
+    time_suffix_list = ["s", "m", "h", "days"]
+
+    while count < 4:
+        count += 1
+        if count < 3:
+            remainder, result = divmod(seconds, 60)
+        else:
+            remainder, result = divmod(seconds, 24)
+        if seconds == 0 and remainder == 0:
+            break
+        time_list.append(int(result))
+        seconds = int(remainder)
+
+    for x in range(len(time_list)):
+        time_list[x] = str(time_list[x]) + time_suffix_list[x]
+    if len(time_list) == 4:
+        up_time += time_list.pop() + ", "
+
+    time_list.reverse()
+    up_time += ":".join(time_list)
+
+    return up_time
 
 
 @register(outgoing=True, pattern=r"^\.sysd$")
@@ -124,12 +152,14 @@ async def pipcheck(pip):
 @register(outgoing=True, pattern=r"^\.alive$")
 async def oke(pek):   
     ALIVE_IMG = aliv()
+    uptime = await get_readable_time((time.time() - StartTime))
     output = (
         "**KensurBot v1.0 is up and running!**\n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
         f"•  ⚙️ `Telethon       : v{version.__version__} `\n"
         f"•  🐍 `Python         : v{python_version()} `\n"
         f"•  👤 `User           :`  {DEFAULTUSER} \n"
+        f"•  🕒 `Bot Uptime     : {uptime} `\n"
         "⊷⊷⊷⊷⊷⊷⊷⊷⊷⊷⊶⊷⊶⊶⊶⊶⊶⊶⊶⊶⊶⊶\n"
     )
     await pek.client.send_file(pek.chat_id, ALIVE_IMG, caption=output)
