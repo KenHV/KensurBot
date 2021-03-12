@@ -14,7 +14,6 @@ from telethon.errors import (
     ChatAdminRequiredError,
     ImageProcessFailedError,
     PhotoCropSizeSmallError,
-    UserAdminInvalidError,
 )
 from telethon.errors.rpcerrorlist import (
     BadRequestError,
