@@ -199,7 +199,7 @@ async def listf(event):
 
 
 @register(outgoing=True, disable_edited=True, pattern=r"^\.clearf$")
-async def delf(event):
+async def clearf(event):
     """Removes all chats from connected federations."""
     try:
         from userbot.modules.sql_helper.fban_sql import del_flist_all
