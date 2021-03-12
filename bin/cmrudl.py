@@ -322,7 +322,7 @@ class Main:
     def search_folders(self, folders, search_id):
         props = ["id", "mtime", "name", "size", "hash"]
         queue = collections.deque([folders])
-        while len(queue):
+        while queue:
             entry = queue.pop()
             if self.dict_has_props(entry, props) and entry["id"] == search_id:
                 return entry
