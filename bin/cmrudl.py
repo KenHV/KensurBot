@@ -46,7 +46,8 @@ class Main:
             return
         self.output(message, err, nl)
 
-    def output(self, message, err=False, nl=True):
+    @staticmethod
+    def output(message, err=False, nl=True):
         out = sys.stderr if err else sys.stdout
         out.write(message)
         if nl:
@@ -62,7 +63,8 @@ class Main:
         message_pad = message.ljust(l)
         self.output("\r%s\r" % message_pad, err, False)
 
-    def stat(self, path):
+    @staticmethod
+    def stat(path):
         try:
             return os.stat(path)
         except OSError as ex:
@@ -70,19 +72,23 @@ class Main:
                 raise ex
         return None
 
-    def dict_has_props(self, dic, props):
+    @staticmethod
+    def dict_has_props(dic, props):
         return all(p in dic for p in props)
 
-    def assert_status_code(self, code, expected):
+    @staticmethod
+    def assert_status_code(code, expected):
         if code != expected:
             raise Exception(f"Invalid status code: {code} expected: {expected}")
 
-    def seconds_human(self, seconds):
+    @staticmethod
+    def seconds_human(seconds):
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
         return "%d:%02d:%02d" % (h, m, s)
 
-    def bytes_human(self, size):
+    @staticmethod
+    def bytes_human(size):
         based = float(size)
         base = 1024
         names = ["B", "K", "M", "G", "T"]
@@ -93,11 +99,13 @@ class Main:
             i += 1
         return "{:.2f}{}".format(based, names[i])
 
-    def percent_human(self, part, total):
+    @staticmethod
+    def percent_human(part, total):
         f = (part / float(total)) if total else 0
         return "%.2f%%" % (f * 100)
 
-    def json_decode(self, s):
+    @staticmethod
+    def json_decode(s):
         return json.loads(s)
 
     def js_object_decode(self, s):
@@ -126,11 +134,13 @@ class Main:
         body = res.read()
         return (code, headers, body)
 
-    def request_data_decode(self, body, headers):
+    @staticmethod
+    def request_data_decode(body, headers):
         # Should use headers to determine the correct encoding.
         return body.decode("utf-8")
 
-    def request_header_get(self, headers, header, cast=None):
+    @staticmethod
+    def request_header_get(headers, header, cast=None):
         r = headers[header] if header in headers else None
         if cast:
             try:
@@ -316,7 +326,7 @@ class Main:
             entry = queue.pop()
             if self.dict_has_props(entry, props) and entry["id"] == search_id:
                 return entry
-            for k, v in entry.items():
+            for _, v in entry.items():
                 if isinstance(v, list):
                     for e in v:
                         if isinstance(e, dict):
@@ -325,14 +335,16 @@ class Main:
                     queue.append(v)
         return None
 
-    def create_download_url(self, storage, token):
+    @staticmethod
+    def create_download_url(storage, token):
         return "{}/{}?key={}".format(storage["url"], storage["id"], urllib_quote(token))
 
     def create_out_dir(self):
         opt_dir = self.options.dir
         return opt_dir or ""
 
-    def create_file_name_temp(self, storage):
+    @staticmethod
+    def create_file_name_temp(storage):
         return ".{}.{}".format(__prog__, urllib_quote(storage["hash"]))
 
     def create_file_name(self, storage):
@@ -346,7 +358,8 @@ class Main:
         if size != file_size:
             raise Exception(f"Unexected download size: {size} expected: {file_size}")
 
-    def download_set_mtime(self, file_path, file_mtime):
+    @staticmethod
+    def download_set_mtime(file_path, file_mtime):
         os.utime(file_path, (file_mtime, file_mtime))
 
     def assert_not_exists(self, file_path):
