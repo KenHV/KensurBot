@@ -13,7 +13,7 @@ from userbot.events import register
     outgoing=True,
     pattern=r"^\.web ?(.+?|) (anonfiles|transfer|filebin|anonymousfiles|megaupload|bayfiles|letsupload|0x0)",
 )
-async def _(event):
+async def webupload(event):
     await event.edit("**Processing...**")
     input_str = event.pattern_match.group(1)
     selected_transfer = event.pattern_match.group(2)
@@ -50,20 +50,13 @@ async def _(event):
     )
     stdout, stderr = await process.communicate()
     stderr.decode().strip()
-    # logger.info(e_response)
     t_response = stdout.decode().strip()
-    # logger.info(t_response)
-    """if e_response:
-		await event.edit(f"**FAILED** to __transload__: `{e_response}`")
-		return"""
     if t_response:
         try:
             t_response = json.dumps(json.loads(t_response), sort_keys=True, indent=4)
         except Exception:
-            # some sites don't return valid JSONs
-            pass
-        # assuming, the return values won't be longer than
-        # 4096 characters
+            pass  # some sites don't return valid JSONs
+        # assuming, the return values won't be longer than 4096 characters
         await event.edit(t_response)
 
 
