@@ -131,9 +131,8 @@ def register(**args):
 
                     ftext += result
 
-                    file = open("error.log", "w+")
-                    file.write(ftext)
-                    file.close()
+                    with open("error.log", "w+") as file:
+                        file.write(ftext)
 
                     if LOGSPAMMER:
                         await check.client.send_file(
