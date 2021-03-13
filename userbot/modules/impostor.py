@@ -22,7 +22,7 @@ async def impostor(event):
             )
         await updateProfile(STORAGE.userObj, restore=True)
         return await event.edit("**Feels good to be back!**")
-    elif inputArgs:
+    if inputArgs:
         try:
             user = await event.client.get_entity(inputArgs)
         except:

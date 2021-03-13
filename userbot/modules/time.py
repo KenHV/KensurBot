@@ -94,7 +94,7 @@ async def time_func(tdata):
         return await tdata.edit(
             f"**It's** `{dtnow}` **in {c_name}({time_zone} timezone).**"
         )
-    elif COUNTRY:
+    if COUNTRY:
         return await tdata.edit(
             f"**It's** `{dtnow}` **here, in {COUNTRY}" f"({time_zone} timezone).**"
         )
@@ -153,7 +153,7 @@ async def date_func(dat):
         return await dat.edit(
             f"**It's** `{dtnow}` **in {c_name}({time_zone} timezone).**"
         )
-    elif COUNTRY:
+    if COUNTRY:
         return await dat.edit(
             f"**It's** `{dtnow}` **here, in {COUNTRY}" f"({time_zone} timezone).**"
         )

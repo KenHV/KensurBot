@@ -109,10 +109,9 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
             await event.edit("**Build failed!**\nCancelled or there were some errors.`")
             await asyncio.sleep(5)
             return await event.delete()
-        else:
-            await event.edit(
-                "**Successfully updated!**\nBot is restarting, will be back up in a few seconds."
-            )
+        await event.edit(
+            "**Successfully updated!**\nBot is restarting, will be back up in a few seconds."
+        )
     else:
         await event.edit("**Please set up** `HEROKU_API_KEY` **variable.**")
     return

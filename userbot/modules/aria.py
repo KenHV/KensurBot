@@ -236,7 +236,7 @@ async def check_progress_for_dl(gid, event, previous):
                 await event.edit(f"Download Canceled :\n`{file.name}`")
                 await sleep(2.5)
                 return await event.delete()
-            elif " depth exceeded" in str(e):
+            if " depth exceeded" in str(e):
                 file.remove(force=True)
                 await event.edit(
                     "Download Auto Canceled :\n`{}`\nYour Torrent/Link is Dead.".format(

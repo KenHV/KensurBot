@@ -69,8 +69,7 @@ async def locks(event):
     else:
         if not input_str:
             return await event.edit("**I can't lock nothing!**")
-        else:
-            return await event.edit(f"**Invalid lock type:** `{input_str}`")
+        return await event.edit(f"**Invalid lock type:** `{input_str}`")
 
     lock_rights = ChatBannedRights(
         until_date=None,
@@ -155,8 +154,7 @@ async def rem_locks(event):
     else:
         if not input_str:
             return await event.edit("**I can't unlock nothing!**")
-        else:
-            return await event.edit(f"**Invalid unlock type:** `{input_str}`")
+        return await event.edit(f"**Invalid unlock type:** `{input_str}`")
 
     unlock_rights = ChatBannedRights(
         until_date=None,

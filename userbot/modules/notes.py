@@ -73,8 +73,7 @@ async def add_note(fltr):
     success = "**Note {} successfully. Use** `#{}` **to get it.**"
     if add_note(str(fltr.chat_id), keyword, string, msg_id) is False:
         return await fltr.edit(success.format("updated", keyword))
-    else:
-        return await fltr.edit(success.format("added", keyword))
+    return await fltr.edit(success.format("added", keyword))
 
 
 @register(

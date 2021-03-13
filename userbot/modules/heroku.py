@@ -47,12 +47,10 @@ async def variable(var):
                     )
                     await var.edit("**Check your botlog group.**")
                     return True
-                else:
-                    await var.edit("**Enable** `BOTLOG`**!**")
-                    return False
-            else:
-                await var.edit("**Error: ConfigVar not found.**")
-                return True
+                await var.edit("**Enable** `BOTLOG`**!**")
+                return False
+            await var.edit("**Error: ConfigVar not found.**")
+            return True
         else:
             configvars = heroku_var.to_dict()
             if BOTLOG:
@@ -64,9 +62,8 @@ async def variable(var):
                 )
                 await var.edit("**Check your botlog group.**")
                 return True
-            else:
-                await var.edit("**Enable** `BOTLOG`**!**")
-                return False
+            await var.edit("**Enable** `BOTLOG`**!**")
+            return False
     elif exe == "del":
         if variable == "":
             await var.edit("**Error: Give me a ConfigVar to delete!**")
