@@ -10,7 +10,7 @@ import re
 from os import remove
 from sys import executable
 
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TERM_ALIAS
+from userbot import CMD_HELP, TERM_ALIAS
 from userbot.events import register
 
 
@@ -63,11 +63,6 @@ async def evaluate(query):
     except Exception as err:
         await query.edit(
             "**Query: **\n`" f"{expression}" "`\n**Exception: **\n" f"`{err}`"
-        )
-
-    if BOTLOG:
-        await query.client.send_message(
-            BOTLOG_CHATID, f"Eval query {expression} was executed successfully."
         )
 
 
@@ -128,11 +123,6 @@ async def run(run_q):
             "**Query: **\n`" f"{codepre}" "`\n**Result: **\n`No result returned/False`"
         )
 
-    if BOTLOG:
-        await run_q.client.send_message(
-            BOTLOG_CHATID, "Exec query " + codepre + " was executed successfully."
-        )
-
 
 @register(outgoing=True, pattern=r"^\.term(?: |$|\n)(.*)")
 async def terminal_runner(term):
@@ -181,12 +171,6 @@ async def terminal_runner(term):
         await term.edit("`" f"{curruser}:~# {command}" f"\n{result}" "`")
     else:
         await term.edit("`" f"{curruser}:~$ {command}" f"\n{result}" "`")
-
-    if BOTLOG:
-        await term.client.send_message(
-            BOTLOG_CHATID,
-            "Terminal command " + command + " was executed sucessfully.",
-        )
 
 
 CMD_HELP.update(

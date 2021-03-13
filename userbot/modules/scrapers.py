@@ -231,12 +231,6 @@ async def gsearch(event):
         "**Search Query:**\n`" + match + "`\n\n**Results:**\n" + msg, link_preview=False
     )
 
-    if BOTLOG:
-        await event.client.send_message(
-            BOTLOG_CHATID,
-            "Google Search query` " + match + " `was executed successfully",
-        )
-
 
 @register(outgoing=True, pattern=r"^\.wiki(?: |$)(.*)")
 async def wiki(wiki_q):
@@ -272,10 +266,6 @@ async def wiki(wiki_q):
         if os.path.exists("output.txt"):
             return os.remove("output.txt")
     await wiki_q.edit("**Search:**\n`" + match + "`\n\n**Result:**\n" + result)
-    if BOTLOG:
-        await wiki_q.client.send_message(
-            BOTLOG_CHATID, f"Wiki query `{match}` was executed successfully"
-        )
 
 
 @register(outgoing=True, pattern=r"^\.ud(?: |$)(.*)")
@@ -374,10 +364,6 @@ async def text_to_speech(query):
     with open("k.mp3"):
         await query.client.send_file(query.chat_id, "k.mp3", voice_note=True)
         os.remove("k.mp3")
-        if BOTLOG:
-            await query.client.send_message(
-                BOTLOG_CHATID, "Text to Speech executed successfully!"
-            )
     await query.delete()
 
 

@@ -556,17 +556,6 @@ async def pin(msg):
 
     await msg.edit("**Pinned successfully!**")
 
-    user = await get_user_from_id(msg.sender_id, msg)
-
-    if BOTLOG:
-        await msg.client.send_message(
-            BOTLOG_CHATID,
-            "#PIN\n"
-            f"ADMIN: [{user.first_name}](tg://user?id={user.id})\n"
-            f"CHAT: {msg.chat.title}(`{msg.chat_id}`)\n"
-            f"LOUD: {not is_silent}",
-        )
-
 
 @register(outgoing=True, pattern=r"^\.kick(?: |$)(.*)")
 async def kick(usr):
@@ -598,14 +587,6 @@ async def kick(usr):
         )
     else:
         await usr.edit(f"**Kicked** [{user.first_name}](tg://user?id={user.id})**!**")
-
-    if BOTLOG:
-        await usr.client.send_message(
-            BOTLOG_CHATID,
-            "#KICK\n"
-            f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-            f"CHAT: {usr.chat.title}(`{usr.chat_id}`)\n",
-        )
 
 
 @register(outgoing=True, pattern=r"^\.users ?(.*)")
