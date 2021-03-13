@@ -79,7 +79,7 @@ async def get_weather(weather):
     result = json.loads(request.text)
 
     if request.status_code != 200:
-        return await weather.edit(f"**Invalid country.**")
+        return await weather.edit("**Invalid country.**")
 
     cityname = result["name"]
     curtemp = result["main"]["temp"]
