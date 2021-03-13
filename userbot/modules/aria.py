@@ -56,6 +56,8 @@ subprocess_run(cmd)
 if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
     os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
 download_path = os.getcwd() + TEMP_DOWNLOAD_DIRECTORY.strip(".")
+if not download_path.endswith("/"):
+    download_path += "/"
 
 aria2 = aria2p.API(aria2p.Client(host="http://localhost", port=8210, secret=""))
 
