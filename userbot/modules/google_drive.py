@@ -85,10 +85,7 @@ if __ is not None:
                 except IndexError:
                     if "http://" not in __ or "https://" not in __:
                         _1 = any(map(str.isdigit, __))
-                        if "-" in __ or "_" in __:
-                            _2 = True
-                        else:
-                            _2 = False
+                        _2 = bool("-" in __ or "_" in __)
                         if True not in [_1 or _2]:
                             LOGS.info("G_DRIVE_FOLDER_ID " "not a valid ID...")
                             G_DRIVE_FOLDER_ID = None
@@ -1064,10 +1061,7 @@ async def google_drive(gdrive):
         else:
             for fileId in value.split():
                 one = any(map(str.isdigit, fileId))
-                if "-" in fileId or "_" in fileId:
-                    two = True
-                else:
-                    two = False
+                two = bool("-" in fileId or "_" in fileId)
                 if True in [one or two]:
                     try:
                         reply += await download_gdrive(gdrive, service, fileId)
@@ -1182,10 +1176,7 @@ async def set_upload_folder(gdrive):
     except IndexError:
         """ - if given value isn't folderURL assume it's an Id - """
         c1 = any(map(str.isdigit, inp))
-        if "-" in inp or "_" in inp:
-            c2 = True
-        else:
-            c2 = False
+        c2 = bool("-" in inp or "_" in inp)
         if True in [c1 or c2]:
             parent_Id = inp
             await gdrive.edit(
