@@ -59,10 +59,6 @@ def register(**args):
                 # Messages sent in channels can be edited by other users.
                 # Ignore edits that take place in channels.
                 return
-            if not LOGSPAMMER:
-                check.chat_id
-            else:
-                pass
 
             if not trigger_on_fwd and check.fwd_from:
                 return
