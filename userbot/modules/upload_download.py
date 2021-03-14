@@ -60,8 +60,8 @@ async def download(target_file):
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed()
             progress_str = "[{}{}] `{}%`".format(
-                "".join("●" for i in range(math.floor(percentage / 10))),
-                "".join("○" for i in range(10 - math.floor(percentage / 10))),
+                "".join("●" for _ in range(math.floor(percentage / 10))),
+                "".join("○" for _ in range(10 - math.floor(percentage / 10))),
                 round(percentage, 2),
             )
 
@@ -124,11 +124,11 @@ async def download(target_file):
         else:
             try:
                 await target_file.edit(
-                    f"**Downloaded to** `{result.name}` **in** `{dl_time} seconds`**!**"
+                    f"**Downloaded to** `{result.name}` **in {dl_time} seconds.**"
                 )
             except AttributeError:
                 await target_file.edit(
-                    f"**Downloaded to** `{result}` **in** `{dl_time} seconds`**!**"
+                    f"**Downloaded to** `{result}` **in {dl_time} seconds.**"
                 )
     else:
         await target_file.edit("**Reply to a message to download to my local server.**")
@@ -148,9 +148,7 @@ async def get_video_thumb(file, output):
 
 @register(pattern=r"^\.upload (.*)", outgoing=True)
 async def upload(event):
-    if event.fwd_from:
-        return
-    await event.edit("`Processing...`")
+    await event.edit("**Processing...**")
     input_str = event.pattern_match.group(1)
     if os.path.exists(input_str):
         if os.path.isfile(input_str):
@@ -220,21 +218,21 @@ async def upload(event):
             )
             if thumb is not None:
                 os.remove(thumb)
-            await event.edit(f"Uploaded successfully in `{up_time}` seconds.")
+            await event.edit(f"**Uploaded successfully in {up_time} seconds.**")
         elif os.path.isdir(input_str):
             start_time = datetime.now()
             lst_files = []
-            for root, dirs, files in os.walk(input_str):
+            for root, _, files in os.walk(input_str):
                 for file in files:
                     lst_files.append(os.path.join(root, file))
             if len(lst_files) == 0:
-                return await event.edit(f"`{input_str}` is empty.")
-            await event.edit(f"Found `{len(lst_files)}` files. Now uploading...")
+                return await event.edit(f"`{input_str}` **is empty.**")
+            await event.edit(f"**Found** `{len(lst_files)}` **files. Uploading...**")
             for files in sorted(lst_files):
                 file_name = os.path.basename(files)
                 thumb = None
                 attributes = []
-                msg = await event.reply(f"Uploading `{files}`")
+                msg = await event.reply(f"**Uploading** `{files}`**...**")
                 with open(files, "rb") as f:
                     result = await upload_file(
                         client=event.client,
@@ -296,11 +294,11 @@ async def upload(event):
             await event.delete()
             up_time = (datetime.now() - start_time).seconds
             await event.respond(
-                f"Uploaded `{len(lst_files)}` files in `{input_str}` folder "
-                f"in `{up_time}` seconds."
+                f"**Uploaded {len(lst_files)} files in** `{input_str}` **folder "
+                f"in {up_time} seconds.**"
             )
     else:
-        await event.edit("`404: File/Folder Not Found`")
+        await event.edit("**Error: File/Folder not found**")
 
 
 CMD_HELP.update(
