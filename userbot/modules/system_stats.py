@@ -71,9 +71,7 @@ async def bot_ver(event):
 
         await event.edit(f"**Userbot:** `{verout}`\n" f"**Revision:** `{revout}`\n")
     else:
-        await event.edit(
-            "**Shame that you don't have git, you're running v1.0 anyway!**"
-        )
+        await event.edit("**Shame that you don't have git!**")
 
 
 @register(outgoing=True, pattern=r"^\.pip(?: |$)(.*)")
@@ -128,7 +126,7 @@ async def pipcheck(pip):
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit(
-        "**KensurBot v1.0 is up and running!**\n\n"
+        "**KensurBot v1.1 is up and running!**\n\n"
         f"**Telethon:** {version.__version__}\n"
         f"**Python:** {python_version()}\n"
         f"**User:** {DEFAULTUSER}"
