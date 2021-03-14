@@ -42,7 +42,7 @@ async def _(event):
                 reply_message,
                 TEMP_DOWNLOAD_DIRECTORY,
                 progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "[DOWNLOADING]")
+                    progress(d, t, mone, c_time, "Zip - Download")
                 ),
             )
             directory_name = downloaded_file_name
@@ -62,7 +62,7 @@ async def _(event):
         allow_cache=False,
         reply_to=event.message.id,
         progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-            progress(d, t, mone, c_time, "[Uploading]")
+            progress(d, t, mone, c_time, "Zip - Upload")
         ),
     )
     await event.edit("**Done!**")
@@ -93,7 +93,7 @@ async def addzip(add):
                 reply_message,
                 ZIP_DOWNLOAD_DIRECTORY,
                 progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "[Downloading]")
+                    progress(d, t, mone, c_time, "Zip - Download")
                 ),
             )
             success = str(downloaded_file_name).replace("./zips/", "")
@@ -123,7 +123,7 @@ async def upload_zip(up):
         allow_cache=False,
         reply_to=up.message.id,
         progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-            progress(d, t, mone, c_time, "[Uploading]", input_str)
+            progress(d, t, mone, c_time, "Zip - Upload", input_str)
         ),
     )
     os.rmdir(ZIP_DOWNLOAD_DIRECTORY)
