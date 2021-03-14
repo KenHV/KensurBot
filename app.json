@@ -136,6 +136,10 @@
       "description": "Despite the name, it avoids sending logs (if there's a crash) everywhere and stores it in your botlog group instead.",
       "value": "True"
     },
+    "DEEZER_ARL_TOKEN": {
+      "description": "Put your Deezer ARL token here.",
+      "required": false
+    },
     "USR_TOKEN_UPTOBOX": {
       "description": "API for direct link uptobox, https://docs.uptobox.com/#how-to-find-my-api-token",
       "required": false
