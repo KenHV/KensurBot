@@ -102,10 +102,10 @@ async def run(event):
         "-c",
         command.strip(),
         stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
     )
-    stdout, stderr = await process.communicate()
-    result = str(stdout.decode().strip()) + str(stderr.decode().strip())
+    stdout, _ = await process.communicate()
+    result = str(stdout.decode().strip())
 
     if result:
         if len(result) > 4096:
@@ -146,10 +146,10 @@ async def terminal_runner(event):
         return await event.edit("**That's a dangerous operation! Not permitted!**")
 
     process = await asyncio.create_subprocess_shell(
-        command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
     )
-    stdout, stderr = await process.communicate()
-    result = str(stdout.decode().strip()) + str(stderr.decode().strip())
+    stdout, _ = await process.communicate()
+    result = str(stdout.decode().strip())
 
     if len(result) > 4096:
         with open("output.txt", "w+") as output:
