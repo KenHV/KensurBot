@@ -125,7 +125,7 @@ async def run(event):
         )
 
 
-@register(outgoing=True, pattern=r"^\.term(?: |$|\n)(.*)")
+@register(outgoing=True, pattern=r"^\.term(?: |$|\n)([\s\S]*)")
 async def terminal_runner(event):
     """For .term command, runs bash commands and scripts on your server."""
     command = event.pattern_match.group(1)
