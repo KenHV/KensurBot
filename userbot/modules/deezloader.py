@@ -3,12 +3,13 @@
 # Ported from UniBorg by AnggaR96s
 
 import os
-import shutil
-import time
+from shutil import rmtree
+from time import time
 
-import deezloader
+from deezloader import Login
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
+from requests import get
 from telethon.tl.types import DocumentAttributeAudio
 
 from userbot import CMD_HELP, DEEZER_ARL_TOKEN, TEMP_DOWNLOAD_DIRECTORY
@@ -24,15 +25,19 @@ async def deeznuts(event):
         return await event.edit("**Set** `DEEZER_ARL_TOKEN` **first.**")
 
     try:
-        loader = deezloader.Login(DEEZER_ARL_TOKEN)
+        loader = Login(DEEZER_ARL_TOKEN)
     except Exception as e:
         return await event.edit(f"**Error:** `{e}`")
 
-    link = event.pattern_match.group(1)
+    try:
+        link = get(event.pattern_match.group(1)).url
+    except:
+        return await event.edit("**Error: Invalid link provided.**")
+
     quality = {"flac": "FLAC", "320": "MP3_320", "256": "MP3_256", "128": "MP3_128"}
     quality = quality[event.pattern_match.group(2)]
 
-    temp_dl_path = os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(time.time()))
+    temp_dl_path = os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(time()))
     if not os.path.exists(temp_dl_path):
         os.makedirs(temp_dl_path)
 
@@ -53,7 +58,7 @@ async def deeznuts(event):
                 return await event.edit(f"**Error:** `{e}`")
             await event.edit("**Uploading...**")
             await upload_track(track, event)
-            shutil.rmtree(temp_dl_path)
+            rmtree(temp_dl_path)
             return await event.delete()
 
         if "album" in link:
@@ -72,7 +77,7 @@ async def deeznuts(event):
             await event.edit("**Uploading...**")
             for track in album:
                 await upload_track(track, event)
-            shutil.rmtree(temp_dl_path)
+            rmtree(temp_dl_path)
             return await event.delete()
 
     if "deezer" in link:
@@ -90,7 +95,7 @@ async def deeznuts(event):
                 return await event.edit(f"**Error:** `{e}`")
             await event.edit("**Uploading...**")
             await upload_track(track, event)
-            shutil.rmtree(temp_dl_path)
+            rmtree(temp_dl_path)
             return await event.delete()
 
         if "album" in link:
@@ -109,7 +114,7 @@ async def deeznuts(event):
             await event.edit("**Uploading...**")
             for track in album:
                 await upload_track(track, event)
-            shutil.rmtree(temp_dl_path)
+            rmtree(temp_dl_path)
             return await event.delete()
 
     await event.edit("**Syntax error!\nRead** `.help deezloader`**.**")
