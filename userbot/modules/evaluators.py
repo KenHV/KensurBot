@@ -6,46 +6,45 @@
 """Userbot module for executing code and terminal commands from Telegram."""
 
 import asyncio
-import io
 import sys
-import traceback
+from io import StringIO
 from os import remove
+from traceback import format_exc
 
-from userbot import CMD_HELP, TERM_ALIAS
+from userbot import CMD_HELP
 from userbot.events import register
 
 
 @register(outgoing=True, pattern=r"^\.eval(?: |$|\n)([\s\S]*)")
-async def evaluate(query):
+async def evaluate(event):
     """For .eval command, evaluates the given Python expression."""
-    if query.is_channel and not query.is_group:
-        return await query.edit("`Eval isn't permitted on channels`")
+    if event.is_channel and not event.is_group:
+        return await event.edit("**Eval isn't permitted on channels.**")
 
-    if query.pattern_match.group(1):
-        expression = query.pattern_match.group(1)
+    if event.pattern_match.group(1):
+        expression = event.pattern_match.group(1)
     else:
-        return await query.edit("``` Give an expression to evaluate. ```")
+        return await event.edit("**Give an expression to evaluate.**")
 
     if expression in ("userbot.session", "config.env"):
-        return await query.edit("`That's a dangerous operation! Not Permitted!`")
+        return await event.edit("**That's a dangerous operation! Not permitted!**")
 
     old_stderr = sys.stderr
     old_stdout = sys.stdout
-    redirected_output = sys.stdout = io.StringIO()
-    redirected_error = sys.stderr = io.StringIO()
+    redirected_output = sys.stdout = StringIO()
+    redirected_error = sys.stderr = StringIO()
     stdout, stderr, exc = None, None, None
 
     async def aexec(code, event):
-        """ execute command """
         head = "async def __aexec(event):\n "
         code = "".join(f"\n {line}" for line in code.split("\n"))
         exec(head + code)  # pylint: disable=exec-used
         return await locals()["__aexec"](event)
 
     try:
-        returned = await aexec(expression, query)
+        returned = await aexec(expression, event)
     except Exception:  # pylint: disable=broad-except
-        exc = traceback.format_exc()
+        exc = format_exc()
 
     stdout = redirected_output.getvalue().strip()
     stderr = redirected_error.getvalue().strip()
@@ -58,49 +57,36 @@ async def evaluate(query):
             if len(str(evaluation)) >= 4096:
                 with open("output.txt", "w+") as file:
                     file.write(evaluation)
-                await query.client.send_file(
-                    query.chat_id,
+                await event.client.send_file(
+                    event.chat_id,
                     "output.txt",
-                    reply_to=query.id,
-                    caption="`Output too large, sending as file`",
+                    reply_to=event.id,
+                    caption="**Output too large, sending as file...**",
                 )
                 remove("output.txt")
                 return
-            await query.edit(
-                "**Query: **\n`"
-                f"{expression}"
-                "`\n**Result: **\n`"
-                f"{evaluation}"
-                "`"
-            )
+            await event.edit(f"**Query:**\n`{expression}`\n**Result:**\n`{evaluation}`")
         else:
-            await query.edit(
-                "**Query: **\n`"
-                f"{expression}"
-                "`\n**Result: **\n`No Result Returned/False`"
+            await event.edit(
+                f"**Query:**\n`{expression}`\n**Result:**\n`No Result Returned/False`"
             )
     except Exception as err:
-        await query.edit(
-            "**Query: **\n`" f"{expression}" "`\n**Exception: **\n" f"`{err}`"
-        )
+        await event.edit(f"**Query:**\n`{expression}`\n**Exception:**\n`{err}`")
 
 
 @register(outgoing=True, pattern=r"^\.exec(?: |$|\n)([\s\S]*)")
-async def run(run_q):
+async def run(event):
     """For .exec command, which executes the dynamically created program"""
-    code = run_q.pattern_match.group(1)
+    code = event.pattern_match.group(1)
 
-    if run_q.is_channel and not run_q.is_group:
-        return await run_q.edit("`Exec isn't permitted on channels!`")
+    if event.is_channel and not event.is_group:
+        return await event.edit("**Exec isn't permitted on channels!**")
 
     if not code:
-        return await run_q.edit(
-            "``` At least a variable is required to"
-            "execute. Use .help exec for an example.```"
-        )
+        return await event.edit("**Read** `.help exec` **for an example.**")
 
     if code in ("userbot.session", "config.env"):
-        return await run_q.edit("`That's a dangerous operation! Not Permitted!`")
+        return await event.edit("**That's a dangerous operation! Not permitted!**")
 
     if len(code.splitlines()) <= 5:
         codepre = code
@@ -125,28 +111,24 @@ async def run(run_q):
         if len(result) > 4096:
             with open("output.txt", "w+") as file:
                 file.write(result)
-            await run_q.client.send_file(
-                run_q.chat_id,
+            await event.client.send_file(
+                event.chat_id,
                 "output.txt",
-                reply_to=run_q.id,
-                caption="`Output too large, sending as file`",
+                reply_to=event.id,
+                caption="**Output too large, sending as file...**",
             )
-            remove("output.txt")
-            return
-        await run_q.edit(
-            "**Query: **\n`" f"{codepre}" "`\n**Result: **\n`" f"{result}" "`"
-        )
+            return remove("output.txt")
+        await event.edit(f"**Query:**\n`{codepre}`\n**Result:**\n`{result}`")
     else:
-        await run_q.edit(
-            "**Query: **\n`" f"{codepre}" "`\n**Result: **\n`No result returned/False`"
+        await event.edit(
+            f"**Query:**\n`{codepre}`\n**Result:**\n`No result returned/False`"
         )
 
 
 @register(outgoing=True, pattern=r"^\.term(?: |$|\n)(.*)")
-async def terminal_runner(term):
+async def terminal_runner(event):
     """For .term command, runs bash commands and scripts on your server."""
-    curruser = TERM_ALIAS
-    command = term.pattern_match.group(1)
+    command = event.pattern_match.group(1)
     try:
         from os import geteuid
 
@@ -154,16 +136,14 @@ async def terminal_runner(term):
     except ImportError:
         uid = "This ain't it chief!"
 
-    if term.is_channel and not term.is_group:
-        return await term.edit("`Term commands aren't permitted on channels!`")
+    if event.is_channel and not event.is_group:
+        return await event.edit("**Term commands aren't permitted on channels!**")
 
     if not command:
-        return await term.edit(
-            "``` Give a command or use .help term for an example.```"
-        )
+        return await event.edit("**Give a command or use .help term for an example.**")
 
     if command in ("userbot.session", "config.env"):
-        return await term.edit("`That's a dangerous operation! Not Permitted!`")
+        return await event.edit("**That's a dangerous operation! Not permitted!**")
 
     process = await asyncio.create_subprocess_shell(
         command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
@@ -174,27 +154,30 @@ async def terminal_runner(term):
     if len(result) > 4096:
         with open("output.txt", "w+") as output:
             output.write(result)
-        await term.client.send_file(
-            term.chat_id,
+        await event.client.send_file(
+            event.chat_id,
             "output.txt",
-            reply_to=term.id,
-            caption="`Output too large, sending as file`",
+            reply_to=event.id,
+            caption="**Output too large, sending as file...**",
         )
-        remove("output.txt")
-        return
+        return remove("output.txt")
 
     if uid == 0:
-        await term.edit("`" f"{curruser}:~# {command}" f"\n{result}" "`")
+        await event.edit(f"`# {command}\n{result}`")
     else:
-        await term.edit("`" f"{curruser}:~$ {command}" f"\n{result}" "`")
+        await event.edit(f"`$ {command}\n{result}`")
 
 
 CMD_HELP.update(
     {
-        "eval": "`.eval <cmd>`\n`.eval return 2 + 3`\n`.eval print(event)`\n"
-        "`.eval await event.reply('hii..')`\n\n"
-        "Usage: Evaluate Python expressions in the running script args.",
-        "exec": "`.exec print('hello')`\nUsage: Execute small python scripts in subprocess.",
-        "term": "`.term <cmd>`\nUsage: Run bash commands and scripts on your server.",
+        "eval": "`.eval <cmd>`\n"
+        "`.eval return 2 + 3`\n"
+        "`.eval print(event)`\n"
+        "`.eval await event.reply('Ender')`\n"
+        "\nUsage: Evaluate Python expressions in the running script args.",
+        "exec": "`.exec print('hello')`"
+        "\nUsage: Execute small python scripts in subprocess.",
+        "term": "`.term <cmd>`\n"
+        "Usage: Run bash commands and scripts on your server.",
     }
 )
