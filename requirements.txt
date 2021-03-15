@@ -6,7 +6,6 @@ bs4
 CairoSVG
 cffi
 cowpy
-cryptg
 deezloader
 dnspython
 emoji
@@ -46,6 +45,7 @@ sqlalchemy
 telegraph
 telethon
 telethon-session-sqlalchemy
+TgCrypto
 wikipedia
 youtube-dl
 youtube_search
