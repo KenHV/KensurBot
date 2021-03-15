@@ -58,8 +58,8 @@ if CONFIG_CHECK:
     sys.exit(1)
 
 # Telegram App KEY and HASH
-API_KEY = os.environ.get("API_KEY") or None
-API_HASH = os.environ.get("API_HASH") or None
+API_KEY = int(os.environ.get("API_KEY") or 0)
+API_HASH = str(os.environ.get("API_HASH") or None)
 
 # Userbot Session String
 STRING_SESSION = os.environ.get("STRING_SESSION") or None
@@ -166,7 +166,13 @@ USR_TOKEN = os.environ.get("USR_TOKEN_UPTOBOX") or None
 # 'bot' variable
 if STRING_SESSION:
     # pylint: disable=invalid-name
-    bot = TelegramClient(StringSession(STRING_SESSION), API_KEY, API_HASH)
+    bot = TelegramClient(
+        session=StringSession(STRING_SESSION),
+        api_id=API_KEY,
+        api_hash=API_HASH,
+        auto_reconnect=True,
+        connection_retries=-1,
+    )
 else:
     # pylint: disable=invalid-name
     bot = TelegramClient("userbot", API_KEY, API_HASH)
