@@ -52,6 +52,9 @@ async def evaluate(event):
     sys.stderr = old_stderr
     evaluation = exc or stderr or stdout or returned
 
+    expression = repr(expression)[1:-1]
+    evaluation = repr(evaluation)[1:-1]
+
     try:
         if evaluation:
             if len(str(evaluation)) >= 4096:
@@ -65,13 +68,15 @@ async def evaluate(event):
                 )
                 remove("output.txt")
                 return
-            await event.edit(f"**Query:**\n`{expression}`\n**Result:**\n`{evaluation}`")
+            await event.edit(
+                f"**Query:**\n`{expression}`\n\n**Result:**\n`{evaluation}`"
+            )
         else:
             await event.edit(
-                f"**Query:**\n`{expression}`\n**Result:**\n`No Result Returned/False`"
+                f"**Query:**\n`{expression}`\n\n**Result:**\n`No Result Returned/False`"
             )
     except Exception as err:
-        await event.edit(f"**Query:**\n`{expression}`\n**Exception:**\n`{err}`")
+        await event.edit(f"**Query:**\n`{expression}`\n\n**Exception:**\n`{err}`")
 
 
 @register(outgoing=True, pattern=r"^\.exec(?: |$|\n)([\s\S]*)")
@@ -107,6 +112,9 @@ async def run(event):
     stdout, _ = await process.communicate()
     result = str(stdout.decode().strip())
 
+    codepre = repr(codepre)[1:-1]
+    result = repr(result)[1:-1]
+
     if result:
         if len(result) > 4096:
             with open("output.txt", "w+") as file:
@@ -118,10 +126,10 @@ async def run(event):
                 caption="**Output too large, sending as file...**",
             )
             return remove("output.txt")
-        await event.edit(f"**Query:**\n`{codepre}`\n**Result:**\n`{result}`")
+        await event.edit(f"**Query:**\n`{codepre}`\n\n**Result:**\n`{result}`")
     else:
         await event.edit(
-            f"**Query:**\n`{codepre}`\n**Result:**\n`No result returned/False`"
+            f"**Query:**\n`{codepre}`\n\n**Result:**\n`No result returned/False`"
         )
 
 
@@ -129,12 +137,6 @@ async def run(event):
 async def terminal_runner(event):
     """For .term command, runs bash commands and scripts on your server."""
     command = event.pattern_match.group(1)
-    try:
-        from os import geteuid
-
-        uid = geteuid()
-    except ImportError:
-        uid = "This ain't it chief!"
 
     if event.is_channel and not event.is_group:
         return await event.edit("**Term commands aren't permitted on channels!**")
@@ -151,6 +153,9 @@ async def terminal_runner(event):
     stdout, _ = await process.communicate()
     result = str(stdout.decode().strip())
 
+    command = repr(command)[1:-1]
+    output = repr(result)[1:-1]
+
     if len(result) > 4096:
         with open("output.txt", "w+") as output:
             output.write(result)
@@ -162,10 +167,7 @@ async def terminal_runner(event):
         )
         return remove("output.txt")
 
-    if uid == 0:
-        await event.edit(f"`# {command}\n{result}`")
-    else:
-        await event.edit(f"`$ {command}\n{result}`")
+    await event.edit(f"**Command:**\n`{command}`\n\n**Result:**\n`{result}`")
 
 
 CMD_HELP.update(
