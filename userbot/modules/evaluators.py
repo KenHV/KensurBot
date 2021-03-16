@@ -52,8 +52,8 @@ async def evaluate(event):
     sys.stderr = old_stderr
     evaluation = exc or stderr or stdout or returned
 
-    expression = repr(expression)[1:-1]
-    evaluation = repr(evaluation)[1:-1]
+    expression.encode("unicode-escape").decode().replace("\\\\", "\\")
+    evaluation.encode("unicode-escape").decode().replace("\\\\", "\\")
 
     try:
         if evaluation:
@@ -112,8 +112,8 @@ async def run(event):
     stdout, _ = await process.communicate()
     result = str(stdout.decode().strip())
 
-    codepre = repr(codepre)[1:-1]
-    result = repr(result)[1:-1]
+    codepre.encode("unicode-escape").decode().replace("\\\\", "\\")
+    result.encode("unicode-escape").decode().replace("\\\\", "\\")
 
     if result:
         if len(result) > 4096:
@@ -153,8 +153,8 @@ async def terminal_runner(event):
     stdout, _ = await process.communicate()
     result = str(stdout.decode().strip())
 
-    command = repr(command)[1:-1]
-    output = repr(result)[1:-1]
+    command.encode("unicode-escape").decode().replace("\\\\", "\\")
+    output = result.encode("unicode-escape").decode().replace("\\\\", "\\")
 
     if len(result) > 4096:
         with open("output.txt", "w+") as output:
