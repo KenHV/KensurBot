@@ -47,14 +47,20 @@ async def get_weather(weather):
 
     APPID = OWM_API
 
+    anonymous = False
+
     if not weather.pattern_match.group(1):
         CITY = DEFCITY
-        if not CITY:
-            return await weather.edit(
-                "**Please specify a city or set one as default using the WEATHER_DEFCITY config variable.**"
-            )
+    elif weather.pattern_match.group(1).lower() == "anon":
+        CITY = DEFCITY
+        anonymous = True
     else:
         CITY = weather.pattern_match.group(1)
+
+    if not CITY:
+        return await weather.edit(
+            "**Please specify a city or set one as default using the WEATHER_DEFCITY config variable.**"
+        )
 
     timezone_countries = {
         timezone: country
@@ -117,7 +123,7 @@ async def get_weather(weather):
     def sun(unix):
         return datetime.fromtimestamp(unix, tz=ctimezone).strftime("%I:%M %p")
 
-    await weather.edit(
+    results = (
         f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
         + f"**Min. Temp.:** `{celsius(min_temp)}°C | {fahrenheit(min_temp)}°F`\n"
         + f"**Max. Temp.:** `{celsius(max_temp)}°C | {fahrenheit(max_temp)}°F`\n"
@@ -126,14 +132,18 @@ async def get_weather(weather):
         + f"**Sunrise:** `{sun(sunrise)}`\n"
         + f"**Sunset:** `{sun(sunset)}`\n\n"
         + f"**{desc}**\n"
-        + f"`{cityname}, {fullc_n}`\n"
-        + f"`{time}`"
+        + f"`{time}`\n"
     )
+    if not anonymous:
+        results += f"`{cityname}, {fullc_n}`"
+
+    await weather.edit(results)
 
 
 CMD_HELP.update(
     {
         "weather": ">`.weather <city> or .weather <city>, <country name/code>`"
         "\nUsage: Gets the weather of a city."
+        "\nUse `.weather anon` to omit location details in results. (This needs WEATHER_DEFCITY to be set)"
     }
 )
