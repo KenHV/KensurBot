@@ -169,7 +169,7 @@ async def upstream(event):
     if ac_br != UPSTREAM_REPO_BRANCH:
         await event.edit(
             f"**Looks like you are using your own custom branch: ({ac_br}). \n"
-            "Please switch to** `sql-extended` **branch.**"
+            "Please switch to** `master` **branch.**"
         )
         return repo.__del__()
     try:

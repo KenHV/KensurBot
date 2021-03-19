@@ -23,7 +23,7 @@ I made this fork to cherry-pick some modules I needed. Eventually I started mess
 
 - [Guide to setting up](https://kenharris.xyz/userbot.html)
 - [Generate session string](http://sessiongen.kenhv.repl.run)
-- [Deploy on Heroku](https://heroku.com/deploy?template=https://github.com/KenHV/KensurBot/tree/sql-extended)
+- [Deploy on Heroku](https://heroku.com/deploy?template=https://github.com/KenHV/KensurBot/tree/master)
 - [Setup GDrive module](https://telegra.ph/How-To-Setup-Google-Drive-04-03)
 - [Setup Last.FM module](https://telegra.ph/How-to-set-up-LastFM-module-for-Paperplane-userbot-11-02)
 
