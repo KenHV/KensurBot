@@ -6,7 +6,7 @@ import asyncio
 import os
 import shlex
 import textwrap
-from typing import Optional, Tuple
+from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -122,7 +122,7 @@ async def add_text_img(image_path, text):
     return final_image
 
 
-async def runcmd(cmd: str) -> Tuple[str, str, int, int]:
+async def runcmd(cmd: str) -> tuple[str, str, int, int]:
     """ run command in terminal """
     args = shlex.split(cmd)
     process = await asyncio.create_subprocess_exec(

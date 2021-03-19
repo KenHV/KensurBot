@@ -9,16 +9,7 @@ import logging
 import math
 import os
 from collections import defaultdict
-from typing import (
-    AsyncGenerator,
-    Awaitable,
-    BinaryIO,
-    DefaultDict,
-    List,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import AsyncGenerator, Awaitable, BinaryIO, DefaultDict, Optional, Union
 
 from telethon import TelegramClient, helpers, utils
 from telethon.crypto import AuthKey
@@ -150,7 +141,7 @@ class ParallelTransferrer:
     client: TelegramClient
     loop: asyncio.AbstractEventLoop
     dc_id: int
-    senders: Optional[List[Union[DownloadSender, UploadSender]]]
+    senders: Optional[list[Union[DownloadSender, UploadSender]]]
     auth_key: AuthKey
     upload_ticker: int
 
@@ -277,7 +268,7 @@ class ParallelTransferrer:
         file_size: int,
         part_size_kb: Optional[float] = None,
         connection_count: Optional[int] = None,
-    ) -> Tuple[int, int, bool]:
+    ) -> tuple[int, int, bool]:
         connection_count = connection_count or self._get_connection_count(file_size)
         print("init_upload count is ", connection_count)
         part_size = (part_size_kb or utils.get_appropriated_part_size(file_size)) * 1024
@@ -335,7 +326,7 @@ parallel_transfer_locks: DefaultDict[int, asyncio.Lock] = defaultdict(
 
 async def _internal_transfer_to_telegram(
     client: TelegramClient, response: BinaryIO, progress_callback: callable
-) -> Tuple[TypeInputFile, int]:
+) -> tuple[TypeInputFile, int]:
     global filename
     file_id = helpers.generate_random_long()
     file_size = os.path.getsize(response.name)
