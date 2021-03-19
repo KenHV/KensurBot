@@ -10,12 +10,13 @@ import sys
 from distutils.util import strtobool as sb
 from logging import DEBUG, INFO, basicConfig, getLogger
 from pathlib import Path
+from platform import python_version
 
 from dotenv import load_dotenv
 from pylast import LastFMNetwork, md5
 from pySmartDL import SmartDL
 from requests import get
-from telethon import TelegramClient
+from telethon import TelegramClient, version
 from telethon.network.connection.tcpabridged import ConnectionTcpAbridged
 from telethon.sessions import StringSession
 
@@ -212,6 +213,26 @@ with bot:
             "valid entity. Check your environment variables/config.env file."
         )
         sys.exit(1)
+
+
+async def send_alive_status():
+    if BOTLOG_CHATID and LOGSPAMMER:
+        DEFAULTUSER = ALIVE_NAME or "Set `ALIVE_NAME` ConfigVar!"
+        message = (
+            "**KensurBot v1.1 is up and running!**\n\n"
+            f"**Telethon:** {version.__version__}\n"
+            f"**Python:** {python_version()}\n"
+            f"**User:** {DEFAULTUSER}"
+        )
+        await bot.send_message(BOTLOG_CHATID, message)
+        return True
+
+
+with bot:
+    try:
+        bot.loop.run_until_complete(send_alive_status())
+    except:
+        pass
 
 # Global Variables
 COUNT_MSG = 0
