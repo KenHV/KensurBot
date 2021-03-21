@@ -390,6 +390,4 @@ async def upload_file(
 ) -> TypeInputFile:
     global filename
     filename = name
-    return (
-        await _internal_transfer_to_telegram(client, file, progress_callback)
-    )[0]
+    return (await _internal_transfer_to_telegram(client, file, progress_callback))[0]
