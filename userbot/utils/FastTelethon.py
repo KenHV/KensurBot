@@ -304,9 +304,7 @@ class ParallelTransferrer:
 
         part = 0
         while part < part_count:
-            tasks = []
-            for sender in self.senders:
-                tasks.append(self.loop.create_task(sender.next()))
+            tasks = [self.loop.create_task(sender.next()) for sender in self.senders]
             for task in tasks:
                 data = await task
                 if not data:
@@ -392,5 +390,4 @@ async def upload_file(
 ) -> TypeInputFile:
     global filename
     filename = name
-    res = (await _internal_transfer_to_telegram(client, file, progress_callback))[0]
-    return res
+    return (await _internal_transfer_to_telegram(client, file, progress_callback))[0]

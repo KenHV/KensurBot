@@ -147,10 +147,9 @@ async def get_video_thumb(file, output):
     t_resp, e_resp = await run_cmd(command)
     if os.path.lexists(output):
         return output
-    else:
-        LOGS.info(t_resp)
-        LOGS.info(e_resp)
-        return None
+    LOGS.info(t_resp)
+    LOGS.info(e_resp)
+    return None
 
 
 @register(pattern=r"^\.upload (.*)", outgoing=True)
@@ -232,7 +231,7 @@ async def upload(event):
             for root, _, files in os.walk(input_str):
                 for file in files:
                     lst_files.append(os.path.join(root, file))
-            if len(lst_files) == 0:
+            if not lst_files:
                 return await event.edit(f"`{input_str}` **is empty.**")
             await event.edit(f"**Found** `{len(lst_files)}` **files. Uploading...**")
             for files in sorted(lst_files):
