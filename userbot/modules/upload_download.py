@@ -14,15 +14,13 @@ import math
 import os
 import time
 from datetime import datetime
+from urllib.parse import unquote_plus
 
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pySmartDL import SmartDL
-from telethon.tl.types import (
-    DocumentAttributeAudio,
-    DocumentAttributeFilename,
-    DocumentAttributeVideo,
-)
+from requests import get
+from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 
 from userbot import CMD_HELP, LOGS, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
@@ -35,17 +33,26 @@ async def download(target_file):
     """ For .download command, download files to the userbot's server. """
     await target_file.edit("**Processing...**")
     input_str = target_file.pattern_match.group(1)
+    replied = await target_file.get_reply_message()
     if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-    if "|" in input_str:
-        url, file_name = input_str.split("|")
-        url = url.strip()
-        # https://stackoverflow.com/a/761825/4723940
-        file_name = file_name.strip()
-        head, tail = os.path.split(file_name)
-        if head and not os.path.isdir(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)):
-            os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
-            file_name = os.path.join(head, tail)
+    if input_str:
+        url = input_str
+        file_name = unquote_plus(os.path.basename(url))
+        if "|" in input_str:
+            url, file_name = input_str.split("|")
+            url = url.strip()
+            # https://stackoverflow.com/a/761825/4723940
+            file_name = file_name.strip()
+            head, tail = os.path.split(file_name)
+            if head:
+                if not os.path.isdir(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head)):
+                    os.makedirs(os.path.join(TEMP_DOWNLOAD_DIRECTORY, head))
+                    file_name = os.path.join(head, tail)
+        try:
+            url = get(url).url
+        except BaseException:
+            return await target_file.edit("**This is not a valid link.**")
         downloaded_file_name = TEMP_DOWNLOAD_DIRECTORY + "" + file_name
         downloader = SmartDL(url, downloaded_file_name, progress_bar=False)
         downloader.start(blocking=False)
@@ -75,7 +82,7 @@ async def download(target_file):
                     f"\n**ETA:** {estimated_total_time}"
                 )
 
-                if round(diff % 10.00) == 0 and current_message != display_message:
+                if round(diff % 15.00) == 0 and current_message != display_message:
                     await target_file.edit(current_message)
                     display_message = current_message
             except Exception as e:
@@ -86,21 +93,24 @@ async def download(target_file):
             )
         else:
             await target_file.edit(f"**Incorrect URL**\n{url}")
-    elif target_file.reply_to_msg_id:
+    elif replied:
+        if not replied.media:
+            return await target_file.edit("**Reply to file or media.**")
         try:
-            replied = await target_file.get_reply_message()
             media = replied.media
             if hasattr(media, "document"):
                 file = media.document
                 mime_type = file.mime_type
-                attribs = file.attributes
-                for attr in attribs:
-                    if isinstance(attr, DocumentAttributeFilename):
-                        filename = attr.file_name
-                    elif "audio" in mime_type:
-                        filename = "audio-" + str(datetime.now()) + ".ogg"
+                filename = replied.file.name
+                if not filename:
+                    if "audio" in mime_type:
+                        filename = (
+                            "audio_" + datetime.now().isoformat("_", "seconds") + ".ogg"
+                        )
                     elif "video" in mime_type:
-                        filename = "video-" + str(datetime.now()) + ".mp4"
+                        filename = (
+                            "video_" + datetime.now().isoformat("_", "seconds") + ".mp4"
+                        )
                 outdir = TEMP_DOWNLOAD_DIRECTORY + filename
                 c_time = time.time()
                 start_time = datetime.now()
@@ -138,7 +148,7 @@ async def download(target_file):
                     f"**Downloaded to** `{result}` **in {dl_time} seconds.**"
                 )
     else:
-        await target_file.edit("**Reply to a message to download to my local server.**")
+        await target_file.edit("**See** `.help download` **for more info.**")
 
 
 async def get_video_thumb(file, output):
@@ -309,8 +319,10 @@ async def upload(event):
 
 CMD_HELP.update(
     {
-        "download": ">`.download <link|filename> or reply to media`"
-        "\nUsage: Downloads file to the server."
+        "download": ">`.download` <link> | <filename> (optional)"
+        "\nUsage: Downloads file from url to the server."
+        "\n\n>`.download` <reply to file>"
+        "\nUsage: Downloads file from the replied file/media."
         "\n\n>`.upload` <file/folder path in server>"
         "\nUsage: Uploads a locally stored file/folder to the chat."
     }
