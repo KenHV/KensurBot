@@ -172,7 +172,6 @@ async def show_all(event):
     if len(msg) <= 4096:
         await event.edit("**On-going Downloads:**\n" + msg)
         await sleep(5)
-        await event.delete()
     else:
         await event.edit("**Output is too big, sending it as a file...**")
         output = "output.txt"
@@ -184,7 +183,8 @@ async def show_all(event):
             output,
             reply_to=event.message.id,
         )
-        await event.delete()
+
+    await event.delete()
 
 
 async def check_metadata(gid):
