@@ -45,7 +45,7 @@ sqlalchemy==1.3.23
 telegraph
 telethon
 telethon-session-sqlalchemy
-TgCrypto
+telethon-tgcrypto
 wikipedia
 youtube-dl
 youtube_search
