@@ -10,7 +10,7 @@ This module updates the userbot based on upstream revision
 
 import asyncio
 import sys
-from os import environ, execle, path, remove
+from os import environ, execle, remove
 
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
@@ -23,10 +23,6 @@ from userbot import (
     UPSTREAM_REPO_URL,
 )
 from userbot.events import register
-
-requirements_path = path.join(
-    path.dirname(path.dirname(path.dirname(__file__))), "requirements.txt"
-)
 
 
 async def gen_chlog(repo, diff):
@@ -50,20 +46,6 @@ async def print_changelogs(event, ac_br, changelog):
     else:
         await event.client.send_message(event.chat_id, changelog_str)
     return True
-
-
-async def update_requirements():
-    reqs = str(requirements_path)
-    try:
-        process = await asyncio.create_subprocess_shell(
-            " ".join([sys.executable, "-m", "pip", "install", "-r", reqs]),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-        await process.communicate()
-        return process.returncode
-    except Exception as e:
-        return repr(e)
 
 
 async def deploy(event, repo, ups_rem, ac_br, txt):
@@ -122,14 +104,12 @@ async def update(event, repo, ups_rem, ac_br):
         ups_rem.pull(ac_br)
     except GitCommandError:
         repo.git.reset("--hard", "FETCH_HEAD")
-    await update_requirements()
     await event.edit(
         "**Successfully updated!**\nBot is restarting, will be back up in a few seconds."
     )
     # Spin a new instance of bot
     args = [sys.executable, "-m", "userbot"]
     execle(sys.executable, *args, environ)
-    return
 
 
 @register(outgoing=True, pattern=r"^\.update( now| deploy|$)")
