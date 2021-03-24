@@ -52,7 +52,7 @@ async def killthebot(event):
     await event.edit("**Shutting down.**")
     if BOTLOG:
         await event.client.send_message(BOTLOG_CHATID, "#SHUTDOWN \n" "Bot shut down")
-    bot.disconnect()
+    await bot.disconnect()
 
 
 @register(outgoing=True, pattern=r"^\.restart$")
