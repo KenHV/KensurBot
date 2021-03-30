@@ -106,6 +106,10 @@
       "description": "Your client_secret.json.",
       "required": false
     },
+    "G_DRIVE_INDEX_URL": {
+      "description": "Your Cloudflare Google Drive Index URL",
+      "required": false
+    },
     "GENIUS_ACCESS_TOKEN": {
       "description": "Client Access Token from https://genius.com/api-clients, needed for lyrics module.",
       "required": false
