@@ -99,9 +99,9 @@ ALIVE_NAME = str(os.environ.get("ALIVE_NAME")) or None
 # remove.bg API key
 REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY") or None
 
-# Chrome Driver and Headless Google Chrome Binaries
+# Chrome Driver and Chrome Binaries
 CHROME_DRIVER = "/usr/bin/chromedriver"
-GOOGLE_CHROME_BIN = "/usr/bin/google-chrome"
+CHROME_BIN = "/usr/bin/chromium"
 
 # OpenWeatherMap API Key
 OPEN_WEATHER_MAP_APPID = os.environ.get("OPEN_WEATHER_MAP_APPID") or None

@@ -19,7 +19,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from userbot import CHROME_DRIVER, GOOGLE_CHROME_BIN, TEMP_DOWNLOAD_DIRECTORY
+from userbot import CHROME_BIN, CHROME_DRIVER, TEMP_DOWNLOAD_DIRECTORY
 
 
 async def chrome(chrome_options=None):
@@ -34,7 +34,7 @@ async def chrome(chrome_options=None):
 
 async def options():
     chrome_options = Options()
-    chrome_options.binary_location = GOOGLE_CHROME_BIN
+    chrome_options.binary_location = CHROME_BIN
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920x1080")
     chrome_options.add_argument("--disable-dev-shm-usage")
