@@ -166,7 +166,7 @@ GENIUS = os.environ.get("GENIUS_ACCESS_TOKEN") or None
 USR_TOKEN = os.environ.get("USR_TOKEN_UPTOBOX") or None
 
 # KensurBot version
-KENSURBOT_VERSION = "1.1"
+KENSURBOT_VERSION = "1.2"
 
 # 'bot' variable
 if STRING_SESSION:
