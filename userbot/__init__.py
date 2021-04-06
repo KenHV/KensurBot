@@ -180,7 +180,6 @@ if STRING_SESSION:
         api_hash=API_HASH,
         connection=ConnectionTcpAbridged,
         auto_reconnect=True,
-        connection_retries=-1,
     )
 else:
     # pylint: disable=invalid-name
