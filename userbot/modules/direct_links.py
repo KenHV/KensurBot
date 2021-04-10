@@ -7,7 +7,6 @@
 
 import asyncio
 import json
-import math
 import re
 import urllib.parse
 from asyncio import create_subprocess_shell as asyncSubprocess
@@ -18,6 +17,7 @@ import aiohttp
 import requests
 from bs4 import BeautifulSoup
 from humanize import naturalsize
+from js2py import EvalJs
 
 from userbot import CMD_HELP, USR_TOKEN
 from userbot.events import register
@@ -83,47 +83,28 @@ async def direct_link_generator(request):
 
 
 async def zippy_share(url: str) -> str:
-    regex_link = r"https://www(\d{1,3}).zippyshare.com/v/(\w{8})/file.html"
-    regex_result = (
-        r"var a = (\d{6});\s+var b = (\d{6});\s+document\.getElementById"
-        r'\(\'dlbutton\'\).omg = "f";\s+if \(document.getElementById\(\''
-        r"dlbutton\'\).omg != \'f\'\) {\s+a = Math.ceil\(a/3\);\s+} else"
-        r" {\s+a = Math.floor\(a/3\);\s+}\s+document.getElementById\(\'d"
-        r'lbutton\'\).href = "/d/[a-zA-Z\d]{8}/\"\+\(a \+ \d{6}%b\)\+"/('
-        r'[\w%-.]+)";'
-    )
-    _headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome"
-        "/75.0.3770.100 Safari/537.36"
-    }
-    reply = ""
+    link = re.findall("https:/.(.*?).zippyshare", url)[0]
+    response_content = (requests.get(url)).content
+    bs_obj = BeautifulSoup(response_content, "lxml")
+
     try:
-        session = requests.Session()
-        session.headers.update(_headers)
-        with session as ses:
-            match = re.match(regex_link, url)
-            if not match:
-                raise ValueError("Invalid URL: " + str(url))
-            server, id_ = match.group(1), match.group(2)
-            res = ses.get(url)
-            res.raise_for_status()
-            match = re.search(regex_result, res.text)
-            if not match:
-                raise ValueError("Invalid Response!")
-            val_1 = int(match.group(1))
-            val_2 = math.floor(val_1 / 3)
-            val_3 = int(match.group(2))
-            val = val_1 + val_2 % val_3
-            name = match.group(3)
-            d_l = "https://www{}.zippyshare.com/d/{}/{}/{}".format(
-                server, id_, val, name
-            )
-        name = urllib.parse.unquote(d_l.split("/")[-1])
-        reply += f"[{name}]({d_l})\n"
-    except Exception as err:
-        reply += f"{err}"
-    return reply
+        js_script = bs_obj.find("div", {"class": "center",}).find_all(
+            "script"
+        )[1]
+    except:
+        js_script = bs_obj.find("div", {"class": "right",}).find_all(
+            "script"
+        )[0]
+
+    js_content = re.findall(r'\.href.=."/(.*?)";', str(js_script))
+    js_content = 'var x = "/' + js_content[0] + '"'
+
+    evaljs = EvalJs()
+    setattr(evaljs, "x", None)
+    evaljs.execute(js_content)
+    js_content = getattr(evaljs, "x")
+
+    return f"https://{link}.zippyshare.com{js_content}"
 
 
 async def yandex_disk(url: str) -> str:

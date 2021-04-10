@@ -22,6 +22,7 @@ heroku3
 httplib2
 https://github.com/yt-dlp/yt-dlp/archive/master.zip
 humanize
+js2py
 lottie
 lxml
 lyricsgenius
