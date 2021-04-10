@@ -222,24 +222,27 @@ with bot:
         sys.exit(1)
 
 
-async def send_alive_status():
-    if BOTLOG_CHATID and LOGSPAMMER:
-        DEFAULTUSER = ALIVE_NAME or "Set `ALIVE_NAME` ConfigVar!"
-        message = (
-            f"**KensurBot v{KENSURBOT_VERSION} is up and running!**\n\n"
-            f"**Telethon:** {version.__version__}\n"
-            f"**Python:** {python_version()}\n"
-            f"**User:** {DEFAULTUSER}"
-        )
-        await bot.send_message(BOTLOG_CHATID, message)
-        return True
+async def update_restart_msg(chat_id, msg_id):
+    DEFAULTUSER = ALIVE_NAME or "Set `ALIVE_NAME` ConfigVar!"
+    message = (
+        f"**KensurBot v{KENSURBOT_VERSION} is up and running!**\n\n"
+        f"**Telethon:** {version.__version__}\n"
+        f"**Python:** {python_version()}\n"
+        f"**User:** {DEFAULTUSER}"
+    )
+    await bot.edit_message(chat_id, msg_id, message)
+    return True
 
 
-with bot:
-    try:
-        bot.loop.run_until_complete(send_alive_status())
-    except:
-        pass
+if os.path.isfile(".restartmsg"):
+    with open(".restartmsg") as f:
+        chat_id, msg_id = map(int, f)
+    with bot:
+        try:
+            bot.loop.run_until_complete(update_restart_msg(chat_id, msg_id))
+        except:
+            pass
+    os.remove(".restartmsg")
 
 # Global Variables
 COUNT_MSG = 0

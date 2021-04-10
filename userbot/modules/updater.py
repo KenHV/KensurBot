@@ -94,6 +94,10 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         await event.edit(
             "**Successfully updated!**\nBot is restarting, will be back up in a few seconds."
         )
+
+        with open(".restartmsg", "w") as f:
+            f.truncate(0)
+            f.write(f"{event.chat_id}\n{event.id}\n")
     else:
         await event.edit("**Please set up** `HEROKU_API_KEY` **variable.**")
     return
@@ -107,6 +111,11 @@ async def update(event, repo, ups_rem, ac_br):
     await event.edit(
         "**Successfully updated!**\nBot is restarting, will be back up in a few seconds."
     )
+
+    with open(".restartmsg", "w") as f:
+        f.truncate(0)
+        f.write(f"{event.chat_id}\n{event.id}\n")
+
     # Spin a new instance of bot
     args = [sys.executable, "-m", "userbot"]
     execle(sys.executable, *args, environ)

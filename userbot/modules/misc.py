@@ -58,10 +58,11 @@ async def killthebot(event):
 @register(outgoing=True, pattern=r"^\.restart$")
 async def killdabot(event):
     await event.edit("**Restarting...**")
-    if BOTLOG:
-        await event.client.send_message(
-            BOTLOG_CHATID, "#RESTART \n" "Restarting bot..."
-        )
+
+    with open(".restartmsg", "w") as f:
+        f.truncate(0)
+        f.write(f"{event.chat_id}\n{event.id}\n")
+
     # Spin a new instance of bot
     args = [sys.executable, "-m", "userbot"]
     execle(sys.executable, *args, environ)
