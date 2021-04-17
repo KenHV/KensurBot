@@ -25,9 +25,8 @@ from search_engine_parser import GoogleSearch
 from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
-from youtube_search import YoutubeSearch
-from yt_dlp import YoutubeDL
-from yt_dlp.utils import (
+from youtube_dl import YoutubeDL
+from youtube_dl.utils import (
     ContentTooShortError,
     DownloadError,
     ExtractorError,
@@ -37,6 +36,7 @@ from yt_dlp.utils import (
     UnavailableVideoError,
     XAttrMetadataError,
 )
+from youtube_search import YoutubeSearch
 
 from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
 from userbot.events import register
@@ -625,7 +625,6 @@ async def download_video(v_url):
             "outtmpl": "%(id)s.mp3",
             "quiet": True,
             "logtostderr": False,
-            "external_downloader": "aria2c",
         }
         video = False
         song = True
@@ -644,7 +643,6 @@ async def download_video(v_url):
             "outtmpl": "%(id)s.mp4",
             "logtostderr": False,
             "quiet": True,
-            "external_downloader": "aria2c",
         }
         song = False
         video = True

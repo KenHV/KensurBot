@@ -20,7 +20,6 @@ gTTS-token
 hachoir
 heroku3
 httplib2
-https://github.com/yt-dlp/yt-dlp/archive/master.zip
 humanize
 js2py
 lottie
@@ -49,4 +48,5 @@ telethon
 telethon-session-sqlalchemy
 telethon-tgcrypto
 wikipedia
+youtube-dl
 youtube_search
