@@ -97,7 +97,7 @@ class Main:
         while based > base and i < il:
             based /= base
             i += 1
-        return "{:.2f}{}".format(based, names[i])
+        return f"{based:.2f}{names[i]}"
 
     @staticmethod
     def percent_human(part, total):
