@@ -56,7 +56,7 @@ async def setlang(prog):
 
 @register(outgoing=True, pattern=r"^\.carbon")
 async def carbon_api(e):
-    """ A Wrapper for carbon.now.sh """
+    """A Wrapper for carbon.now.sh"""
     await e.edit("**Processing...**")
     CARBON = "https://carbon.now.sh/?l={lang}&code={code}"
     global CARBONLANG
@@ -111,7 +111,7 @@ async def carbon_api(e):
 
 @register(outgoing=True, pattern=r"^\.img(?: |$)(\d*)? ?(.*)")
 async def img_sampler(event):
-    """ For .img command, search and return images matching the query. """
+    """For .img command, search and return images matching the query."""
 
     if event.is_reply and not event.pattern_match.group(2):
         query = await event.get_reply_message()
@@ -182,7 +182,7 @@ async def moni(event):
 
 @register(outgoing=True, pattern=r"^\.google(?: |$)(\d*)? ?(.*)")
 async def gsearch(event):
-    """ For .google command, do a Google search. """
+    """For .google command, do a Google search."""
 
     if event.is_reply and not event.pattern_match.group(2):
         match = await event.get_reply_message()
@@ -231,7 +231,7 @@ async def gsearch(event):
 
 @register(outgoing=True, pattern=r"^\.wiki(?: |$)(.*)")
 async def wiki(wiki_q):
-    """ For .wiki command, fetch content from Wikipedia. """
+    """For .wiki command, fetch content from Wikipedia."""
 
     if wiki_q.is_reply and not wiki_q.pattern_match.group(1):
         match = await wiki_q.get_reply_message()
@@ -314,7 +314,7 @@ async def urban_dict(event):
 
 @register(outgoing=True, pattern=r"^\.tts(?: |$)([\s\S]*)")
 async def text_to_speech(query):
-    """ For .tts command, a wrapper for Google Text-to-Speech. """
+    """For .tts command, a wrapper for Google Text-to-Speech."""
 
     if query.is_reply and not query.pattern_match.group(1):
         message = await query.get_reply_message()
@@ -457,7 +457,7 @@ async def imdb(e):
 
 @register(outgoing=True, pattern=r"^\.trt(?: |$)([\s\S]*)")
 async def translateme(trans):
-    """ For .trt command, translate the given text using Google Translate. """
+    """For .trt command, translate the given text using Google Translate."""
 
     if trans.is_reply and not trans.pattern_match.group(1):
         message = await trans.get_reply_message()
@@ -502,7 +502,7 @@ async def translateme(trans):
 
 @register(pattern=r"\.lang (trt|tts) (.*)", outgoing=True)
 async def lang(value):
-    """ For .lang command, change the default langauge of userbot scrapers. """
+    """For .lang command, change the default langauge of userbot scrapers."""
     util = value.pattern_match.group(1).lower()
 
     try:
@@ -547,7 +547,7 @@ async def lang(value):
 
 @register(outgoing=True, pattern=r"^\.yt(?: |$)(\d*)? ?(.*)")
 async def yt_search(event):
-    """ For .yt command, do a YouTube search from Telegram. """
+    """For .yt command, do a YouTube search from Telegram."""
 
     if event.is_reply and not event.pattern_match.group(2):
         query = await event.get_reply_message()
@@ -592,7 +592,7 @@ async def yt_search(event):
 
 @register(outgoing=True, pattern=r"^\.r(a|v)(?: |$)(.*)")
 async def download_video(v_url):
-    """ For media downloader command, download media from YouTube and many other sites. """
+    """For media downloader command, download media from YouTube and many other sites."""
 
     if v_url.is_reply and not v_url.pattern_match.group(2):
         url = await v_url.get_reply_message()
@@ -753,7 +753,7 @@ async def download_video(v_url):
 
 
 def deEmojify(inputString):
-    """ Remove emojis and other non-safe characters from string """
+    """Remove emojis and other non-safe characters from string"""
     return get_emoji_regexp().sub("", inputString)
 
 

@@ -19,7 +19,7 @@ from userbot.utils import time_formatter
 
 @register(outgoing=True, pattern=r"^\.random")
 async def randomise(items):
-    """ For .random command, get a random item from the list of items. """
+    """For .random command, get a random item from the list of items."""
     itemo = (items.text[8:]).split()
     if len(itemo) < 2:
         return await items.edit(
@@ -33,7 +33,7 @@ async def randomise(items):
 
 @register(outgoing=True, pattern=r"^\.sleep ([0-9]+)$")
 async def sleepybot(time):
-    """ For .sleep command, let the userbot snooze for a few second. """
+    """For .sleep command, let the userbot snooze for a few second."""
     counter = int(time.pattern_match.group(1))
     await time.edit("**I am sulking and snoozing...**")
     if BOTLOG:
@@ -48,7 +48,7 @@ async def sleepybot(time):
 
 @register(outgoing=True, pattern=r"^\.shutdown$")
 async def killthebot(event):
-    """ For .shutdown command, shut the bot down."""
+    """For .shutdown command, shut the bot down."""
     await event.edit("**Shutting down.**")
     if BOTLOG:
         await event.client.send_message(BOTLOG_CHATID, "#SHUTDOWN \n" "Bot shut down")
@@ -97,7 +97,7 @@ async def repeat(rep):
 
 @register(outgoing=True, pattern=r"^\.repo$")
 async def repo_is_here(wannasee):
-    """ For .repo command, just returns the repo URL. """
+    """For .repo command, just returns the repo URL."""
     await wannasee.edit(
         "Click [here](https://github.com/KenHV/KensurBot) to open the bot's GitHub page."
     )

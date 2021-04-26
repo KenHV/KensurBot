@@ -13,7 +13,7 @@ from userbot.events import register
 
 @register(outgoing=True, pattern=r"^\.notes$")
 async def notes_active(svd):
-    """ For .notes command, list all of the notes saved in a chat. """
+    """For .notes command, list all of the notes saved in a chat."""
     try:
         from userbot.modules.sql_helper.notes_sql import get_notes
     except AttributeError:
@@ -29,7 +29,7 @@ async def notes_active(svd):
 
 @register(outgoing=True, pattern=r"^\.clear (\w*)")
 async def remove_notes(clr):
-    """ For .clear command, clear note with the given name."""
+    """For .clear command, clear note with the given name."""
     try:
         from userbot.modules.sql_helper.notes_sql import rm_note
     except AttributeError:
@@ -43,7 +43,7 @@ async def remove_notes(clr):
 
 @register(outgoing=True, pattern=r"^\.save (\w*)")
 async def add_note(fltr):
-    """ For .save command, saves notes in a chat. """
+    """For .save command, saves notes in a chat."""
     try:
         from userbot.modules.sql_helper.notes_sql import add_note
     except AttributeError:
@@ -80,7 +80,7 @@ async def add_note(fltr):
     pattern=r"^#\w*", disable_edited=True, disable_errors=True, ignore_unsafe=True
 )
 async def incom_note(getnt):
-    """ Notes logic. """
+    """Notes logic."""
     try:
         if not (await getnt.get_sender()).bot:
             try:

@@ -42,7 +42,7 @@ async def subprocess_run(cmd):
 
 @register(outgoing=True, pattern=r"^\.direct(?: |$)([\s\S]*)")
 async def direct_link_generator(request):
-    """ direct links generator """
+    """direct links generator"""
     await request.edit("**Processing...**")
     textx = await request.get_reply_message()
     message = request.pattern_match.group(1)
@@ -154,7 +154,7 @@ async def cm_ru(url: str) -> str:
 
 
 async def mediafire(url: str) -> str:
-    """ MediaFire direct links generator """
+    """MediaFire direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*mediafire\.com\S+", url)[0]
     except IndexError:
@@ -171,7 +171,7 @@ async def mediafire(url: str) -> str:
 
 
 async def sourceforge(url: str) -> str:
-    """ SourceForge direct links generator """
+    """SourceForge direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*sourceforge\.net\S+", url)[0]
     except IndexError:
@@ -196,7 +196,7 @@ async def sourceforge(url: str) -> str:
 
 
 async def osdn(url: str) -> str:
-    """ OSDN direct links generator """
+    """OSDN direct links generator"""
     osdn_link = "https://osdn.net"
     try:
         link = re.findall(r"\bhttps?://.*osdn\.net\S+", url)[0]
@@ -217,7 +217,7 @@ async def osdn(url: str) -> str:
 
 
 async def github(url: str) -> str:
-    """ GitHub direct links generator """
+    """GitHub direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*github\.com.*releases\S+", url)[0]
     except IndexError:
@@ -236,7 +236,7 @@ async def github(url: str) -> str:
 
 
 async def androidfilehost(url: str) -> str:
-    """ AFH direct links generator """
+    """AFH direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*androidfilehost.*fid.*\S+", url)[0]
     except IndexError:
@@ -284,7 +284,7 @@ async def androidfilehost(url: str) -> str:
 
 
 async def uptobox(request, url: str) -> str:
-    """ Uptobox direct links generator """
+    """Uptobox direct links generator"""
     try:
         link = re.findall(r"\bhttps?://.*uptobox\.com\S+", url)[0]
     except IndexError:
