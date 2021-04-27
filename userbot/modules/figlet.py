@@ -44,7 +44,7 @@ async def figlet(event):
 
 
 def deEmojify(inputString):
-    """ Remove emojis and other non-safe characters from string """
+    """Remove emojis and other non-safe characters from string"""
     return get_emoji_regexp().sub("", inputString)
 
 

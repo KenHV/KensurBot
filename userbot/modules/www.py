@@ -18,7 +18,7 @@ from userbot.utils import humanbytes
 
 @register(outgoing=True, pattern=r"^\.speedtest$")
 async def speedtst(event):
-    """ For .speed command, use SpeedTest to check server speeds. """
+    """For .speed command, use SpeedTest to check server speeds."""
     await event.edit("**Running speed test...**")
 
     test = Speedtest()
@@ -51,7 +51,7 @@ async def speedtst(event):
 
 @register(outgoing=True, pattern=r"^\.dc$")
 async def neardc(event):
-    """ For .dc command, get the nearest datacenter information. """
+    """For .dc command, get the nearest datacenter information."""
     result = await event.client(functions.help.GetNearestDcRequest())
     await event.edit(
         f"**Country:** `{result.country}`\n"
@@ -62,7 +62,7 @@ async def neardc(event):
 
 @register(outgoing=True, pattern=r"^\.ping$")
 async def pingme(event):
-    """ For .ping command, ping the userbot from any chat.  """
+    """For .ping command, ping the userbot from any chat."""
     start = datetime.now()
     await event.edit("**Pong!**")
     end = datetime.now()

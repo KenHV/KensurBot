@@ -21,7 +21,7 @@ from userbot.events import register
 
 @register(pattern=r"^\.decode$", outgoing=True)
 async def parseqr(qr_e):
-    """ For .decode command, get QR Code/BarCode content from the replied photo. """
+    """For .decode command, get QR Code/BarCode content from the replied photo."""
     downloaded_file_name = await qr_e.client.download_media(
         await qr_e.get_reply_message()
     )
@@ -56,7 +56,7 @@ async def parseqr(qr_e):
 
 @register(pattern=r"\.barcode(?: |$)([\s\S]*)", outgoing=True)
 async def bq(event):
-    """ For .barcode command, genrate a barcode containing the given content. """
+    """For .barcode command, genrate a barcode containing the given content."""
     await event.edit("**Processing...**")
     input_str = event.pattern_match.group(1)
     message = "**Syntax:** `.barcode <long text to include>`"
@@ -91,7 +91,7 @@ async def bq(event):
 
 @register(pattern=r"\.makeqr(?: |$)([\s\S]*)", outgoing=True)
 async def make_qr(makeqr):
-    """ For .makeqr command, make a QR Code containing the given content. """
+    """For .makeqr command, make a QR Code containing the given content."""
     input_str = makeqr.pattern_match.group(1)
     message = "**Syntax:** `.makeqr <long text to include>`"
     reply_msg_id = None

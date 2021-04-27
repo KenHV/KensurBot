@@ -37,7 +37,7 @@ USERNAME_TAKEN = "**This username is already taken.**"
 
 @register(outgoing=True, pattern=r"^\.reserved$")
 async def mine(event):
-    """ For .reserved command, get a list of your reserved usernames. """
+    """For .reserved command, get a list of your reserved usernames."""
     result = await bot(GetAdminedPublicChannelsRequest())
     output_str = "".join(
         f"{channel_obj.title}\n@{channel_obj.username}\n\n"
@@ -49,7 +49,7 @@ async def mine(event):
 
 @register(outgoing=True, pattern=r"^\.name")
 async def update_name(name):
-    """ For .name command, change your name in Telegram. """
+    """For .name command, change your name in Telegram."""
     newname = name.text[6:]
     if " " not in newname:
         firstname = newname
@@ -65,7 +65,7 @@ async def update_name(name):
 
 @register(outgoing=True, pattern=r"^\.setpfp$")
 async def set_profilepic(propic):
-    """ For .profilepic command, change your profile picture in Telegram. """
+    """For .profilepic command, change your profile picture in Telegram."""
     replymsg = await propic.get_reply_message()
     photo = None
     if replymsg.media:
@@ -93,7 +93,7 @@ async def set_profilepic(propic):
 
 @register(outgoing=True, pattern=r"^\.setbio (.*)")
 async def set_biograph(setbio):
-    """ For .setbio command, set a new bio for your profile in Telegram. """
+    """For .setbio command, set a new bio for your profile in Telegram."""
     newbio = setbio.pattern_match.group(1)
     await setbio.client(UpdateProfileRequest(about=newbio))
     await setbio.edit(BIO_SUCCESS)
@@ -101,7 +101,7 @@ async def set_biograph(setbio):
 
 @register(outgoing=True, pattern=r"^\.username (.*)")
 async def update_username(username):
-    """ For .username command, set a new username in Telegram. """
+    """For .username command, set a new username in Telegram."""
     newusername = username.pattern_match.group(1)
     try:
         await username.client(UpdateUsernameRequest(newusername))
@@ -112,7 +112,7 @@ async def update_username(username):
 
 @register(outgoing=True, pattern=r"^\.count$")
 async def count(event):
-    """ For .count command, get profile stats. """
+    """For .count command, get profile stats."""
     u = 0
     g = 0
     c = 0
@@ -149,7 +149,7 @@ async def count(event):
 
 @register(outgoing=True, pattern=r"^\.delpfp")
 async def remove_profilepic(delpfp):
-    """ For .delpfp command, delete your current profile picture in Telegram. """
+    """For .delpfp command, delete your current profile picture in Telegram."""
     group = delpfp.text[8:]
     if group == "all":
         lim = 0

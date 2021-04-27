@@ -54,13 +54,13 @@ AFKSTR = [
 
 @register(incoming=True, disable_edited=True)
 async def mention_afk(mention):
-    """ This function takes care of notifying the people who mention you that you are AFK."""
+    """This function takes care of notifying the people who mention you that you are AFK."""
     global COUNT_MSG
     global USERS
     global ISAFK
     if mention.message.mentioned and ISAFK:
         is_bot = False
-        if (sender := await mention.get_sender()) :
+        if sender := await mention.get_sender():
             is_bot = sender.bot
         if not is_bot and mention.sender_id not in USERS:
             if AFKREASON:
@@ -84,7 +84,7 @@ async def mention_afk(mention):
 
 @register(incoming=True, disable_errors=True)
 async def afk_on_pm(sender):
-    """ Function which informs people that you are AFK in PM """
+    """Function which informs people that you are AFK in PM"""
     global ISAFK
     global USERS
     global COUNT_MSG
@@ -127,7 +127,7 @@ async def afk_on_pm(sender):
 
 @register(outgoing=True, pattern=r"^\.afk(?: |$)(.*)", disable_errors=True)
 async def set_afk(afk_e):
-    """ For .afk command, allows you to inform people that you are afk when they message you """
+    """For .afk command, allows you to inform people that you are afk when they message you"""
     afk_e.text
     string = afk_e.pattern_match.group(1)
     global ISAFK
@@ -145,7 +145,7 @@ async def set_afk(afk_e):
 
 @register(outgoing=True)
 async def type_afk_is_not_true(notafk):
-    """ This sets your status as not afk automatically when you write something while being afk """
+    """This sets your status as not afk automatically when you write something while being afk"""
     global ISAFK
     global COUNT_MSG
     global USERS
