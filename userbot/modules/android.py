@@ -8,8 +8,8 @@
 import json
 import re
 
+import requests
 from bs4 import BeautifulSoup
-from requests import get
 
 from userbot import CMD_HELP
 from userbot.events import register
@@ -19,32 +19,17 @@ GITHUB = "https://github.com"
 
 @register(outgoing=True, pattern=r"^\.magisk$")
 async def magisk(request):
-    """magisk latest releases"""
     magisk_dict = {
-        "Stable": "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json",
-        "Beta": "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json",
-        "Canary": "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/canary.json",
+        "Stable": "https://raw.githubusercontent.com/topjohnwu/magisk-files/master/stable.json",
+        "Beta": "https://raw.githubusercontent.com/topjohnwu/magisk-files/master/beta.json",
+        "Canary": "https://raw.githubusercontent.com/topjohnwu/magisk-files/master/canary.json",
     }
-    releases = "Latest Magisk Releases:\n"
+    releases = "**Latest Magisk Releases:**\n"
     for name, release_url in magisk_dict.items():
-        data = get(release_url).json()
-        if str(name) == "Canary":
-            data["magisk"]["link"] = (
-                "https://github.com/topjohnwu/magisk_files/raw/canary/"
-                + data["magisk"]["link"]
-            )
-            data["app"]["link"] = (
-                "https://github.com/topjohnwu/magisk_files/raw/canary/"
-                + data["app"]["link"]
-            )
-            data["uninstaller"]["link"] = (
-                "https://github.com/topjohnwu/magisk_files/raw/canary/"
-                + data["uninstaller"]["link"]
-            )
+        data = requests.get(release_url).json()
         releases += (
-            f'{name}: [ZIP v{data["magisk"]["version"]}]({data["magisk"]["link"]}) | '
-            f'[APK v{data["app"]["version"]}]({data["app"]["link"]}) | '
-            f'[Uninstaller]({data["uninstaller"]["link"]})\n'
+            f'**{name} v{data["magisk"]["version"]}:** [APK]({data["magisk"]["link"]}) | '
+            f'[Changelog]({data["magisk"]["note"]})\n'
         )
     await request.edit(releases)
 
@@ -62,7 +47,7 @@ async def device_info(request):
         await request.edit("**Usage:** `.device <codename/model>`")
         return
     data = json.loads(
-        get(
+        requests.get(
             "https://raw.githubusercontent.com/androidtrackers/"
             "certified-android-devices/master/by_device.json"
         ).text
@@ -98,7 +83,7 @@ async def codename_info(request):
         return
 
     data = json.loads(
-        get(
+        requests.get(
             "https://raw.githubusercontent.com/androidtrackers/"
             "certified-android-devices/master/by_brand.json"
         ).text
@@ -141,7 +126,8 @@ async def devices_specifications(request):
         return
     all_brands = (
         BeautifulSoup(
-            get("https://www.devicespecifications.com/en/brand-more").content, "lxml"
+            requests.get("https://www.devicespecifications.com/en/brand-more").content,
+            "lxml",
         )
         .find("div", {"class": "brand-listing-container-news"})
         .findAll("a")
@@ -153,7 +139,8 @@ async def devices_specifications(request):
         ][0]
     except IndexError:
         await request.edit(f"`{brand}` **is an unknown brand!**")
-    devices = BeautifulSoup(get(brand_page_url).content, "lxml").findAll(
+        return
+    devices = BeautifulSoup(requests.get(brand_page_url).content, "lxml").findAll(
         "div", {"class": "model-listing-container-80"}
     )
     device_page_url = None
@@ -165,11 +152,12 @@ async def devices_specifications(request):
         ]
     except IndexError:
         await request.edit(f"**Can't find** `{device}`.")
+        return
     if len(device_page_url) > 2:
         device_page_url = device_page_url[:2]
     reply = ""
     for url in device_page_url:
-        info = BeautifulSoup(get(url).content, "lxml")
+        info = BeautifulSoup(requests.get(url).content, "lxml")
         reply = "\n" + info.title.text.split("-")[0].strip() + "\n"
         info = info.find("div", {"id": "model-brief-specifications"})
         specifications = re.findall(r"<b>.*?<br/>", str(info))
@@ -197,7 +185,7 @@ async def twrp(request):
     else:
         await request.edit("**Usage:** `.twrp <codename>`")
         return
-    url = get(f"https://dl.twrp.me/{device}/")
+    url = requests.get(f"https://dl.twrp.me/{device}/")
     if url.status_code == 404:
         reply = f"**Couldn't find TWRP downloads for** `{device}`!`\n"
         await request.edit(reply)
