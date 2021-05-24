@@ -225,7 +225,7 @@ with bot:
 async def update_restart_msg(chat_id, msg_id):
     DEFAULTUSER = ALIVE_NAME or "Set `ALIVE_NAME` ConfigVar!"
     message = (
-        f"**KensurBot v{KENSURBOT_VERSION} is up and running!**\n\n"
+        f"**KensurBot v{KENSURBOT_VERSION} is back up and running!**\n\n"
         f"**Telethon:** {version.__version__}\n"
         f"**Python:** {python_version()}\n"
         f"**User:** {DEFAULTUSER}"
@@ -234,15 +234,18 @@ async def update_restart_msg(chat_id, msg_id):
     return True
 
 
-if os.path.isfile(".restartmsg"):
-    with open(".restartmsg") as f:
-        chat_id, msg_id = map(int, f)
+try:
+    from userbot.modules.sql_helper.globals import delgvar, gvarstatus
+
+    chat_id, msg_id = gvarstatus("restartstatus").split("\n")
     with bot:
         try:
-            bot.loop.run_until_complete(update_restart_msg(chat_id, msg_id))
+            bot.loop.run_until_complete(update_restart_msg(int(chat_id), int(msg_id)))
         except:
             pass
-    os.remove(".restartmsg")
+    delgvar("restartstatus")
+except AttributeError:
+    pass
 
 # Global Variables
 COUNT_MSG = 0

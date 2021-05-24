@@ -59,9 +59,13 @@ async def killthebot(event):
 async def killdabot(event):
     await event.edit("**Restarting...**")
 
-    with open(".restartmsg", "w") as f:
-        f.truncate(0)
-        f.write(f"{event.chat_id}\n{event.id}\n")
+    try:
+        from userbot.modules.sql_helper.globals import addgvar, delgvar
+
+        delgvar("restartstatus")
+        addgvar("restartstatus", f"{event.chat_id}\n{event.id}")
+    except AttributeError:
+        pass
 
     # Spin a new instance of bot
     args = [sys.executable, "-m", "userbot"]
