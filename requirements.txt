@@ -6,7 +6,6 @@ bs4
 CairoSVG
 cffi
 cowpy
-deezloader
 dnspython
 emoji
 gitpython
@@ -20,6 +19,7 @@ gTTS-token
 hachoir
 heroku3
 httplib2
+https://github.com/tomyprs/deezloader/archive/master.zip
 humanize
 js2py
 lottie
