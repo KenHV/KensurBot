@@ -203,9 +203,9 @@ async def upstream(event):
         )
 
     if conf == "now":
-        if changelog != "":
-            for commit in changelog.splitlines():
-                if commit.startswith("- [NQ]"):
+        for commit in changelog.splitlines():
+            if commit.startswith("- [NQ]"):
+                if HEROKU_APP_NAME is not None and HEROKU_API_KEY is not None:
                     return await event.edit(
                         "**Quick update has been disabled for this update; "
                         "use** `.update deploy` **instead.**"
