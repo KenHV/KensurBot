@@ -34,9 +34,7 @@ async def impostor(event):
             return await event.edit("**Can't impersonate anonymous admins, sed.**")
         userObj = await event.client(GetFullUserRequest(replyMessage.sender_id))
     else:
-        return await event.edit(
-            "**Do** `.help impersonate` **to learn how to use it.**"
-        )
+        return await event.edit("**Do** `.help impostor` **to learn how to use it.**")
 
     if not STORAGE.userObj:
         STORAGE.userObj = await event.client(GetFullUserRequest(event.sender_id))
