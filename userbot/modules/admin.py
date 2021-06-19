@@ -435,7 +435,7 @@ async def muter(moot):
                     await moot.client.send_read_acknowledge(moot.chat_id, moot.id)
 
 
-@register(outgoing=True, pattern=r"^\.zombies(?: |$)(.*)", groups_only=False)
+@register(outgoing=True, pattern=r"^\.zombies(?: |$)(.*)")
 async def rm_deletedacc(show):
     """For .zombies command, list all the ghost/deleted/zombie accounts in a chat."""
 
@@ -773,7 +773,7 @@ async def get_userdel_from_id(user, event):
     return user_obj
 
 
-@register(outgoing=True, pattern=r"^\.bots$", groups_only=True)
+@register(outgoing=True, pattern=r"^\.bots$")
 async def get_bots(show):
     """For .bots command, list all of the bots of the chat."""
     info = await show.client.get_entity(show.chat_id)
