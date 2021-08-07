@@ -17,7 +17,7 @@ from urllib.parse import quote_plus
 import asyncurban
 from bs4 import BeautifulSoup
 from emoji import get_emoji_regexp
-from google_trans_new import LANGUAGES, google_translator
+from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
 from hachoir.metadata import extractMetadata
@@ -473,7 +473,7 @@ async def translateme(trans):
         )
 
     await trans.edit("**Processing...**")
-    translator = google_translator()
+    translator = Translator()
 
     try:
         from userbot.modules.sql_helper.globals import gvarstatus
@@ -486,18 +486,16 @@ async def translateme(trans):
         target_lang = "en"
 
     try:
-        reply_text = translator.translate(deEmojify(message), lang_tgt=target_lang)
+        reply_text = translator.translate(deEmojify(message), dest=target_lang)
     except ValueError:
         return await trans.edit(
             "**Invalid language selected, use **`.lang trt <language code>`**.**"
         )
 
-    try:
-        source_lan = translator.detect(deEmojify(message))[1].title()
-    except:
-        source_lan = "(Google didn't provide this info)"
+    source_lang = LANGUAGES.get(reply_text.src).title()  # type: ignore
+    target_lang = LANGUAGES.get(target_lang).title()
 
-    reply_text = f"From: **{source_lan}**\nTo: **{LANGUAGES.get(target_lang).title()}**\n\n{reply_text}"
+    reply_text = f"From: **{source_lang}**\nTo: **{target_lang}**\n\n{reply_text.text}"  # type: ignore
 
     await trans.edit(reply_text)
 

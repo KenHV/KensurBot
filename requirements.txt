@@ -13,7 +13,7 @@ google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 google_images_download
-google_trans_new
+googletrans==4.0.0rc1
 gTTS
 gTTS-token
 hachoir
