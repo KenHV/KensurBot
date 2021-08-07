@@ -167,8 +167,8 @@ async def moni(event):
     c_to = (event.pattern_match.group(3)).upper()
     try:
         response = get(
-            "https://api.ratesapi.io/api/latest",
-            params={"base": c_from, "symbols": c_to},
+            "https://api.frankfurter.app/latest",
+            params={"from": c_from, "to": c_to},
         ).json()
     except Exception:
         await event.edit("**Error: API is down.**")
