@@ -5,13 +5,13 @@
 #
 """ Userbot module containing various scrapers. """
 
-import asyncio
 import json
 import os
 import re
 import shutil
 import time
-from asyncio import sleep
+from asyncio import get_event_loop, sleep
+from glob import glob
 from urllib.parse import quote_plus
 
 import asyncurban
@@ -20,6 +20,8 @@ from emoji import get_emoji_regexp
 from google_trans_new import LANGUAGES, google_translator
 from gtts import gTTS
 from gtts.lang import tts_langs
+from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
 from requests import get
 from search_engine_parser import GoogleSearch
 from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
@@ -38,7 +40,7 @@ from youtube_dl.utils import (
 )
 from youtube_search import YoutubeSearch
 
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 from userbot.modules.upload_download import get_video_thumb
 from userbot.utils import chrome, googleimagesdownload, progress
@@ -590,23 +592,20 @@ async def yt_search(event):
     await event.edit(output, link_preview=False)
 
 
-@register(outgoing=True, pattern=r"^\.r(a|v)(?: |$)(.*)")
+@register(outgoing=True, pattern=r"\.r(a|v( \d{0,4})?) (.*)")
 async def download_video(v_url):
-    """For media downloader command, download media from YouTube and many other sites."""
+    """For .rip command, download media from YouTube and many other sites."""
+    dl_type = v_url.pattern_match.group(1).lower()
+    reso = v_url.pattern_match.group(2)
+    reso = reso.strip() if reso else None
+    url = v_url.pattern_match.group(3)
 
-    if v_url.is_reply and not v_url.pattern_match.group(2):
-        url = await v_url.get_reply_message()
-        url = str(url.text)
-    else:
-        url = str(v_url.pattern_match.group(2))
-
-    if not url:
-        return await v_url.edit("**Reply to a message with a URL or pass a URL!**")
-
-    type = v_url.pattern_match.group(1).lower()
     await v_url.edit("**Preparing to download...**")
+    s_time = time.time()
+    video = False
+    audio = False
 
-    if type == "a":
+    if "a" in dl_type:
         opts = {
             "format": "bestaudio",
             "addmetadata": True,
@@ -622,37 +621,41 @@ async def download_video(v_url):
                     "preferredquality": "320",
                 }
             ],
-            "outtmpl": "%(id)s.mp3",
+            "outtmpl": os.path.join(
+                TEMP_DOWNLOAD_DIRECTORY, str(s_time), "%(title)s.%(ext)s"
+            ),
             "quiet": True,
             "logtostderr": False,
         }
-        video = False
-        song = True
+        audio = True
 
-    elif type == "v":
+    else:
+        quality = (
+            f"bestvideo[height<={reso}]+bestaudio/best[height<={reso}]"
+            if reso
+            else "bestvideo+bestaudio/best"
+        )
         opts = {
-            "format": "best",
+            "format": quality,
             "addmetadata": True,
             "key": "FFmpegMetadata",
             "prefer_ffmpeg": True,
             "geo_bypass": True,
             "nocheckcertificate": True,
-            "postprocessors": [
-                {"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}
-            ],
-            "outtmpl": "%(id)s.mp4",
+            "outtmpl": os.path.join(
+                TEMP_DOWNLOAD_DIRECTORY, str(s_time), "%(title)s.%(ext)s"
+            ),
             "logtostderr": False,
             "quiet": True,
         }
-        song = False
         video = True
 
     try:
-        await v_url.edit("**Fetching data, please wait..**")
+        await v_url.edit("**Fetching data, please wait...**")
         with YoutubeDL(opts) as rip:
             rip_data = rip.extract_info(url)
     except DownloadError as DE:
-        return await v_url.edit(f"`{str(DE)}`")
+        return await v_url.edit(f"**{str(DE)}**")
     except ContentTooShortError:
         return await v_url.edit("**The download content was too short.**")
     except GeoRestrictedError:
@@ -667,88 +670,106 @@ async def download_video(v_url):
     except UnavailableVideoError:
         return await v_url.edit("**Media is not available in the requested format.**")
     except XAttrMetadataError as XAME:
-        return await v_url.edit(f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
+        return await v_url.edit(f"**{XAME.code}: {XAME.msg}\n{XAME.reason}**")
     except ExtractorError:
         return await v_url.edit("**There was an error during info extraction.**")
     except Exception as e:
-        return await v_url.edit(f"{str(type(e)): {str(e)}}")
+        return await v_url.edit(f"**{str(type(e)): {str(e)}}**")
     c_time = time.time()
-    if song:
-        await v_url.edit(f"**Preparing to upload song:**\n**{rip_data['title']}**")
-        with open(rip_data["id"] + ".mp3", "rb") as f:
+    if audio:
+        await v_url.edit(
+            f"**Preparing to upload song:**\n`{rip_data.get('title')}`"
+            f"\nby `{rip_data.get('uploader')}`"
+        )
+        f_name = glob(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time), "*.mp3"))[0]
+        with open(f_name, "rb") as f:
             result = await upload_file(
                 client=v_url.client,
                 file=f,
-                name=f"{rip_data['id']}.mp3",
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                name=f_name,
+                progress_callback=lambda d, t: get_event_loop().create_task(  # type: ignore
                     progress(
                         d,
                         t,
                         v_url,
                         c_time,
-                        "YouTube-DL - Upload",
+                        "**Uploading...**",
                         f"{rip_data['title']}.mp3",
                     )
                 ),
             )
-        img_extensions = ["jpg", "jpeg", "webp"]
-        img_filenames = [
-            fn_img
-            for fn_img in os.listdir()
-            if any(fn_img.endswith(ext_img) for ext_img in img_extensions)
-        ]
-        thumb_image = img_filenames[0]
+
+        thumb_image = [
+            x
+            for x in glob(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time), "*"))
+            if not x.endswith(".mp3")
+        ][0]
+        metadata = extractMetadata(createParser(f_name))
+        duration = 0
+        if metadata and metadata.has("duration"):
+            duration = metadata.get("duration").seconds
         await v_url.client.send_file(
             v_url.chat_id,
             result,
             supports_streaming=True,
             attributes=[
                 DocumentAttributeAudio(
-                    duration=int(rip_data["duration"]),
-                    title=str(rip_data["title"]),
-                    performer=str(rip_data["uploader"]),
+                    duration=duration,
+                    title=rip_data.get("title"),
+                    performer=rip_data.get("uploader"),
                 )
             ],
             thumb=thumb_image,
         )
-        os.remove(thumb_image)
-        os.remove(f"{rip_data['id']}.mp3")
         await v_url.delete()
     elif video:
-        await v_url.edit(f"**Preparing to upload video:**\n**{rip_data['title']}**")
-        thumb_image = await get_video_thumb(rip_data["id"] + ".mp4", "thumb.png")
-        with open(rip_data["id"] + ".mp4", "rb") as f:
+        await v_url.edit(
+            f"**Preparing to upload video:**\n`{rip_data.get('title')}`"
+            f"\nby `{rip_data.get('uploader')}`"
+        )
+        f_path = glob(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time), "*"))[0]
+        # Noob way to convert from .mkv to .mp4
+        if f_path.endswith(".mkv"):
+            base = os.path.splitext(f_path)[0]
+            os.rename(f_path, base + ".mp4")
+            f_path = glob(os.path.join(TEMP_DOWNLOAD_DIRECTORY, str(s_time), "*"))[0]
+        f_name = os.path.basename(f_path)
+        with open(f_path, "rb") as f:
             result = await upload_file(
                 client=v_url.client,
                 file=f,
-                name=f"{rip_data['id']}.mp4",
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(
-                        d,
-                        t,
-                        v_url,
-                        c_time,
-                        "YouTube-DL - Upload",
-                        f"{rip_data['title']}.mp4",
-                    )
+                name=f_name,
+                progress_callback=lambda d, t: get_event_loop().create_task(  # type: ignore
+                    progress(d, t, v_url, c_time, "**Uploading...**", f_name)
                 ),
             )
+        thumb_image = await get_video_thumb(f_path, "thumb.png")
+        metadata = extractMetadata(createParser(f_path))
+        duration = 0
+        width = 0
+        height = 0
+        if metadata:
+            if metadata.has("duration"):
+                duration = metadata.get("duration").seconds
+            if metadata.has("width"):
+                width = metadata.get("width")
+            if metadata.has("height"):
+                height = metadata.get("height")
         await v_url.client.send_file(
             v_url.chat_id,
             result,
             thumb=thumb_image,
             attributes=[
                 DocumentAttributeVideo(
-                    duration=rip_data["duration"],
-                    w=rip_data["width"],
-                    h=rip_data["height"],
+                    duration=duration,
+                    w=width,
+                    h=height,
                     supports_streaming=True,
                 )
             ],
-            caption=rip_data["title"],
+            caption=f"[{rip_data.get('title')}]({url})",
         )
-        os.remove(f"{rip_data['id']}.mp4")
-        os.remove(thumb_image)
+        os.remove(str(thumb_image))
         await v_url.delete()
 
 
@@ -782,8 +803,11 @@ CMD_HELP.update(
         "\nUsage: Does a YouTube search."
         "\nCan specify the number of results needed (default is 3).",
         "imdb": ">`.imdb <movie-name>`" "\nUsage: Shows movie info and other stuff.",
-        "rip": ">`.ra <url> [or reply] or .rv <url> [or reply]`"
-        "\nUsage: Download videos and songs from YouTube "
-        "(and [many other sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html)).",
+        "rip": ">`.ra <url>`"
+        "\nUsage: Download videos from YouTube and convert to audio "
+        "\n\n>`.rv <quality> <url>` (quality is optional)"
+        "\nQuality: `144` `240` `360` `480` `720` `1080` `2160`"
+        "\nUsage: Download videos from YouTube"
+        "\n\n[Other supported sites](https://ytdl-org.github.io/youtube-dl/supportedsites.html)",
     }
 )
