@@ -24,6 +24,7 @@ from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from requests import get
 from search_engine_parser import GoogleSearch
+from telethon.errors.rpcerrorlist import MediaEmptyError
 from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
@@ -152,10 +153,15 @@ async def img_sampler(event):
     except Exception as e:
         return await event.edit(f"**Error:** `{e}`")
 
-    lst = paths[0][query]
-    await event.client.send_file(
-        await event.client.get_input_entity(event.chat_id), lst
-    )
+    lst = paths[0][query.replace(",", " ")]
+    try:
+        await event.client.send_file(event.chat_id, lst)
+    except MediaEmptyError:
+        for i in lst:
+            try:
+                await event.client.send_file(event.chat_id, i)
+            except MediaEmptyError:
+                pass
     shutil.rmtree(os.path.dirname(os.path.abspath(lst[0])))
     await event.delete()
 
