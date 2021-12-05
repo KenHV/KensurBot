@@ -136,7 +136,7 @@ async def cm_ru(url: str) -> str:
     except IndexError:
         reply = "**No cloud.mail.ru links found.**\n"
         return reply
-    cmd = f"bin/cmrudl -s {link}"
+    cmd = f"userbot/bin/cmrudl -s {link}"
     result = subprocess_run(cmd)
     try:
         result = result[0].splitlines()[-1]

@@ -75,7 +75,7 @@ async def mega_downloader(megadl):
     except IndexError:
         await megadl.edit("**Error: Broken link.**")
         return None
-    cmd = f"bin/megadown -q -m {link}"
+    cmd = f"userbot/bin/megadown -q -m {link}"
     result = await subprocess_run(megadl, cmd)
     try:
         data = json.loads(result[0])
