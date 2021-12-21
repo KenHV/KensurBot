@@ -23,8 +23,7 @@ from gtts.lang import tts_langs
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from requests import get
-from search_engine_parser import GoogleSearch
-from telethon.errors.rpcerrorlist import MediaEmptyError
+from duckduckgo_search import ddg
 from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeVideo
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
@@ -187,55 +186,39 @@ async def moni(event):
     c_to_val = round(c_from_val * response["rates"][c_to], 2)
     await event.edit(f"**{c_from_val} {c_from} = {c_to_val} {c_to}**")
 
-
-@register(outgoing=True, pattern=r"^\.google(?: |$)(\d*)? ?(.*)")
-async def gsearch(event):
-    """For .google command, do a Google search."""
+@register(outgoing=True, pattern=r"^.ddg(?: |$)(.*)")
+async def gsearch(q_event):
+    """For .ddg command, do a DuckDuckGo search."""
+    textx = await q_event.get_reply_message()
+    query = q_event.pattern_match.group(1)
 
     if event.is_reply and not event.pattern_match.group(2):
         match = await event.get_reply_message()
         match = str(match.message)
     else:
-        match = str(event.pattern_match.group(2))
-
-    if not match:
-        return await event.edit("**Reply to a message or pass a query to search!**")
-
-    await event.edit("**Processing...**")
-
-    if event.pattern_match.group(1) != "":
-        counter = int(event.pattern_match.group(1))
-        if counter > 10:
-            counter = int(10)
-        if counter <= 0:
-            counter = int(1)
-    else:
-        counter = int(3)
-
-    search_args = (str(match), int(1))
-    gsearch = GoogleSearch()
-
-    try:
-        gresults = await gsearch.async_search(*search_args)
-    except Exception:
-        return await event.edit(
-            "**Error: Your query could not be found or it was flagged as unusual traffic.**"
+        await q_event.edit(
+            "`Pass a query as an argument or reply " "to a message for DuckDuckGo search!`"
         )
+        return
+
     msg = ""
-
-    for i in range(counter):
-        try:
-            title = gresults["titles"][i]
-            link = gresults["links"][i]
-            desc = gresults["descriptions"][i]
-            msg += f"[{title}]({link})\n`{desc}`\n\n"
-        except IndexError:
-            break
-
-    await event.edit(
-        "**Search Query:**\n`" + match + "`\n\n**Results:**\n" + msg, link_preview=False
-    )
-
+    await q_event.edit("`Searching...`")
+    try:
+        rst = ddg(query)
+        i = 1
+        while i <=5:
+            result = rst[i]
+            msg += f"{i}: [{result['title']}]({result['href']})\n"
+            msg += f"{result['body']}\n\n"
+            i += 1
+        await q_event.edit(msg)
+        if BOTLOG:
+            await q_event.client.send_message(
+            BOTLOG_CHATID,
+            "Google Search query `" + query + "` was executed successfully",
+            )
+    except Exception as e:
+        await q_event.edit(f"An error: {e} occured, report it to support group")
 
 @register(outgoing=True, pattern=r"^\.wiki(?: |$)(.*)")
 async def wiki(wiki_q):
@@ -792,11 +775,12 @@ CMD_HELP.update(
         "carbon": ">`.carbon <text> [or reply]`"
         "\nUsage: Beautify your code using carbon.now.sh\n"
         "Use .crblang <text> to set language for your code.",
-        "google": ">`.google [count] <query> [or reply]`"
-        "\nUsage: Does a search on Google."
-        "\nCan specify the number of results needed (default is 3).",
-        "wiki": ">`.wiki <query> [or reply]`" "\nUsage: Does a search on Wikipedia.",
-        "ud": ">`.ud <query> [or reply]`" "\nUsage: Does a search on Urban Dictionary.",
+        "duckduckgo": ">`.ddg <query> [or reply]`"
+        "\nUsage: Does a search on DuckDuckGo.",
+        "wiki": ">`.wiki <query> [or reply]`"
+        "\nUsage: Does a search on Wikipedia.",
+        "ud": ">`.ud <query> [or reply]`"
+        "\nUsage: Does a search on Urban Dictionary.",
         "tts": ">`.tts <text> [or reply]`"
         "\nUsage: Translates text to speech for the language which is set."
         "\nUse >`.lang tts <language code>` to set language for tts. (Default is English.)",
