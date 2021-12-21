@@ -16,6 +16,7 @@ from urllib.parse import quote_plus
 
 import asyncurban
 from bs4 import BeautifulSoup
+from duckduckgo_search import ddg
 from emoji import get_emoji_regexp
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
@@ -235,6 +236,43 @@ async def gsearch(event):
     await event.edit(
         "**Search Query:**\n`" + match + "`\n\n**Results:**\n" + msg, link_preview=False
     )
+
+
+@register(outgoing=True, pattern=r"^.ddg(?: |$)(.*)")
+async def gsearch(q_event):
+    """For .ddg command, do a DuckDuckGo search."""
+    textx = await q_event.get_reply_message()
+    query = q_event.pattern_match.group(1)
+
+    if query:
+        pass
+    elif textx:
+        query = textx.text
+    else:
+        await q_event.edit(
+            "`Pass a query as an argument or reply "
+            "to a message for DuckDuckGo search!`"
+        )
+        return
+
+    msg = ""
+    await q_event.edit("`Searching...`")
+    try:
+        rst = ddg(query)
+        i = 1
+        while i <= 5:
+            result = rst[i]
+            msg += f"{i}: [{result['title']}]({result['href']})\n"
+            msg += f"{result['body']}\n\n"
+            i += 1
+        await q_event.edit(msg)
+        if BOTLOG:
+            await q_event.client.send_message(
+                BOTLOG_CHATID,
+                " Search query `" + query + "` was executed successfully",
+            )
+    except Exception as e:
+        await q_event.edit(f"An error: {e} occured, report it to support group")
 
 
 @register(outgoing=True, pattern=r"^\.wiki(?: |$)(.*)")
