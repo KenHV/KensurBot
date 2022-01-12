@@ -19,6 +19,7 @@ from userbot import (
     CMD_HELP,
     bot,
 )
+from userbot.events import is_chat_allowed
 
 
 @bot.on(ChatAction)
@@ -27,6 +28,10 @@ async def ANTI_SPAMBOTS(welcm):
     try:
         if not ANTI_SPAMBOT:
             return
+
+        if not is_chat_allowed(welcm):
+            return
+
         if welcm.user_joined or welcm.user_added:
             adder = None
             ignore = False
