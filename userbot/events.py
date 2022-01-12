@@ -18,6 +18,19 @@ from telethon import events
 from userbot import BOTLOG_CHATID, LOGS, LOGSPAMMER, bot
 
 
+def is_chat_allowed(event_obj):
+    try:
+        from userbot.modules.sql_helper.blacklist_sql import get_blacklist
+
+        for blacklisted in get_blacklist():  # type: ignore
+            if str(event_obj.chat_id) == blacklisted.chat_id:
+                return False
+    except Exception:
+        pass
+
+    return True
+
+
 def register(**args):
     """Register a new event."""
     pattern = args.get("pattern", None)
@@ -48,14 +61,8 @@ def register(**args):
                 # Ignore edits that take place in channels.
                 return
 
-            try:
-                from userbot.modules.sql_helper.blacklist_sql import get_blacklist
-
-                for blacklisted in get_blacklist():
-                    if str(check.chat_id) == blacklisted.chat_id:
-                        return
-            except Exception:
-                pass
+            if not is_chat_allowed(check):
+                return
 
             if check.via_bot_id and check.out:
                 return
