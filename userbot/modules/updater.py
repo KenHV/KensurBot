@@ -80,6 +80,9 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
             pass
         ups_rem.fetch(ac_br)
         repo.git.reset("--hard", "FETCH_HEAD")
+        repo.config_writer().set_value("user", "name", "KenHV").release()
+        repo.config_writer().set_value("user", "email", "yo@kenharris.xyz").release()
+        repo.git.commit("--amend", "--no-edit")
         heroku_git_url = heroku_app.git_url.replace(
             "https://", "https://api:" + HEROKU_API_KEY + "@"
         )
