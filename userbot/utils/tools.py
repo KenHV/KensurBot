@@ -18,7 +18,6 @@
 import asyncio
 import hashlib
 import re
-from typing import Union
 
 
 async def md5(fname: str) -> str:
@@ -29,7 +28,7 @@ async def md5(fname: str) -> str:
     return hash_md5.hexdigest()
 
 
-def humanbytes(size: Union[int, float]) -> str:
+def humanbytes(size: int | float) -> str:
     if size is None or isinstance(size, str):
         return ""
 

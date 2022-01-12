@@ -6,7 +6,6 @@ import asyncio
 import os
 import shlex
 import textwrap
-from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -139,7 +138,7 @@ async def runcmd(cmd: str) -> tuple[str, str, int, int]:
 
 async def take_screen_shot(
     video_file: str, duration: int, path: str = ""
-) -> Optional[str]:
+) -> str | None:
     """take a screenshot"""
     ttl = duration // 2
     thumb_image_path = path or os.path.join(
