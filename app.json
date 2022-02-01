@@ -129,6 +129,10 @@
     "USR_TOKEN_UPTOBOX": {
       "description": "API for direct link uptobox, https://docs.uptobox.com/#how-to-find-my-api-token",
       "required": false
+    },
+    "MODULES_EXCLUDE_LIST": {
+      "description": "A list of comma separated values containing modules that you don't want to load",
+      "required": false
     }
   },
   "addons": [

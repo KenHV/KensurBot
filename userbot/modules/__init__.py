@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 #
 """ Init file which loads all of the modules """
-from userbot import LOGS
+from userbot import LOGS, MODULES_EXCLUDE_LIST
 
 
 def __list_all_modules():
@@ -19,6 +19,16 @@ def __list_all_modules():
     ]
 
 
-ALL_MODULES = sorted(__list_all_modules())
+MODULES = sorted(__list_all_modules())
+
+if MODULES_EXCLUDE_LIST:
+    ALL_MODULES = []
+    for i in MODULES:
+        if i not in MODULES_EXCLUDE_LIST:
+            ALL_MODULES.append(i)
+else:
+    ALL_MODULES = MODULES
+
+
 LOGS.info("Modules to load: %s", str(ALL_MODULES))
 __all__ = ALL_MODULES + ["ALL_MODULES"]

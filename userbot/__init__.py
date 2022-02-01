@@ -168,6 +168,11 @@ USR_TOKEN = os.environ.get("USR_TOKEN_UPTOBOX")
 # KensurBot version
 KENSURBOT_VERSION = "1.2"
 
+# Module exclude list
+MODULES_EXCLUDE_LIST = os.environ.get("MODULES_EXCLUDE_LIST")
+if MODULES_EXCLUDE_LIST:
+    MODULES_EXCLUDE_LIST = MODULES_EXCLUDE_LIST.split(",")
+
 
 def shutdown_bot(*_):
     LOGS.info("Received SIGTERM.")
