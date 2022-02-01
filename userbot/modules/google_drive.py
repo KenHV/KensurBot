@@ -1,3 +1,6 @@
+# Modules:
+# ["requests", "bs4", "google-api-python-client", "google-auth-httplib2", "google-auth-oauthlib"]
+
 # Copyright (C) 2020 Adek Maulana
 #
 # SPDX-License-Identifier: GPL-3.0-or-later

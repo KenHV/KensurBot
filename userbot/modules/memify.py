@@ -1,3 +1,6 @@
+# Modules:
+# ["Pillow"]
+
 # Ported from Userge and refactored by @KenHV
 # Copyright (C) UsergeTeam 2020
 # Licensed under GPLv3

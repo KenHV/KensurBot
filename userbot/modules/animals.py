@@ -1,3 +1,6 @@
+# Modules:
+# ["requests"]
+
 # Taken from https://github.com/AvinashReddy3108/PaperplaneRemix/blob/master/userbot/plugins/memes.py
 
 # TG-UserBot - A modular Telegram UserBot script for Python.

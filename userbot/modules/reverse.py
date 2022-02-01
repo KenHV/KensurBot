@@ -1,3 +1,6 @@
+# Modules:
+# ["requests", "bs4", "Pillow"]
+
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
 # Thanks to @kandnub, for this awesome module !!

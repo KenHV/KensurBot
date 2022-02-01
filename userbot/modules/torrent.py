@@ -1,3 +1,6 @@
+# Modules:
+# ["requests"]
+
 # Copyright (C) 2020 GengKapak and AnggaR96s.
 # All rights reserved.
 

@@ -1,3 +1,6 @@
+# Modules:
+# ["deezloader", "hachoir", "requests"]
+
 # UniBorg (telegram userbot)
 # Copyright (C) 2020 The Authors
 # Ported from UniBorg by AnggaR96s

@@ -1,3 +1,6 @@
+# Modules:
+# ["asyncurban", "bs4", "emoji", "googletrans", "gTTS", "gTTS-token", "hachoir", "requests", "search-engine-parser", "wikipedia", "youtube-dl", "youtube_search"]
+
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
 # Licensed under the Raphielscape Public License, Version 1.c (the "License");

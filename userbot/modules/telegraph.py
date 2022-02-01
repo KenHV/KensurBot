@@ -1,3 +1,6 @@
+# Modules:
+# ["Pillow", "telegraph"]
+
 import os
 from datetime import datetime
 

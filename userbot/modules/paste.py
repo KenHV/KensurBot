@@ -1,3 +1,6 @@
+# Modules:
+# ["requests"]
+
 # Copyright (C) 2021 KenHV
 
 from requests import post
