@@ -31,6 +31,6 @@ repos:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
   - repo: "https://github.com/psf/black"
-    rev: 21.12b0
+    rev: 22.1.0
     hooks:
       - id: black
