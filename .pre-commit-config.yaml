@@ -9,7 +9,7 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.31.0
+    rev: v2.31.1
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
@@ -31,6 +31,6 @@ repos:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
   - repo: "https://github.com/psf/black"
-    rev: 22.1.0
+    rev: 22.3.0
     hooks:
       - id: black
