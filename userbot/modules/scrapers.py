@@ -836,6 +836,9 @@ CMD_HELP.update(
         "google": ">`.google [count] <query> [or reply]`"
         "\nUsage: Does a search on Google."
         "\nCan specify the number of results needed (default is 3).",
+        "ddg": ">`.ddg [count] <query> [or reply]`"
+        "\nUsage: Does a search on DuckDuckGo."
+        "\nCan specify the number of results needed (default is 3).",
         "wiki": ">`.wiki <query> [or reply]`" "\nUsage: Does a search on Wikipedia.",
         "ud": ">`.ud <query> [or reply]`" "\nUsage: Does a search on Urban Dictionary.",
         "tts": ">`.tts <text> [or reply]`"
