@@ -192,8 +192,8 @@ async def gsearch(q_event):
     textx = await q_event.get_reply_message()
     query = q_event.pattern_match.group(1)
 
-    if event.is_reply and not event.pattern_match.group(2):
-        match = await event.get_reply_message()
+    if q_event.is_reply and not q_event.pattern_match.group(2):
+        match = await q_event.get_reply_message()
         match = str(match.message)
     else:
         await q_event.edit(
