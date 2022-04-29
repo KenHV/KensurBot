@@ -238,41 +238,44 @@ async def gsearch(event):
     )
 
 
-@register(outgoing=True, pattern=r"^.ddg(?: |$)(.*)")
-async def gsearch(q_event):
+@register(outgoing=True, pattern=r"^\.ddg(?: |$)(\d*)? ?(.*)")
+async def ddg_search(event):
     """For .ddg command, do a DuckDuckGo search."""
-    textx = await q_event.get_reply_message()
-    query = q_event.pattern_match.group(1)
+    match = event.pattern_match.group(1)
 
-    if query:
-        pass
-    elif textx:
-        query = textx.text
+    if event.is_reply and not event.pattern_match.group(2):
+        match = await event.get_reply_message()
+        match = str(match.message)
     else:
-        await q_event.edit(
-            "`Pass a query as an argument or reply "
-            "to a message for DuckDuckGo search!`"
-        )
-        return
+        match = str(event.pattern_match.group(2))
+
+    if not match:
+        return await event.edit("**Reply to a message or pass a query to search!**")
+
+    await event.edit("**Processing...**")
+
+    if event.pattern_match.group(1) != "":
+        counter = int(event.pattern_match.group(1))
+        if counter > 10:
+            counter = int(10)
+        if counter <= 0:
+            counter = int(1)
+    else:
+        counter = int(3)
 
     msg = ""
-    await q_event.edit("`Searching...`")
     try:
-        rst = ddg(query)
-        i = 1
-        while i <= 5:
-            result = rst[i]
-            msg += f"{i}: [{result['title']}]({result['href']})\n"
+        results = ddg(match)
+        for i in range(1, counter + 1):
+            result = results[i]
+            msg += f"{i}. [{result['title']}]({result['href']})\n"
             msg += f"{result['body']}\n\n"
-            i += 1
-        await q_event.edit(msg)
-        if BOTLOG:
-            await q_event.client.send_message(
-                BOTLOG_CHATID,
-                " Search query `" + query + "` was executed successfully",
-            )
     except Exception as e:
-        await q_event.edit(f"An error: {e} occured, report it to support group")
+        await event.edit(f"**Error: {e}**")
+
+    await event.edit(
+        "**Search Query:**\n`" + match + "`\n\n**Results:**\n" + msg, link_preview=False
+    )
 
 
 @register(outgoing=True, pattern=r"^\.wiki(?: |$)(.*)")
