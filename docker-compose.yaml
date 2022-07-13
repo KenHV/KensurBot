@@ -11,7 +11,7 @@ services:
 
   kensurbot:
       build:
-        context: https://github.com/KenHV/KensurBot.git#master
+        context: https://github.com/KenHV/KensurBot.git#staging
       depends_on:
         - db
       restart: unless-stopped
