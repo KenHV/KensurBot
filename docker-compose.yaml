@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    env_file:
+      - config.env
+
+  kensurbot:
+      build:
+        context: https://github.com/KenHV/KensurBot.git#master
+      depends_on:
+        - db
+      restart: unless-stopped
+      env_file:
+        - config.env

@@ -25,7 +25,6 @@ code and here we are.
 
 - [Guide to setting up](https://kenharris.xyz/posts/userbot)
 - [Generate session string](http://sessiongen.kenhv.repl.run)
-- [Deploy on Heroku](https://heroku.com/deploy)
 - [Setup GDrive module](https://telegra.ph/How-To-Setup-Google-Drive-04-03)
 - [Setup Last.FM module](https://telegra.ph/How-to-set-up-LastFM-module-for-Paperplane-userbot-11-02)
 
