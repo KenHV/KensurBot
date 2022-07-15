@@ -4,7 +4,7 @@ RUN set -ex \
     && git clone -b master https://github.com/KenHV/KensurBot /home/userbot \
     && chmod 777 /home/userbot
 
-COPY ./config.env /home/userbot/
+COPY ./docker-compose.yaml ./config.env* /home/userbot/
 
 WORKDIR /home/userbot/
 
