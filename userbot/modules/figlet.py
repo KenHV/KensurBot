@@ -5,7 +5,7 @@
 #
 
 import pyfiglet
-from emoji import get_emoji_regexp
+from emoji import replace_emoji
 
 from userbot import CMD_HELP
 from userbot.events import register
@@ -38,14 +38,9 @@ async def figlet(event):
         return await event.edit(
             "**Invalid style selected, refer to **`.help figlet`**.**"
         )
-    result = pyfiglet.figlet_format(deEmojify(text), font=font)
+    result = pyfiglet.figlet_format(replace_emoji(text), font=font)
     await event.respond(f"‌‌‎`{result}`")
     await event.delete()
-
-
-def deEmojify(inputString):
-    """Remove emojis and other non-safe characters from string"""
-    return get_emoji_regexp().sub("", inputString)
 
 
 CMD_HELP.update(
