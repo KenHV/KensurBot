@@ -16,6 +16,38 @@ from userbot import CMD_HELP, REM_BG_API_KEY, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
 
+# this method will call the API, and return in the appropriate format
+# with the name provided.
+async def ReTrieveFile(input_file_name):
+    headers = {
+        "X-API-Key": REM_BG_API_KEY,
+    }
+    files = {
+        "image_file": (input_file_name, open(input_file_name, "rb")),
+    }
+    return requests.post(
+        "https://api.remove.bg/v1.0/removebg",
+        headers=headers,
+        files=files,
+        allow_redirects=True,
+        stream=True,
+    )
+
+
+async def ReTrieveURL(input_url):
+    headers = {
+        "X-API-Key": REM_BG_API_KEY,
+    }
+    data = {"image_url": input_url}
+    return requests.post(
+        "https://api.remove.bg/v1.0/removebg",
+        headers=headers,
+        data=data,
+        allow_redirects=True,
+        stream=True,
+    )
+
+
 @register(outgoing=True, pattern=r"^\.rbg(?: |$)(.*)")
 async def kbg(remob):
     """For .rbg command, Remove Image Background."""
@@ -68,38 +100,6 @@ async def kbg(remob):
                 output_file_name.content.decode("UTF-8")
             )
         )
-
-
-# this method will call the API, and return in the appropriate format
-# with the name provided.
-async def ReTrieveFile(input_file_name):
-    headers = {
-        "X-API-Key": REM_BG_API_KEY,
-    }
-    files = {
-        "image_file": (input_file_name, open(input_file_name, "rb")),
-    }
-    return requests.post(
-        "https://api.remove.bg/v1.0/removebg",
-        headers=headers,
-        files=files,
-        allow_redirects=True,
-        stream=True,
-    )
-
-
-async def ReTrieveURL(input_url):
-    headers = {
-        "X-API-Key": REM_BG_API_KEY,
-    }
-    data = {"image_url": input_url}
-    return requests.post(
-        "https://api.remove.bg/v1.0/removebg",
-        headers=headers,
-        data=data,
-        allow_redirects=True,
-        stream=True,
-    )
 
 
 CMD_HELP.update(

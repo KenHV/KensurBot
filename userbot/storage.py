@@ -32,6 +32,12 @@ class Storage:
     def bulk_save(self):
         return self._guard
 
+    def _save(self):
+        if not self._root.is_dir():
+            self._root(parents=True, exist_ok=True)
+        with open(self._root / FILE_NAME, "w") as file_pointer:
+            json.dump(self._data, file_pointer)
+
     def __getattr__(self, name):
         if name.startswith("_"):
             raise ValueError("You can only access existing private members")
@@ -44,9 +50,3 @@ class Storage:
             self._data[name] = value
             if self._autosave:
                 self._save()
-
-    def _save(self):
-        if not self._root.is_dir():
-            self._root(parents=True, exist_ok=True)
-        with open(self._root / FILE_NAME, "w") as file_pointer:
-            json.dump(self._data, file_pointer)

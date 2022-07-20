@@ -18,51 +18,6 @@ from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
 
-@register(pattern=r"\.whois(?: |$)(.*)", outgoing=True)
-async def who(event):
-
-    await event.edit(
-        "**Sit tight while I steal some data from the Global Network Zone...**"
-    )
-
-    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
-        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-
-    replied_user = await get_user(event)
-    if replied_user is None:
-        return await event.edit(
-            "**Well that's an anonymous admin, good luck figuring out which one!**"
-        )
-
-    try:
-        photo, caption = await fetch_info(replied_user, event)
-    except AttributeError:
-        return await event.edit("**Couldn't fetch the info of this user.**")
-
-    message_id_to_reply = event.message.reply_to_msg_id
-
-    if not message_id_to_reply:
-        message_id_to_reply = None
-
-    try:
-        await event.client.send_file(
-            event.chat_id,
-            photo,
-            caption=caption,
-            link_preview=False,
-            force_document=False,
-            reply_to=message_id_to_reply,
-            parse_mode=r"html",
-        )
-
-        if not photo.startswith("http"):
-            os.remove(photo)
-        await event.delete()
-
-    except TypeError:
-        await event.edit(caption, parse_mode=r"html")
-
-
 async def get_user(event):
     """Get the user from argument or replied message."""
     if event.reply_to_msg_id and not event.pattern_match.group(1):
@@ -156,6 +111,51 @@ async def fetch_info(replied_user, event):
     caption += f'<a href="tg://user?id={user_id}">{first_name}</a>'
 
     return photo, caption
+
+
+@register(pattern=r"\.whois(?: |$)(.*)", outgoing=True)
+async def who(event):
+
+    await event.edit(
+        "**Sit tight while I steal some data from the Global Network Zone...**"
+    )
+
+    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
+
+    replied_user = await get_user(event)
+    if replied_user is None:
+        return await event.edit(
+            "**Well that's an anonymous admin, good luck figuring out which one!**"
+        )
+
+    try:
+        photo, caption = await fetch_info(replied_user, event)
+    except AttributeError:
+        return await event.edit("**Couldn't fetch the info of this user.**")
+
+    message_id_to_reply = event.message.reply_to_msg_id
+
+    if not message_id_to_reply:
+        message_id_to_reply = None
+
+    try:
+        await event.client.send_file(
+            event.chat_id,
+            photo,
+            caption=caption,
+            link_preview=False,
+            force_document=False,
+            reply_to=message_id_to_reply,
+            parse_mode=r"html",
+        )
+
+        if not photo.startswith("http"):
+            os.remove(photo)
+        await event.delete()
+
+    except TypeError:
+        await event.edit(caption, parse_mode=r"html")
 
 
 CMD_HELP.update(

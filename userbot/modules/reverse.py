@@ -29,6 +29,29 @@ useragent = (
 opener.addheaders = [("User-agent", useragent)]
 
 
+async def ParseSauce(googleurl):
+    """Parse/Scrape the HTML code for the info we want."""
+
+    source = opener.open(googleurl).read()
+    soup = BeautifulSoup(source, "html.parser")
+    results = {"similar_images": "", "best_guess": ""}
+
+    try:
+        for similar_image in soup.findAll("input", {"class": "gLFyf"}):
+            url = "https://www.google.com/search?tbm=isch&q=" + urllib.parse.quote_plus(
+                similar_image.get("value")
+            )
+            results["similar_images"] = url
+    except BaseException:
+        pass
+
+    for best_guess in soup.findAll("div", attrs={"class": "r5a77d"}):
+        results["best_guess"] = best_guess.get_text()
+
+    results["best_guess"] = results["best_guess"][12:]
+    return results
+
+
 @register(outgoing=True, pattern=r"^\.reverse(?: |$)(\d*)")
 async def okgoogle(img):
     """For .reverse command, Google search images and stickers."""
@@ -130,29 +153,6 @@ async def okgoogle(img):
                    \n\n[Results for {guess}]({imgspage})"
     )
     shutil.rmtree(os.path.dirname(os.path.abspath(lst[0])))
-
-
-async def ParseSauce(googleurl):
-    """Parse/Scrape the HTML code for the info we want."""
-
-    source = opener.open(googleurl).read()
-    soup = BeautifulSoup(source, "html.parser")
-    results = {"similar_images": "", "best_guess": ""}
-
-    try:
-        for similar_image in soup.findAll("input", {"class": "gLFyf"}):
-            url = "https://www.google.com/search?tbm=isch&q=" + urllib.parse.quote_plus(
-                similar_image.get("value")
-            )
-            results["similar_images"] = url
-    except BaseException:
-        pass
-
-    for best_guess in soup.findAll("div", attrs={"class": "r5a77d"}):
-        results["best_guess"] = best_guess.get_text()
-
-    results["best_guess"] = results["best_guess"][12:]
-    return results
 
 
 CMD_HELP.update(

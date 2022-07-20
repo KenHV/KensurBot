@@ -47,6 +47,30 @@ BIOPREFIX = BIO_PREFIX or None
 LASTFMCHECK = False
 RUNNING = False
 LastLog = False
+
+
+async def gettags(track=None, isNowPlaying=None, playing=None):
+    if isNowPlaying:
+        tags = playing.get_top_tags()
+        arg = playing
+        if not tags:
+            tags = playing.artist.get_top_tags()
+    else:
+        tags = track.track.get_top_tags()
+        arg = track.track
+    if not tags:
+        tags = arg.artist.get_top_tags()
+    tags = "".join(" #" + t.item.__str__() for t in tags[:5])
+    tags = sub("^ ", "", tags)
+    tags = sub(" ", "_", tags)
+    tags = sub("_#", " #", tags)
+    return tags
+
+
+async def artist_and_song(track):
+    return f"{track.track}"
+
+
 # ================================================
 
 
@@ -99,28 +123,6 @@ async def last_fm(lastFM):
         await lastFM.edit(f"{output}", parse_mode="md", link_preview=True)
     else:
         await lastFM.edit(f"{output}", parse_mode="md")
-
-
-async def gettags(track=None, isNowPlaying=None, playing=None):
-    if isNowPlaying:
-        tags = playing.get_top_tags()
-        arg = playing
-        if not tags:
-            tags = playing.artist.get_top_tags()
-    else:
-        tags = track.track.get_top_tags()
-        arg = track.track
-    if not tags:
-        tags = arg.artist.get_top_tags()
-    tags = "".join(" #" + t.item.__str__() for t in tags[:5])
-    tags = sub("^ ", "", tags)
-    tags = sub(" ", "_", tags)
-    tags = sub("_#", " #", tags)
-    return tags
-
-
-async def artist_and_song(track):
-    return f"{track.track}"
 
 
 async def get_curr_track(lfmbio):

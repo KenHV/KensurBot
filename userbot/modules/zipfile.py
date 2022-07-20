@@ -103,6 +103,14 @@ async def addzip(add):
             return
 
 
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, _, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file))
+            os.remove(os.path.join(root, file))
+
+
 @register(outgoing=True, pattern=r"^\.upzip(?: |$)(.*)")
 async def upload_zip(up):
     if not os.path.isdir(ZIP_DOWNLOAD_DIRECTORY):
@@ -137,14 +145,6 @@ async def remove_dir(rm):
         return
     os.rmdir(ZIP_DOWNLOAD_DIRECTORY)
     await rm.edit("**Zip list removed.**")
-
-
-def zipdir(path, ziph):
-    # ziph is zipfile handle
-    for root, _, files in os.walk(path):
-        for file in files:
-            ziph.write(os.path.join(root, file))
-            os.remove(os.path.join(root, file))
 
 
 CMD_HELP.update(

@@ -12,6 +12,11 @@ r = telegraph.create_account(short_name="telegraph")
 auth_url = r["auth_url"]
 
 
+def resize_image(image):
+    im = Image.open(image)
+    im.save(image, "PNG")
+
+
 @register(outgoing=True, pattern=r"^\.telegraph (media|text)$")
 async def telegraphs(graph):
     """For .telegraph command, upload media & text to telegraph site."""
@@ -76,11 +81,6 @@ async def telegraphs(graph):
             await graph.edit(
                 "**Reply to a message to get a permanent telegra.ph link.**"
             )
-
-
-def resize_image(image):
-    im = Image.open(image)
-    im.save(image, "PNG")
 
 
 CMD_HELP.update(

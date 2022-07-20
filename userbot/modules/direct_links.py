@@ -40,48 +40,6 @@ async def subprocess_run(cmd):
     return result
 
 
-@register(outgoing=True, pattern=r"^\.direct(?: |$)([\s\S]*)")
-async def direct_link_generator(request):
-    """direct links generator"""
-    await request.edit("**Processing...**")
-    textx = await request.get_reply_message()
-    message = request.pattern_match.group(1)
-    if message:
-        pass
-    elif textx:
-        message = textx.text
-    else:
-        return await request.edit("**Usage: .direct <url>**")
-    reply = ""
-    links = re.findall(r"\bhttps?://.*\.\S+", message)
-    if not links:
-        reply = "**No links found!**"
-        await request.edit(reply)
-    for link in links:
-        if "zippyshare.com" in link:
-            reply += await zippy_share(link)
-        elif "yadi.sk" in link:
-            reply += await yandex_disk(link)
-        elif "cloud.mail.ru" in link:
-            reply += await cm_ru(link)
-        elif "mediafire.com" in link:
-            reply += await mediafire(link)
-        elif "sourceforge.net" in link:
-            reply += await sourceforge(link)
-        elif "osdn.net" in link:
-            reply += await osdn(link)
-        elif "github.com" in link:
-            reply += await github(link)
-        elif "androidfilehost.com" in link:
-            reply += await androidfilehost(link)
-        elif "uptobox.com" in link:
-            await uptobox(request, link)
-            return None
-        else:
-            reply += re.findall(r"\bhttps?://(.*?[^/]+)", link)[0] + "is not supported"
-    await request.edit(reply)
-
-
 async def zippy_share(url: str) -> str:
     link = re.findall("https:/.(.*?).zippyshare", url)[0]
     response_content = (requests.get(url)).content
@@ -235,6 +193,21 @@ async def github(url: str) -> str:
     return reply
 
 
+async def useragent():
+    """
+    useragent random setter
+    """
+    useragents = BeautifulSoup(
+        requests.get(
+            "https://developers.whatismybrowser.com/"
+            "useragents/explore/operating_system_name/android/"
+        ).content,
+        "lxml",
+    ).findAll("td", {"class": "useragent"})
+    user_agent = choice(useragents)
+    return user_agent.text
+
+
 async def androidfilehost(url: str) -> str:
     """AFH direct links generator"""
     try:
@@ -355,19 +328,46 @@ async def uptobox(request, url: str) -> str:
                 return
 
 
-async def useragent():
-    """
-    useragent random setter
-    """
-    useragents = BeautifulSoup(
-        requests.get(
-            "https://developers.whatismybrowser.com/"
-            "useragents/explore/operating_system_name/android/"
-        ).content,
-        "lxml",
-    ).findAll("td", {"class": "useragent"})
-    user_agent = choice(useragents)
-    return user_agent.text
+@register(outgoing=True, pattern=r"^\.direct(?: |$)([\s\S]*)")
+async def direct_link_generator(request):
+    """direct links generator"""
+    await request.edit("**Processing...**")
+    textx = await request.get_reply_message()
+    message = request.pattern_match.group(1)
+    if message:
+        pass
+    elif textx:
+        message = textx.text
+    else:
+        return await request.edit("**Usage: .direct <url>**")
+    reply = ""
+    links = re.findall(r"\bhttps?://.*\.\S+", message)
+    if not links:
+        reply = "**No links found!**"
+        await request.edit(reply)
+    for link in links:
+        if "zippyshare.com" in link:
+            reply += await zippy_share(link)
+        elif "yadi.sk" in link:
+            reply += await yandex_disk(link)
+        elif "cloud.mail.ru" in link:
+            reply += await cm_ru(link)
+        elif "mediafire.com" in link:
+            reply += await mediafire(link)
+        elif "sourceforge.net" in link:
+            reply += await sourceforge(link)
+        elif "osdn.net" in link:
+            reply += await osdn(link)
+        elif "github.com" in link:
+            reply += await github(link)
+        elif "androidfilehost.com" in link:
+            reply += await androidfilehost(link)
+        elif "uptobox.com" in link:
+            await uptobox(request, link)
+            return None
+        else:
+            reply += re.findall(r"\bhttps?://(.*?[^/]+)", link)[0] + "is not supported"
+    await request.edit(reply)
 
 
 CMD_HELP.update(

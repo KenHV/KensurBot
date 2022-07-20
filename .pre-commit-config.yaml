@@ -8,8 +8,17 @@ repos:
       - id: mixed-line-ending
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/sondrelg/pep585-upgrade
+    rev: v1.0
+    hooks:
+      - id: upgrade-type-hints
+        args: [ '--futures=true' ]
+  - repo: https://github.com/bwhmather/ssort
+    rev: v0.11.5
+    hooks:
+      - id: ssort
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.1
+    rev: v2.37.2
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
@@ -29,7 +38,7 @@ repos:
     rev: 5.10.1
     hooks:
       - id: isort
-        args: ["--profile", "black", "--filter-files"]
+        args: ["--profile=black", "--filter-files"]
   - repo: "https://github.com/psf/black"
     rev: 22.6.0
     hooks:

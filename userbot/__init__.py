@@ -176,15 +176,6 @@ if MODULES_EXCLUDE_LIST:
     MODULES_EXCLUDE_LIST = MODULES_EXCLUDE_LIST.split(",")
 
 
-def shutdown_bot(*_):
-    LOGS.info("Received SIGTERM.")
-    bot.disconnect()
-    sys.exit(143)
-
-
-signal.signal(signal.SIGTERM, shutdown_bot)
-
-
 bot = TelegramClient(
     session=StringSession(STRING_SESSION),
     api_id=API_KEY,
@@ -192,6 +183,15 @@ bot = TelegramClient(
     connection=ConnectionTcpAbridged,
     auto_reconnect=True,
 )
+
+
+def shutdown_bot(*_):
+    LOGS.info("Received SIGTERM.")
+    bot.disconnect()
+    sys.exit(143)
+
+
+signal.signal(signal.SIGTERM, shutdown_bot)
 
 
 async def check_botlog_chatid():

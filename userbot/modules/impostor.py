@@ -10,6 +10,41 @@ if not hasattr(STORAGE, "userObj"):
     STORAGE.userObj = False
 
 
+async def updateProfile(userObj, restore=False):
+    firstName = (
+        "Deleted Account"
+        if userObj.user.first_name is None
+        else userObj.user.first_name
+    )
+    lastName = "" if userObj.user.last_name is None else userObj.user.last_name
+    userAbout = userObj.about if userObj.about is not None else ""
+    userAbout = "" if len(userAbout) > 70 else userAbout
+    if restore:
+        userPfps = await bot.get_profile_photos("me")
+        userPfp = userPfps[0]
+        await bot(
+            DeletePhotosRequest(
+                id=[
+                    InputPhoto(
+                        id=userPfp.id,
+                        access_hash=userPfp.access_hash,
+                        file_reference=userPfp.file_reference,
+                    )
+                ]
+            )
+        )
+    else:
+        try:
+            userPfp = userObj.profile_photo
+            pfpImage = await bot.download_media(userPfp)
+            await bot(UploadProfilePhotoRequest(await bot.upload_file(pfpImage)))
+        except BaseException:
+            pass
+    await bot(
+        UpdateProfileRequest(about=userAbout, first_name=firstName, last_name=lastName)
+    )
+
+
 @register(outgoing=True, pattern=r"^\.impostor ?(.*)")
 async def impostor(event):
     inputArgs = event.pattern_match.group(1)
@@ -44,41 +79,6 @@ async def impostor(event):
     await event.edit("**Stealing this random person's identity...**")
     await updateProfile(userObj)
     await event.edit("**I am you and you are me.**")
-
-
-async def updateProfile(userObj, restore=False):
-    firstName = (
-        "Deleted Account"
-        if userObj.user.first_name is None
-        else userObj.user.first_name
-    )
-    lastName = "" if userObj.user.last_name is None else userObj.user.last_name
-    userAbout = userObj.about if userObj.about is not None else ""
-    userAbout = "" if len(userAbout) > 70 else userAbout
-    if restore:
-        userPfps = await bot.get_profile_photos("me")
-        userPfp = userPfps[0]
-        await bot(
-            DeletePhotosRequest(
-                id=[
-                    InputPhoto(
-                        id=userPfp.id,
-                        access_hash=userPfp.access_hash,
-                        file_reference=userPfp.file_reference,
-                    )
-                ]
-            )
-        )
-    else:
-        try:
-            userPfp = userObj.profile_photo
-            pfpImage = await bot.download_media(userPfp)
-            await bot(UploadProfilePhotoRequest(await bot.upload_file(pfpImage)))
-        except BaseException:
-            pass
-    await bot(
-        UpdateProfileRequest(about=userAbout, first_name=firstName, last_name=lastName)
-    )
 
 
 CMD_HELP.update(

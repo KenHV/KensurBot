@@ -52,6 +52,17 @@ async def subprocess_run(megadl, cmd):
     return stdout.decode().strip(), stderr.decode().strip(), exitCode
 
 
+async def decrypt_file(megadl, file_path, temp_file_path, hex_key, hex_raw_key):
+    cmd = "cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'".format(
+        temp_file_path, hex_key, hex_raw_key, file_path
+    )
+    if await subprocess_run(megadl, cmd):
+        os.remove(temp_file_path)
+    else:
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
+    return
+
+
 @register(outgoing=True, pattern=r"^\.mega(?: |$)(.*)")
 async def mega_downloader(megadl):
     await megadl.edit("**Collecting information...**")
@@ -170,17 +181,6 @@ async def mega_downloader(megadl):
         )
         for e in downloader.get_errors():
             LOGS.info(str(e))
-    return
-
-
-async def decrypt_file(megadl, file_path, temp_file_path, hex_key, hex_raw_key):
-    cmd = "cat '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'".format(
-        temp_file_path, hex_key, hex_raw_key, file_path
-    )
-    if await subprocess_run(megadl, cmd):
-        os.remove(temp_file_path)
-    else:
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_path)
     return
 
 

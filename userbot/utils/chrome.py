@@ -22,16 +22,6 @@ from selenium.webdriver.chrome.options import Options
 from userbot import CHROME_BIN, CHROME_DRIVER, TEMP_DOWNLOAD_DIRECTORY
 
 
-async def chrome(chrome_options=None):
-    if chrome_options is None:
-        chrome_options = await options()
-    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
-        os.mkdir(TEMP_DOWNLOAD_DIRECTORY)
-    prefs = {"download.default_directory": TEMP_DOWNLOAD_DIRECTORY}
-    chrome_options.add_experimental_option("prefs", prefs)
-    return webdriver.Chrome(executable_path=CHROME_DRIVER, options=chrome_options)
-
-
 async def options():
     chrome_options = Options()
     chrome_options.binary_location = CHROME_BIN
@@ -41,3 +31,13 @@ async def options():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-gpu")
     return chrome_options
+
+
+async def chrome(chrome_options=None):
+    if chrome_options is None:
+        chrome_options = await options()
+    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+        os.mkdir(TEMP_DOWNLOAD_DIRECTORY)
+    prefs = {"download.default_directory": TEMP_DOWNLOAD_DIRECTORY}
+    chrome_options.add_experimental_option("prefs", prefs)
+    return webdriver.Chrome(executable_path=CHROME_DRIVER, options=chrome_options)

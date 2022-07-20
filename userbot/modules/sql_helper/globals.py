@@ -33,14 +33,6 @@ def gvarstatus(variable):
         SESSION.close()
 
 
-def addgvar(variable, value):
-    if SESSION.query(Globals).filter(Globals.variable == str(variable)).one_or_none():
-        delgvar(variable)
-    adder = Globals(str(variable), value)
-    SESSION.add(adder)
-    SESSION.commit()
-
-
 def delgvar(variable):
     rem = (
         SESSION.query(Globals)
@@ -49,3 +41,11 @@ def delgvar(variable):
     )
     if rem:
         SESSION.commit()
+
+
+def addgvar(variable, value):
+    if SESSION.query(Globals).filter(Globals.variable == str(variable)).one_or_none():
+        delgvar(variable)
+    adder = Globals(str(variable), value)
+    SESSION.add(adder)
+    SESSION.commit()

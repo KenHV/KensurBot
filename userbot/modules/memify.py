@@ -13,56 +13,6 @@ from userbot import CMD_HELP, TEMP_DOWNLOAD_DIRECTORY
 from userbot.events import register
 
 
-@register(outgoing=True, pattern=r"^\.mmf (.*)")
-async def memify(event):
-    reply_msg = await event.get_reply_message()
-    input_str = event.pattern_match.group(1)
-    await event.edit("**Processing...**")
-
-    if not reply_msg:
-        return await event.edit("**Reply to a message containing media!**")
-
-    if not reply_msg.media:
-        return await event.edit("**Reply to an image/sticker/gif/video!**")
-
-    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
-        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
-
-    input_file = await event.client.download_media(reply_msg, TEMP_DOWNLOAD_DIRECTORY)
-    input_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, os.path.basename(input_file))
-
-    if input_file.endswith(".tgs"):
-        await event.edit("**Extracting first frame...**")
-        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.webp")
-        cmd = f"lottie_convert.py --frame 0 {input_file} {converted_file}"
-        await runcmd(cmd)
-        os.remove(input_file)
-        if not os.path.lexists(converted_file):
-            return await event.edit("**Couldn't parse this animated sticker.**")
-        input_file = converted_file
-
-    elif input_file.endswith(".mp4"):
-        await event.edit("**Extracting first frame...**")
-        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.png")
-        await take_screen_shot(input_file, 0, converted_file)
-        os.remove(input_file)
-        if not os.path.lexists(converted_file):
-            return await event.edit("**Couldn't parse this video.**")
-        input_file = converted_file
-
-    await event.edit("**Adding text...**")
-    try:
-        final_image = await add_text_img(input_file, input_str)
-    except Exception as e:
-        return await event.edit(f"**An error occurred:**\n`{e}`")
-    await event.client.send_file(
-        entity=event.chat_id, file=final_image, reply_to=reply_msg
-    )
-    await event.delete()
-    os.remove(final_image)
-    os.remove(input_file)
-
-
 async def add_text_img(image_path, text):
     font_size = 12
     stroke_width = 2
@@ -147,6 +97,56 @@ async def take_screen_shot(
     command = f'''ffmpeg -ss {ttl} -i "{video_file}" -vframes 1 "{thumb_image_path}"'''
     err = (await runcmd(command))[1]
     return thumb_image_path if os.path.exists(thumb_image_path) else err
+
+
+@register(outgoing=True, pattern=r"^\.mmf (.*)")
+async def memify(event):
+    reply_msg = await event.get_reply_message()
+    input_str = event.pattern_match.group(1)
+    await event.edit("**Processing...**")
+
+    if not reply_msg:
+        return await event.edit("**Reply to a message containing media!**")
+
+    if not reply_msg.media:
+        return await event.edit("**Reply to an image/sticker/gif/video!**")
+
+    if not os.path.isdir(TEMP_DOWNLOAD_DIRECTORY):
+        os.makedirs(TEMP_DOWNLOAD_DIRECTORY)
+
+    input_file = await event.client.download_media(reply_msg, TEMP_DOWNLOAD_DIRECTORY)
+    input_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, os.path.basename(input_file))
+
+    if input_file.endswith(".tgs"):
+        await event.edit("**Extracting first frame...**")
+        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.webp")
+        cmd = f"lottie_convert.py --frame 0 {input_file} {converted_file}"
+        await runcmd(cmd)
+        os.remove(input_file)
+        if not os.path.lexists(converted_file):
+            return await event.edit("**Couldn't parse this animated sticker.**")
+        input_file = converted_file
+
+    elif input_file.endswith(".mp4"):
+        await event.edit("**Extracting first frame...**")
+        converted_file = os.path.join(TEMP_DOWNLOAD_DIRECTORY, "meme.png")
+        await take_screen_shot(input_file, 0, converted_file)
+        os.remove(input_file)
+        if not os.path.lexists(converted_file):
+            return await event.edit("**Couldn't parse this video.**")
+        input_file = converted_file
+
+    await event.edit("**Adding text...**")
+    try:
+        final_image = await add_text_img(input_file, input_str)
+    except Exception as e:
+        return await event.edit(f"**An error occurred:**\n`{e}`")
+    await event.client.send_file(
+        entity=event.chat_id, file=final_image, reply_to=reply_msg
+    )
+    await event.delete()
+    os.remove(final_image)
+    os.remove(input_file)
 
 
 CMD_HELP.update(

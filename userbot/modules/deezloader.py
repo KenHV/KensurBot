@@ -19,6 +19,47 @@ if not TEMP_DOWNLOAD_DIRECTORY.endswith("/"):
     TEMP_DOWNLOAD_DIRECTORY += "/"
 
 
+async def upload_track(track_location, message):
+    metadata = extractMetadata(createParser(track_location))
+    duration = 0
+    title = ""
+    performer = ""
+    if metadata.has("duration"):
+        duration = metadata.get("duration").seconds
+    if metadata.has("title"):
+        title = metadata.get("title")
+    if metadata.has("artist"):
+        performer = metadata.get("artist")
+
+    document_attributes = [
+        DocumentAttributeAudio(
+            duration=duration,
+            voice=False,
+            title=title,
+            performer=performer,
+            waveform=None,
+        )
+    ]
+
+    if title and performer:
+        track = f"{performer} - {title}"
+    else:
+        track = str(os.path.basename(track_location).rsplit(".", 1)[0])
+
+    await message.edit(f"**Uploading...\nTrack:** {track}")
+
+    await message.client.send_file(
+        message.chat_id,
+        track_location,
+        caption=os.path.basename(track_location),
+        force_document=False,
+        supports_streaming=True,
+        allow_cache=False,
+        attributes=document_attributes,
+    )
+    os.remove(track_location)
+
+
 @register(outgoing=True, pattern=r"^\.deezloader (.*) (flac|320|256|128)")
 async def deeznuts(event):
     if DEEZER_ARL_TOKEN is None:
@@ -118,47 +159,6 @@ async def deeznuts(event):
             return await event.delete()
 
     await event.edit("**Syntax error!\nRead** `.help deezloader`**.**")
-
-
-async def upload_track(track_location, message):
-    metadata = extractMetadata(createParser(track_location))
-    duration = 0
-    title = ""
-    performer = ""
-    if metadata.has("duration"):
-        duration = metadata.get("duration").seconds
-    if metadata.has("title"):
-        title = metadata.get("title")
-    if metadata.has("artist"):
-        performer = metadata.get("artist")
-
-    document_attributes = [
-        DocumentAttributeAudio(
-            duration=duration,
-            voice=False,
-            title=title,
-            performer=performer,
-            waveform=None,
-        )
-    ]
-
-    if title and performer:
-        track = f"{performer} - {title}"
-    else:
-        track = str(os.path.basename(track_location).rsplit(".", 1)[0])
-
-    await message.edit(f"**Uploading...\nTrack:** {track}")
-
-    await message.client.send_file(
-        message.chat_id,
-        track_location,
-        caption=os.path.basename(track_location),
-        force_document=False,
-        supports_streaming=True,
-        allow_cache=False,
-        attributes=document_attributes,
-    )
-    os.remove(track_location)
 
 
 CMD_HELP.update(

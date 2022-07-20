@@ -649,25 +649,6 @@ async def coin(event):
             await event.edit("The coin landed on: **Tails**.")
 
 
-@register(pattern=r"^\.slap(?: |$)(.*)", outgoing=True)
-async def who(event):
-    """slaps a user, or get slapped if not a reply."""
-    replied_user = await get_user_from_event(event)
-    if replied_user:
-        replied_user = replied_user[0]
-    else:
-        return
-    caption = await slap(replied_user, event)
-
-    try:
-        await event.edit(caption)
-
-    except BaseException:
-        await event.edit(
-            "**Can't slap this person, need to fetch some sticks and stones!**"
-        )
-
-
 async def slap(replied_user, event):
     """Construct a funny slap sentence !!"""
     user_id = replied_user.id
@@ -688,6 +669,25 @@ async def slap(replied_user, event):
     return "..." + temp.format(
         victim=slapped, item=item, hits=hit, throws=throw, where=where
     )
+
+
+@register(pattern=r"^\.slap(?: |$)(.*)", outgoing=True)
+async def who(event):
+    """slaps a user, or get slapped if not a reply."""
+    replied_user = await get_user_from_event(event)
+    if replied_user:
+        replied_user = replied_user[0]
+    else:
+        return
+    caption = await slap(replied_user, event)
+
+    try:
+        await event.edit(caption)
+
+    except BaseException:
+        await event.edit(
+            "**Can't slap this person, need to fetch some sticks and stones!**"
+        )
 
 
 @register(outgoing=True, pattern=r"^\.(yes|no|maybe|decide)$")
