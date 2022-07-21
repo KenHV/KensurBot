@@ -21,7 +21,6 @@ gTTS-token
 hachoir
 heroku3
 httplib2
-https://github.com/LonamiWebs/Telethon/archive/v1.24.zip
 https://github.com/tomyprs/deezloader/archive/master.zip
 humanize
 js2py
@@ -46,6 +45,7 @@ search-engine-parser
 speedtest-cli
 sqlalchemy==1.3.23
 telegraph
+telethon
 telethon-session-sqlalchemy
 wikipedia
 youtube-dl
